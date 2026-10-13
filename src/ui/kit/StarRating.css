@@ -1,0 +1,13 @@
+.ad-stars {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--gold);
+}
+
+.ad-stars__off {
+  color: var(--paper-edge);
+}
+
+.ad-stars__on path {
+  fill-opacity: 1;
+}

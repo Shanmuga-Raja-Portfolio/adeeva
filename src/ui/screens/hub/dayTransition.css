@@ -1,0 +1,175 @@
+.ad-dawn {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  background: linear-gradient(180deg, #1d1838 0%, #3a2d5c 40%, #c7768c 78%, #f6c99b 100%);
+  animation: ad-dawn-sky 2.2s var(--ease-out) both;
+  overflow: hidden;
+}
+
+.ad-dawn__sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ad-dawn__moon {
+  position: absolute;
+  left: 18%;
+  top: 14%;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  box-shadow: inset -14px 6px 0 0 #fff4d6;
+  animation: ad-dawn-moon 2s var(--ease-out) forwards;
+}
+
+.ad-dawn__sun {
+  position: absolute;
+  left: 50%;
+  bottom: -120px;
+  width: 240px;
+  height: 240px;
+  margin-left: -120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff3c9 0%, #ffd59a 45%, rgba(255, 196, 140, 0) 70%);
+  animation: ad-dawn-sun 2.2s var(--ease-out) 300ms both;
+}
+
+.ad-dawn__star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px #fff;
+  animation: ad-dawn-star 1.8s ease-out forwards;
+}
+
+.ad-dawn__card {
+  position: relative;
+  width: min(520px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-6) var(--space-5);
+  border-radius: 28px;
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  animation: ad-rise 700ms var(--ease-out) 600ms both;
+}
+
+.ad-dawn__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  font-size: 44px;
+}
+
+.ad-dawn__weekday {
+  font-size: var(--text-lg);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.ad-dawn__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: left;
+}
+
+.ad-dawn__line {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  animation: ad-rise var(--duration-slow) var(--ease-out) both;
+}
+
+.ad-dawn__line .ad-pill-tag {
+  margin-right: 4px;
+}
+
+.ad-dawn__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--rose-soft);
+  color: var(--rose-deep);
+}
+
+.ad-dawn__ledger {
+  display: flex;
+  gap: var(--space-4);
+  margin: 0;
+  font-weight: 700;
+}
+
+.ad-dawn__ledger span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ad-dawn__up {
+  color: var(--sage-deep);
+}
+
+.ad-dawn__down {
+  color: var(--rose-deep);
+}
+
+@keyframes ad-dawn-sky {
+  from {
+    filter: brightness(0.55) saturate(0.7);
+  }
+  to {
+    filter: none;
+  }
+}
+
+@keyframes ad-dawn-sun {
+  from {
+    transform: translateY(80px) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes ad-dawn-moon {
+  to {
+    transform: translate(-30px, -40px);
+    opacity: 0.25;
+  }
+}
+
+@keyframes ad-dawn-star {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}

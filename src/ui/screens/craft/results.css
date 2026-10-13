@@ -1,0 +1,312 @@
+.ad-craft--results {
+  background:
+    radial-gradient(circle at 25% 20%, rgba(201, 162, 39, 0.18), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(208, 88, 126, 0.12), transparent 45%), var(--paper);
+}
+
+.ad-craft-results {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: var(--space-6) clamp(16px, 3vw, 36px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.ad-craft-results--missing {
+  align-items: center;
+  text-align: center;
+}
+
+.ad-craft-results__hero {
+  display: grid;
+  grid-template-columns: minmax(220px, 380px) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.ad-craft-results__figure {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.ad-craft-results__glow {
+  position: absolute;
+  inset: 8% 0 4%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 233, 170, 0.85), rgba(255, 233, 170, 0) 65%);
+  animation: ad-craft-results-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes ad-craft-results-glow {
+  from {
+    transform: scale(0.94);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+.ad-craft-results__avatar {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  max-height: 72vh;
+  animation: ad-craft-results-twirl 900ms var(--ease-out) both;
+}
+
+@keyframes ad-craft-results-twirl {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ad-craft-results__verdict {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.ad-craft-results__verdict h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.ad-craft-results__quote {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 4px solid var(--rose);
+  background: var(--card);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-style: italic;
+  box-shadow: var(--shadow-sm);
+}
+
+.ad-craft-results__score {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.ad-craft-results__score-number {
+  font-family: var(--font-display);
+  font-size: 4.5rem;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--rose-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+.ad-craft-results__score-max {
+  font-size: var(--text-lg);
+  color: var(--ink-soft);
+}
+
+.ad-craft-results__stars {
+  margin-left: var(--space-3);
+  color: var(--gold);
+  animation: ad-pop-in 600ms var(--ease-out) 1.6s both;
+}
+
+.ad-craft-results__rewards,
+.ad-craft-results__look-note,
+.ad-craft-criterion {
+  animation: ad-craft-results-rise 520ms var(--ease-out) both;
+  animation-delay: calc(var(--reveal, 0) * 160ms + 500ms);
+}
+
+@keyframes ad-craft-results-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ad-craft-results__rewards {
+  width: 100%;
+  max-width: 460px;
+  padding: var(--space-4);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.ad-craft-results__lines {
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.ad-craft-results__lines li {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  padding-bottom: 4px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.ad-craft-results__totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ad-craft-results__total {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+}
+
+.ad-craft-results__total--coins {
+  background: var(--gold-soft);
+  color: var(--gold-deep);
+}
+
+.ad-craft-results__total--rep {
+  background: var(--rose-soft);
+  color: var(--rose-deep);
+}
+
+.ad-craft-results__total--buzz {
+  background: #efe6fa;
+  color: #6d4fa8;
+}
+
+.ad-craft-results__trend,
+.ad-craft-results__look-note,
+.ad-craft-results__praise {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: var(--space-2) 0 0;
+  font-weight: 600;
+  color: var(--sage-deep);
+}
+
+.ad-craft-results__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.ad-craft-results__panel {
+  padding: var(--space-5);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.ad-craft-results__criteria {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ad-craft-criterion {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.ad-craft-criterion--passed {
+  background: var(--sage-soft);
+}
+
+.ad-craft-criterion--failed {
+  background: var(--danger-soft);
+}
+
+.ad-craft-criterion__mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+.ad-craft-criterion--passed .ad-craft-criterion__mark {
+  background: var(--sage-deep);
+  color: #fff;
+}
+
+.ad-craft-criterion--failed .ad-craft-criterion__mark {
+  background: var(--danger);
+  color: #fff;
+}
+
+.ad-craft-criterion__text {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--text-sm);
+}
+
+.ad-craft-results__meters {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ad-craft-results__feedback {
+  margin-top: var(--space-4);
+}
+
+.ad-craft-results__feedback ul {
+  margin: 0;
+  padding-left: var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.ad-craft-results--still *,
+.ad-craft-results--still {
+  animation: none !important;
+}
+
+@media (max-width: 900px) {
+  .ad-craft-results__hero {
+    grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  .ad-craft-results__details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ad-craft-results__score-number {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .ad-craft-results__hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,93 @@
+.ad-upgrades {
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ad-upgrade,
+.ad-assistant {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "icon name buy"
+    "icon text text";
+  align-items: center;
+  row-gap: 2px;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.ad-upgrade--owned {
+  background: var(--sage-soft);
+  border-color: rgba(127, 165, 138, 0.35);
+}
+
+.ad-upgrade__icon,
+.ad-assistant__icon {
+  grid-area: icon;
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--gold-soft);
+  color: var(--gold-deep);
+}
+
+.ad-upgrade--owned .ad-upgrade__icon {
+  background: var(--card);
+  color: var(--sage-deep);
+}
+
+.ad-upgrade__name {
+  grid-area: name;
+  font-weight: 700;
+}
+
+.ad-upgrade > .ad-button,
+.ad-upgrade > .ad-upgrade__owned,
+.ad-assistant > .ad-button {
+  grid-area: buy;
+}
+
+.ad-upgrade__text,
+.ad-assistant__text {
+  grid-area: text;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.ad-upgrade__text strong,
+.ad-assistant__text strong {
+  color: var(--ink);
+}
+
+.ad-upgrade__owned {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--sage-deep);
+}
+
+.ad-assistant__icon {
+  background: var(--rose-soft);
+  color: var(--rose-deep);
+}
+
+.ad-assistant--hired {
+  background: linear-gradient(180deg, #fff7f9, var(--paper));
+  border-color: rgba(208, 88, 126, 0.3);
+}

@@ -1,0 +1,58 @@
+.ad-screen {
+  animation: ad-fade-in var(--duration-slow) var(--ease-out) both;
+}
+
+@keyframes ad-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ad-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+:root[data-motion="reduced"] {
+  --duration-fast: 0ms;
+  --duration-base: 0ms;
+  --duration-slow: 0ms;
+}
+
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+.ad-view-state {
+  display: grid;
+  place-items: center;
+  min-height: 60vh;
+  padding: var(--space-6) var(--space-4);
+  animation: ad-fade-in var(--duration-slow) var(--ease-out) both;
+}
+
+.ad-view-state .ad-card {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+  max-width: 28rem;
+}
+
+.ad-view-state__loading {
+  margin: 0;
+}

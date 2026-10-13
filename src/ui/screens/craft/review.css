@@ -1,0 +1,130 @@
+.ad-review-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.ad-review-stage__dress {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(ellipse at 50% 95%, rgba(43, 34, 48, 0.2), transparent 45%),
+    linear-gradient(180deg, #f6ecdf 0%, #efe1cf 100%);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.ad-review-stage__spot {
+  position: absolute;
+  inset: -20% 15% 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 246, 214, 0.9), transparent 65%);
+  pointer-events: none;
+}
+
+.ad-review-stage__preview {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  max-height: 76vh;
+}
+
+.ad-review-stage__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ad-review-card__who {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ad-review-card__who h2 {
+  margin: 0;
+}
+
+.ad-review-build {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.ad-review-build li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 253, 249, 0.75);
+}
+
+.ad-review-checklist ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.ad-review-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 34px;
+  font-size: var(--text-sm);
+}
+
+.ad-review-check__mark {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  font-weight: 700;
+  flex: none;
+}
+
+.ad-review-check--met .ad-review-check__mark {
+  background: var(--sage);
+  border-color: var(--sage-deep);
+  color: #fff;
+}
+
+.ad-review-check--unmet {
+  color: var(--danger);
+}
+
+.ad-review-check--unmet .ad-review-check__mark {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+}
+
+.ad-review-checklist__note {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 900px) {
+  .ad-review-stage {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .ad-review-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

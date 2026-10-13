@@ -1,0 +1,158 @@
+.ad-brief-stage {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.ad-brief-card__who {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.ad-brief-card__who svg {
+  flex: none;
+  filter: drop-shadow(0 6px 14px rgba(60, 36, 50, 0.18));
+}
+
+.ad-brief-card__theme-mark {
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--gold-soft);
+  color: var(--gold-deep);
+}
+
+.ad-brief-card__name {
+  margin: 2px 0 2px;
+  font-size: var(--text-2xl);
+}
+
+.ad-brief-card__occasion {
+  margin: 0;
+  font-size: var(--text-lg);
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-style: italic;
+}
+
+.ad-brief-card__quote {
+  position: relative;
+  margin: var(--space-4) 0 0;
+  padding: var(--space-4) var(--space-5);
+  background: var(--card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--text-lg);
+  line-height: 1.45;
+  font-family: var(--font-display);
+}
+
+.ad-brief-card__quote::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 54px;
+  width: 20px;
+  height: 20px;
+  background: var(--card);
+  transform: rotate(45deg);
+  border-radius: 3px;
+}
+
+.ad-brief-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.ad-brief-fact {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto auto;
+  column-gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-4);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  color: var(--rose-deep);
+}
+
+.ad-brief-fact__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+.ad-brief-fact strong {
+  grid-column: 1 / -1;
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--ink);
+}
+
+.ad-brief-fact small {
+  grid-column: 1 / -1;
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+}
+
+.ad-brief-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ad-brief-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0 var(--space-4) 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.ad-brief-chip svg {
+  flex: none;
+}
+
+.ad-brief-chip--must {
+  background: var(--rose-soft);
+  border-color: rgba(208, 88, 126, 0.35);
+  color: var(--rose-deep);
+}
+
+.ad-brief-chip--love {
+  background: var(--sage-soft);
+  border-color: rgba(127, 165, 138, 0.45);
+}
+
+.ad-brief-chip--avoid {
+  background: #f6efe9;
+  color: var(--ink-soft);
+}
+
+.ad-brief-chip__lead {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 900px) {
+  .ad-brief-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
