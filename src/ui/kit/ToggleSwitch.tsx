@@ -6,9 +6,10 @@ export interface ToggleSwitchProps {
   description?: string | undefined;
   checked: boolean;
   onChange: (checked: boolean) => void;
+  disabled?: boolean | undefined;
 }
 
-export function ToggleSwitch({ label, description, checked, onChange }: ToggleSwitchProps) {
+export function ToggleSwitch({ label, description, checked, onChange, disabled }: ToggleSwitchProps) {
   const labelId = useId();
   const descriptionId = useId();
   return (
@@ -30,6 +31,7 @@ export function ToggleSwitch({ label, description, checked, onChange }: ToggleSw
         aria-labelledby={labelId}
         aria-describedby={description !== undefined ? descriptionId : undefined}
         className="ad-toggle__switch"
+        disabled={disabled}
         onClick={() => onChange(!checked)}
       >
         <span className="ad-toggle__knob" />

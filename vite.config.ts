@@ -5,7 +5,14 @@ const port = Number(process.env["MAKER_PORT"] ?? 5173);
 
 export default defineConfig({
   plugins: [react()],
-  server: { port, strictPort: true },
+  server: {
+    port,
+    strictPort: true,
+    watch: { ignored: ["**/test-results*/**", "**/playwright-report/**"] },
+    warmup: {
+      clientFiles: ["./src/main.tsx", "./src/games/*/ui/*Game.tsx", "./src/games/*/ui/screens/*/*Flow.tsx"],
+    },
+  },
   test: {
     include: ["src/**/*.test.ts"],
     environment: "node",

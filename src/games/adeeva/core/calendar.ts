@@ -9,7 +9,7 @@ import { lapseOverdueGigs } from "./gigDeadline";
 import { rollOffers } from "./offers";
 import { queueStoryTrigger } from "./storyQueue";
 import { assistantWage } from "./studio";
-import { advanceTrendWeek } from "./trendMarket";
+import { advanceTrendWeek } from "../../../engine/trendMarket";
 import { isWeekEnd, weekEndDay } from "../../../engine/week";
 
 export interface WeeklyBill {

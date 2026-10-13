@@ -1,7 +1,7 @@
 import type { AvatarLook } from "../../../engine/avatar";
 import type { CareerId } from "./career";
 import type { ColourId, MaterialId } from "../../../engine/palette";
-import type { StyleTag } from "./styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 import type { TraitId } from "../../../engine/trait";
 import type { TrimId } from "./trim";
 

@@ -116,3 +116,10 @@ export function fixedRecordOf<K extends string, T>(
     return parsed(Object.fromEntries(entries) as Record<K, T>);
   };
 }
+
+export function keyedRecordOf<K extends string, T>(
+  isKey: (key: string) => key is K,
+  value: Parser<T>,
+): Parser<Readonly<Partial<Record<K, T>>>> {
+  return recordOf(isKey, value) as Parser<Readonly<Partial<Record<K, T>>>>;
+}

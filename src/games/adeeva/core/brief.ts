@@ -1,7 +1,7 @@
 import type { ClientDef, TrimRequirement } from "../content/client";
 import type { ColourId, MaterialId } from "../../../engine/palette";
 import type { ShowThemeDef } from "../content/showTheme";
-import type { StyleTag } from "../content/styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 import type { RngState } from "../../../engine/rng";
 import { drawDistinct, drawInt } from "../../../engine/rngDraw";
 

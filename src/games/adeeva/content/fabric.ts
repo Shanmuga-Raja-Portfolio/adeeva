@@ -1,5 +1,5 @@
 import type { ColourId, MaterialId, PrintId } from "../../../engine/palette";
-import type { StyleTag } from "./styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 
 export interface FabricDef {
   id: string;

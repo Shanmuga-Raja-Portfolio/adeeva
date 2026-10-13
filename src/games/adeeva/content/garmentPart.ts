@@ -1,6 +1,6 @@
 import type { Point } from "../../../engine/geometry/point";
 import type { GarmentSlot } from "./garmentSlot";
-import type { StyleTag } from "./styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 
 export const PART_CATEGORIES = ["bodice", "neckline", "sleeves", "skirt"] as const;
 export type PartCategory = (typeof PART_CATEGORIES)[number];

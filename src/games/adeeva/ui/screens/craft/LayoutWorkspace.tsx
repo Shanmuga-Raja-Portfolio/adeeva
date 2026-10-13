@@ -11,12 +11,12 @@ import {
 import { BOLT_MARGIN } from "../../art/FabricBolt";
 import { Button } from "../../../../../ui/kit/Button";
 import { autoPlacementSpot } from "./autoPlacement";
-import { clientToSvg, isInsideElement } from "./clientToSvg";
+import { clientToSvg, isInsideElement } from "../../../../../ui/kit/clientToSvg";
 import { LayoutBoard, type LayoutGhost } from "./LayoutBoard";
 import { clampToBoltWidth, rotatedSize, snapCm } from "./pieceGeometry";
 import { PieceInspector } from "./PieceInspector";
 import { PieceTray } from "./PieceTray";
-import { useElementWidth } from "./useElementSize";
+import { useElementWidth } from "../../../../../ui/kit/useElementSize";
 
 export interface LayoutWorkspaceProps {
   readonly state: GameState;

@@ -1,0 +1,341 @@
+.pa-weigh__layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.pa-weigh__list {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pa-weigh__list h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.pa-weigh__list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.pa-weigh__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  background: var(--paper-deep);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pa-weigh__item--active {
+  border-color: var(--pa-apricot);
+  background: #fff7ec;
+}
+
+.pa-weigh__item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.pa-weigh__dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(59, 38, 32, 0.3);
+}
+
+.pa-weigh__grams {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.pa-eggs__row {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: 4px;
+}
+
+.pa-egg {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 56px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pa-egg span {
+  width: 36px;
+  height: 46px;
+  border-radius: 50% 50% 46% 46% / 60% 60% 40% 40%;
+  background: radial-gradient(circle at 35% 30%, #fff8ec, #ead2ad);
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.08),
+    0 2px 3px rgba(0, 0, 0, 0.15);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.pa-egg:not(:disabled):hover span {
+  transform: rotate(-8deg);
+}
+
+.pa-egg--cracked span {
+  background: radial-gradient(circle at 50% 55%, #f7c548 0 32%, #fffdf5 34% 70%, transparent 72%);
+  box-shadow: none;
+  animation: pa-crack var(--duration-slow) var(--ease-out) both;
+}
+
+.pa-egg:disabled {
+  cursor: default;
+}
+
+.pa-egg:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 12px;
+}
+
+@keyframes pa-crack {
+  0% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.pa-weigh__done {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-weight: 800;
+  color: var(--pa-pistachio-deep);
+}
+
+.pa-weigh__bench {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pa-weigh__bowl-done {
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 253, 247, 0.8);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.pa-weigh-station {
+  display: grid;
+  grid-template-columns: minmax(240px, 380px) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.95), transparent 50%),
+    linear-gradient(140deg, #f2eee8, #e2dbd1);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8),
+    var(--shadow-md);
+}
+
+.pa-dial {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 12px 14px rgba(47, 58, 120, 0.25));
+}
+
+.pa-dial__needle {
+  transition: transform 120ms linear;
+}
+
+.pa-dial__zone--hit {
+  filter: drop-shadow(0 0 6px rgba(95, 160, 70, 0.9));
+}
+
+.pa-dial__puff circle {
+  opacity: 0.6;
+  animation: pa-puff 0.6s ease-out infinite;
+}
+
+.pa-dial__puff circle:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.pa-dial__puff circle:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.pa-dial__puff circle:nth-child(4) {
+  animation-delay: 0.1s;
+}
+
+@keyframes pa-puff {
+  from {
+    transform: translateY(0) scale(0.6);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(-18px) scale(1.4);
+    opacity: 0;
+  }
+}
+
+.pa-weigh-station__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pa-weigh-station__target {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.pa-weigh-station__target div {
+  display: flex;
+  flex-direction: column;
+}
+
+.pa-weigh-station__target strong {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+}
+
+.pa-pour-pad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 88px;
+  padding: 0 var(--space-5);
+  border: none;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #f6b06d, #e0863e);
+  color: #3b1d0c;
+  font: inherit;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  box-shadow: 0 6px 0 #b9662a;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.pa-pour-pad:focus-visible {
+  outline: none;
+  box-shadow:
+    0 6px 0 #b9662a,
+    var(--focus-ring);
+}
+
+.pa-pour-pad--pouring {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #b9662a;
+}
+
+.pa-pour-pad--piece {
+  background: linear-gradient(180deg, #fbe39b, #f1c94f);
+  box-shadow: 0 6px 0 #c9a227;
+}
+
+.pa-pour-pad--piece:active {
+  transform: translateY(4px);
+}
+
+.pa-pour-pad__scoop {
+  width: 40px;
+  height: 26px;
+  border-radius: 0 0 22px 22px;
+  background: #c9d0ea;
+  border: 3px solid #2f3a78;
+  transform: rotate(-20deg);
+}
+
+.pa-pour-pad--pouring .pa-pour-pad__scoop {
+  transform: rotate(-60deg);
+}
+
+.pa-weigh-station__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pa-scoop-back {
+  min-height: 48px;
+}
+
+.pa-weigh-station__verdict {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--ink-soft);
+}
+
+.pa-weigh-station__verdict--great {
+  color: var(--pa-pistachio-deep);
+  animation: pa-cheer var(--duration-slow) var(--ease-out) both;
+}
+
+@keyframes pa-cheer {
+  0% {
+    transform: scale(0.8);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.pa-weigh-station__empty {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--pa-apricot-soft);
+}
+
+@media (max-width: 1100px) {
+  .pa-weigh__layout {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+  .pa-weigh-station {
+    grid-template-columns: 1fr;
+  }
+  .pa-weigh-station__scale {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .pa-weigh__layout {
+    grid-template-columns: 1fr;
+  }
+}

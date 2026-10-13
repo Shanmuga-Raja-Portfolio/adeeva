@@ -1,7 +1,6 @@
 import { isNeedleOnLine, type SeamProgress } from "../../../core";
+import { TICK_SECONDS } from "../../../../../ui/kit/useTickLoop";
 
-export const TICK_SECONDS = 1 / 60;
-export const MAX_TICKS_PER_FRAME = 6;
 const MIN_SPEED = 70;
 const MAX_SPEED = 230;
 const RAMP_SECONDS = 2.2;

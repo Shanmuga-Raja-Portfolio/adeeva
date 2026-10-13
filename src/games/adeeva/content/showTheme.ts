@@ -1,7 +1,7 @@
 import type { ColourId } from "../../../engine/palette";
 import type { RunwayLightId } from "./runwayLight";
 import type { RunwayMoodId } from "./runwayMood";
-import type { StyleTag } from "./styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 
 export interface ShowThemeDef {
   id: string;

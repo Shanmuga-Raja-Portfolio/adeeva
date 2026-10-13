@@ -1,3 +1,4 @@
+import type { FollowProgress } from "../../../engine/followRecord";
 import { PART_CATEGORIES, type PartCategory } from "../content/garmentPart";
 import { GARMENT_SLOTS, type GarmentSlot } from "../content/garmentSlot";
 import type { TrimId } from "../content/trim";
@@ -20,12 +21,7 @@ export interface PiecePlacement {
   readonly rotation: Rotation;
 }
 
-export interface SeamProgress {
-  readonly progress: number;
-  readonly ticks: number;
-  readonly insideTicks: number;
-  readonly assisted: boolean;
-}
+export type SeamProgress = FollowProgress;
 
 export interface Decoration {
   readonly id: string;

@@ -1,0 +1,124 @@
+.pa-stack__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.pa-stack__stand {
+  position: relative;
+  width: min(520px, 100%);
+  margin: 0 auto;
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(circle at 50% 35%, #fffaf0 0%, #f6e7c9 60%, #ead2a6 100%);
+  box-shadow: var(--shadow-md);
+}
+
+.pa-stack__art {
+  width: 100%;
+  height: 100%;
+}
+
+.pa-stack__placed {
+  animation: pa-drop var(--duration-slow) var(--ease-out) both;
+}
+
+@keyframes pa-drop {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(4px);
+    opacity: 1;
+  }
+  to {
+    transform: none;
+  }
+}
+
+.pa-stack__filling {
+  animation: ad-fade-in var(--duration-slow) var(--ease-out) both;
+}
+
+.pa-stack__slot {
+  position: absolute;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pa-stack__slot:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.pa-stack__side {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pa-stack__side h2 {
+  margin: 0;
+}
+
+.pa-stack__pieces {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.pa-stack__piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 96px;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--line-strong);
+  background: var(--card);
+  font: inherit;
+  font-weight: 700;
+  cursor: grab;
+  touch-action: none;
+}
+
+.pa-stack__piece svg {
+  width: 140px;
+  height: 64px;
+}
+
+.pa-stack__piece--selected {
+  border-style: solid;
+  border-color: var(--pa-blueberry);
+  background: var(--pa-blueberry-soft);
+}
+
+.pa-stack__piece:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.pa-stack__piece:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.pa-stack__filled {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+  font-weight: 800;
+  color: var(--pa-pistachio-deep);
+}
+
+@media (max-width: 900px) {
+  .pa-stack__layout {
+    grid-template-columns: 1fr;
+  }
+}

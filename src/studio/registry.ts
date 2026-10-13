@@ -1,7 +1,7 @@
 import { adeevaModule } from "../games/adeeva/module";
+import { patisserieModule } from "../games/patisserie/module";
 import { InteriorTileArt } from "../ui/art/tiles/InteriorTileArt";
 import { JewelleryTileArt } from "../ui/art/tiles/JewelleryTileArt";
-import { PatisserieTileArt } from "../ui/art/tiles/PatisserieTileArt";
 import { ThriftFlipTileArt } from "../ui/art/tiles/ThriftFlipTileArt";
 import { WoodTileArt } from "../ui/art/tiles/WoodTileArt";
 import type { GameId, GameModule, StudioGame } from "./gameModule";
@@ -16,14 +16,7 @@ export const GAMES: readonly StudioGame[] = [
     ages: "8+",
     tileArt: ThriftFlipTileArt,
   },
-  {
-    status: "workshop",
-    id: "patisserie",
-    title: "Patisserie Atelier",
-    tagline: "Design tiered cakes, bake by temperature and time, pipe the finish and run a bakery counter.",
-    ages: "8+",
-    tileArt: PatisserieTileArt,
-  },
+  patisserieModule,
   {
     status: "workshop",
     id: "workshop",

@@ -1,0 +1,100 @@
+import { avatarLookParser } from "../../../engine/avatar";
+import { BASE_DAY_HOURS, type DayClock } from "../../../engine/dayHours";
+import { DIFFICULTY_IDS } from "../../../engine/difficulty";
+import { MAX_BUZZ } from "../../../engine/standing";
+import {
+  arrayOf,
+  booleanParser,
+  fixedRecordOf,
+  integerParser,
+  integerRangeParser,
+  keyedRecordOf,
+  nullable,
+  objectOf,
+  oneOf,
+  refined,
+  stringParser,
+} from "../../../engine/parse";
+import { isColourId } from "../../../engine/palette";
+import {
+  countParser,
+  dayParser,
+  gigBoardParser,
+  knownIdParser,
+  rngParser,
+  storyStateParser,
+  trendStateParser,
+} from "../../../engine/stateParsers";
+import { TRAIT_IDS } from "../../../engine/trait";
+import { FILLING_IDS } from "../content/filling";
+import { INGREDIENT_IDS } from "../content/ingredient";
+import { TOPPING_IDS } from "../content/topping";
+import { UPGRADE_IDS } from "../content/upgrade";
+import { bakeRunParser, briefParser, clientIdParser } from "./bakeRunParser";
+import { storyBeatById } from "./catalog";
+import { SCHEMA_VERSION, type GameState, type Pantry, type Profile } from "./gameState";
+import { bakeBookEntryParser, counterParser, logEntryParser } from "./resultParsers";
+
+const profileParser = objectOf<Profile>({
+  name: refined(stringParser, (name) => name.trim().length > 0, "a name"),
+  look: avatarLookParser,
+  trait: oneOf(TRAIT_IDS),
+  difficulty: oneOf(DIFFICULTY_IDS),
+});
+
+const calendarParser = objectOf<DayClock>({
+  day: dayParser,
+  hoursLeft: integerRangeParser(0, BASE_DAY_HOURS),
+});
+
+const pantryParser = objectOf<Pantry>({
+  ingredients: fixedRecordOf(INGREDIENT_IDS, countParser),
+  gels: keyedRecordOf(isColourId, countParser),
+  fillings: fixedRecordOf(FILLING_IDS, countParser),
+  toppings: fixedRecordOf(TOPPING_IDS, countParser),
+});
+
+const upgradesParser = refined(
+  arrayOf(oneOf(UPGRADE_IDS)),
+  (upgrades) => new Set(upgrades).size === upgrades.length,
+  "each upgrade at most once",
+);
+
+const gameStateShapeParser = objectOf<GameState>({
+  schemaVersion: oneOf([SCHEMA_VERSION]),
+  profile: profileParser,
+  calendar: calendarParser,
+  coins: integerParser,
+  reputation: countParser,
+  buzz: integerRangeParser(0, MAX_BUZZ),
+  pantry: pantryParser,
+  upgrades: upgradesParser,
+  guide: booleanParser,
+  trends: trendStateParser,
+  gigs: gigBoardParser(briefParser, clientIdParser),
+  story: storyStateParser(knownIdParser(storyBeatById, "story beat")),
+  activeRun: nullable(bakeRunParser),
+  counter: counterParser,
+  bakeBook: arrayOf(bakeBookEntryParser),
+  log: arrayOf(logEntryParser),
+  ordersDelivered: countParser,
+  nextRunNumber: dayParser,
+  rng: rngParser,
+});
+
+function runNumber(runId: string): number {
+  const match = /^run-(\d+)$/.exec(runId);
+  return match?.[1] === undefined ? 0 : Number(match[1]);
+}
+
+function runNumbersBelowNext(state: GameState): boolean {
+  const ids = [...state.log.map((entry) => entry.runId), ...state.bakeBook.map((entry) => entry.runId)];
+  if (state.activeRun !== null) ids.push(state.activeRun.id);
+  return ids.every((id) => runNumber(id) < state.nextRunNumber);
+}
+
+export const gameStateParser = refined(
+  gameStateShapeParser,
+  runNumbersBelowNext,
+  "a run counter above every saved run",
+);

@@ -1,4 +1,4 @@
-import type { StyleTag } from "./styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 
 export const TRIM_IDS = [
   "button",

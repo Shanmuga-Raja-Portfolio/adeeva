@@ -22,6 +22,10 @@ export const COLOURS = [
 export type ColourId = (typeof COLOURS)[number]["id"];
 export type ColourDef = (typeof COLOURS)[number];
 
+export function isColourId(value: string): value is ColourId {
+  return COLOURS.some((colour) => colour.id === value);
+}
+
 export function colourById(id: ColourId): ColourDef {
   return requireById(COLOURS, id, "colour");
 }

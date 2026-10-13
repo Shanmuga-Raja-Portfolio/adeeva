@@ -5,7 +5,7 @@ import { StudioBackdrop } from "../../art/StudioBackdrop";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { Meter } from "../../../../../ui/kit/Meter";
-import { daysUntilWeekEnd, weekdayName, weekNumber } from "./weekday";
+import { daysUntilWeekEnd, weekdayName, weekNumber } from "../../../../../engine/weekday";
 
 export interface HubHeroProps {
   state: GameState;

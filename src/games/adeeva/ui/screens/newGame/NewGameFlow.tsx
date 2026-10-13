@@ -5,12 +5,19 @@ import type { LookOptions, StudioPlayer } from "../../../../../studio/gameModule
 import type { NewGameSettings } from "../../../core";
 import { Button } from "../../../../../ui/kit/Button";
 import { Wordmark } from "../title/Wordmark";
-import { AvatarStep } from "./AvatarStep";
+import { AvatarStep } from "../../../../../ui/newGame/AvatarStep";
+import { DifficultyStep } from "../../../../../ui/newGame/DifficultyStep";
+import { NewGameStepper } from "../../../../../ui/newGame/NewGameStepper";
+import { TraitStep } from "../../../../../ui/newGame/TraitStep";
+import type { DifficultyId } from "../../../../../engine/difficulty";
+import type { TraitId } from "../../../../../engine/trait";
+import type { IconName } from "../../../../../ui/kit/IconSet";
+import { DIFFICULTIES } from "../../../content/difficulty";
+import { STORY_BEATS } from "../../../content/storyBeat";
+import { TRAITS } from "../../../content/trait";
+import { beatLines } from "../../../core";
 import { CareerStep } from "./CareerStep";
-import { DifficultyStep } from "./DifficultyStep";
 import { draftSettings, NEW_GAME_STEPS, playerDraft, stepIssue, type NewGameDraft } from "./newGameDraft";
-import { NewGameStepper } from "./NewGameStepper";
-import { TraitStep } from "./TraitStep";
 import "./newGame.css";
 
 export interface NewGameFlowProps {
@@ -40,6 +47,25 @@ const headings: Record<(typeof NEW_GAME_STEPS)[number]["id"], { title: string; l
   },
 };
 
+const traitIcons: Record<TraitId, IconName> = {
+  dreamer: "sparkle",
+  perfectionist: "scissors",
+  trendsetter: "megaphone",
+  charmer: "heart",
+};
+
+const difficultyIcons: Record<DifficultyId, IconName> = {
+  relaxed: "heart",
+  standard: "needle",
+  challenging: "scissors",
+};
+
+function voiceSample(trait: TraitId, name: string): string {
+  const intro = STORY_BEATS.find((beat) => beat.trigger === "intro-student");
+  if (intro === undefined) return "";
+  return beatLines(intro, trait, name).find((line) => line.isPlayer)?.text ?? "";
+}
+
 export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: NewGameFlowProps) {
   const [draft, setDraft] = useState<NewGameDraft>(() => playerDraft(player));
   const [index, setIndex] = useState(0);
@@ -63,7 +89,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
     <main className="ad-new-game ad-screen">
       <header className="ad-new-game__header">
         <Wordmark compact />
-        <NewGameStepper index={index} />
+        <NewGameStepper steps={NEW_GAME_STEPS} index={index} />
         <span className="ad-new-game__slot">Slot {slot}</span>
       </header>
       <section className="ad-new-game__body" aria-labelledby="ad-new-game-title">
@@ -82,6 +108,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
               name={draft.name}
               look={draft.look}
               options={lookOptions}
+              role="designer"
               nameIssue={issue}
               onName={(name) => update({ name })}
               onLook={(look) => update({ look })}
@@ -89,6 +116,9 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
           ) : null}
           {step.id === "trait" ? (
             <TraitStep
+              traits={TRAITS}
+              icons={traitIcons}
+              voiceSample={(trait) => voiceSample(trait, draft.name)}
               value={draft.trait}
               name={draft.name}
               look={draft.look}
@@ -99,7 +129,13 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
             <CareerStep value={draft.career} onChange={(career) => update({ career })} />
           ) : null}
           {step.id === "difficulty" ? (
-            <DifficultyStep value={draft.difficulty} onChange={(difficulty) => update({ difficulty })} />
+            <DifficultyStep
+              difficulties={DIFFICULTIES}
+              icons={difficultyIcons}
+              skills="cutting and sewing"
+              value={draft.difficulty}
+              onChange={(difficulty) => update({ difficulty })}
+            />
           ) : null}
         </div>
       </section>

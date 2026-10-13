@@ -1,5 +1,5 @@
 import type { ColourId, MaterialId } from "../../../engine/palette";
-import type { StyleTag } from "../content/styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 import type { Decoration, Design, DressRun } from "./dressRun";
 import { dressColours, dressMaterials, dressTags } from "./dressTags";
 import { grainScore } from "./grainScore";

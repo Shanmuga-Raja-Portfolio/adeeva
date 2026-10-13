@@ -1,7 +1,7 @@
 import { CAREERS, type CareerId } from "../../../content/career";
 import { StudioBackdrop } from "../../art/StudioBackdrop";
 import { Icon } from "../../../../../ui/kit/IconSet";
-import { ChoiceCard } from "./ChoiceCard";
+import { ChoiceCard } from "../../../../../ui/newGame/ChoiceCard";
 
 export interface CareerStepProps {
   value: CareerId | null;

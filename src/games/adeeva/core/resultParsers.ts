@@ -24,6 +24,7 @@ import {
   type RunwayResult,
   type SubScore,
 } from "./runwayScore";
+import { dayParser } from "../../../engine/stateParsers";
 import {
   arrayOf,
   booleanParser,
@@ -39,7 +40,6 @@ import {
 } from "../../../engine/parse";
 
 const scoreParser = rangeParser(0, 100);
-const dayParser = integerRangeParser(1, Number.MAX_SAFE_INTEGER);
 
 const pieceResultParser = objectOf<PieceResult>({
   pieceId: stringParser,

@@ -1,16 +1,13 @@
-import { gatePassed, passMix, starsForScore } from "../../../engine/score";
+import { gatePassed, judgedScore, starsForScore, type ScoreRule } from "../../../engine/score";
 import type { Brief } from "./brief";
 import { colourById } from "../../../engine/palette";
 import { trimById } from "./catalog";
-import { clamp } from "../../../engine/clamp";
 import { CRITERION_WEIGHTS, type Criterion, type CriterionId } from "./criterion";
 import { dressQuality, type QualityBreakdown } from "./dressQuality";
 import { constructionCount, isConstructionComplete, type DressSnapshot } from "./dressSnapshot";
+import { budgetFeedback, coloursFeedback, deadlineFeedback } from "../../../engine/kindFeedback";
 import {
-  budgetFeedback,
-  coloursFeedback,
   constructionFeedback,
-  deadlineFeedback,
   qualityFeedback,
   styleFeedback,
   trimsFeedback,
@@ -20,6 +17,12 @@ import {
 export const FAVOURED_COLOUR_BONUS = 3;
 export const MAX_FAVOURED_COLOUR_BONUS = 9;
 export const PASS_GATE: readonly CriterionId[] = ["construction", "style", "trims", "quality"];
+const SCORE_RULE: ScoreRule = {
+  passMixWeight: 0.5,
+  qualityWeight: 0.5,
+  colourBonusPer: FAVOURED_COLOUR_BONUS,
+  maxColourBonus: MAX_FAVOURED_COLOUR_BONUS,
+};
 
 export interface EvaluationContext {
   readonly deliveredDay: number;
@@ -131,8 +134,7 @@ export function evaluate(snapshot: DressSnapshot, brief: Brief, context: Evaluat
     judgeDeadline(brief, context),
   ];
   const criteria = results.map((result) => result.criterion);
-  const colourBonus = Math.min(MAX_FAVOURED_COLOUR_BONUS, FAVOURED_COLOUR_BONUS * favouredColoursUsed);
-  const score = clamp(Math.round(0.5 * passMix(criteria) + 0.5 * quality.quality + colourBonus), 0, 100);
+  const score = judgedScore(criteria, quality.quality, favouredColoursUsed, SCORE_RULE);
   const passed = gatePassed(criteria, PASS_GATE);
   return {
     criteria,

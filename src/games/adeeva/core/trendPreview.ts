@@ -1,4 +1,4 @@
-import type { StyleTag } from "../content/styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 import type { GameState } from "./gameState";
 
 export function visibleNextTrends(state: GameState): readonly StyleTag[] | null {

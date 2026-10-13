@@ -7,7 +7,7 @@ import { SCHEMA_VERSION, type GameState } from "./gameState";
 import { rollOffers } from "./offers";
 import { beginSeason } from "./seasonFlow";
 import { queueStoryTrigger } from "./storyQueue";
-import { rollTrendState } from "./trendMarket";
+import { rollTrendState } from "../../../engine/trendMarket";
 
 export interface NewGameSettings extends ProfileSettings {
   readonly career: CareerId;

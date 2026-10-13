@@ -16,7 +16,7 @@ import type { Evaluation } from "./evaluate";
 import type { LabelSeason } from "./labelSeason";
 import type { Reward } from "./rewards";
 import type { RngState } from "../../../engine/rng";
-import type { TrendState } from "./trendMarket";
+import type { TrendState } from "../../../engine/trendMarket";
 
 export const SCHEMA_VERSION = 3;
 

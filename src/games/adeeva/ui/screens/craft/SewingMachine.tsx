@@ -4,15 +4,8 @@ import { seamAccuracy, type Action, type SeamProgress } from "../../../core";
 import { SEAM_VIEW, seamLength } from "../../art/SeamStrip";
 import { SewingStage } from "../../art/SewingStage";
 import { Button } from "../../../../../ui/kit/Button";
-import {
-  MAX_TICKS_PER_FRAME,
-  resumeSimulation,
-  sewSpeed,
-  sewTick,
-  STEER_LIMIT,
-  TICK_SECONDS,
-  type SewSimulation,
-} from "./seamSimulation";
+import { useTickLoop } from "../../../../../ui/kit/useTickLoop";
+import { resumeSimulation, sewSpeed, sewTick, STEER_LIMIT, type SewSimulation } from "./seamSimulation";
 
 export interface SewingMachineProps {
   readonly seamId: string;
@@ -85,35 +78,18 @@ export function SewingMachine({
     setSim(resumed);
   }, [stored]);
 
-  useEffect(() => {
-    if (!held) return;
-    let frame = 0;
-    let last: number | null = null;
-    let carry = 0;
-    const step = (now: number) => {
-      carry += last === null ? 0 : Math.min(0.1, (now - last) / 1000);
-      last = now;
-      let next = simRef.current;
-      let count = 0;
-      while (carry >= TICK_SECONDS && count < MAX_TICKS_PER_FRAME) {
-        next = sewTick(next, input.current, profile, band, length);
-        carry -= TICK_SECONDS;
-        count += 1;
-      }
-      simRef.current = next;
-      setSim(next);
-      if (next.progress >= 1) {
-        input.current.held = false;
-        press.current = null;
-        record.current(next);
-        setHeld(false);
-        return;
-      }
-      frame = requestAnimationFrame(step);
-    };
-    frame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frame);
-  }, [held, profile, band, length]);
+  useTickLoop(held, (count) => {
+    let next = simRef.current;
+    for (let tick = 0; tick < count; tick += 1) next = sewTick(next, input.current, profile, band, length);
+    simRef.current = next;
+    setSim(next);
+    if (next.progress < 1) return true;
+    input.current.held = false;
+    press.current = null;
+    record.current(next);
+    setHeld(false);
+    return false;
+  });
 
   const down = (event: PointerEvent<HTMLDivElement>) => {
     if (done) return;

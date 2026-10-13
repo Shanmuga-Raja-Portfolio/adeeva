@@ -29,3 +29,21 @@ export function gatePassed<Id extends string>(
 ): boolean {
   return gate.every((id) => criteria.find((criterion) => criterion.id === id)?.passed === true);
 }
+
+export interface ScoreRule {
+  readonly passMixWeight: number;
+  readonly qualityWeight: number;
+  readonly colourBonusPer: number;
+  readonly maxColourBonus: number;
+}
+
+export function judgedScore(
+  criteria: readonly Criterion<string>[],
+  quality: number,
+  favouredColoursUsed: number,
+  rule: ScoreRule,
+): number {
+  const colourBonus = Math.min(rule.maxColourBonus, rule.colourBonusPer * favouredColoursUsed);
+  const raw = rule.passMixWeight * passMix(criteria) + rule.qualityWeight * quality + colourBonus;
+  return Math.min(100, Math.max(0, Math.round(raw)));
+}

@@ -1,19 +1,15 @@
-import { COLOURS, MATERIAL_IDS } from "../../../engine/palette";
-import { STYLE_TAGS } from "../content/styleTag";
+import { MATERIAL_IDS } from "../../../engine/palette";
 import { TRIM_IDS } from "../content/trim";
 import { clientById, fabricById, partById, storyBeatById, themeById } from "./catalog";
-import { oneOf, refined, stringParser, type Parser } from "../../../engine/parse";
+import { oneOf } from "../../../engine/parse";
+import { knownIdParser } from "../../../engine/stateParsers";
 
-function knownId(lookup: (id: string) => unknown, kind: string): Parser<string> {
-  return refined(stringParser, (id) => lookup(id) !== undefined, `a known ${kind} id`);
-}
+export { colourIdParser, styleTagParser } from "../../../engine/stateParsers";
 
-export const fabricIdParser = knownId(fabricById, "fabric");
-export const partIdParser = knownId(partById, "garment part");
-export const clientIdParser = knownId(clientById, "client");
-export const themeIdParser = knownId(themeById, "show theme");
-export const storyBeatIdParser = knownId(storyBeatById, "story beat");
-export const styleTagParser = oneOf(STYLE_TAGS);
-export const colourIdParser = oneOf(COLOURS.map((colour) => colour.id));
+export const fabricIdParser = knownIdParser(fabricById, "fabric");
+export const partIdParser = knownIdParser(partById, "garment part");
+export const clientIdParser = knownIdParser(clientById, "client");
+export const themeIdParser = knownIdParser(themeById, "show theme");
+export const storyBeatIdParser = knownIdParser(storyBeatById, "story beat");
 export const materialIdParser = oneOf(MATERIAL_IDS);
 export const trimIdParser = oneOf(TRIM_IDS);

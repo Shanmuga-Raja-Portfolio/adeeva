@@ -3,7 +3,7 @@ import { Button } from "../../../../../ui/kit/Button";
 import { Icon, type IconName } from "../../../../../ui/kit/IconSet";
 import { TagPill } from "../../../../../ui/kit/TagPill";
 import type { DaySummary } from "./daySummary";
-import { weekdayName } from "./weekday";
+import { weekdayName } from "../../../../../engine/weekday";
 import "./dayTransition.css";
 
 export interface DayTransitionProps {

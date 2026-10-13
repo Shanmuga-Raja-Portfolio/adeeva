@@ -1,5 +1,5 @@
 import type { MaterialId } from "../../../engine/palette";
-import type { StyleTag } from "./styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 
 export interface MaterialDef {
   id: MaterialId;

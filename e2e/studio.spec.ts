@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { ADEEVA_URL } from "./fixtures/adeevaPage";
 import { finishStories } from "./fixtures/story";
 
-const WORKSHOP_GAMES = ["thrift-flip", "patisserie", "workshop", "interior", "jewellery"] as const;
+const WORKSHOP_GAMES = ["thrift-flip", "workshop", "interior", "jewellery"] as const;
 
 function watchOutsideRequests(page: Page): string[] {
   const outside: string[] = [];

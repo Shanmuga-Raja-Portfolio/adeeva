@@ -1,4 +1,4 @@
-import type { StyleTag } from "../content/styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 import { average } from "../../../engine/average";
 import type { Brief } from "./brief";
 import { fabricById, materialById } from "./catalog";

@@ -2,7 +2,7 @@ import type { DifficultyId } from "../../../engine/difficulty";
 import type { RunwayLightId } from "../content/runwayLight";
 import type { RunwayMoodId } from "../content/runwayMood";
 import type { ShowThemeDef } from "../content/showTheme";
-import type { StyleTag } from "../content/styleTag";
+import type { StyleTag } from "../../../engine/styleTag";
 import { average } from "../../../engine/average";
 import { trimById } from "./catalog";
 import { clamp } from "../../../engine/clamp";

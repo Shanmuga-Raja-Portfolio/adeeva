@@ -12,7 +12,7 @@ import {
   type Rotation,
 } from "../../../core";
 import { FabricBolt } from "../../art/FabricBolt";
-import { clientToSvg } from "./clientToSvg";
+import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
 import { clampToBoltWidth, rotateInPlace, rotatedSize, snapCm, turned } from "./pieceGeometry";
 import { PlacedPieceArt } from "./PlacedPieceArt";
 

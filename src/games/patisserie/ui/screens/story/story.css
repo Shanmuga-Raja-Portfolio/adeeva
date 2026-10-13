@@ -1,0 +1,140 @@
+.pa-story {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: end center;
+  padding: var(--space-5);
+}
+
+.pa-story__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.pa-story__veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(59, 38, 32, 0.05) 30%, rgba(59, 38, 32, 0.45));
+}
+
+.pa-story__tap {
+  position: absolute;
+  inset: 0;
+}
+
+.pa-story__panel {
+  position: relative;
+  width: min(760px, 100%);
+  max-height: 80dvh;
+  overflow: auto;
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  animation: ad-rise var(--duration-slow) var(--ease-out) both;
+}
+
+.pa-story__title {
+  margin: 0;
+  color: var(--pa-cocoa);
+}
+
+.pa-story__history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pa-story__line {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+  animation: ad-rise var(--duration-base) var(--ease-out) both;
+}
+
+.pa-story__line--player {
+  flex-direction: row-reverse;
+}
+
+.pa-story__portrait {
+  flex: none;
+  width: 96px;
+  height: 96px;
+}
+
+.pa-story__portrait--narrator {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--pa-blueberry);
+}
+
+.pa-story__bubble {
+  position: relative;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 18px;
+  background: var(--pa-pistachio-soft);
+  max-width: 520px;
+}
+
+.pa-story__line--player .pa-story__bubble {
+  background: var(--pa-apricot-soft);
+}
+
+.pa-story__line--narrator .pa-story__bubble {
+  background: transparent;
+  font-family: var(--font-display);
+  font-style: italic;
+  padding-left: 0;
+}
+
+.pa-story__bubble p {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.pa-story__speaker {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pa-cocoa);
+}
+
+.pa-story__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pa-story__pips {
+  display: flex;
+  gap: 6px;
+}
+
+.pa-story__pip {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--paper-edge);
+}
+
+.pa-story__pip--on {
+  background: var(--pa-apricot);
+}
+
+@media (max-width: 600px) {
+  .pa-story__portrait {
+    width: 64px;
+    height: 64px;
+  }
+}

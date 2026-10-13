@@ -1,4 +1,4 @@
-import type { StyleTag } from "../../../content/styleTag";
+import type { StyleTag } from "../../../../../engine/styleTag";
 import { clientById, isWeekEnd, weeklyBill, type GameState, type WeeklyBill } from "../../../core";
 
 export type DayEndKind = "rest" | "shift";

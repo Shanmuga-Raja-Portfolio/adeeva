@@ -1,6 +1,6 @@
 import { COLOURS } from "../../../../../engine/palette";
 import { MATERIALS } from "../../../content/material";
-import { STYLE_TAGS } from "../../../content/styleTag";
+import { STYLE_TAGS } from "../../../../../engine/styleTag";
 import { SegmentedControl } from "../../../../../ui/kit/SegmentedControl";
 
 export type ShopAvailability = "all" | "design" | "owned" | "locked";

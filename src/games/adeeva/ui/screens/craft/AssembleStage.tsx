@@ -6,7 +6,7 @@ import { DressPreview } from "../../art/DressPreview";
 import { SlotHighlight } from "../../art/SlotHighlight";
 import { slotAnchor, slotAtPoint } from "../../art/slotAnchor";
 import { Icon } from "../../../../../ui/kit/IconSet";
-import { clientToSvg } from "./clientToSvg";
+import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
 import { designFabrics, designParts } from "../../art/designLook";
 import { PieceThumb } from "./PieceThumb";
 import { StageFooter } from "./StageFooter";

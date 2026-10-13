@@ -5,7 +5,7 @@ import { StudioBackdrop } from "../../art/StudioBackdrop";
 import { Button } from "../../../../../ui/kit/Button";
 import { Dialog } from "../../../../../ui/kit/Dialog";
 import { Icon } from "../../../../../ui/kit/IconSet";
-import { weekdayName } from "../hub/weekday";
+import { weekdayName } from "../../../../../engine/weekday";
 import { SaveSlotCard } from "./SaveSlotCard";
 import { slotSummary } from "./slotSummary";
 import { Wordmark } from "./Wordmark";

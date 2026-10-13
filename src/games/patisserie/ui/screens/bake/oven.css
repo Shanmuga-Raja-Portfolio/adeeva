@@ -1,0 +1,142 @@
+.pa-bake-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pa-oven-bench {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr);
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.pa-oven-bench__oven {
+  position: relative;
+}
+
+.pa-oven {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 14px 18px rgba(59, 38, 32, 0.25));
+}
+
+.pa-oven__tray {
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.pa-oven-bench__stop {
+  position: absolute;
+  top: 26%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.9);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+}
+
+.pa-oven-bench__stop--golden {
+  background: #f6cf6a;
+  box-shadow: 0 0 18px rgba(246, 207, 106, 0.9);
+}
+
+.pa-oven-bench__stop--toasty {
+  background: #6f4126;
+  color: #fff1cf;
+}
+
+.pa-oven-bench__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.pa-oven-bench__card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: #fffdf7;
+  box-shadow: var(--shadow-sm);
+  transform: rotate(-1deg);
+}
+
+.pa-knob {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #4b5aa6, #2f3a78);
+}
+
+.pa-knob__dot {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid #fff1cf;
+  background: #2f3a78;
+  color: #fff1cf;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.pa-knob__dot[aria-checked="true"] {
+  background: var(--pa-apricot);
+  color: #3b1d0c;
+  transform: scale(1.08);
+  box-shadow: 0 0 16px rgba(244, 162, 89, 0.8);
+}
+
+.pa-knob__dot:disabled {
+  cursor: default;
+}
+
+.pa-knob__dot:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.pa-oven-bench__clock {
+  margin: 0;
+  text-align: center;
+  font-family: ui-monospace, monospace;
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.pa-oven-bench__live {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+.pa-oven-bench__result {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--pa-pistachio-soft);
+  animation: pa-cheer var(--duration-slow) var(--ease-out) both;
+}
+
+.pa-bake-stage__help {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .pa-oven-bench,
+  .pa-bake-stage__help {
+    grid-template-columns: 1fr;
+  }
+}

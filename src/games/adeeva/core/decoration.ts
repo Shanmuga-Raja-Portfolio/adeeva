@@ -3,11 +3,23 @@ import { updateActiveRun } from "./activeRunUpdate";
 import { isTrimId } from "./catalog";
 import type { Decoration } from "./dressRun";
 import type { GameState } from "./gameState";
+import {
+  isOnCanvas,
+  isValidPose,
+  normalisedRotation,
+  samePose,
+  topLayer,
+  type PlacedPose,
+} from "../../../engine/placedPose";
+
+export {
+  MAX_PLACED_SCALE as MAX_DECORATION_SCALE,
+  MIN_PLACED_SCALE as MIN_DECORATION_SCALE,
+} from "../../../engine/placedPose";
 
 export const DOLL_WIDTH = 400;
 export const DOLL_HEIGHT = 800;
-export const MIN_DECORATION_SCALE = 0.5;
-export const MAX_DECORATION_SCALE = 2;
+const DOLL = { width: DOLL_WIDTH, height: DOLL_HEIGHT } as const;
 
 export function availableTrims(state: GameState, trimId: TrimId): number {
   if (!isTrimId(trimId)) return 0;
@@ -19,20 +31,8 @@ export function availableTrims(state: GameState, trimId: TrimId): number {
   return state.inventory.trims[trimId] - placed;
 }
 
-function isOnDoll(x: number, y: number): boolean {
-  return Number.isFinite(x) && Number.isFinite(y) && x >= 0 && x <= DOLL_WIDTH && y >= 0 && y <= DOLL_HEIGHT;
-}
-
-function normalisedRotation(rotation: number): number {
-  return ((rotation % 360) + 360) % 360;
-}
-
-function topLayer(decorations: readonly Decoration[]): number {
-  return decorations.reduce((highest, decoration) => Math.max(highest, decoration.layer), 0);
-}
-
 export function addDecoration(state: GameState, trimId: TrimId, x: number, y: number): GameState {
-  if (!isOnDoll(x, y) || availableTrims(state, trimId) <= 0) return state;
+  if (!isOnCanvas(DOLL, x, y) || availableTrims(state, trimId) <= 0) return state;
   return updateActiveRun(state, "decorate", (run) => {
     const decoration: Decoration = {
       id: `decoration-${run.nextDecorationNumber}`,
@@ -51,35 +51,15 @@ export function addDecoration(state: GameState, trimId: TrimId, x: number, y: nu
   });
 }
 
-export interface DecorationPose {
-  readonly x: number;
-  readonly y: number;
-  readonly rotation: number;
-  readonly scale: number;
-  readonly layer: number;
-}
+export type DecorationPose = PlacedPose;
 
 export function moveDecoration(state: GameState, decorationId: string, pose: DecorationPose): GameState {
-  const validScale = pose.scale >= MIN_DECORATION_SCALE && pose.scale <= MAX_DECORATION_SCALE;
-  if (
-    !isOnDoll(pose.x, pose.y) ||
-    !validScale ||
-    !Number.isFinite(pose.rotation) ||
-    !Number.isInteger(pose.layer) ||
-    pose.layer < 0
-  )
-    return state;
+  if (!isValidPose(DOLL, pose)) return state;
   return updateActiveRun(state, "decorate", (run) => {
     const current = run.decorations.find((decoration) => decoration.id === decorationId);
     if (current === undefined) return null;
     const rotation = normalisedRotation(pose.rotation);
-    const unchanged =
-      current.x === pose.x &&
-      current.y === pose.y &&
-      current.rotation === rotation &&
-      current.scale === pose.scale &&
-      current.layer === pose.layer;
-    if (unchanged) return null;
+    if (samePose(current, { ...pose, rotation })) return null;
     return {
       ...run,
       decorations: run.decorations.map((decoration) =>

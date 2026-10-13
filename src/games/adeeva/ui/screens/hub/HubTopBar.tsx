@@ -2,7 +2,7 @@ import { hoursPerDay, type GameState } from "../../../core";
 import { Button } from "../../../../../ui/kit/Button";
 import { StatChip } from "../../../../../ui/kit/StatChip";
 import { Wordmark } from "../title/Wordmark";
-import { weekdayName } from "./weekday";
+import { weekdayName } from "../../../../../engine/weekday";
 
 export interface HubTopBarProps {
   state: GameState;

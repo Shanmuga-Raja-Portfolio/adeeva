@@ -1,0 +1,130 @@
+.pa-root {
+  --pa-buttercream: #fff1cf;
+  --pa-buttercream-deep: #f8dfa8;
+  --pa-pistachio: #a9c98b;
+  --pa-pistachio-deep: #6f9152;
+  --pa-pistachio-soft: #e7f1dc;
+  --pa-cocoa: #6b4232;
+  --pa-cocoa-deep: #4a2c20;
+  --pa-blueberry: #4b5aa6;
+  --pa-blueberry-soft: #e3e6f6;
+  --pa-apricot: #f4a259;
+  --pa-apricot-deep: #c86a24;
+  --pa-apricot-soft: #fde6cf;
+  --pa-tile: #fbfaf6;
+  --pa-tile-line: #e4ddd0;
+  --pa-crust: #e9b872;
+  --rose: #d97a35;
+  --rose-deep: #a9541c;
+  --rose-soft: #fde6cf;
+  --sage: var(--pa-pistachio);
+  --sage-deep: var(--pa-pistachio-deep);
+  --sage-soft: var(--pa-pistachio-soft);
+  --gold-soft: #fbefcb;
+  --ink: #3b2620;
+  --ink-soft: #6c5249;
+  --ink-faint: #9b8178;
+  --paper: #fdf6e8;
+  --paper-deep: #f6ead2;
+  --paper-edge: #ead9b8;
+  --card: #fffdf7;
+  --font-display: "Bookman Old Style", "Bookman", Georgia, serif;
+  --focus-ring: 0 0 0 3px var(--paper), 0 0 0 6px rgba(75, 90, 166, 0.7);
+  min-height: 100dvh;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(circle at 10% 6%, rgba(244, 162, 89, 0.12), transparent 40%),
+    radial-gradient(circle at 92% 94%, rgba(169, 201, 139, 0.16), transparent 46%);
+}
+
+.pa-root .ad-button--primary:not(:disabled) {
+  background: linear-gradient(180deg, #f6b06d 0%, var(--pa-apricot) 45%, #e0863e 100%);
+  color: #3b1d0c;
+  box-shadow:
+    0 2px 0 #b9662a,
+    0 6px 14px rgba(200, 106, 36, 0.28);
+  text-shadow: 0 1px 0 rgba(255, 238, 214, 0.6);
+}
+
+.pa-root .ad-button--primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f8bc80 0%, #f5aa63 45%, #e48d47 100%);
+}
+
+.pa-root .ad-button--secondary:not(:disabled) {
+  background: var(--card);
+  border-color: rgba(107, 66, 50, 0.28);
+  color: var(--pa-cocoa);
+}
+
+.pa-root .ad-meter__fill {
+  background: linear-gradient(90deg, #f7c48f, var(--pa-apricot));
+}
+
+.pa-root .ad-meter--sage .ad-meter__fill {
+  background: linear-gradient(90deg, #cfe3bb, var(--pa-pistachio));
+}
+
+.pa-root .ad-card {
+  border-color: rgba(107, 66, 50, 0.12);
+}
+
+.pa-root .ad-eyebrow {
+  color: var(--pa-cocoa);
+}
+
+.pa-doily {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.pa-doily::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  padding: 7px;
+  border-radius: calc(var(--radius-lg) + 7px);
+  background: radial-gradient(circle at 7px 7px, #fffdf6 5.5px, transparent 6px) 0 0 / 14px 14px;
+  filter: drop-shadow(0 1px 1px rgba(107, 66, 50, 0.25));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.pa-muted {
+  color: var(--ink-soft);
+}
+
+.pa-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.pa-safety {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+}
+
+.pa-coin-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.pa-root .ad-button--sm {
+  min-height: var(--tap);
+}

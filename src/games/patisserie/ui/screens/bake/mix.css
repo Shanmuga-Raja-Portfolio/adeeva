@@ -1,0 +1,118 @@
+.pa-mix__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.pa-mix__side {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pa-mix__side h2 {
+  margin: 0;
+}
+
+.pa-mix__side p {
+  margin: 0;
+}
+
+.pa-stir {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pa-stir__bowl {
+  position: relative;
+  width: min(520px, 100%);
+  aspect-ratio: 1;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.6), transparent 70%);
+}
+
+.pa-stir__bowl:active {
+  cursor: grabbing;
+}
+
+.pa-stir__bowl:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.pa-bowl {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 16px 18px rgba(59, 38, 32, 0.22));
+}
+
+.pa-stir__prompt,
+.pa-stir__done {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.92);
+  box-shadow: var(--shadow-sm);
+  pointer-events: none;
+  text-align: center;
+}
+
+.pa-stir__done {
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  animation: pa-cheer var(--duration-slow) var(--ease-out) both;
+}
+
+.pa-stir__done strong {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--pa-pistachio-deep);
+}
+
+.pa-stir__laps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+}
+
+.pa-stir__lap {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--paper-deep);
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.pa-stir__lap--done {
+  background: var(--pa-pistachio);
+  color: #ffffff;
+}
+
+.pa-stir__score {
+  font-weight: 800;
+  color: var(--pa-cocoa);
+}
+
+@media (max-width: 760px) {
+  .pa-mix__layout {
+    grid-template-columns: 1fr;
+  }
+}

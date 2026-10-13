@@ -3,7 +3,7 @@ import type { TrimId } from "../../../content/trim";
 import { DOLL_HEIGHT, DOLL_WIDTH, type Decoration, type DecorationPose } from "../../../core";
 import { DressPreview } from "../../art/DressPreview";
 import { TRIM_EXTENT, TrimBadge } from "../../art/TrimArt";
-import { clientToSvg, type SvgPoint } from "./clientToSvg";
+import { clientToSvg, type SvgPoint } from "../../../../../ui/kit/clientToSvg";
 import { DecorationControls } from "./DecorationControls";
 import { clampPose, poseOf, samePose } from "./decorationPose";
 import { designFabrics, designParts } from "../../art/designLook";

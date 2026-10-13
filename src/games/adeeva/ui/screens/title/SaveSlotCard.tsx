@@ -4,7 +4,7 @@ import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { StatChip } from "../../../../../ui/kit/StatChip";
-import { weekdayName } from "../hub/weekday";
+import { weekdayName } from "../../../../../engine/weekday";
 
 export interface SaveSlotCardProps {
   read: SlotRead;

@@ -6,23 +6,26 @@ import { TRIM_IDS } from "../content/trim";
 import { UPGRADE_IDS } from "../content/upgrade";
 import { fabricById } from "./catalog";
 import { hoursPerDay } from "./dayHours";
-import { clientIdParser, storyBeatIdParser, styleTagParser } from "./catalogIdParsers";
+import { clientIdParser, storyBeatIdParser } from "./catalogIdParsers";
+import {
+  countParser,
+  dayParser,
+  gigBoardParser,
+  rngParser,
+  storyStateParser,
+  trendStateParser,
+} from "../../../engine/stateParsers";
 import { METRE_STEP } from "./cutMetres";
 import { briefParser, dressRunParser, nonNegativeParser } from "./dressRunParser";
 import {
   SCHEMA_VERSION,
   type CalendarState,
   type GameState,
-  type Gig,
   type GigBoard,
   type Inventory,
-  type LapsedGig,
-  type Offer,
   type Profile,
-  type StoryState,
   type StudioState,
 } from "./gameState";
-import { HOT_TAGS_PER_WEEK, type TrendState } from "./trendMarket";
 import { labelSeasonParser, logEntryParser } from "./resultParsers";
 import {
   arrayOf,
@@ -37,10 +40,8 @@ import {
   recordOf,
   refined,
   stringParser,
+  type Parser,
 } from "../../../engine/parse";
-
-const dayParser = integerRangeParser(1, Number.MAX_SAFE_INTEGER);
-const countParser = integerRangeParser(0, Number.MAX_SAFE_INTEGER);
 
 const profileParser = objectOf<Profile>({
   name: refined(stringParser, (name) => name.trim().length > 0, "a name"),
@@ -77,47 +78,9 @@ const studioParser = objectOf<StudioState>({
   assistantPaidThroughDay: countParser,
 });
 
-const hotTagsParser = refined(
-  arrayOf(styleTagParser),
-  (tags) => tags.length === HOT_TAGS_PER_WEEK,
-  `${HOT_TAGS_PER_WEEK} hot tags`,
-);
+const gigBoardStateParser: Parser<GigBoard> = gigBoardParser(briefParser, clientIdParser);
 
-const trendParser = objectOf<TrendState>({ current: hotTagsParser, next: hotTagsParser });
-
-const offerParser = objectOf<Offer>({
-  id: stringParser,
-  clientId: clientIdParser,
-  brief: briefParser,
-  expiresDay: dayParser,
-});
-
-const gigParser = objectOf<Gig>({
-  id: stringParser,
-  clientId: clientIdParser,
-  brief: briefParser,
-  acceptedDay: dayParser,
-});
-
-const lapsedGigParser = objectOf<LapsedGig>({
-  gigId: stringParser,
-  clientId: clientIdParser,
-  day: dayParser,
-  reputation: integerParser,
-});
-
-const gigBoardParser = objectOf<GigBoard>({
-  offers: arrayOf(offerParser),
-  active: arrayOf(gigParser),
-  lapsed: arrayOf(lapsedGigParser),
-  nextGigNumber: dayParser,
-});
-
-const storyParser = objectOf<StoryState>({
-  seen: arrayOf(storyBeatIdParser),
-  flags: arrayOf(stringParser),
-  queue: arrayOf(storyBeatIdParser),
-});
+const storyParser = storyStateParser(storyBeatIdParser);
 
 const gameStateShapeParser = objectOf<GameState>({
   schemaVersion: oneOf([SCHEMA_VERSION]),
@@ -128,8 +91,8 @@ const gameStateShapeParser = objectOf<GameState>({
   buzz: rangeParser(0, 100),
   inventory: inventoryParser,
   studio: studioParser,
-  trends: trendParser,
-  gigs: gigBoardParser,
+  trends: trendStateParser,
+  gigs: gigBoardStateParser,
   story: storyParser,
   activeRun: nullable(dressRunParser),
   season: nullable(labelSeasonParser),
@@ -137,7 +100,7 @@ const gameStateShapeParser = objectOf<GameState>({
   deliveredRunIds: arrayOf(stringParser),
   gigsDelivered: countParser,
   nextRunNumber: dayParser,
-  rng: integerRangeParser(-2147483648, 2147483647),
+  rng: rngParser,
 });
 
 function runNumber(runId: string): number {

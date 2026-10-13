@@ -8,12 +8,12 @@ import { fabricLook } from "../../../../../ui/art/cloth/fabricLook";
 import { seedFromText } from "../../../../../ui/art/seedFromText";
 import { useSvgId } from "../../../../../ui/art/useSvgId";
 import { Button } from "../../../../../ui/kit/Button";
-import { clientToSvg } from "./clientToSvg";
+import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
 import { PlacedPieceArt } from "./PlacedPieceArt";
 import { ScissorsCursor, ScissorsDefs } from "./ScissorsCursor";
 import { SnipParticles } from "./SnipParticles";
 import { cutPath, projectOnTrack, traceTrack, visitedBins } from "./traceTrack";
-import { useElementSize } from "./useElementSize";
+import { useElementSize } from "../../../../../ui/kit/useElementSize";
 import "./trace.css";
 
 export interface TraceMatProps {

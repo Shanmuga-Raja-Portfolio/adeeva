@@ -1,3 +1,4 @@
+import { PlacedLayer } from "../../../../ui/art/PlacedLayer";
 import type { PlacedTrim } from "./DressLook";
 import { TrimArt } from "./TrimArt";
 
@@ -7,12 +8,12 @@ export interface TrimLayerProps {
 }
 
 export function TrimLayer({ trims, selectedId }: TrimLayerProps) {
-  const ordered = [...trims].sort((a, b) => a.layer - b.layer);
   return (
-    <g className="ad-trim-layer">
-      {ordered.map((trim) => (
+    <PlacedLayer
+      items={trims}
+      className="ad-trim-layer"
+      render={(trim) => (
         <TrimArt
-          key={trim.id}
           trimId={trim.trimId}
           x={trim.x}
           y={trim.y}
@@ -20,7 +21,7 @@ export function TrimLayer({ trims, selectedId }: TrimLayerProps) {
           scale={trim.scale}
           selected={trim.id === selectedId}
         />
-      ))}
-    </g>
+      )}
+    />
   );
 }

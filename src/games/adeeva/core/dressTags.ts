@@ -1,5 +1,5 @@
 import { type ColourId, COLOURS, MATERIAL_IDS, type MaterialId } from "../../../engine/palette";
-import { STYLE_TAGS, type StyleTag } from "../content/styleTag";
+import { STYLE_TAGS, type StyleTag } from "../../../engine/styleTag";
 import { fabricById, partById, trimById } from "./catalog";
 import { fabricsNeedingCut } from "./designFabrics";
 import type { Decoration, Design, PiecePlacement } from "./dressRun";

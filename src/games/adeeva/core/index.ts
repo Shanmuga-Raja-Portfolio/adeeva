@@ -130,7 +130,7 @@ export {
   distanceToOutline,
   traceAccuracy,
 } from "../../../engine/geometry/traceAccuracy";
-export { trendMatches, type TrendState } from "./trendMarket";
+export { trendMatches, type TrendState } from "../../../engine/trendMarket";
 export { visibleNextTrends } from "./trendPreview";
 export {
   careerById,
