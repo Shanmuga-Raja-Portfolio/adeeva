@@ -1,6 +1,6 @@
 dist
 node_modules
 pnpm-lock.yaml
-test-results
+test-results*
 playwright-report
 dressmaker_ide_build_spec_DELETE_when_done.md

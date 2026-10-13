@@ -1,7 +1,5 @@
-import { useId } from "react";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { Icon } from "./IconSet";
-import type { IconName } from "./IconSet";
+import { type ButtonHTMLAttributes, type ReactNode, useId } from "react";
+import { Icon, type IconName } from "./IconSet";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";

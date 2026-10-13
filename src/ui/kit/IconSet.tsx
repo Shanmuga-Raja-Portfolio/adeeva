@@ -15,7 +15,10 @@ export type IconName =
   | "megaphone"
   | "close"
   | "check"
-  | "lock";
+  | "lock"
+  | "home"
+  | "shield"
+  | "back";
 
 export interface IconProps {
   name: IconName;
@@ -139,6 +142,29 @@ const glyphs: Record<IconName, ReactNode> = {
       <circle cx="12" cy="15.4" r="1.2" fill="currentColor" />
     </>
   ),
+  home: (
+    <>
+      <path
+        d="M4.2 11.2L12 4.6l7.8 6.6V19a1.4 1.4 0 0 1-1.4 1.4H5.6A1.4 1.4 0 0 1 4.2 19z"
+        fill="currentColor"
+        fillOpacity="0.14"
+      />
+      <path d="M4.2 11.2L12 4.6l7.8 6.6V19a1.4 1.4 0 0 1-1.4 1.4H5.6A1.4 1.4 0 0 1 4.2 19z" />
+      <path d="M9.8 20.4v-5.2h4.4v5.2" />
+    </>
+  ),
+  shield: (
+    <>
+      <path
+        d="M12 3.4l7 2.6v5.4c0 4.4-3 7.8-7 9.2-4-1.4-7-4.8-7-9.2V6z"
+        fill="currentColor"
+        fillOpacity="0.14"
+      />
+      <path d="M12 3.4l7 2.6v5.4c0 4.4-3 7.8-7 9.2-4-1.4-7-4.8-7-9.2V6z" />
+      <path d="M8.8 12.2l2.2 2.2 4.2-4.4" />
+    </>
+  ),
+  back: <path d="M14.6 5.6L8.2 12l6.4 6.4" />,
 };
 
 export function Icon({ name, size = 20, title, className }: IconProps) {

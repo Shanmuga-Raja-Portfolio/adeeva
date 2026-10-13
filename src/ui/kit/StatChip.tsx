@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
-import { Icon } from "./IconSet";
-import type { IconName } from "./IconSet";
+import { Icon, type IconName } from "./IconSet";
 
 export type StatKind = "coins" | "reputation" | "buzz" | "hours" | "day";
 

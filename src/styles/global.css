@@ -97,6 +97,10 @@ textarea {
   border-radius: var(--radius-sm);
 }
 
+h1[tabindex="-1"]:focus-visible {
+  box-shadow: none;
+}
+
 ::selection {
   background: var(--rose-soft);
   color: var(--ink);

@@ -1,0 +1,143 @@
+.st-parent {
+  width: min(880px, 100%);
+  margin: 0 auto;
+  padding: clamp(20px, 5vh, 48px) 16px var(--space-7);
+  display: grid;
+  gap: var(--space-5);
+}
+
+.st-parent__head {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.st-parent__head h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.st-parent__head p {
+  margin: 0;
+  max-width: 40rem;
+}
+
+.st-parent__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0 16px 0 10px;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.st-parent__back:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.st-parent__card {
+  padding: var(--space-5) clamp(18px, 4vw, 32px);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.st-parent__card h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+}
+
+.st-parent__card h2 .ad-icon {
+  color: var(--rose-deep);
+}
+
+.st-parent__card--promise {
+  background: linear-gradient(160deg, var(--sage-soft), var(--card) 60%);
+  border-color: rgba(127, 165, 138, 0.4);
+}
+
+.st-parent__card--promise h2 .ad-icon {
+  color: var(--sage-deep);
+}
+
+.st-parent__promises {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.st-parent__promises li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.st-parent__promises .ad-icon {
+  flex: none;
+  margin-top: 3px;
+  color: var(--sage-deep);
+}
+
+.st-parent__times {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.st-parent__time {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+}
+
+.st-parent__time dt {
+  font-weight: 700;
+}
+
+.st-parent__time dd {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.st-parent__time--total {
+  background: var(--gold-soft);
+}
+
+.st-parent__games {
+  list-style: none;
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.st-parent__games li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+}
+
+.st-parent__games li > span {
+  display: grid;
+}

@@ -1,6 +1,5 @@
-import { Icon } from "./IconSet";
+import { Icon, type IconName } from "./IconSet";
 import "./ToastStack.css";
-import type { IconName } from "./IconSet";
 
 export type ToastTone = "success" | "info" | "warning";
 

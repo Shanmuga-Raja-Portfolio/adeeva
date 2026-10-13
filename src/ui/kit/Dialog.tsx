@@ -1,5 +1,4 @@
-import { useEffect, useId, useRef } from "react";
-import type { MouseEvent, ReactNode, SyntheticEvent } from "react";
+import { type MouseEvent, type ReactNode, type SyntheticEvent, useEffect, useId, useRef } from "react";
 import { Icon } from "./IconSet";
 
 export interface DialogProps {

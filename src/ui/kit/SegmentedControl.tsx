@@ -1,7 +1,5 @@
-import { useRef } from "react";
-import type { KeyboardEvent } from "react";
-import { Icon } from "./IconSet";
-import type { IconName } from "./IconSet";
+import { type KeyboardEvent, useRef } from "react";
+import { Icon, type IconName } from "./IconSet";
 
 export interface SegmentedOption<T extends string> {
   value: T;

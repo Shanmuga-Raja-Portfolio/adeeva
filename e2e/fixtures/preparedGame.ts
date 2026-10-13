@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test";
-import { currentBeat, reduce, serialize, type GameState } from "../../src/core";
+import { currentBeat, reduce, serialize, type GameState } from "../../src/games/adeeva/core";
+import { openAdeeva } from "./adeevaPage";
 import { finishStories } from "./story";
 
 export function settleStories(state: GameState): GameState {
@@ -17,7 +18,7 @@ export function settleStories(state: GameState): GameState {
 }
 
 export async function openPreparedGame(page: Page, state: GameState): Promise<void> {
-  await page.goto("/");
+  await openAdeeva(page);
   await page.evaluate((json) => {
     window.localStorage.clear();
     window.localStorage.setItem("adeeva.save.1", json);
