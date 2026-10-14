@@ -6,6 +6,7 @@ import { expireStaleOffers } from "../../../engine/gigBoardState";
 import { workPaidShift } from "../../../engine/paidShift";
 import { applyStanding, decayBuzz } from "../../../engine/standing";
 import { isWeekEnd } from "../../../engine/week";
+import { STYLE_TAGS } from "../../../engine/styleTag";
 import { settleWeek } from "../../../engine/weekSettlement";
 import { CAREER } from "../content/career";
 import type { GameState } from "./gameState";
@@ -36,7 +37,7 @@ export function endDay(state: GameState): GameState {
     calendar: { day: endedDay + 1, hoursLeft: BASE_DAY_HOURS, marketOpen: false },
   };
   const weekSettled = isWeekEnd(endedDay)
-    ? settleWeek(advanced, weeklyBill(advanced), queueStoryTrigger)
+    ? settleWeek(advanced, weeklyBill(advanced), STYLE_TAGS, queueStoryTrigger)
     : advanced;
   const rolled = rollRail(rollOffers(lapseOverdueGigs(expireStaleOffers(weekSettled))));
   return isStallDay(rolled.calendar.day) ? queueStoryTrigger(rolled, "first-stall-day") : rolled;

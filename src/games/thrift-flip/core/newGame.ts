@@ -1,5 +1,6 @@
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import { profileIssues, type ProfileSettings } from "../../../engine/profile";
+import { STYLE_TAGS } from "../../../engine/styleTag";
 import { rollTrendState } from "../../../engine/trendMarket";
 import { TRIM_IDS, type TrimId } from "../../adeeva/content/trim";
 import { CAREER } from "../content/career";
@@ -33,7 +34,7 @@ function scrapTin(): ScrapSource[] {
 }
 
 export function createGame(settings: NewGameSettings): GameState {
-  const [trends, rng] = rollTrendState(settings.seed | 0);
+  const [trends, rng] = rollTrendState(settings.seed | 0, STYLE_TAGS);
   const tin = addScraps([], scrapTin(), 1);
   const base: GameState = {
     schemaVersion: SCHEMA_VERSION,

@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { ADEEVA_URL } from "./fixtures/adeevaPage";
 import { finishStories } from "./fixtures/story";
 
-const WORKSHOP_GAMES = ["workshop", "interior", "jewellery"] as const;
+const WORKSHOP_GAMES = ["interior", "jewellery"] as const;
 
 function watchOutsideRequests(page: Page): string[] {
   const outside: string[] = [];
@@ -120,7 +120,7 @@ test("the parent page shows the promise, playtime and how to clear saves", async
 
 test("a game still in the workshop or an unknown page leads home with a tidy address", async ({ page }) => {
   await freshStudio(page);
-  for (const hash of ["#/workshop", "#/nowhere"]) {
+  for (const hash of ["#/interior", "#/nowhere"]) {
     await page.evaluate((next) => {
       window.location.hash = next;
     }, hash);

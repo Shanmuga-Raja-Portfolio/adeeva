@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DifficultyId } from "./difficulty";
+import { STYLE_TAGS } from "./styleTag";
 import type { TrendState } from "./trendMarket";
 import { settleWeek, type WeekTrigger } from "./weekSettlement";
 
@@ -26,7 +27,7 @@ const ledger = (coins: number, difficulty: DifficultyId): Ledger => ({
 
 describe("settleWeek", () => {
   it("charges the bill, moves the trends on and queues the first-week beat", () => {
-    const settled = settleWeek(ledger(100, "standard"), 30, queue);
+    const settled = settleWeek(ledger(100, "standard"), 30, STYLE_TAGS, queue);
     expect(settled.coins).toBe(70);
     expect(settled.trends.current).toEqual(["bold", "classic"]);
     expect(settled.rng).not.toBe(42);
@@ -34,7 +35,10 @@ describe("settleWeek", () => {
   });
 
   it("queues bankruptcy only on challenging when coins go below zero", () => {
-    expect(settleWeek(ledger(10, "challenging"), 30, queue).queued).toEqual(["first-week", "bankrupt"]);
-    expect(settleWeek(ledger(10, "standard"), 30, queue).queued).toEqual(["first-week"]);
+    expect(settleWeek(ledger(10, "challenging"), 30, STYLE_TAGS, queue).queued).toEqual([
+      "first-week",
+      "bankrupt",
+    ]);
+    expect(settleWeek(ledger(10, "standard"), 30, STYLE_TAGS, queue).queued).toEqual(["first-week"]);
   });
 });

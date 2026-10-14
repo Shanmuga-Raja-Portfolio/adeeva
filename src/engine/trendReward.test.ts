@@ -46,3 +46,24 @@ describe("trend reward options", () => {
     expect(reward.buzz).toBe(settleTrendReward(dreamer).buzz + 4);
   });
 });
+
+describe("trend rewards over a game's own tags", () => {
+  it("matches any tag pool and appends the game's extra lines after the trait lines", () => {
+    const reward = settleTrendReward({
+      ...TERMS,
+      trait: "dreamer",
+      hotTags: ["rustic", "cosy"],
+      tags: ["rustic", "sturdy"],
+      colourCount: 3,
+      labels: { trend: "Neighbourhood favourite", dreamer: "Big ideas" },
+      extraLines: [{ label: "Fine wood bonus", amount: 15 }],
+    });
+    expect(reward.lines.map((line) => line.label)).toEqual([
+      "Fee",
+      "Neighbourhood favourite",
+      "Big ideas",
+      "Fine wood bonus",
+    ]);
+    expect(reward.trendMatches).toEqual(["rustic"]);
+  });
+});

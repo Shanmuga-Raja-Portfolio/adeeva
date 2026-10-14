@@ -7,6 +7,7 @@ import { SCHEMA_VERSION, type GameState } from "./gameState";
 import { rollOffers } from "./offers";
 import { beginSeason } from "./seasonFlow";
 import { queueStoryTrigger } from "./storyQueue";
+import { STYLE_TAGS } from "../../../engine/styleTag";
 import { rollTrendState } from "../../../engine/trendMarket";
 
 export interface NewGameSettings extends ProfileSettings {
@@ -21,7 +22,7 @@ export function newGameIssues(settings: NewGameSettings): string[] {
 
 export function createGame(settings: NewGameSettings): GameState {
   const career = careerById(settings.career);
-  const [trends, rng] = rollTrendState(settings.seed | 0);
+  const [trends, rng] = rollTrendState(settings.seed | 0, STYLE_TAGS);
   const base: GameState = {
     schemaVersion: SCHEMA_VERSION,
     profile: {

@@ -1,0 +1,230 @@
+.ww-saw {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ww-saw__safety {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fff3c4;
+  border: 2px dashed var(--ww-safety-deep);
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.ww-saw__parts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ww-saw__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 2px solid rgba(47, 38, 34, 0.35);
+  background: var(--card);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ww-saw__chip--current {
+  border-color: var(--ww-outline);
+  background: var(--ww-safety);
+  box-shadow: 0 2px 0 var(--ww-outline);
+}
+
+.ww-saw__chip--done {
+  color: var(--ww-forest);
+  background: var(--ww-forest-soft);
+  cursor: default;
+}
+
+.ww-saw__table {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0)), #e9dcc6;
+}
+
+.ww-saw__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ww-saw__title {
+  margin: 0;
+  color: var(--ww-slate-deep);
+}
+
+.ww-saw-bench {
+  width: 100%;
+  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ww-saw-bench__svg {
+  max-width: none;
+  touch-action: none;
+  cursor: crosshair;
+  border-radius: 8px;
+  background: radial-gradient(ellipse at 50% 30%, #fff9ee, #e7d6ba);
+}
+
+.ww-saw-bench__svg--sawing {
+  cursor: grabbing;
+}
+
+.ww-saw-bench__part {
+  fill: rgba(255, 250, 241, 0.18);
+  stroke: none;
+}
+
+.ww-saw-bench__pencil {
+  fill: none;
+  stroke: #4a4a52;
+  stroke-width: 0.32;
+  stroke-dasharray: 1 0.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+
+.ww-saw-bench__pencil--active {
+  stroke-width: 0.5;
+  opacity: 1;
+}
+
+.ww-saw-bench__kerf {
+  fill: none;
+  stroke: #3b2a20;
+  stroke-width: 0.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ww-saw-bench__trail {
+  fill: none;
+  stroke: #c0392b;
+  stroke-width: 0.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+}
+
+.ww-saw-bench__rail {
+  fill: none;
+  stroke: var(--ww-slate);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.45;
+}
+
+.ww-saw-bench__start circle:first-child {
+  fill: var(--ww-forest);
+  stroke: var(--ww-outline);
+  stroke-width: 0.3;
+  animation: ww-pulse 1.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes ww-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.35);
+  }
+}
+
+.ww-saw--busy .ww-saw__body {
+  animation: ww-saw-stroke 0.18s linear infinite;
+}
+
+@keyframes ww-saw-stroke {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-2.4px);
+  }
+}
+
+.ww-sawdust__speck {
+  animation: ww-dust-fall 0.9s ease-in forwards;
+}
+
+@keyframes ww-dust-fall {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, 7px);
+    opacity: 0;
+  }
+}
+
+.ww-saw-bench__progress {
+  width: min(420px, 100%);
+  height: 10px;
+  border-radius: 999px;
+  border: 2px solid var(--ww-outline);
+  background: #fffdf8;
+  overflow: hidden;
+}
+
+.ww-saw-bench__progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--ww-safety), var(--ww-timber));
+  transition: width var(--duration-fast) linear;
+}
+
+.ww-saw__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ww-saw__message {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--text-lg);
+}
+
+.ww-saw__done {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-4);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--ww-forest);
+}

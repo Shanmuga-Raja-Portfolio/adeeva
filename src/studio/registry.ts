@@ -1,23 +1,16 @@
 import { adeevaModule } from "../games/adeeva/module";
 import { patisserieModule } from "../games/patisserie/module";
 import { thriftFlipModule } from "../games/thrift-flip/module";
+import { workshopModule } from "../games/workshop/module";
 import { InteriorTileArt } from "../ui/art/tiles/InteriorTileArt";
 import { JewelleryTileArt } from "../ui/art/tiles/JewelleryTileArt";
-import { WoodTileArt } from "../ui/art/tiles/WoodTileArt";
 import type { GameId, GameModule, StudioGame } from "./gameModule";
 
 export const GAMES: readonly StudioGame[] = [
   adeevaModule,
   thriftFlipModule,
   patisserieModule,
-  {
-    status: "workshop",
-    id: "workshop",
-    title: "Workshop & Wood",
-    tagline: "Plan furniture from parts, cut with the grain, then saw, join, sand and deliver.",
-    ages: "8+",
-    tileArt: WoodTileArt,
-  },
+  workshopModule,
   {
     status: "workshop",
     id: "interior",

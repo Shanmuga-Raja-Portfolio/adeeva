@@ -10,6 +10,7 @@ import { lapseOverdueGigs } from "./gigDeadline";
 import { rollOffers } from "./offers";
 import { queueStoryTrigger } from "./storyQueue";
 import { assistantWage } from "./studio";
+import { STYLE_TAGS } from "../../../engine/styleTag";
 import { advanceTrendWeek } from "../../../engine/trendMarket";
 import { isWeekEnd, weekEndDay } from "../../../engine/week";
 
@@ -25,7 +26,7 @@ export function weeklyBill(state: GameState): WeeklyBill {
 
 function settleWeek(state: GameState): GameState {
   const bill = weeklyBill(state);
-  const [trends, rng] = advanceTrendWeek(state.trends, state.rng);
+  const [trends, rng] = advanceTrendWeek(state.trends, state.rng, STYLE_TAGS);
   const studio = state.studio.assistantHired
     ? { ...state.studio, assistantPaidThroughDay: weekEndDay(state.calendar.day) }
     : state.studio;

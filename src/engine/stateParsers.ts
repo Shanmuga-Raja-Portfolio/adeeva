@@ -33,13 +33,16 @@ export function knownIdParser(lookup: (id: string) => unknown, kind: string): Pa
   return refined(stringParser, (id) => lookup(id) !== undefined, `a known ${kind} id`);
 }
 
-const hotTagsParser = refined(
-  arrayOf(styleTagParser),
-  (tags) => tags.length === HOT_TAGS_PER_WEEK,
-  `${HOT_TAGS_PER_WEEK} hot tags`,
-);
+export function trendStateParserOf<T extends string>(tag: Parser<T>): Parser<TrendState<T>> {
+  const hotTags = refined(
+    arrayOf(tag),
+    (tags) => tags.length === HOT_TAGS_PER_WEEK && new Set(tags).size === tags.length,
+    `${HOT_TAGS_PER_WEEK} different hot tags`,
+  );
+  return objectOf<TrendState<T>>({ current: hotTags, next: hotTags });
+}
 
-export const trendStateParser = objectOf<TrendState>({ current: hotTagsParser, next: hotTagsParser });
+export const trendStateParser = trendStateParserOf(styleTagParser);
 
 export function gigBoardParser<B>(brief: Parser<B>, clientId: Parser<string>): Parser<GigBoard<B>> {
   return objectOf<GigBoard<B>>({

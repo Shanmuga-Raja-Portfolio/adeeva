@@ -1,0 +1,154 @@
+.ww-design {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ww-design__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.ww-design__choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ww-design__heading {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-lg);
+  color: var(--ww-slate-deep);
+}
+
+.ww-design__products,
+.ww-design__chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--space-2);
+}
+
+.ww-design__product,
+.ww-design__chip {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  min-height: 56px;
+  padding: var(--space-3);
+  border-radius: 10px;
+  border: 2px solid rgba(47, 38, 34, 0.3);
+  background: #fffdf8;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ww-design__product[aria-checked="true"],
+.ww-design__chip[aria-checked="true"],
+.ww-design__wood[aria-checked="true"] {
+  border-color: var(--ww-outline);
+  box-shadow:
+    0 3px 0 var(--ww-outline),
+    0 0 0 3px var(--ww-safety);
+}
+
+.ww-design__chip-note {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.ww-design__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ww-design__woods {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: var(--space-2);
+}
+
+.ww-design__wood {
+  display: grid;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 2px solid rgba(47, 38, 34, 0.3);
+  background: #fffdf8;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ww-design__wood:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ww-design__wood-swatch {
+  display: grid;
+  place-items: center;
+  height: 34px;
+  border-radius: 6px;
+  border: 2px solid var(--ww-outline);
+  color: #fff;
+}
+
+.ww-design__wood-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ww-design__wood-tags {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.ww-design__warn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: var(--space-2) 0 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fde3df;
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.ww-design__preview {
+  position: sticky;
+  top: 90px;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background:
+    linear-gradient(rgba(74, 99, 120, 0.1) 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(90deg, rgba(74, 99, 120, 0.1) 1px, transparent 1px) 0 0 / 20px 20px,
+    #fbf8f1;
+}
+
+.ww-design__art {
+  width: 100%;
+  height: auto;
+}
+
+.ww-design__empty {
+  margin: var(--space-5) 0;
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+  .ww-design__grid {
+    grid-template-columns: 1fr;
+  }
+  .ww-design__preview {
+    position: static;
+    max-width: 420px;
+  }
+}

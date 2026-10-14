@@ -1,5 +1,6 @@
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import { profileIssues, type ProfileSettings } from "../../../engine/profile";
+import { STYLE_TAGS } from "../../../engine/styleTag";
 import { rollTrendState } from "../../../engine/trendMarket";
 import { CAREER } from "../content/career";
 import { FILLING_IDS, type FillingId } from "../content/filling";
@@ -29,7 +30,7 @@ function starterPantry(): Pantry {
 }
 
 export function createGame(settings: NewGameSettings): GameState {
-  const [trends, rng] = rollTrendState(settings.seed | 0);
+  const [trends, rng] = rollTrendState(settings.seed | 0, STYLE_TAGS);
   const base: GameState = {
     schemaVersion: SCHEMA_VERSION,
     profile: {

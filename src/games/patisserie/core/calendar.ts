@@ -5,6 +5,7 @@ import { expireOffers, lapseOverdue } from "../../../engine/gigBoard";
 import { workPaidShift } from "../../../engine/paidShift";
 import { applyStanding, decayBuzz } from "../../../engine/standing";
 import { isWeekEnd } from "../../../engine/week";
+import { STYLE_TAGS } from "../../../engine/styleTag";
 import { settleWeek } from "../../../engine/weekSettlement";
 import { CAREER } from "../content/career";
 import { closeCounter } from "./boxItUp";
@@ -35,7 +36,7 @@ export function endDay(state: GameState): GameState {
     calendar: { day: endedDay + 1, hoursLeft: BASE_DAY_HOURS },
   };
   const weekSettled = isWeekEnd(endedDay)
-    ? settleWeek(advanced, weeklyBill(advanced), queueStoryTrigger)
+    ? settleWeek(advanced, weeklyBill(advanced), STYLE_TAGS, queueStoryTrigger)
     : advanced;
   const expired = expireOffers(weekSettled.gigs, weekSettled.calendar.day);
   const withOffers = rollOffers(lapseOverdueOrders({ ...weekSettled, gigs: expired }));
