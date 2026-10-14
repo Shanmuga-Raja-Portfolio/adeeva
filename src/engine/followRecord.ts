@@ -1,4 +1,5 @@
 import { cappedAccuracy } from "./assistCap";
+import { isCount } from "./count";
 
 export interface FollowProgress {
   readonly progress: number;
@@ -14,10 +15,6 @@ export interface FollowBounds {
 }
 
 export const UNSTARTED_FOLLOW: FollowProgress = { progress: 0, ticks: 0, insideTicks: 0, assisted: false };
-
-function isCount(value: number): boolean {
-  return Number.isSafeInteger(value) && value >= 0;
-}
 
 function isWellFormed(sample: FollowProgress, units: number): boolean {
   return (

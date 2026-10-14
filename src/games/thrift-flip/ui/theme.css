@@ -1,0 +1,151 @@
+.tf-theme {
+  --tf-kraft: #e8d9bd;
+  --tf-kraft-deep: #d6c09a;
+  --tf-kraft-ink: #6b5235;
+  --tf-denim: #3f5d84;
+  --tf-denim-deep: #2c4466;
+  --tf-denim-soft: #dfe7f1;
+  --tf-tangerine: #f08a3c;
+  --tf-tangerine-deep: #b85a17;
+  --tf-tangerine-soft: #fde4cf;
+  --tf-mint: #8fcfb2;
+  --tf-mint-deep: #3f8f6e;
+  --tf-mint-soft: #e2f4ea;
+  --tf-twine: #a07a52;
+  --tf-chalk: #2f3d38;
+  --tf-chalk-ink: #f6f2e4;
+  --tf-cream: #fff8ec;
+
+  --rose: var(--tf-tangerine);
+  --rose-deep: var(--tf-tangerine-deep);
+  --rose-soft: var(--tf-tangerine-soft);
+  --sage: var(--tf-mint);
+  --sage-deep: var(--tf-mint-deep);
+  --sage-soft: var(--tf-mint-soft);
+  --paper: #f7efe1;
+  --paper-deep: #efe2c9;
+  --paper-edge: #e1cfae;
+  --card: #fffaf0;
+  --font-display: "Rockwell", "Roboto Slab", "Rockwell Nova", Georgia, serif;
+  --focus-ring: 0 0 0 3px var(--paper), 0 0 0 6px rgba(240, 138, 60, 0.7);
+
+  min-height: 100dvh;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(240, 138, 60, 0.08), transparent 40%),
+    radial-gradient(circle at 84% 88%, rgba(63, 93, 132, 0.08), transparent 44%),
+    repeating-linear-gradient(115deg, rgba(160, 122, 82, 0.035) 0 2px, transparent 2px 9px),
+    repeating-linear-gradient(25deg, rgba(160, 122, 82, 0.025) 0 1px, transparent 1px 7px);
+}
+
+.tf-theme h1,
+.tf-theme h2,
+.tf-theme h3 {
+  letter-spacing: 0.01em;
+}
+
+.tf-theme .ad-button--sm {
+  min-height: var(--tap);
+}
+
+.tf-theme .ad-button--primary {
+  background: linear-gradient(180deg, #f59a52, var(--tf-tangerine) 55%, #e07a2c);
+  box-shadow:
+    0 2px 0 var(--tf-tangerine-deep),
+    0 6px 14px rgba(184, 90, 23, 0.25);
+}
+
+.tf-theme .ad-button--secondary {
+  background: var(--tf-cream);
+  border-color: var(--tf-kraft-deep);
+  color: var(--tf-denim-deep);
+}
+
+.tf-theme .ad-card {
+  background: var(--card);
+  border-color: rgba(160, 122, 82, 0.28);
+}
+
+.tf-theme .ad-eyebrow {
+  color: var(--tf-denim);
+}
+
+.tf-stitch-border {
+  border: 2px dashed rgba(63, 93, 132, 0.35);
+}
+
+.tf-chalk {
+  font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", var(--font-body);
+  color: var(--tf-chalk-ink);
+}
+
+.tf-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--tf-cream);
+  border: 1px solid var(--paper-edge);
+  color: var(--tf-denim-deep);
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.tf-hint svg {
+  flex: none;
+  color: var(--tf-tangerine);
+}
+
+.tf-safety {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+@keyframes tf-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes tf-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes tf-float-up {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 0.85;
+  }
+  to {
+    transform: translateY(-28px) scale(1.3);
+    opacity: 0;
+  }
+}
+
+@keyframes tf-twinkle {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}

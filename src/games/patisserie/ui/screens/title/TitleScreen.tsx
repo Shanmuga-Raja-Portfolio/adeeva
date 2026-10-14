@@ -8,6 +8,7 @@ import { BakePreview } from "../../art/BakePreview";
 import { BakeryBackdrop } from "../../art/BakeryBackdrop";
 import { SHOWCASE_LOOKS } from "../../art/showcaseLooks";
 import { continueSlot, type SaveSlotId, type SlotRead } from "../../patisserieSlots";
+import { slotSummary } from "../../../../../studio/slotSummary";
 import { SaveSlotCard } from "./SaveSlotCard";
 import { Wordmark } from "./Wordmark";
 import "./title.css";
@@ -27,12 +28,6 @@ type Pending =
   | { readonly kind: "pick-slot" }
   | { readonly kind: "overwrite"; readonly read: SlotRead }
   | { readonly kind: "delete"; readonly read: SlotRead };
-
-function slotSummary(read: SlotRead): string {
-  if (read.kind === "empty") return "Empty";
-  if (read.kind === "damaged") return "Damaged save";
-  return `${read.state.profile.name} · Day ${read.state.calendar.day}`;
-}
 
 export function TitleScreen({
   slots,

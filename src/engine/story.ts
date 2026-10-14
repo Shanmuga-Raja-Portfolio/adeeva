@@ -51,3 +51,12 @@ export function completeBeat(story: StoryState, beatId: string, flag: string | n
   const seen = story.seen.includes(beatId) ? story.seen : [...story.seen, beatId];
   return { seen, flags, queue: story.queue.filter((id) => id !== beatId) };
 }
+
+export function markBeatSeen<S extends { readonly story: StoryState }>(
+  state: S,
+  beatId: string,
+  lookup: (beatId: string) => unknown,
+): S {
+  if (!state.story.queue.includes(beatId) || lookup(beatId) === undefined) return state;
+  return { ...state, story: completeBeat(state.story, beatId, null) };
+}

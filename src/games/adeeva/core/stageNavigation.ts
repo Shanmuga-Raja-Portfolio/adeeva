@@ -1,5 +1,5 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
-import { spendHours } from "./dayHours";
+import { spendHours } from "../../../engine/dayHours";
 import type { GameState } from "./gameState";
 import { stageCompletionHours } from "./hourCost";
 import { stageAfter, stageIndex, type RunStage } from "./runStage";

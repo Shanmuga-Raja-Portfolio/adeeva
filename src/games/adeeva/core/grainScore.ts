@@ -8,14 +8,22 @@ export const BIAS_SCORE = 0.7;
 export const CROSS_GRAIN_SCORE = 0.6;
 export const BIAS_BONUS_SLOTS: readonly GarmentSlot[] = ["skirt-front", "skirt-back"];
 
-export type GrainPiece = Pick<PatternPieceDef, "grain" | "slot">;
+export interface GrainPiece {
+  readonly grain: PatternPieceDef["grain"];
+  readonly slot?: GarmentSlot | undefined;
+}
 
 export function isBiasRotation(rotation: Rotation): boolean {
   return rotation % 90 === 45;
 }
 
 export function earnsBiasBonus(piece: GrainPiece, rotation: Rotation): boolean {
-  return piece.grain === "bias-friendly" && BIAS_BONUS_SLOTS.includes(piece.slot) && isBiasRotation(rotation);
+  return (
+    piece.grain === "bias-friendly" &&
+    piece.slot !== undefined &&
+    BIAS_BONUS_SLOTS.includes(piece.slot) &&
+    isBiasRotation(rotation)
+  );
 }
 
 export function grainScore(piece: GrainPiece, rotation: Rotation): number {

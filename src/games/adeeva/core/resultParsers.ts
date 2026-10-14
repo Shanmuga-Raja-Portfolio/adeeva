@@ -15,7 +15,7 @@ import type { Evaluation } from "./evaluate";
 import type { FinishedLook } from "./finishedLook";
 import type { LogEntry } from "./gameState";
 import { LOOKS_PER_SEASON, type LabelSeason } from "./labelSeason";
-import type { Reward, RewardLine } from "./rewards";
+import type { Reward } from "./rewards";
 import { isWalkOrder } from "./runway";
 import {
   PANEL_IDS,
@@ -24,14 +24,13 @@ import {
   type RunwayResult,
   type SubScore,
 } from "./runwayScore";
-import { dayParser } from "../../../engine/stateParsers";
+import { dayParser, rewardLineParser } from "../../../engine/stateParsers";
 import {
   arrayOf,
   booleanParser,
   integerParser,
   integerRangeParser,
   nullable,
-  numberParser,
   objectOf,
   oneOf,
   rangeParser,
@@ -92,8 +91,6 @@ const evaluationParser = objectOf<Evaluation>({
   passed: booleanParser,
   feedback: arrayOf(stringParser),
 });
-
-const rewardLineParser = objectOf<RewardLine>({ label: stringParser, amount: numberParser });
 
 const rewardParser = objectOf<Reward>({
   outcome: oneOf(["pass", "soft-fail", "fail"]),

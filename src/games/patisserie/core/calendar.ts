@@ -2,9 +2,10 @@ import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import { weeklyRent } from "../../../engine/difficulty";
 import { expireOffers, lapseOverdue } from "../../../engine/gigBoard";
+import { workPaidShift } from "../../../engine/paidShift";
 import { applyStanding, decayBuzz } from "../../../engine/standing";
-import { advanceTrendWeek } from "../../../engine/trendMarket";
 import { isWeekEnd } from "../../../engine/week";
+import { settleWeek } from "../../../engine/weekSettlement";
 import { CAREER } from "../content/career";
 import { closeCounter } from "./boxItUp";
 import { isCounterDay } from "./counter";
@@ -14,16 +15,6 @@ import { queueStoryTrigger } from "./storyQueue";
 
 export function weeklyBill(state: GameState): number {
   return weeklyRent(CAREER.weeklyRent, state.profile.difficulty);
-}
-
-function settleWeek(state: GameState): GameState {
-  const [trends, rng] = advanceTrendWeek(state.trends, state.rng);
-  const settled = queueStoryTrigger(
-    { ...state, coins: state.coins - weeklyBill(state), trends, rng },
-    "first-week",
-  );
-  const bankrupt = settled.profile.difficulty === "challenging" && settled.coins < 0;
-  return bankrupt ? queueStoryTrigger(settled, "bankrupt") : settled;
 }
 
 function lapseOverdueOrders(state: GameState): GameState {
@@ -43,7 +34,9 @@ export function endDay(state: GameState): GameState {
     buzz: decayBuzz(closed.buzz),
     calendar: { day: endedDay + 1, hoursLeft: BASE_DAY_HOURS },
   };
-  const weekSettled = isWeekEnd(endedDay) ? settleWeek(advanced) : advanced;
+  const weekSettled = isWeekEnd(endedDay)
+    ? settleWeek(advanced, weeklyBill(advanced), queueStoryTrigger)
+    : advanced;
   const expired = expireOffers(weekSettled.gigs, weekSettled.calendar.day);
   const withOffers = rollOffers(lapseOverdueOrders({ ...weekSettled, gigs: expired }));
   return isCounterDay(withOffers.calendar.day)
@@ -58,6 +51,5 @@ export function canWorkShift(state: GameState): ActionCheck {
 }
 
 export function workShift(state: GameState): GameState {
-  if (!canWorkShift(state).ok) return state;
-  return endDay({ ...state, coins: state.coins + CAREER.shiftPay });
+  return workPaidShift(state, canWorkShift(state), CAREER.shiftPay, endDay);
 }

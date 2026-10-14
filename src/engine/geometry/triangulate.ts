@@ -1,4 +1,5 @@
 import type { Point } from "./point";
+import { signedArea } from "./polygonArea";
 
 export type Triangle = readonly [Point, Point, Point];
 
@@ -6,13 +7,6 @@ const AREA_EPSILON = 1e-9;
 
 function cross(origin: Point, a: Point, b: Point): number {
   return (a[0] - origin[0]) * (b[1] - origin[1]) - (a[1] - origin[1]) * (b[0] - origin[0]);
-}
-
-function signedArea(points: readonly Point[]): number {
-  return points.reduce((sum, point, index) => {
-    const next = points[(index + 1) % points.length] ?? point;
-    return sum + point[0] * next[1] - next[0] * point[1];
-  }, 0);
 }
 
 function samePoint(a: Point, b: Point): boolean {

@@ -102,6 +102,7 @@ export function ParentPage() {
             <li key={game.id}>
               <span>
                 <strong>{game.title}</strong>
+                {game.parentNote !== undefined ? <span className="st-muted">{game.parentNote}</span> : null}
                 <span className="st-muted">
                   {saveCounts[game.id] === 1 ? "1 save" : `${saveCounts[game.id] ?? 0} saves`}
                 </span>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { DifficultyId } from "../../../../../engine/difficulty";
-import { beatLines } from "../../../../../engine/storyVoice";
+import { playerVoiceSample } from "../../../../../engine/storyVoice";
 import type { TraitId } from "../../../../../engine/trait";
 import type { LookOptions, StudioPlayer } from "../../../../../studio/gameModule";
 import { newSeed } from "../../../../../studio/newSeed";
@@ -16,7 +16,13 @@ import { TRAITS } from "../../../content/trait";
 import type { NewGameSettings } from "../../../core";
 import type { SaveSlotId } from "../../patisserieSlots";
 import { Wordmark } from "../title/Wordmark";
-import { draftSettings, NEW_GAME_STEPS, playerDraft, stepIssue, type NewGameDraft } from "./newGameDraft";
+import {
+  draftSettings,
+  PROFILE_STEPS as NEW_GAME_STEPS,
+  playerDraft,
+  stepIssue,
+  type ProfileDraft as NewGameDraft,
+} from "../../../../../ui/newGame/profileDraft";
 import "./newGame.css";
 
 export interface NewGameFlowProps {
@@ -53,9 +59,11 @@ const difficultyIcons: Record<DifficultyId, IconName> = {
 };
 
 function voiceSample(trait: TraitId, name: string): string {
-  const intro = STORY_BEATS.find((beat) => beat.trigger === "intro");
-  if (intro === undefined) return "";
-  return beatLines(intro, trait, name).find((line) => line.isPlayer)?.text ?? "";
+  return playerVoiceSample(
+    STORY_BEATS.find((beat) => beat.trigger === "intro"),
+    trait,
+    name,
+  );
 }
 
 export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: NewGameFlowProps) {

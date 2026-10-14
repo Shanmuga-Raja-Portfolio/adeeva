@@ -56,3 +56,7 @@ export function clientById(id: string): ClientDef | undefined {
 export function storyBeatById(id: string): StoryBeatDef | undefined {
   return STORY_BEATS.find((beat) => beat.id === id);
 }
+
+export function knownUpgrade(id: string): UpgradeDef | undefined {
+  return isUpgradeId(id) ? upgradeById(id) : undefined;
+}

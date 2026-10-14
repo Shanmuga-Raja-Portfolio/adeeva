@@ -8,3 +8,10 @@ export interface TraitDef {
   perk: string;
   voice: string;
 }
+
+export const TRAIT_STORY_TRIGGERS = {
+  dreamer: "trait-dreamer",
+  perfectionist: "trait-perfectionist",
+  trendsetter: "trait-trendsetter",
+  charmer: "trait-charmer",
+} as const satisfies Readonly<Record<TraitId, `trait-${TraitId}`>>;

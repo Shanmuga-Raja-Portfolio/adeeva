@@ -33,26 +33,28 @@ A playable slice of the Maker Studio contract (`work/0003-studio/design.md`), at
 
 **`FlipRun.stage`** = `brief → design → market → unpick → clean → layout → cut → sew → finish → review → done`
 
-| #   | Stage  | Hours                     | What happens                                                                                                                                                                                                                                           |
-| --- | ------ | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | brief  | 0                         | Client card: recipe(s) allowed, required tags, favoured and avoided colours, avoided materials, required finishes, budget, fee, deadline, minimum quality and minimum Leaves. The live checklist stays visible afterwards. Skipped for own-stall runs. |
-| 2   | design | 1                         | Pick a recipe and its ADEEVA parts. `ProductPreview` shows it on a hanger or stand (never a body).                                                                                                                                                     |
-| 3   | market | 1 per visit               | The rail shows 6 finds (§4.1), each with a condition ribbon, a price and a **Fits** badge (✓ or ✗) for the chosen recipe. Several can be bought in one visit; coins are checked atomically. Owned finds can be used instead.                           |
-| 4   | unpick | 1                         | Pull out each stitch on the chosen finds (§3.1). Opens them into flat **panels** and saves their buttons & bows.                                                                                                                                       |
-| 5   | clean  | 1                         | Scrub stains off the panels (§3.2). Sets the restored condition.                                                                                                                                                                                       |
-| 6   | layout | 0                         | Drag pattern pieces onto the panels (§3.3).                                                                                                                                                                                                            |
-| 7   | cut    | 2 (layout + cut together) | ADEEVA cut trace per piece. Confirming is idempotent per run and panel.                                                                                                                                                                                |
-| 8   | sew    | 2 (1 for scrunchie-trio)  | ADEEVA sewing machine, one strip per seam.                                                                                                                                                                                                             |
-| 9   | finish | 1                         | Place patches, mend stitches and ADEEVA trims on the preview.                                                                                                                                                                                          |
-| 10  | review | 0                         | Evaluate once and reward once. Commissions are delivered from the hub; own pieces go to the stall rack.                                                                                                                                                |
+| #   | Stage  | Hours                     | What happens                                                                                                                                                                                                                                                                                                                                           |
+| --- | ------ | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | brief  | 0                         | Client card: recipe(s) allowed, required tags, favoured and avoided colours, avoided materials, required finishes, budget, fee, deadline, minimum quality and minimum Leaves. The live checklist stays visible afterwards. Skipped for own-stall runs.                                                                                                 |
+| 2   | design | 1                         | Pick a recipe and its ADEEVA parts. `ProductPreview` shows it on a hanger or stand (never a body).                                                                                                                                                                                                                                                     |
+| 3   | market | 1 per visit               | The rail shows 6 finds (§4.1), each with a condition ribbon, a price and a **Fits** badge (✓ or ✗) for the chosen plan. Opening the rail costs 1 hour; several finds can be bought in one visit and coins are checked atomically. Bought finds are picked for the flip automatically (up to 2). Owned finds can be used instead, which costs no hours. |
+| 4   | unpick | 1                         | Pull out each stitch on the chosen finds (§3.1). Opens them into flat **panels** and saves their buttons & bows.                                                                                                                                                                                                                                       |
+| 5   | clean  | 1                         | Scrub stains off the panels (§3.2). Sets the restored condition.                                                                                                                                                                                                                                                                                       |
+| 6   | layout | 0                         | Drag pattern pieces onto the panels (§3.3).                                                                                                                                                                                                                                                                                                            |
+| 7   | cut    | 2 (layout + cut together) | ADEEVA cut trace per piece. Confirming is idempotent per run and panel.                                                                                                                                                                                                                                                                                |
+| 8   | sew    | 2 (1 for scrunchie-trio)  | ADEEVA sewing machine, one strip per seam.                                                                                                                                                                                                                                                                                                             |
+| 9   | finish | 1                         | Place patches, mend stitches and ADEEVA trims on the preview.                                                                                                                                                                                                                                                                                          |
+| 10  | review | 0                         | Evaluate once and reward once. Commissions are delivered from the hub; own pieces go to the stall rack.                                                                                                                                                                                                                                                |
 
-A full flip costs 9 hours, against a 10-hour day, so one flip fits per working day. Moving back is allowed until the first cut; after that the design is locked, as in ADEEVA's `stageNavigation`.
+A full flip costs 9 hours (8 when using owned finds), against a 10-hour day, so one flip fits per working day. Completing a stage costs that stage's hours the first time only; walking forward again after a revisit is free, unless a new find joins the flip, which reopens the workbench hours. The plan, the rail and the layout can be revisited until the cut; after that the plan is locked, as in ADEEVA's `stageNavigation`. Going back closes the rail. Changing the plan or the finds clears the layout; unpick and clean progress stays with each find that is still chosen. Kept cut traces are stored on the flip and stay until their piece moves. No flip work happens on Stall Day.
 
-**Fits badge.** It comes from a hand-written fit table in `content/findFit.ts` (find × recipe → ✓/✗, for one find on its own). A unit test checks each ✓ entry with a real placement through `panelLayout`, once for each of the find's two worn-spot positions. Examples of ✗: Gingham Shirt for Envelope Cushion and Market Tote; Grandad's Blazer, Teal Satin Dress and Coral Check Coat for the pencil skirt (each holds only one 44×65 piece). A ✗ find can still be used as one of two finds (§3.3).
+**Finds on the bench.** Chosen finds stay in the stockroom until the cut, so setting a flip aside before the cut costs only the hours spent. At the cut the finds are used up, their saved buttons & bows go into stock and their leftovers become scraps.
+
+**Fits badge.** It comes from a hand-written fit table in `content/findFit.ts`, listing for each find the plans it holds on its own. A plan is keyed by recipe, plus the chosen ADEEVA parts for the skirt and top (for example `remade-skirt:pencil-skirt` or `remade-top:wrap-bodice+cap-sleeve`), because the badge is shown after the plan is chosen. A unit test checks every ✓ entry with a real placement through the core auto-layout, once for each of the find's two worn-spot positions, and a recipe's blocked materials are never ✓. Examples of ✗: Gingham Shirt for Envelope Cushion and Market Tote; Grandad's Blazer, Teal Satin Dress and Coral Check Coat for the pencil skirt; any denim find for the Remade Top. A ✗ find can still be used as one of two finds (§3.3).
 
 ## 3. Hands-on mini-games
 
-All mini-games use Pointer Events only (mouse and touch), with no keyboard or hover. Every draggable item, handle and button is at least 44×44 px, and trace paths are drawn at least 12 px wide. Scoring lives in core: the UI only sends counts or samples. Tolerances multiply as **base × trait × upgrade × difficulty**; difficulty is ADEEVA `content/difficulty` `toleranceMultiplier` (Relaxed 1.3, Standard 1, Challenging 0.85). Perfectionist is ×1.2 on every tolerance below. **Assist caps:** the two new mini-games (Unpick, Clean) cap at 0.7; Cut and Sew keep ADEEVA's 0.8.
+All mini-games use Pointer Events (mouse and touch) and never rely on hover. Every draggable item, handle and button is at least 44×44 px, and trace paths are drawn at least 12 px wide. Keyboard players use the assisted path of each step: Enter on a stitch snips it with the helper, Soak it, Assist cut, Space to sew with the arrow keys to steer, Enter on a pattern piece or finish to lay it down, nudge and turn buttons, and the price slider. Scoring lives in core: the UI only sends counts or samples. Tolerances multiply as **base × trait × upgrade × difficulty**; difficulty is ADEEVA `content/difficulty` `toleranceMultiplier` (Relaxed 1.3, Standard 1, Challenging 0.85). Perfectionist is ×1.2 on every tolerance below. **Assist caps:** the two new mini-games (Unpick, Clean) cap at 0.7; Cut and Sew keep ADEEVA's 0.8.
 
 ### 3.1 Unpick ("Snip old stitches"; pull-the-stitch)
 
@@ -62,8 +64,9 @@ All mini-games use Pointer Events only (mouse and touch), with no keyboard or ho
   - `d > maxPull`: **snag**; the stitch stays in. Condition −0.02 per snag, at most −0.10 per find.
 - **Tolerance:** `maxPull = 4.0 cm × (1 − 0.5 × sewDifficulty) × trait × upgrade (Sharp Seam Ripper 1.15) × difficulty`. On Standard this is about 3.8 cm on cotton and 2.6 cm on silk, so delicate fabrics really are harder.
 - **Score:** `unpickAccuracy = pops ÷ (pops + snags)`, averaged over lines.
-- **Record and checks:** per line `{stitches, pops, snags, attempts, assisted}`. Counts only grow, `pops ≤ stitches`, `pops + snags ≤ attempts ≤ 3 × stitches`. A line is done when every stitch has popped; if it reaches 3 × stitches attempts, its remaining stitches come loose and count as snags.
-- **Buttons & bows:** each notion (button, bow, lace, ribbon-belt, pearl, sequin-patch) sits on one stitch. It is saved into the ADEEVA trim inventory when that stitch pops cleanly. A snag on that stitch loses it; with the Sharp Seam Ripper, only the second snag loses it.
+- **Record and checks:** per line `{popped: stitch indices, snagsAt: stitch indices, attempts, assisted}`; the UI sends one pull at a time (stitch and drag distance) and the core decides pop or snag. Each pop or snag is an attempt; a pull under 1 cm changes nothing. A popped stitch cannot be pulled again. A line is done when every stitch has popped; if it reaches 3 × stitches attempts, its remaining stitches come loose and count as snags (for accuracy and for condition).
+- **Close-up:** each stitch line is shown on its own, turned flat across the bench, so a 4 cm pull is a comfortable drag on a tablet.
+- **Buttons & bows:** each notion (button, bow, lace, ribbon-belt, pearl, sequin-patch) sits on one stitch; a line can hold several. It is saved when that stitch pops cleanly. A snag on that stitch loses it; with the Sharp Seam Ripper, only the second snag loses it. Saved notions reach the stock as saved ADEEVA trims at the cut.
 - **Assist:** tap a stitch to pop it. No snags; accuracy is capped at 0.7.
 - **Fun at 8 and at 15:** at 8, a row of satisfying pops with a "ping" for each saved button. At 15, short, careful pulls on silk where a greedy drag costs condition.
 
@@ -73,7 +76,9 @@ All mini-games use Pointer Events only (mouse and touch), with no keyboard or ho
 - **Clearing:** a cell clears after `ticksToClear ÷ cells` non-harsh moving ticks inside it. `ticksToClear = 180 × materialFactor ÷ washTub` (materialFactor 1.0 cotton, linen, denim; 1.2 wool; 1.3 silk, satin, velvet, tulle; Big Wash Tub 1.25).
 - **Gentle limit (every material):** `gentle = 60 cm/s × (1 − 0.6 × sewDifficulty) × trait × upgrade (wash-tub 1.15) × difficulty`: about 56 cm/s on cotton and 35 cm/s on silk.
 - **Scored per stain:** `dirt` = share of cells not yet cleared; `fade = min(0.3, 0.002 × harshTicks)`. `cleanAccuracy = (1 − average dirt) × (1 − average fade)`.
-- **Validation:** counts only grow, `harshTicks ≤ scrubTicks`, cleared cells ≤ cells, at most 1200 scrubTicks per stain.
+- **Validation:** the UI sends cumulative counts per stain `{cellTicks per cell, harshTicks, scrubTicks}` about every 300 ms; counts only grow, `harshTicks ≤ scrubTicks`, moving plus harsh ticks ≤ scrubTicks, and at most 1200 scrubTicks per stain. Pointer speed is measured every animation frame, so holding still does nothing.
+- **Done:** a stain is done when every cell is cleared or it has used its 1200 ticks; every stain must be done (or soaked) before the layout.
+- **Stains** are rolled when a find is bought: panel, radius 6–10 cm, centre inside the panel, and 9, 12 or 16 cells (3×3, 3×4 or 4×4 over the stain's square).
 - **Restored condition:** `restored = condition − snagLoss + (1 − condition) × cleanAccuracy × 0.8`, clamped to 0–1, averaged over the finds used.
 - **Assist** ("Soak it"): one tap clears every stain; cleanAccuracy is capped at 0.7 and fade is 0.
 - **Fun at 8 and at 15:** at 8, bubbles and sparkle as stains vanish. At 15, steady circles on silk, balancing speed against fading.
@@ -81,10 +86,10 @@ All mini-games use Pointer Events only (mouse and touch), with no keyboard or ho
 ### 3.3 Layout and cut (reused from ADEEVA)
 
 - **Finds per flip:** a flip may use panels from up to **2 finds**. Bounds are the union of their panels. Hours do not change.
-- **Layout:** the same drag and 45°-rotate interaction as ADEEVA's cut layout, with the panels (rectangles) as bounds. A Tired find's worn spot (12×12 cm) is an obstacle in the overlap test.
-- **Auto-layout (Relaxed only, Scrunchie Trio and Envelope Cushion):** one tap places every piece; grain is capped at 0.8.
+- **Layout:** the same drag and 45°-rotate interaction as ADEEVA's cut layout (double-tap turns a piece 90°), with the panels as bounds. Panels of the chosen finds are laid out in rows up to 160 cm wide with 6 cm gaps; a piece must sit wholly on one panel. A Tired find's worn spot (12×12 cm) is an obstacle in the overlap test.
+- **Auto-layout (Relaxed only, Scrunchie Trio and Envelope Cushion):** one tap keeps well-placed pieces and places the rest (or all of them if needed); grain is capped at 0.8.
 - **Fabric lines (grain):** ADEEVA's `grainScore` (0/180 → 1.0; bias 1.0 for bias-friendly pieces, else 0.7; 90/270 → 0.6). Recipe pieces carry `slot?: GarmentSlot`; with no slot, no bias bonus applies.
-- **Cut:** ADEEVA's `traceAccuracy` with `cutTolerance`: base 1.2 cm × trait × upgrade (Cutting Mat 1.15) × difficulty. **Assist cut** gives a flat 0.8.
+- **Cut:** ADEEVA's `TraceMat` on each piece; the UI sends the traced samples and the core scores them with `traceAccuracy` and `cutTolerance`: base 1.2 cm × trait × upgrade (Cutting Mat 1.15) × difficulty. **Assist cut** sends no samples for a piece and scores a flat 0.8. All pieces are cut together in one idempotent commit.
 - **Fun:** fitting pieces around a worn spot, or across two finds, is a small puzzle; the trace keeps ADEEVA's "steady hand" feel.
 
 ### 3.4 Sew (reused from ADEEVA)
@@ -94,7 +99,9 @@ All mini-games use Pointer Events only (mouse and touch), with no keyboard or ho
 
 ### 3.5 Finish (reused decoration, new patches)
 
-- Drag finishes onto the preview, then move, rotate (15° steps) and scale them (0.5–2, ADEEVA's `MIN/MAX_DECORATION_SCALE`). Tapping a placed finish returns it to stock. Reuses ADEEVA's `Decoration` pose and `TrimLayer`.
+- Drag finishes onto the preview (or press Enter on a drawer item), then move, rotate (15° steps) and scale them (0.5–2, ADEEVA's `MIN/MAX_DECORATION_SCALE`) with handles or buttons. Tapping a placed finish returns it to stock. The preview canvas is 400×400; ADEEVA's `TrimArt` draws trims.
+- New trims, mend stitches and paint dots are paid when placed and refunded when removed or when the flip is set aside. Saved trims and scraps leave the stock when the flip is delivered or racked.
+- Paint dots take one of six palette colours (coral, mustard, teal, lavender, ivory, rose).
 - **Scraps:** each patch uses 1 scrap and takes on its source's colour and tags; it counts as secondhand. At most 12 scraps are held.
   - The tf-intro gift is "Femi's scrap tin": 4 ADEEVA fabric scraps (`sage-linen`, `emerald-velvet`, `ruby-velvet`, `sky-gingham`).
   - Each used find leaves 1 scrap per 600 cm² of panel area not covered by pieces, at most 3 per find.
@@ -102,7 +109,7 @@ All mini-games use Pointer Events only (mouse and touch), with no keyboard or ho
 
 ### 3.6 Price tag (Stall Day only)
 
-- **Input:** a big slider on a kraft price tag, in steps of 1 coin with ±1 buttons sized 48 px. One tag per own-made piece; the rack holds 4 (6 with the Stall Awning).
+- **Input:** a big slider on a kraft price tag, in steps of 1 coin with ±1 buttons sized 48 px; arrow keys work on the slider. The slider runs from 1 to twice the fair value and each tag starts at 125% of it, above the band, so the player picks a price. One tag per own-made piece; the rack holds 4 (6 with the Stall Awning). Every piece needs a tag before the awning opens; the stall can be held once per Stall Day, even with an empty rack.
 - **Fair value:** `V = round(recipe.baseValue × (0.6 + 0.4 × quality/100) × (1 + 0.1 × hotTagMatches) + 0.1 × sustainability)`.
 - **Guide:** "Pieces like this go for `round(0.9V)`–`round(1.1V)`." The fair band is exactly these two numbers, inclusive.
 - **Outcome** (deterministic, no RNG; one rack-wide "sold or stayed" result, no per-shopper reactions):
@@ -133,7 +140,7 @@ All mini-games use Pointer Events only (mouse and touch), with no keyboard or ho
 
 ## 4. Content catalog
 
-Shared from ADEEVA via `src/engine/textile/`: style tags (10), colours (16), prints (6), materials (8), trims (8) and fabrics (20, as scraps only).
+Shared from ADEEVA (imported from `src/games/adeeva`) and the engine palette: style tags (10), colours (16), prints (6), materials (8), trims (8) and fabrics (20, as scraps only).
 
 ### 4.1 Finds (14). Panels are W×H in cm; stitch lines list stitches per line.
 
@@ -154,7 +161,7 @@ Shared from ADEEVA via `src/engine/textile/`: style tags (10), colours (16), pri
 | sparkle-cardigan | Disco Cardigan     | satin    | black / sparkle   | 50×60, 50×60        | 20    | bold, edgy        | sequin-patch×2 | 8, 8, 6      | 18  | Spun round a roller-rink disco       |
 | check-coat       | Coral Check Coat   | wool     | coral / check     | 60×90, 35×90        | 24    | classic, bold     | button×4       | 10, 10, 8, 6 | 18  | Walked a big dog through ten winters |
 
-**Per-find content** (`content/find.ts`): each stitch line is `{panel, from, to, stitches, notionAt?: {stitch, notion}}` with hand-placed endpoints in panel cm; and `wornSpots: [pos, pos]`, two hand-placed 12×12 positions, of which the seeded roll picks one for a Tired find. Every ✓ in the fit table must fit with either spot.
+**Per-find content** (`content/find.ts`): each stitch line is `{panel, from, to, stitches, notions: [{stitch, notion}]}` with hand-placed endpoints in panel cm, one stitch every 4 cm; and `wornSpots: [pos, pos]`, two hand-placed 12×12 positions, of which the seeded roll picks one for a Tired find. Every ✓ in the fit table fits with either spot. Each find also has a flat silhouette (`jeans`, `shirt`, `dress`, `cloth`, `coat` or `skirt`).
 
 **Condition grades** (rolled per rail slot, weights 25/50/25):
 
@@ -173,11 +180,11 @@ Shared from ADEEVA via `src/engine/textile/`: style tags (10), colours (16), pri
 | scrunchie-trio | Scrunchie Trio   | 3× strip 50×10                                                         | tube (straight), loop (gentle)                      | 18         | playful         | wool              |
 | cushion-cover  | Envelope Cushion | front 45×45; 2× back 45×30                                             | hems (straight), outer (gentle)                     | 35         | classic         | tulle             |
 | tote-bag       | Market Tote      | 2× body 36×40; 2× strap 8×60                                           | sides, straps (straight), top hem (gentle)          | 40         | casual          | tulle, silk       |
-| bucket-hat     | Bucket Hat       | crown octagon Ø18; 2× band 30×8; 2× brim arc 40×12                     | band, crown (curved), brim (wavy)                   | 45         | sporty, playful | tulle, silk       |
+| bucket-hat     | Bucket Hat       | crown octagon Ø18; 2× band 30×8; 2× brim arc 40×12                     | band (gentle), crown (curved), brim (wavy)          | 45         | sporty, playful | tulle, silk       |
 | remade-skirt   | Remade Skirt     | ADEEVA `mini-skirt`, `a-line-skirt` or `pencil-skirt` pieces           | ADEEVA `skirtSeams`                                 | 60         | the part's tags | —                 |
 | remade-top     | Remade Top       | ADEEVA `fitted-bodice` or `wrap-bodice` + `sleeveless` or `cap-sleeve` | ADEEVA `bodiceSeams` (+ `setSleeveSeams` with caps) | 70         | the part's tags | denim             |
 
-The flip's tags are the union of the recipe or part tags, the finds' tags, the material tags and the finish tags. Its colours are the finds' colours plus those of its patches and trims. The **main find** is the one holding the most placed area.
+Blocked materials apply to every find in the flip. The flip's tags are the union of the recipe or part tags, the finds' tags, the material tags and the finish tags (a patch adds its own tags and its scrap's tags). Its colours are the finds' colours plus those of its patches (the scrap's colour) and paint dots; ADEEVA trims carry no colour. The **main find** is the one holding the most placed area; its material sets the sewing band.
 
 ### 4.3 Finishes
 
@@ -197,16 +204,16 @@ The flip's tags are the union of the recipe or part tags, the finds' tags, the m
 
 Briefs are varied by seeded RNG like ADEEVA's `rollClientBrief` (budget, fee, deadline, 2 favoured colours).
 
-| id           | name, relation                                  | gate / min rep     | recipes                    | required tags   | favoured colours               | avoid           | required finishes | budget | fee    | days | min Q | min Leaves |
-| ------------ | ----------------------------------------------- | ------------------ | -------------------------- | --------------- | ------------------------------ | --------------- | ----------------- | ------ | ------ | ---- | ----- | ---------- |
-| nana-bea     | Nana Bea, neighbour with the sunny porch        | — / 0              | cushion-cover              | classic         | sage, ivory, mustard           | black           | button×2          | 25–35  | 40–55  | 4–6  | 55    | 0          |
-| juniper-wren | Juniper & Wren, the twins next door             | — / 0              | scrunchie-trio             | playful         | blush, sky, lavender           | charcoal        | any patch×1       | 15–25  | 30–40  | 3–5  | 50    | 0          |
-| lumi         | Lumi, art-club classmate                        | — / 0              | tote-bag                   | casual, playful | coral, mustard, sky            | —               | any patch×2       | 30–45  | 45–60  | 4–6  | 58    | 40         |
-| kofi         | Kofi, cousin who skates                         | — / 0              | bucket-hat                 | sporty          | navy, black, emerald           | ivory, sky      | patch-star×1      | 25–40  | 50–65  | 4–6  | 58    | 0          |
-| ms-okafor    | Ms. Okafor, school librarian                    | — / 6              | remade-skirt               | classic         | navy, teal, sage               | material: denim | button×1          | 40–60  | 70–90  | 5–7  | 68    | 0          |
-| rafa         | Rafa, drummer in your sister's band             | — / 14             | remade-top                 | edgy            | black, charcoal, ruby          | ivory           | sequin-patch×1    | 45–65  | 75–95  | 5–7  | 80    | 0          |
-| marisol      | Marisol, muralist with paint on her sleeves     | Dreamer / 8        | tote-bag, cushion-cover    | bold            | lavender, coral, teal, mustard | —               | any patch×3       | 35–50  | 90–110 | 5–7  | 68    | 70         |
-| mr-halvorsen | Mr. Halvorsen, retired tailor at the next stall | Perfectionist / 10 | remade-skirt (pencil only) | elegant         | charcoal, navy                 | gold            | button×2          | 40–60  | 95–115 | 5–7  | 85    | 0          |
+| id           | name, relation                                  | gate / min rep     | recipes                    | required tags   | favoured colours               | avoid           | required finishes | budget | fee   | days | min Q | min Leaves |
+| ------------ | ----------------------------------------------- | ------------------ | -------------------------- | --------------- | ------------------------------ | --------------- | ----------------- | ------ | ----- | ---- | ----- | ---------- |
+| nana-bea     | Nana Bea, neighbour with the sunny porch        | — / 0              | cushion-cover              | classic         | sage, ivory, mustard           | black           | button×2          | 25–35  | 30–40 | 4–6  | 68    | 0          |
+| juniper-wren | Juniper & Wren, the twins next door             | — / 0              | scrunchie-trio             | playful         | blush, sky, lavender           | charcoal        | any patch×1       | 15–25  | 22–30 | 3–5  | 64    | 0          |
+| lumi         | Lumi, art-club classmate                        | — / 0              | tote-bag                   | casual, playful | coral, mustard, sky            | —               | any patch×2       | 30–45  | 32–44 | 4–6  | 72    | 40         |
+| kofi         | Kofi, cousin who skates                         | — / 0              | bucket-hat                 | sporty          | navy, black, emerald           | ivory, sky      | patch-star×1      | 25–40  | 36–48 | 4–6  | 72    | 0          |
+| ms-okafor    | Ms. Okafor, school librarian                    | — / 12             | remade-skirt               | classic         | navy, teal, sage               | material: denim | button×1          | 40–60  | 52–66 | 5–7  | 82    | 0          |
+| rafa         | Rafa, drummer in your sister's band             | — / 24             | remade-top                 | edgy            | black, charcoal, ruby          | ivory           | sequin-patch×1    | 45–65  | 58–72 | 5–7  | 87    | 0          |
+| marisol      | Marisol, muralist with paint on her sleeves     | Dreamer / 15       | tote-bag, cushion-cover    | bold            | lavender, coral, teal, mustard | —               | any patch×3       | 35–50  | 66–80 | 5–7  | 84    | 70         |
+| mr-halvorsen | Mr. Halvorsen, retired tailor at the next stall | Perfectionist / 18 | remade-skirt (pencil only) | elegant         | charcoal, navy                 | gold            | button×2          | 40–60  | 70–86 | 5–7  | 88    | 0          |
 
 | client       | request                                                                                         | delighted                                              | nearMiss                                                   |
 | ------------ | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------- |
@@ -232,19 +239,19 @@ Day 1: the first offer is drawn from `[nana-bea, juniper-wren]` only.
 
 ### 4.6 Story beats (9; player lines voiced by trait as in ADEEVA's `storyVoice`)
 
-| id                     | trigger             | lines                                                                                                                                                                                                                                                          |
-| ---------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| tf-intro               | intro               | **Femi:** "This stall was mine for twenty years. Now it's yours." / **Femi:** "Everything here had a life before. Give it another." / **Femi:** "Take my scrap tin too. Every scrap is a patch waiting." / **You:** "I won't let a single button go to waste." |
-| tf-first-delivery      | first-delivery      | **Narrator:** Your first flip walks past the stall on its new owner. / **You:** "That was a curtain last week!"                                                                                                                                                |
-| tf-first-stall-day     | first-stall-day     | **Femi:** "Awning up, tags out. Today the rack does the talking." / **Femi:** "Fair prices bring people back." / **You:** "Then fair it is."                                                                                                                   |
-| tf-first-week          | first-week          | **Femi:** "Stall rent day. Every stall pays it." / **Femi:** "If the till is ever thin, the swap shop needs sorters." / **You:** "Good to know. I'll keep flipping."                                                                                           |
-| tf-trait-dreamer       | trait-dreamer       | **Narrator:** "The Scrap Box." You lay leftovers side by side until they sing. / **Marisol:** "Now that's a colour story. Call me when you've got time."                                                                                                       |
-| tf-trait-perfectionist | trait-perfectionist | **Narrator:** "Straight and True." / **Mr. Halvorsen:** "Small pulls, steady hands. You've done this before." / **You:** "Only in my head, a hundred times."                                                                                                   |
-| tf-trait-trendsetter   | trait-trendsetter   | **Narrator:** "Rail Whispers." / **Shopper:** "Has anyone got hats like that?" / **You:** (quietly) "Not yet. By next week, I will."                                                                                                                           |
-| tf-trait-charmer       | trait-charmer       | **Narrator:** "Regulars." / **Femi:** "Same faces every Stall Day. That's your fair prices working." / **You:** "Regulars come back. I like that."                                                                                                             |
-| tf-rack-of-ten         | ten-flips           | **Narrator:** "Ten Rescued." / **Femi:** pins a small rosette to the awning. "Ten things that nearly got thrown out." / **You:** "And ten that didn't."                                                                                                        |
+| id                     | trigger                                               | lines                                                                                                                                                                                                                                                          |
+| ---------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| tf-intro               | intro                                                 | **Femi:** "This stall was mine for twenty years. Now it's yours." / **Femi:** "Everything here had a life before. Give it another." / **Femi:** "Take my scrap tin too. Every scrap is a patch waiting." / **You:** "I won't let a single button go to waste." |
+| tf-first-delivery      | first-delivery                                        | **Narrator:** Your first flip walks past the stall on its new owner. / **You:** "That was a curtain last week!"                                                                                                                                                |
+| tf-first-stall-day     | first-stall-day                                       | **Femi:** "Awning up, tags out. Today the rack does the talking." / **Femi:** "Fair prices bring people back." / **You:** "Then fair it is."                                                                                                                   |
+| tf-first-week          | first-week                                            | **Femi:** "Stall rent day. Every stall pays it." / **Femi:** "If the till is ever thin, the swap shop needs sorters." / **You:** "Good to know. I'll keep flipping."                                                                                           |
+| tf-trait-dreamer       | trait-dreamer (Marisol writes in)                     | **Narrator:** "The Scrap Box." You lay leftovers side by side until they sing. / **Marisol:** "Now that's a colour story. Call me when you've got time."                                                                                                       |
+| tf-trait-perfectionist | trait-perfectionist (Mr. Halvorsen writes in)         | **Narrator:** "Straight and True." / **Mr. Halvorsen:** "Small pulls, steady hands. You've done this before." / **You:** "Only in my head, a hundred times."                                                                                                   |
+| tf-trait-trendsetter   | trait-trendsetter (after the first Stall Day is held) | **Narrator:** "Rail Whispers." / **Shopper:** "Has anyone got hats like that?" / **You:** (quietly) "Not yet. By next week, I will."                                                                                                                           |
+| tf-trait-charmer       | trait-charmer (on the first Fair Price sale)          | **Narrator:** "Regulars." / **Femi:** "Same faces every Stall Day. That's your fair prices working." / **You:** "Regulars come back. I like that."                                                                                                             |
+| tf-rack-of-ten         | ten-flips                                             | **Narrator:** "Ten Rescued." / **Femi:** pins a small rosette to the awning. "Ten things that nearly got thrown out." / **You:** "And ten that didn't."                                                                                                        |
 
-The shared `bankrupt` beat is reused (Challenging only). There is no game over.
+ADEEVA's shared `bankrupt` beat ("Tight Week") is reused (Challenging only). There is no game over. Femi, the mentor, has her own portrait.
 
 ## 5. Evaluation, rewards and economy
 
@@ -278,7 +285,7 @@ The shared `bankrupt` beat is reused (Challenging only). There is no game over.
 - **Standard soft fail:** 40% of the fee, reputation −1 (0 for Charmer), and kind feedback from the failed criteria.
 - **Relaxed:** every run counts as a pass; stars still reflect quality. Rent ×0.
 - **Challenging:** min quality +6; a fail pays 0 with reputation −3; late delivery costs 50% of the fee; rent ×1.5 (120).
-- **Own-stall pieces:** no fee or reputation from review; they earn only through §3.6.
+- **Own-stall pieces:** no fee or reputation from review; they earn only through §3.6. Their score is their quality, and starting one needs a free rack hook.
 
 **Traits** (game-flavoured perk text; ADEEVA mechanics plus stall effects):
 
@@ -296,11 +303,11 @@ The shared `bankrupt` beat is reused (Challenging only). There is no game over.
 **Sanity checks (Standard):**
 
 - **Day 1:** Nana Bea: a Linen Curtain or Polka Tablecloth (6–20 coins), plus 2 buttons. Buy the buttons new (2 coins), or unpick a Gingham Shirt (4–8 coins) as a second find for 6 free buttons. Juniper & Wren: a Gingham Shirt (4–8 coins), with a patch from Femi's scrap tin.
-- **Week 1:** 6 working days: about 3–4 commissions (starter fees average ≈ 48, pay ≈ 48 × 1.17 ≈ 56, materials ≈ 12–18, net ≈ +41 each, so ≈ +145), plus 2 own pieces sold on Stall Day (≈ 25–70 each, ≈ +60–120). Week-1 end ≈ 90 + 145 + 90 − 80 ≈ 245 coins.
+- **Week 1:** 6 working days, one flip each. Ms. Okafor opens at reputation 12 and Rafa at 24, so week 1 is mostly starter orders (fees 22–48, pay ≈ fee × 1.17, materials ≈ 8–18, net ≈ +30 each). A scripted decent player taking only commissions ends week 1 at 191–280 coins (12 seeds, mean ≈ 240), near the 245 target.
   - A struggling player with 2 soft fails (≈ +19 − 15 each) and 1 shift ends week 1 at about 90 + 8 + 30 − 80 = 48 coins and stays solvent.
   - On Challenging (rent 120, fails pay 0) the same player can dip below 0; the bankrupt beat points to the shift.
-- **Pass rate:** a decent player (unpick 0.85, clean 0.9, cut 0.85, seams 0.8, grain 0.9, restored 0.88) has quality ≈ 84. Expected pass rate ≈ 90%+ on starter and mid clients, because the brief checklist stays on screen; Rafa (80) needs care and Mr. Halvorsen (85) is ≈ 50/50.
-- **Assist:** full assist ≈ 78–79 [unpick, clean 0.7; cut, seams 0.8; grain 0.9; restored 0.8–0.85]. This passes the four starter clients (50–58), Ms. Okafor and Marisol (68), and fails Rafa narrowly and Mr. Halvorsen clearly.
+- **Pass rate:** a decent player (unpick 0.85, clean 0.9, cut 0.85, seams 0.8 ± 0.1 from flip to flip) lands at quality 78–93. Over 3 weeks on Standard it passes ≈ 89% of orders (starters 64–72 almost always; Ms. Okafor 82, Marisol 84 and Rafa 87 need a good day; Mr. Halvorsen 88 is ≈ 50/50). A weaker player (seams 0.6, cut ≈ 0.7, unpick ≈ 0.75) passes ≈ 63%. Challenging (+6) passes ≈ 81% and Relaxed every order.
+- **Assist:** full assist ≈ 78–79 [unpick, clean 0.7; cut, seams 0.8; grain 0.9; restored 0.8–0.85]. This passes the four starter clients (64–72) and falls short of the mid and gated clients (82–88), which ask for a steady hand.
 - **Stars separate:** with all criteria met and 1–2 favoured colours, assist scores ≈ 87–89 (4★) and decent play ≈ 91–93 (5★).
 - **Condition:** a Tired find against Like New moves quality by about 2 points through `restored`, and costs a worn spot to plan around.
 - **Stall Day:** a Remade Top at quality 80 and Leaves 70 gives V ≈ 70 × 0.92 + 7 ≈ 71. The guide and fair band read 64–78, and 78 earns the most coins.
@@ -309,40 +316,44 @@ The shared `bankrupt` beat is reused (Challenging only). There is no game over.
 
 **Screens:**
 
-- **Title** (studio-wide) → **New Game** (avatar pre-filled from the studio profile, then trait and difficulty) → **tf-intro**.
-- **Stall Hub:** calendar, hours, coins, reputation, buzz, crowd tags, offers board as hanging tags, active flips, stock (finds, buttons & bows, scraps), upgrades, End Day, Shift, Save, Back to Studio.
-- **Design:** recipe cards and `ProductPreview`.
-- **Market Rail:** finds on a rail, each with a condition ribbon, price tag, Fits badge and backstory tag; tap for a close-up.
-- **Workbench:** Unpick, then Clean, on the same table, with the finds laid flat.
-- **Layout and Cut:** panels with worn spots, using ADEEVA's cut screen chrome.
-- **Sew:** ADEEVA `SewingStage`. **Finish:** preview, scrap drawer and trim tin.
-- **Results:** before/after split card (the tired find, then the finished flip), criteria list, leaf meter, stars, reward lines.
-- **Stall Day:** rack, price tags and stylised shopper silhouettes (never scored, described or reacting one by one); one rack-wide result.
+- **Title** (Thrift-Flip's own, with Continue, New Game, Settings and three price-tag save slots) → **New Game** (name and avatar pre-filled from the studio profile, then trait and difficulty; starting writes the name and avatar back to the profile) → **tf-intro**.
+- **Stall Hub:** striped awning top bar (coins, reputation, buzz, Settings, Save & exit), a chalkboard with week, day and weekday, the hours left, the swap-shop shift and End the day; the order board as hanging price tags on cork with bunting; your orders; the stall rack with "Make a piece for Stall Day"; recent flips; this week's crowd (and next week's for Trendsetters); the stockroom (finds, saved buttons & bows, scraps); stall upgrades. On Stall Day the hero turns into the striped Stall Day banner with "Open the stall".
+- **Flip steps:** a header with the step title and Set aside, a step rail (plan, rail and layout can be revisited before the cut) and the live order checklist beside every step.
+- **Design:** recipe cards with a sample-fabric `ProductPreview`, part choices for the skirt and top, and a large preview.
+- **Market Rail:** finds swaying on a rail, each with a condition ribbon, price, Fits badge, backstory line and a Hot marker for Trendsetters; tap for a close-up; pick several and buy them together; "Use for this flip" lists the stockroom.
+- **Workbench:** Unpick, then Clean, on a wooden table: one stitch line or one stain at a time in close-up, with chips to switch, a progress bar, the assist switch and the safety line.
+- **Layout and Cut:** the opened finds laid flat with worn spots on a cutting mat, a piece tray, a piece inspector (turn, nudge, back to the tray), then ADEEVA's `TraceMat` per piece.
+- **Sew:** ADEEVA's `SewingMachine`. **Finish:** the preview with handles, and a drawer with scrap patches, saved buttons & bows, the trim tin and mend & paint.
+- **Review:** the finished piece with a meter per quality term and the leaf meter, then Hand it over (or Hang it on the stall rack).
+- **Results:** before/after split card (the find as bought, then the finished flip), score counting up, stars, leaf meter, the client's delighted or near-miss line, criteria with reasons, kind feedback and reward lines.
+- **Stall Day:** the lantern-lit lane, the rack with a price tag per piece, stylised shopper silhouettes (never scored, described or reacting one by one) and one rack-wide result with Fair Price badges.
 
 **Art direction (distinct from ADEEVA, same tokens):**
 
-- **Palette:** ADEEVA's ink, cream, shadow, radius and focus tokens, plus a game accent set in `games/thrift-flip/ui/theme.css`: kraft `#e8d9bd`, denim `#3f5d84`, tangerine `#f08a3c`, mint `#8fcfb2`, twine `#a07a52`.
-- **Motifs:** price-tag cards with a punched hole and twine, a striped awning header, bunting, chalkboard numbers, a dashed "stitch" border on panels.
-- **Fonts:** display `"Rockwell", "Roboto Slab", Georgia, serif` (system-only, as ADEEVA); body `system-ui`.
-- **Original SVG scenes:** `StallBackdrop` (covered market lane with lanterns); `MarketRail`; `FindArt` (6 flat silhouettes: jeans, shirt, dress, curtain/cloth, coat/blazer, skirt, filled with `FabricPattern`); `StainArt` (soft blobs that shrink, with bubbles); `StitchMarks`; `PatchArt` (4 shapes with a dashed edge); `ProductPreview` (one hand-drawn silhouette per recipe, 6 in all, on a hanger or stand, filled with the main find's `FabricPattern`, with `TrimLayer` on top); `PriceTag`; `LeafMeter`.
-- Motion respects `prefers-reduced-motion`.
+- **Palette:** the studio's ink, shadow, radius and focus tokens, re-tinted inside `.tf-theme` in `games/thrift-flip/ui/theme.css`: kraft `#e8d9bd`, denim `#3f5d84`, tangerine `#f08a3c`, mint `#8fcfb2`, twine `#a07a52`, chalk `#2f3d38`. The shared kit buttons and cards pick up the tangerine and mint through the token overrides.
+- **Motifs:** price-tag cards with a punched hole and twine, a scalloped striped awning, bunting, a chalkboard, dashed "stitch" borders.
+- **Fonts:** display `"Rockwell", "Roboto Slab", Georgia, serif` (system-only); body `system-ui`.
+- **Original SVG art** (`ui/art`): `StallBackdrop` (market lane with lanterns, bunting and neighbouring stalls), `Awning`, `Bunting`, `Wordmark`, `FindArt` (6 flat silhouettes on wooden hangers, filled with `FabricPattern`, with stains and a worn patch for Loved and Tired finds), `StainArt` (soft blobs that fade cell by cell, with bubbles and a sparkle when clean), `PatchArt` (4 shapes with a stitched edge, in the scrap's fabric), `MarkArt` (mend crosses, paint dots), `FinishArt`, `ProductPreview` (one silhouette per recipe on a hanger, clip, hook, hat stand, stool or peg, filled with the main find's fabric, with finishes on top), `PriceTag`, `LeafMeter`, `Shoppers`, and the studio tile.
+- Motion respects reduced motion (system setting or the in-game toggle).
 
 ## 7. Reuse map
 
-**Engine (`src/engine`, per the studio contract):** `rng`, `rngDraw` (`drawDistinct`); `week`, `dayHours`, calendar `endDay` skeleton and the weekly bill; `standing` (coins, reputation, buzz); offers (`offerCountForBuzz`, `clientIsEligible`, the roll skeleton); difficulty rules; `storyQueue` and `storyVoice`, generic over a per-game `StoryTrigger` union (Thrift-Flip adds `first-stall-day` and `ten-flips`); `criterion` shape and `starsForScore`; reward outcome per difficulty; `trendMarket`; `polygonOverlap`, `triangulate`, `traceAccuracy`, `distanceToOutline`; save envelope and migrations, `actionCheck`.
+**Engine (`src/engine`):** `rng`, `rngDraw`; `week`, `dayHours`; `standing`; `gigBoard` (offers, accept, decline, expiry, lapses, `offerCountForBuzz`, `clientIsOpen`); `difficulty`; `story` and `storyVoice`; `score` (`passMix`, `gatePassed`, `starsForScore`); `reward` (`settleReward`); `upgrades`; `catalog`; geometry (`polygonOverlap`, `placedPolygon`, `rotatedShape`, `traceAccuracy`); `saveEnvelope` and `parse`; `actionCheck`; `profile`.
 
-**Moved to `src/engine/textile/` in this change** (Thrift-Flip is the second user; ADEEVA re-imports from here, and no game imports another game):
+**ADEEVA, imported directly** (Thrift-Flip is the only game allowed to import another game; ESLint enforces the direction):
 
-- Content: `styleTag`, `colour`, `print`, `material`, `trim`, `fabric`, `garmentPart` (skirt, bodice and sleeve parts; the seam profiles `straight`, `gentle`, `curved`, `wavy` become exports), `difficulty`, `trait` (names only).
-- Core: `grainScore` (pieces take `slot?: GarmentSlot`), `rotation`, `piecePolygon` (`placedPolygon`, `polygonBounds`), `piecePlacementIssues` (generalised to rectangle bounds plus obstacle polygons), the `cutCommit` idempotency pattern, `cutTolerance` and `sewBand` (pure functions taking the multipliers as arguments), `seamLine` (`isNeedleOnLine`, `seamLineAt`), `sewing` (`recordSeam`), `seamAccuracy`, `decoration` (pose and scale limits), the `kindFeedback` tone.
-- UI art: `SewingStage`, `SewingNeedle`, `SeamStrip`, `PatternPieceShape`, `GarmentPiece`, `FabricPattern`, `FabricSwatch`, `TrimArt`, `TrimLayer`, `Avatar`. Kit: all of `ui/kit`.
+- Content: `styleTag`, `material`, `trim`, `fabric`, `garmentPart` (skirt, bodice and sleeve parts; the seam profiles are exported as `SEAM_PROFILES`), `garmentSlot`, and the shared "Tight Week" story beat.
+- Core: `grainScore` (pieces with no slot get no bias bonus), `trendMarket`, `seamAccuracy`, `nextSeamProgress` (the seam validation behind ADEEVA's `recordSeam`), the cutting and sewing constants (`BASE_CUT_TOLERANCE_CM`, `BASE_SEW_BAND`, `ASSIST_SEW_WIDENING`, Perfectionist ×1.2), decoration scale limits, and the budget, colours and deadline kind-feedback lines.
+- UI: `TraceMat` (now returns its samples), `PlacedPieceArt`, `PieceThumb`, `PatternPieceShape`, `SewingMachine` (now reports through callbacks and can be played with the keyboard), `SewingStage`, `TrimArt`, `FabricSwatch`, `AssistSwitch`, `clientToSvg`, piece geometry helpers, the new-game `AvatarStep`, `TraitStep`, `DifficultyStep` and stepper (now data-driven), and the story, settings, sewing, trace and new-game styles.
+- Studio and kit: `useGameSession`, `createSlotStore`, profile and look options, settings (with new Assist snip and Assist soak flags), toasts, and every `ui/kit` component.
 
 **New code (`src/games/thrift-flip`):**
 
-- `content/`: `find`, `findFit`, `condition`, `recipe`, `finish`, `client`, `upgrade`, `storyBeat`, `career`.
-- `core/`: `marketRail` (daily roll, ✓ guarantee, buy); `unpick` (pull distance, pops, snags, notion saving, record validation); `clean` (cell grid, moving ticks, fade, restored condition); `scraps`; `panelLayout` (adapter onto the placement checks, 1–2 finds); `polygonArea`; `flipQuality`, `sustainability`, `flipEvaluate`; `stallDay` (fair value, band, outcome); `flipRun`, `reduce`, `gameState`, `save`, `reputationOf`.
-- `ui/`: Stall Hub, Design, Market Rail, Workbench (Unpick, Clean), Finish, Results and Stall Day screens, plus the art in §6.
-- `module.ts`, unit tests per core file (including the fit-table placement test) and `e2e/thrift-flip.spec.ts`, which covers a full Day-1 commission, the Fits badge on the rail, and a two-find flip.
+- `content/`: `career`, `condition`, `find`, `findFit`, `recipe`, `finish`, `client`, `upgrade`, `storyBeat`, `trait`, `difficulty`, `hint`.
+- `core/`: `ownedFind` (stain and worn-spot rolls), `marketRail`, `market`, `findChoice`, `design`, `designChoice`, `flipPieces`, `panelBoard`, `placement`, `autoLayout`, `layout`, `polygonArea`, `unpick`, `clean`, `restoration`, `cutCommit`, `sewing`, `finishing`, `scrap`, `flipTags`, `flipQuality`, `sustainability`, `criterion`, `kindFeedback`, `flipEvaluate`, `rewards`, `delivery`, `rackPiece`, `stallDay`, `stallCalendar`, `calendar`, `offers`, `brief`, `runLifecycle`, `stageReadiness`, `stageNavigation`, `flipStage`, `flipRun`, `runUpdate`, `storyQueue`, `trendPreview`, `tolerance`, `dayHours`, `upgrades`, `checklist`, `newGame`, `gameState`, `action`, `reduce`, save (`save`, `saveMigrations`, `gameStateParser`, `flipRunParser`, `briefParser`, `resultParsers`, `idParsers`, `taggedParser`), `testPlaythrough` and `index`.
+- `ui/`: `ThriftFlipGame`, routes and slots, theme, the art in §6, and the title, new game, hub, flip steps (brief, design, market, unpick, clean, layout, cut, sew, finish, review, results), Stall Day, story and settings screens.
+- `module.ts` (`reputationOf` reads the raw save and counts reputation above the career's start), a unit test per rule (including the fit-table placement test), and `e2e/thrift-flip/order.spec.ts` (a new game through one order with a real drag or trace in every mini-game, results, save, reload and continue, at 1280×800 and 820×1180), `stallDay.spec.ts` and `studio.spec.ts`.
+- The parent page shows this game's note: "This game does not teach real sewing, washing or tool use."
 
 ## 8. Safety notes for this theme
 

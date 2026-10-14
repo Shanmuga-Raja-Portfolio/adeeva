@@ -101,14 +101,14 @@ export function SewStage(props: StageProps) {
         {active !== undefined && fabric !== undefined ? (
           <SewingMachine
             key={active.seam.id}
-            seamId={active.seam.id}
             seamName={active.seam.name}
             profile={active.seam.profile}
             fabric={fabric}
             band={sewBand(state, fabric.material, settings.assistSew)}
             stored={stored}
             assisted={settings.assistSew}
-            dispatch={dispatch}
+            onRecord={(sample) => dispatch({ type: "recordSeam", seamId: active.seam.id, ...sample })}
+            onReset={() => dispatch({ type: "resetSeam", seamId: active.seam.id })}
             onNext={nextOpen !== undefined ? () => setPicked(nextOpen.seam.id) : null}
           />
         ) : null}

@@ -1,0 +1,209 @@
+.tf-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.tf-awning {
+  display: block;
+  width: 100%;
+  height: 46px;
+  filter: drop-shadow(0 4px 4px rgba(91, 58, 30, 0.18));
+}
+
+.tf-bunting {
+  display: block;
+  width: 100%;
+  height: 32px;
+}
+
+.tf-tag {
+  --tf-tilt: 0deg;
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  min-width: 0;
+  transform: rotate(var(--tf-tilt));
+  transform-origin: 8% 50%;
+  filter: drop-shadow(0 3px 4px rgba(91, 58, 30, 0.2));
+}
+
+.tf-tag__body {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-3) var(--space-4) var(--space-3) calc(var(--space-6) + 6px);
+  clip-path: polygon(22px 0, 100% 0, 100% 100%, 22px 100%, 0 50%);
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(100deg, rgba(160, 122, 82, 0.07) 0 2px, transparent 2px 6px), var(--tf-kraft);
+}
+
+.tf-tag--cream .tf-tag__body {
+  background:
+    repeating-linear-gradient(100deg, rgba(160, 122, 82, 0.05) 0 2px, transparent 2px 6px), var(--tf-cream);
+}
+
+.tf-tag--mint .tf-tag__body {
+  background: var(--tf-mint-soft);
+}
+
+.tf-tag--tangerine .tf-tag__body {
+  background: var(--tf-tangerine-soft);
+}
+
+.tf-tag__hole {
+  position: absolute;
+  z-index: 1;
+  left: 16px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: inset 0 1px 2px rgba(91, 58, 30, 0.45);
+  border: 1.5px solid var(--tf-twine);
+}
+
+.tf-tag__twine {
+  position: absolute;
+  z-index: 2;
+  left: -6px;
+  top: -34px;
+  width: 30px;
+  height: 46px;
+  pointer-events: none;
+}
+
+.tf-leaf-meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tf-leaf-meter__value {
+  margin-left: var(--space-2);
+  font-family: var(--font-display);
+  color: var(--tf-mint-deep);
+}
+
+.tf-stain__cell {
+  transition: opacity 260ms var(--ease-out);
+}
+
+.tf-bubble {
+  fill: rgba(255, 255, 255, 0.85);
+  stroke: rgba(143, 207, 178, 0.9);
+  stroke-width: 0.25;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tf-float-up 900ms ease-out infinite;
+}
+
+.tf-sparkle--pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tf-pop 420ms var(--ease-out) both;
+}
+
+.tf-find-glint {
+  animation: tf-twinkle 2.4s ease-in-out infinite;
+}
+
+.tf-wordmark {
+  position: relative;
+  display: inline-grid;
+  justify-items: start;
+}
+
+.tf-wordmark__word {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+  align-items: baseline;
+  gap: 0 6px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.6vw, 72px);
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.tf-wordmark__thrift {
+  color: var(--tf-denim-deep);
+  text-shadow: 3px 3px 0 var(--tf-kraft);
+}
+
+.tf-wordmark__dash {
+  color: var(--tf-twine);
+}
+
+.tf-wordmark__flip {
+  color: var(--tf-tangerine);
+  text-shadow: 3px 3px 0 #fff1df;
+  display: inline-block;
+  transform: rotate(-4deg);
+  animation: tf-sway 5s ease-in-out infinite;
+}
+
+.tf-wordmark__studio {
+  flex-basis: 100%;
+  margin-top: var(--space-2);
+  padding: 4px 14px;
+  width: max-content;
+  border-radius: var(--radius-pill);
+  background: var(--tf-denim);
+  color: var(--tf-cream);
+  font-size: max(var(--text-sm), 0.26em);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+.tf-wordmark__tag {
+  position: absolute;
+  right: -78px;
+  top: -10px;
+  width: 84px;
+  transform: rotate(12deg);
+  animation: tf-sway 4.2s ease-in-out infinite;
+  transform-origin: 6% 20%;
+}
+
+.tf-wordmark__tagline {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-lg);
+  color: var(--ink-soft);
+}
+
+.tf-wordmark--compact .tf-wordmark__word {
+  font-size: 26px;
+}
+
+.tf-wordmark--compact .tf-wordmark__studio {
+  display: none;
+}
+
+.ad-new-game__header .tf-wordmark__tag {
+  display: none;
+}
+
+.tf-wordmark--compact .tf-wordmark__tag {
+  width: 40px;
+  right: -40px;
+  top: -8px;
+}
+
+.tf-shoppers {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tf-shopper--busy {
+  transform-box: fill-box;
+  animation: tf-sway 2.8s ease-in-out infinite;
+}

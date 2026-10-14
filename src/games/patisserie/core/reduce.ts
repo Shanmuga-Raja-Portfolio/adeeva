@@ -14,9 +14,10 @@ import { abandonRun, startOrder, startTray } from "./runLifecycle";
 import { assignStack, fill } from "./stack";
 import { goToStage } from "./stageNavigation";
 import { recordStir } from "./stir";
-import { markBeatSeen } from "./storyQueue";
+import { markBeatSeen } from "../../../engine/story";
 import { addTopping, moveTopping, removeTopping } from "./toppingPlacement";
-import { buyUpgrade } from "./upgrades";
+import { buyUpgrade } from "../../../engine/upgrades";
+import { knownUpgrade, storyBeatById } from "./catalog";
 import { commitBatch, crackEgg, recordWeigh } from "./weigh";
 
 export function reduce(state: GameState, action: Action): GameState {
@@ -102,10 +103,10 @@ export function reduce(state: GameState, action: Action): GameState {
     case "workShift":
       return workShift(state);
     case "buyUpgrade":
-      return buyUpgrade(state, action.upgradeId);
+      return buyUpgrade(state, knownUpgrade(action.upgradeId));
     case "setGuide":
       return setGuide(state, action.on);
     case "markBeatSeen":
-      return markBeatSeen(state, action.beatId);
+      return markBeatSeen(state, action.beatId, storyBeatById);
   }
 }

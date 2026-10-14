@@ -13,6 +13,8 @@ export interface PatternPieceDef {
   grain: "straight" | "bias-friendly";
 }
 
+export type PieceOutline = Pick<PatternPieceDef, "id" | "name" | "shape" | "grain">;
+
 export interface SeamDef {
   id: string;
   name: string;
@@ -28,10 +30,14 @@ export interface GarmentPartDef {
   seams: readonly SeamDef[];
 }
 
-const gentle = [0, 0.1, 0.2, 0.15, 0, -0.15, -0.2, -0.1, 0, 0.1, 0.15, 0];
-const curved = [0, 0.3, 0.55, 0.7, 0.6, 0.35, 0, -0.35, -0.6, -0.7, -0.55, -0.3, 0];
-const straight = [0, 0.05, 0, -0.05, 0, 0.05, 0, -0.05, 0];
-const wavy = [0, 0.45, 0, -0.45, 0, 0.45, 0, -0.45, 0, 0.45, 0];
+export const SEAM_PROFILES = {
+  gentle: [0, 0.1, 0.2, 0.15, 0, -0.15, -0.2, -0.1, 0, 0.1, 0.15, 0],
+  curved: [0, 0.3, 0.55, 0.7, 0.6, 0.35, 0, -0.35, -0.6, -0.7, -0.55, -0.3, 0],
+  straight: [0, 0.05, 0, -0.05, 0, 0.05, 0, -0.05, 0],
+  wavy: [0, 0.45, 0, -0.45, 0, 0.45, 0, -0.45, 0, 0.45, 0],
+} as const satisfies Readonly<Record<string, readonly number[]>>;
+
+const { gentle, curved, straight, wavy } = SEAM_PROFILES;
 
 const bodiceSeams: readonly SeamDef[] = [
   { id: "side-seams", name: "Side seams", profile: gentle },

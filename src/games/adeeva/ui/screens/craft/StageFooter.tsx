@@ -27,7 +27,7 @@ export function StageFooter({ state, run, dispatch, onExit, before = [], hint }:
   if (next === undefined) return null;
   const check = canAdvance(state);
   const hours = stageCompletionHours(run.stage, state.studio.assistantHired);
-  const hoursReason = hoursShortfallReason(state, hours);
+  const hoursReason = hoursShortfallReason(state.calendar, hours);
   const otherReasons = check.reasons.filter((reason) => reason !== hoursReason);
   const advance = (event: ClickLike) => {
     once(event, ...before, { type: "goToStage", stage: next });

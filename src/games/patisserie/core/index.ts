@@ -82,6 +82,6 @@ export {
 } from "./stir";
 export { currentBeat } from "./storyQueue";
 export { availableToppings, CAKE_CANVAS, ROTATION_STEP } from "./toppingPlacement";
-export { upgradePurchaseIssues } from "./upgrades";
+export { upgradePurchaseIssues } from "../../../engine/upgrades";
 export { batchMix, batchReady } from "./weigh";
 export { pourCap, pourFlow, scoopBackGrams, settleGrams, weighAccuracy, weighBand } from "./weighAccuracy";

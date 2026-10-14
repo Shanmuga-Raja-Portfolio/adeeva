@@ -1,10 +1,10 @@
-import type { FabricDef } from "../../content/fabric";
+import type { Cloth } from "../../../../ui/art/cloth/Cloth";
 import { FabricPattern, fabricFill, fabricSheenFill } from "../../../../ui/art/cloth/FabricPattern";
 import { fabricLook } from "../../../../ui/art/cloth/fabricLook";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 
 export interface FabricSwatchProps {
-  fabric: FabricDef;
+  fabric: Cloth & { readonly name: string };
   size?: number | undefined;
   selected?: boolean | undefined;
   locked?: boolean | undefined;

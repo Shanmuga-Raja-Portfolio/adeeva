@@ -1,7 +1,7 @@
 import { PART_CATEGORIES } from "../content/garmentPart";
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { fabricById, partById } from "./catalog";
-import { hoursShortfallReason } from "./dayHours";
+import { hoursShortfallReason } from "../../../engine/dayHours";
 import { fabricsNeedingCut } from "./designFabrics";
 import type { DressRun } from "./dressRun";
 import type { GameState, Inventory } from "./gameState";
@@ -77,7 +77,7 @@ export function canAdvance(state: GameState): ActionCheck {
   const issues = stageCompletionIssues(run, state.inventory);
   if (issues.length > 0) return actionCheck(issues);
   const hoursReason = hoursShortfallReason(
-    state,
+    state.calendar,
     stageCompletionHours(run.stage, state.studio.assistantHired),
   );
   return actionCheck(hoursReason === null ? [] : [hoursReason]);

@@ -5,9 +5,17 @@ export interface AppSettings {
   readonly reducedMotion: boolean;
   readonly assistCut: boolean;
   readonly assistSew: boolean;
+  readonly assistUnpick: boolean;
+  readonly assistClean: boolean;
 }
 
-export const DEFAULT_SETTINGS: AppSettings = { reducedMotion: false, assistCut: false, assistSew: false };
+export const DEFAULT_SETTINGS: AppSettings = {
+  reducedMotion: false,
+  assistCut: false,
+  assistSew: false,
+  assistUnpick: false,
+  assistClean: false,
+};
 
 const SETTINGS_KEY = "adeeva.settings";
 
@@ -23,6 +31,8 @@ export function readSettings(): AppSettings {
     reducedMotion: flag(source, "reducedMotion"),
     assistCut: flag(source, "assistCut"),
     assistSew: flag(source, "assistSew"),
+    assistUnpick: flag(source, "assistUnpick"),
+    assistClean: flag(source, "assistClean"),
   };
 }
 

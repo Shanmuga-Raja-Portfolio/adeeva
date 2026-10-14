@@ -1,18 +1,11 @@
-import { clientIsOpen, freeClients, rollOffers as rollBoardOffers } from "../../../engine/gigBoard";
+import { clientIsOpen, freeClients } from "../../../engine/gigBoard";
+import { rollStateOffers } from "../../../engine/gigBoardState";
 import { CLIENTS, type ClientDef } from "../content/client";
-import type { StoryTrigger } from "../content/storyBeat";
-import type { TraitId } from "../../../engine/trait";
+import { TRAIT_STORY_TRIGGERS } from "../../../engine/trait";
 import { rollClientBrief } from "./brief";
 import { clientById, difficultyById } from "./catalog";
 import type { GameState, Offer } from "./gameState";
 import { queueStoryTrigger } from "./storyQueue";
-
-export const TRAIT_STORY_TRIGGERS: Readonly<Record<TraitId, StoryTrigger>> = {
-  dreamer: "trait-dreamer",
-  perfectionist: "trait-perfectionist",
-  trendsetter: "trait-trendsetter",
-  charmer: "trait-charmer",
-};
 
 export interface OfferView {
   readonly offer: Offer;
@@ -37,14 +30,10 @@ export function offersFor(state: GameState): OfferView[] {
 
 export function rollOffers(state: GameState): GameState {
   const minQualityBonus = difficultyById(state.profile.difficulty).minQualityBonus;
-  const rolled = rollBoardOffers(state.gigs, eligibleClients(state), {
-    day: state.calendar.day,
-    buzz: state.buzz,
-    rng: state.rng,
-    rollBrief: (client, day, rng) => rollClientBrief(client, day, rng, minQualityBonus),
-  });
-  if (rolled.board === state.gigs) return state;
-  const next: GameState = { ...state, rng: rolled.rng, gigs: rolled.board };
-  const gatedArrived = rolled.arrived.some((client) => client.traitGate === state.profile.trait);
-  return gatedArrived ? queueStoryTrigger(next, TRAIT_STORY_TRIGGERS[state.profile.trait]) : next;
+  return rollStateOffers(
+    state,
+    eligibleClients(state),
+    (client, day, rng) => rollClientBrief(client, day, rng, minQualityBonus),
+    (next, trait) => queueStoryTrigger(next, TRAIT_STORY_TRIGGERS[trait]),
+  );
 }

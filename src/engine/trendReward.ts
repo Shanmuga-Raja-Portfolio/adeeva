@@ -13,6 +13,13 @@ export interface TrendReward extends RewardCore {
   readonly trendMatches: readonly StyleTag[];
 }
 
+export interface TrendRewardLabels {
+  readonly trend: string;
+  readonly dreamer: string;
+}
+
+const DEFAULT_LABELS: TrendRewardLabels = { trend: "Trend bonus", dreamer: "Dreamer flair" };
+
 export interface TrendRewardTerms {
   readonly passed: boolean;
   readonly score: number;
@@ -24,6 +31,8 @@ export interface TrendRewardTerms {
   readonly hotTags: readonly StyleTag[];
   readonly tags: readonly StyleTag[];
   readonly colourCount: number;
+  readonly labels?: TrendRewardLabels | undefined;
+  readonly extraBuzz?: number | undefined;
 }
 
 export function dreamerFlair(colourCount: number, tags: readonly StyleTag[]): boolean {
@@ -32,12 +41,13 @@ export function dreamerFlair(colourCount: number, tags: readonly StyleTag[]): bo
 
 function bonusLines(terms: TrendRewardTerms, matches: number): RewardLine[] {
   const { fee, trait } = terms;
+  const labels = terms.labels ?? DEFAULT_LABELS;
   const lines: RewardLine[] = [];
-  if (matches > 0) lines.push({ label: "Trend bonus", amount: Math.round(fee * TREND_FEE_BONUS) });
+  if (matches > 0) lines.push({ label: labels.trend, amount: Math.round(fee * TREND_FEE_BONUS) });
   if (trait === "trendsetter" && matches > 0)
     lines.push({ label: "Trendsetter eye", amount: Math.round(fee * TRENDSETTER_FEE_PER_MATCH * matches) });
   if (trait === "dreamer" && dreamerFlair(terms.colourCount, terms.tags))
-    lines.push({ label: "Dreamer flair", amount: Math.round(fee * DREAMER_FEE_BONUS) });
+    lines.push({ label: labels.dreamer, amount: Math.round(fee * DREAMER_FEE_BONUS) });
   return lines;
 }
 
@@ -52,7 +62,7 @@ export function settleTrendReward(terms: TrendRewardTerms): TrendReward {
     difficulty: terms.difficulty,
     trait: terms.trait,
     bonusLines: bonusLines(terms, matches.length),
-    extraBuzz: matches.length * TREND_BUZZ_PER_MATCH,
+    extraBuzz: matches.length * TREND_BUZZ_PER_MATCH + (terms.extraBuzz ?? 0),
   });
   return { ...core, trendMatches: core.outcome === "pass" ? matches : [] };
 }

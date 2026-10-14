@@ -1,0 +1,74 @@
+import { Button } from "../../../../../ui/kit/Button";
+import { Icon } from "../../../../../ui/kit/IconSet";
+import { useDispatchOnce, type ClickLike } from "../../../../../ui/kit/useDispatchOnce";
+import {
+  canAdvance,
+  FLIP_STAGES,
+  hoursShortfallReason,
+  runStageHours,
+  stageIndex,
+  type Action,
+} from "../../../core";
+import { ADVANCE_LABELS } from "./stageNames";
+import type { StageProps } from "./stageProps";
+
+export interface StageFooterProps extends StageProps {
+  readonly before?: readonly Action[] | undefined;
+  readonly hint?: string | undefined;
+}
+
+export function StageFooter({ state, run, dispatch, onExit, before = [], hint }: StageFooterProps) {
+  const once = useDispatchOnce(state, dispatch);
+  const next = FLIP_STAGES[stageIndex(run.stage) + 1];
+  if (next === undefined || next === "done") return null;
+  const check = canAdvance(state);
+  const hours = runStageHours(run);
+  const hoursReason = hoursShortfallReason(state.calendar, hours);
+  const otherReasons = check.reasons.filter((reason) => reason !== hoursReason);
+  const advance = (event: ClickLike) => {
+    once(event, ...before, { type: "goToStage", stage: next });
+  };
+  return (
+    <footer className="tf-footer">
+      {hoursReason !== null && otherReasons.length === 0 ? (
+        <div className="tf-footer__notice" role="status">
+          <Icon name="clock" size={22} />
+          <span>
+            <strong>Out of hours for today.</strong> {hoursReason} Your flip waits on the bench.
+          </span>
+          <Button variant="secondary" onClick={onExit}>
+            Back to the stall
+          </Button>
+        </div>
+      ) : null}
+      <div className="tf-footer__row">
+        <div className="tf-footer__status" aria-live="polite">
+          {otherReasons.length > 0 ? (
+            <ul className="tf-footer__reasons">
+              {otherReasons.slice(0, 3).map((reason) => (
+                <li key={reason}>{reason}</li>
+              ))}
+              {otherReasons.length > 3 ? <li>…and {otherReasons.length - 3} more.</li> : null}
+            </ul>
+          ) : (
+            <span className="tf-footer__ready">{hint ?? "All set for the next step."}</span>
+          )}
+        </div>
+        <Button
+          size="lg"
+          onClick={advance}
+          disabled={!check.ok}
+          disabledReason={check.ok ? undefined : check.reasons[0]}
+          data-testid="advance-stage"
+        >
+          {ADVANCE_LABELS[run.stage]}
+          {hours > 0 ? (
+            <span className="tf-footer__hours">
+              <Icon name="clock" size={14} /> {hours} h
+            </span>
+          ) : null}
+        </Button>
+      </div>
+    </footer>
+  );
+}

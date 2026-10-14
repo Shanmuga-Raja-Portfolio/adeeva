@@ -1,5 +1,7 @@
 import type { Point } from "../../../../../engine/geometry/point";
-import { BOLT_WIDTH_CM, polygonBounds, ROTATIONS, rotatedShape, type Rotation } from "../../../core";
+import { BOLT_WIDTH_CM } from "../../../core/piecePlacementIssues";
+import { polygonBounds, rotatedShape } from "../../../../../engine/geometry/polygonPlacement";
+import { ROTATIONS, type Rotation } from "../../../../../engine/geometry/rotation";
 
 export interface PieceSize {
   readonly width: number;

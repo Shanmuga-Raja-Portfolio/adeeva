@@ -2,7 +2,7 @@ import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { dreamerFlair } from "../../../engine/trendReward";
 import { runKind, type BakeRun } from "./bakeRun";
 import { bakeTags } from "./bakeTags";
-import { spendHours } from "./dayHours";
+import { spendHours } from "../../../engine/dayHours";
 import type { GameState } from "./gameState";
 import { leaveHours } from "./hourCost";
 import { applyIcing } from "./icing";

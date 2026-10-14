@@ -1,21 +1,14 @@
 import { adeevaModule } from "../games/adeeva/module";
 import { patisserieModule } from "../games/patisserie/module";
+import { thriftFlipModule } from "../games/thrift-flip/module";
 import { InteriorTileArt } from "../ui/art/tiles/InteriorTileArt";
 import { JewelleryTileArt } from "../ui/art/tiles/JewelleryTileArt";
-import { ThriftFlipTileArt } from "../ui/art/tiles/ThriftFlipTileArt";
 import { WoodTileArt } from "../ui/art/tiles/WoodTileArt";
 import type { GameId, GameModule, StudioGame } from "./gameModule";
 
 export const GAMES: readonly StudioGame[] = [
   adeevaModule,
-  {
-    status: "workshop",
-    id: "thrift-flip",
-    title: "Thrift-Flip Studio",
-    tagline: "Find secondhand treasures, unpick and redesign them, then resell them at your own stall.",
-    ages: "8+",
-    tileArt: ThriftFlipTileArt,
-  },
+  thriftFlipModule,
   patisserieModule,
   {
     status: "workshop",

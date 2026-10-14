@@ -16,7 +16,7 @@ export function UpgradesPanel({ state, onBuy }: UpgradesPanelProps) {
       <ul className="pa-upgrades">
         {UPGRADES.map((upgrade) => {
           const owned = state.upgrades.includes(upgrade.id);
-          const issue = upgradePurchaseIssues(state, upgrade.id)[0];
+          const issue = upgradePurchaseIssues(state, upgrade)[0];
           return (
             <li key={upgrade.id} className={owned ? "pa-upgrade pa-upgrade--owned" : "pa-upgrade"}>
               <div>

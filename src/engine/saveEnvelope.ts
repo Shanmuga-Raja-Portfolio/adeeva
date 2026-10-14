@@ -51,3 +51,7 @@ export function parseSaveWith<S>(json: string, codec: SaveCodec<S>): SaveParseRe
   if (!outcome.ok) return { ok: false, error: `The save file is damaged (${outcome.error}).` };
   return { ok: true, state: outcome.value };
 }
+
+export function serializeSave<S>(state: S): string {
+  return JSON.stringify(state);
+}

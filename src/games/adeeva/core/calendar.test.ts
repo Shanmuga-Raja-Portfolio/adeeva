@@ -6,7 +6,7 @@ import type { GameState } from "./gameState";
 import { reduce } from "./reduce";
 import { assistantHireCost } from "./studio";
 import { dispatchAll, newTestGame, withActiveGig } from "./testPlaythrough";
-import { visibleNextTrends } from "./trendPreview";
+import { visibleNextTrends } from "../../../engine/trendMarket";
 
 function endDays(state: GameState, count: number): GameState {
   return Array.from({ length: count }).reduce<GameState>((current) => endDay(current), state);

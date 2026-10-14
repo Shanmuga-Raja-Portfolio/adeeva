@@ -9,9 +9,7 @@ export default defineConfig({
     port,
     strictPort: true,
     watch: { ignored: ["**/test-results*/**", "**/playwright-report/**"] },
-    warmup: {
-      clientFiles: ["./src/main.tsx", "./src/games/*/ui/*Game.tsx", "./src/games/*/ui/screens/*/*Flow.tsx"],
-    },
+    warmup: { clientFiles: ["./src/main.tsx", "./src/games/*/ui/**/*.tsx", "./src/studio/*.tsx"] },
   },
   test: {
     include: ["src/**/*.test.ts"],

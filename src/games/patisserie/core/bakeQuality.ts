@@ -1,5 +1,6 @@
 import { average } from "../../../engine/average";
 import { followAccuracy } from "../../../engine/followRecord";
+import { roundShare as share } from "../../../engine/roundShare";
 import type { MixDef } from "../content/mix";
 import { designMixes } from "./bakeNeeds";
 import type { BakeRun } from "./bakeRun";
@@ -28,10 +29,6 @@ export interface QualityBreakdown {
   readonly pipe: number;
   readonly flavourFit: number;
   readonly quality: number;
-}
-
-function share(value: number): number {
-  return Math.round(value * 1000) / 1000;
 }
 
 function batchMixes(run: BakeRun): { readonly mix: MixDef; readonly batch: number }[] {

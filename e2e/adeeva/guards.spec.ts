@@ -316,3 +316,27 @@ test("turning Assist sew on mid-seam keeps the machine running and marks the sea
     .poll(() => savedState(page, (state) => state.activeRun?.seams[seamId]))
     .toMatchObject({ progress: 1, assisted: true });
 });
+
+test("the sewing bed sews from the keyboard and stops when the page is hidden", async ({ page }) => {
+  await openTable(page, expectStage(assembleToSew(cutAndRested()), "sew"));
+  const bed = page.getByRole("button", { name: /hold Space, steer with the arrow keys/ });
+  const seamId = await page.locator(".ad-seam-item[aria-pressed='true']").getAttribute("data-seam");
+  if (seamId === null) throw new Error("No seam is picked");
+  await bed.focus();
+  await page.keyboard.press("ArrowLeft");
+  await page.keyboard.down("Space");
+  await expect.poll(async () => Number(await bed.getAttribute("data-progress"))).toBeGreaterThan(0.1);
+  await page.evaluate(() => {
+    Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "hidden" });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect
+    .poll(() => savedState(page, (state) => state.activeRun?.seams[seamId]?.progress ?? 0))
+    .toBeGreaterThan(0.1);
+  const stopped = await bed.getAttribute("data-progress");
+  await page.evaluate(async () => {
+    for (let frame = 0; frame < 30; frame += 1) await new Promise((done) => requestAnimationFrame(done));
+  });
+  await expect(bed).toHaveAttribute("data-progress", stopped ?? "");
+  await page.keyboard.up("Space");
+});

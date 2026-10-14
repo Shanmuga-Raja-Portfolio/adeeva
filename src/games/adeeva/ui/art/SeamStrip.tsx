@@ -1,5 +1,5 @@
-import type { FabricDef } from "../../content/fabric";
-import { seamLineAt } from "../../core";
+import type { Cloth } from "../../../../ui/art/cloth/Cloth";
+import { seamLineAt } from "../../core/seamLine";
 import { darken } from "../../../../ui/art/colourMix";
 import { FabricPattern, fabricFill, fabricSheenFill } from "../../../../ui/art/cloth/FabricPattern";
 import { fabricLook } from "../../../../ui/art/cloth/fabricLook";
@@ -21,7 +21,7 @@ export interface SeamStripProps {
   bandWidth: number;
   offsetX?: number | undefined;
   sewnUntil?: number | undefined;
-  fabric?: FabricDef | undefined;
+  fabric?: Cloth | undefined;
   threadColour?: string | undefined;
 }
 

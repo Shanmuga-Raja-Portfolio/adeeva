@@ -9,7 +9,8 @@ export { CRITERION_IDS, CRITERION_WEIGHTS, type Criterion, type CriterionId } fr
 export { canCommitCut } from "./cutCommit";
 export { CM_PER_METRE_STEP, cutMetres, layoutLengthCm, METRE_STEP, metresForLength } from "./cutMetres";
 export { BASE_CUT_TOLERANCE_CM, cutTolerance } from "./cutTolerance";
-export { hoursPerDay, hoursShortfallReason } from "./dayHours";
+export { hoursPerDay } from "./dayHours";
+export { hoursShortfallReason } from "../../../engine/dayHours";
 export { BASE_DAY_HOURS } from "../../../engine/dayHours";
 export {
   availableTrims,
@@ -131,7 +132,7 @@ export {
   traceAccuracy,
 } from "../../../engine/geometry/traceAccuracy";
 export { trendMatches, type TrendState } from "../../../engine/trendMarket";
-export { visibleNextTrends } from "./trendPreview";
+export { visibleNextTrends } from "../../../engine/trendMarket";
 export {
   careerById,
   clientById,

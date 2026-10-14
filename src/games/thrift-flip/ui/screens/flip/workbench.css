@@ -1,0 +1,243 @@
+.tf-workbench {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.tf-workbench__top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.tf-workbench__lines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tf-line-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 2px dashed var(--paper-edge);
+  background: var(--card);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tf-line-chip[aria-selected="true"] {
+  border-style: solid;
+  border-color: var(--tf-denim);
+}
+
+.tf-line-chip--done {
+  background: var(--tf-mint-soft);
+  color: var(--tf-mint-deep);
+}
+
+.tf-workbench__table {
+  position: relative;
+  padding: var(--space-3);
+  border-radius: 24px;
+  background: repeating-linear-gradient(0deg, rgba(160, 122, 82, 0.12) 0 2px, transparent 2px 22px), #d8b98d;
+  border: 6px solid #a07a52;
+  box-shadow:
+    inset 0 2px 10px rgba(59, 42, 28, 0.25),
+    var(--shadow-md);
+}
+
+.tf-workbench__status {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
+.tf-bench {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 58vh;
+  border-radius: 14px;
+  touch-action: none;
+  cursor: grab;
+}
+
+.tf-bench:active {
+  cursor: grabbing;
+}
+
+.tf-stitch:focus-visible {
+  outline: none;
+}
+
+.tf-stitch:focus-visible .tf-stitch__hit {
+  stroke: var(--tf-tangerine);
+  stroke-width: 0.3;
+  fill: rgba(240, 138, 60, 0.2);
+}
+
+.tf-stitch--held path {
+  filter: drop-shadow(0 0 0.4px #fff);
+}
+
+.tf-stitch__curl {
+  transform-box: fill-box;
+  animation: tf-float-up 700ms ease-out both;
+}
+
+.tf-stitch__notion--saved {
+  transform-box: fill-box;
+  animation: tf-float-up 900ms ease-out both;
+}
+
+.tf-pull path {
+  stroke: #8a8f99;
+}
+
+.tf-pull circle {
+  fill: #8a8f99;
+}
+
+.tf-bench--good .tf-pull path,
+.tf-bench--good .tf-pull circle {
+  stroke: var(--tf-mint-deep);
+  fill: var(--tf-mint-deep);
+}
+
+.tf-bench--good .tf-pull path {
+  fill: none;
+}
+
+.tf-bench--snag .tf-pull path {
+  stroke: #c0392b;
+  fill: none;
+}
+
+.tf-bench--snag .tf-pull circle {
+  fill: #c0392b;
+}
+
+.tf-burst {
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-lg);
+  pointer-events: none;
+  animation: tf-pop 420ms var(--ease-out) both;
+  box-shadow: var(--shadow-sm);
+}
+
+.tf-burst--pop {
+  background: var(--tf-mint);
+  color: #12382a;
+}
+
+.tf-burst--saved {
+  background: #f6d36b;
+  color: #4a3510;
+}
+
+.tf-burst--snag {
+  background: #f2a08c;
+  color: #5a1a0e;
+}
+
+.tf-burst--tiny {
+  background: var(--card);
+  color: var(--ink-soft);
+}
+
+.tf-scrub {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+}
+
+.tf-scrub__svg {
+  display: block;
+  width: min(100%, 520px);
+  aspect-ratio: 1;
+  height: auto;
+  max-height: 56vh;
+  border-radius: 18px;
+  touch-action: none;
+  cursor: crosshair;
+  box-shadow: 0 6px 16px rgba(59, 42, 28, 0.25);
+}
+
+.tf-gauge {
+  position: relative;
+  width: min(100%, 420px);
+  height: 14px;
+  border-radius: var(--radius-pill);
+  background: #f2a08c;
+  overflow: visible;
+}
+
+.tf-gauge__gentle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, #d5efe3, var(--tf-mint));
+}
+
+.tf-gauge__needle {
+  position: absolute;
+  top: -5px;
+  width: 6px;
+  height: 24px;
+  margin-left: -3px;
+  border-radius: 3px;
+  background: var(--tf-denim-deep);
+  transition: left 90ms linear;
+}
+
+.tf-gauge__needle--harsh {
+  background: #c0392b;
+}
+
+.tf-scrub__tip {
+  margin: 0;
+  font-weight: 700;
+  color: var(--tf-cream);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.tf-scrub__tip--harsh {
+  color: #fff1ec;
+}
+
+.tf-soaked {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  border-radius: 18px;
+  background: rgba(255, 248, 236, 0.92);
+  text-align: center;
+}
+
+.tf-soaked__tub {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #ffffff, var(--tf-mint));
+  color: var(--tf-mint-deep);
+  animation: tf-pop 600ms var(--ease-out) both;
+}

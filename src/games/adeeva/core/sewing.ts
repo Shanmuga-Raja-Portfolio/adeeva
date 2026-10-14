@@ -9,7 +9,7 @@ import { requiredSeam } from "./requiredSeams";
 export const MIN_TICKS_PER_SEAM = 60;
 export const MAX_TICKS_PER_SEAM = 1200;
 
-const SEAM_BOUNDS: FollowBounds = {
+export const SEAM_BOUNDS: FollowBounds = {
   units: 1,
   minTicksPerUnit: MIN_TICKS_PER_SEAM,
   maxTicksPerUnit: MAX_TICKS_PER_SEAM,

@@ -2,7 +2,7 @@ import type { FabricDef } from "../content/fabric";
 import type { TrimId } from "../content/trim";
 import { fabricById, isTrimId, trimById } from "./catalog";
 import { METRE_STEP } from "./cutMetres";
-import { hoursShortfallReason, spendHours } from "./dayHours";
+import { hoursShortfallReason, spendHours } from "../../../engine/dayHours";
 import type { GameState } from "./gameState";
 import { SHOP_VISIT_HOURS } from "./hourCost";
 
@@ -38,7 +38,7 @@ export function isValidMetres(metres: number): boolean {
 
 export function shopVisitIssue(state: GameState): string | null {
   if (state.calendar.shopOpen) return "The shop is already open.";
-  return hoursShortfallReason(state, SHOP_VISIT_HOURS);
+  return hoursShortfallReason(state.calendar, SHOP_VISIT_HOURS);
 }
 
 export function openShop(state: GameState): GameState {

@@ -1,6 +1,7 @@
 import { STYLE_TAGS, type StyleTag } from "./styleTag";
 import type { RngState } from "./rng";
 import { drawDistinct } from "./rngDraw";
+import type { TraitId } from "./trait";
 
 export const HOT_TAGS_PER_WEEK = 2;
 export const TREND_FEE_BONUS = 0.1;
@@ -28,4 +29,11 @@ export function advanceTrendWeek(trends: TrendState, rng: RngState): [TrendState
 
 export function trendMatches(tags: readonly StyleTag[], hotTags: readonly StyleTag[]): StyleTag[] {
   return hotTags.filter((tag) => tags.includes(tag));
+}
+
+export function visibleNextTrends(state: {
+  readonly profile: { readonly trait: TraitId };
+  readonly trends: TrendState;
+}): readonly StyleTag[] | null {
+  return state.profile.trait === "trendsetter" ? state.trends.next : null;
 }

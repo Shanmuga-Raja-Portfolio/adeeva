@@ -1,56 +1,92 @@
 import { TILE_VIEWBOX, TileBackdrop, type TileArtProps } from "./TileBackdrop";
 
+const STRIPES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+const FLAGS = ["#f08a3c", "#8fcfb2", "#3f5d84", "#f6d36b", "#e57a8f", "#8fcfb2", "#f08a3c"];
+
 export function ThriftFlipTileArt({ className }: TileArtProps) {
   return (
     <svg className={className} viewBox={TILE_VIEWBOX} aria-hidden="true" focusable="false">
       <TileBackdrop tint="#9cc7b4" floor="#d9c3a3" />
-      <ellipse cx={120} cy={134} rx={86} ry={7} fill="#2b2230" opacity={0.1} />
-      <path d="M44 132 L44 30 M196 132 L196 30" stroke="#6d5a4a" strokeWidth={4} strokeLinecap="round" />
-      <path d="M38 132 L52 132 M190 132 L204 132" stroke="#6d5a4a" strokeWidth={4} strokeLinecap="round" />
-      <path d="M40 32 L200 32" stroke="#8a7464" strokeWidth={5} strokeLinecap="round" />
-      <g stroke="#7d6f78" strokeWidth={1.6} fill="none" strokeLinecap="round">
-        <path d="M78 32 C78 26 86 26 86 32 L66 46 L98 46 Z" />
-        <path d="M122 32 C122 26 130 26 130 32 L110 46 L142 46 Z" />
-        <path d="M164 32 C164 26 172 26 172 32 L152 46 L184 46 Z" />
+      {STRIPES.map((index) => (
+        <path
+          key={index}
+          d={`M${index * 20} 0 L${index * 20 + 20} 0 L${index * 20 + 20} 18 Q${index * 20 + 10} 27 ${index * 20} 18 Z`}
+          fill={index % 2 === 0 ? "#f08a3c" : "#fff4e2"}
+        />
+      ))}
+      <path d="M0 2 H240" stroke="#b85a17" strokeOpacity={0.35} strokeWidth={2} />
+      <path d="M8 34 Q120 50 232 34" fill="none" stroke="#a07a52" strokeWidth={1} />
+      {FLAGS.map((colour, index) => {
+        const x = 20 + index * 31;
+        const y = 34 + Math.sin(((x - 8) / 224) * Math.PI) * 8;
+        return <path key={x} d={`M${x} ${y} L${x + 16} ${y + 1} L${x + 8} ${y + 13} Z`} fill={colour} />;
+      })}
+      <ellipse cx={120} cy={138} rx={92} ry={7} fill="#2b2230" opacity={0.1} />
+      <path d="M40 136 L40 54 M200 136 L200 54" stroke="#8a6a4a" strokeWidth={4} strokeLinecap="round" />
+      <path d="M34 136 L46 136 M194 136 L206 136" stroke="#8a6a4a" strokeWidth={4} strokeLinecap="round" />
+      <path d="M36 56 L204 56" stroke="#9aa0aa" strokeWidth={5} strokeLinecap="round" />
+      <path d="M36 55 L204 55" stroke="#d4d8de" strokeWidth={1.4} strokeLinecap="round" />
+      <g stroke="#8a8f99" strokeWidth={1.5} fill="none" strokeLinecap="round">
+        <path d="M76 56 q5 0 5 4 q0 3 -5 5 v3" />
+        <path d="M120 56 q5 0 5 4 q0 3 -5 5 v3" />
+        <path d="M164 56 q5 0 5 4 q0 3 -5 5 v3" />
+      </g>
+      <g stroke="#a07a52" strokeWidth={2.4} strokeLinecap="round">
+        <path d="M60 74 L76 66 L92 74" />
+        <path d="M104 74 L120 66 L136 74" />
+        <path d="M148 74 L164 66 L180 74" />
       </g>
       <path
-        d="M68 46 L96 46 L106 64 L98 68 L96 60 L96 104 L68 104 L68 60 L66 68 L58 64 Z"
-        fill="#e9a5b8"
-        stroke="#b4687f"
-        strokeWidth={1.4}
+        d="M62 74 L90 74 L100 92 L92 96 L90 88 L90 124 L62 124 L62 88 L60 96 L52 92 Z"
+        fill="#9fd0ee"
+        stroke="#5c8fb0"
+        strokeWidth={1.2}
         strokeLinejoin="round"
       />
-      <path d="M82 50 L82 100" stroke="#b4687f" strokeWidth={1} strokeDasharray="3 3" />
+      <g stroke="#5c8fb0" strokeWidth={0.8} opacity={0.6}>
+        <path d="M66 74 L66 124 M72 74 L72 124 M78 74 L78 124 M84 74 L84 124" />
+        <path d="M62 82 L90 82 M62 92 L90 92 M62 102 L90 102 M62 112 L90 112" />
+      </g>
+      <path d="M76 76 L76 122" stroke="#f4ecd8" strokeWidth={1} strokeDasharray="2 2" />
       <path
-        d="M110 46 L142 46 L150 108 L102 108 Z"
-        fill="#3f5f8a"
+        d="M106 74 L134 74 L140 98 L154 128 L86 128 L100 98 Z"
+        fill="#f2c4c9"
+        stroke="#c07a86"
+        strokeWidth={1.2}
+        strokeLinejoin="round"
+      />
+      <g fill="#d0587e">
+        <circle cx={110} cy={104} r={2.6} />
+        <circle cx={124} cy={114} r={2.6} />
+        <circle cx={136} cy={102} r={2.6} />
+        <circle cx={118} cy={88} r={2.2} />
+        <circle cx={100} cy={120} r={2.2} />
+        <circle cx={142} cy={122} r={2.2} />
+      </g>
+      <path d="M100 98 Q120 103 140 98" fill="none" stroke="#c07a86" strokeWidth={1} strokeDasharray="2 2" />
+      <path
+        d="M150 74 L178 74 L182 132 L166 132 L164 96 L162 132 L146 132 Z"
+        fill="#3f5d84"
         stroke="#2c4466"
-        strokeWidth={1.4}
+        strokeWidth={1.2}
         strokeLinejoin="round"
       />
-      <path d="M110 46 L126 70 L142 46" fill="#f4ecd8" stroke="#2c4466" strokeWidth={1.2} />
-      <g stroke="#f4ecd8" strokeWidth={1} strokeDasharray="2.5 2.5" opacity={0.8}>
-        <path d="M106 88 L146 88" />
-        <path d="M126 74 L126 106" />
+      <path d="M146 82 L182 82" stroke="#f4ecd8" strokeWidth={1} strokeDasharray="2.5 2" opacity={0.8} />
+      <g transform="translate(184 96) rotate(16)">
+        <path d="M0 0 L22 0 L28 8 L22 16 L0 16 Z" fill="#e8d9bd" stroke="#a07a52" strokeWidth={1.2} />
+        <circle cx={21} cy={8} r={1.8} fill="#fff8ec" stroke="#a07a52" strokeWidth={0.8} />
+        <path d="M4 6 L14 6 M4 10 L11 10" stroke="#f08a3c" strokeWidth={1.8} strokeLinecap="round" />
       </g>
-      <path
-        d="M154 46 L182 46 L190 82 L178 82 L178 112 L158 112 L158 82 L146 82 Z"
-        fill="#f2c14e"
-        stroke="#b88a1c"
-        strokeWidth={1.4}
-        strokeLinejoin="round"
-      />
-      <g fill="#b88a1c">
-        <circle cx={168} cy={62} r={1.8} />
-        <circle cx={168} cy={74} r={1.8} />
-        <circle cx={168} cy={86} r={1.8} />
+      <path d="M182 132 C186 122 196 116 200 104" stroke="#a07a52" strokeWidth={1} fill="none" />
+      <g transform="translate(26 112) rotate(-24)">
+        <circle cx={0} cy={10} r={4} fill="none" stroke="#f08a3c" strokeWidth={2} />
+        <circle cx={8} cy={10} r={4} fill="none" stroke="#f08a3c" strokeWidth={2} />
+        <path d="M2 7 L16 -10 M6 7 L-6 -10" stroke="#9aa3ad" strokeWidth={2} strokeLinecap="round" />
       </g>
-      <g transform="translate(176 92) rotate(14)">
-        <path d="M0 0 L22 0 L28 8 L22 16 L0 16 Z" fill="#fffaf2" stroke="#9a7a5a" strokeWidth={1.2} />
-        <circle cx={22} cy={8} r={1.8} fill="#9a7a5a" />
-        <path d="M5 6 L15 6 M5 10 L12 10" stroke="#c9a227" strokeWidth={1.6} strokeLinecap="round" />
+      <g fill="#ffffff">
+        <path d="M212 84 l1.6 4 l4 1.6 l-4 1.6 l-1.6 4 l-1.6 -4 l-4 -1.6 l4 -1.6 Z" />
+        <path d="M24 70 l1.2 3 l3 1.2 l-3 1.2 l-1.2 3 l-1.2 -3 l-3 -1.2 l3 -1.2 Z" />
       </g>
-      <path d="M150 112 C156 104 168 104 172 98" stroke="#9a7a5a" strokeWidth={1} fill="none" />
     </svg>
   );
 }

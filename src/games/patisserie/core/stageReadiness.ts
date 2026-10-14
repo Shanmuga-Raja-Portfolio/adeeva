@@ -2,7 +2,7 @@ import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import type { BakeRun } from "./bakeRun";
 import { isCounterDay } from "./counter";
 import { designIssues } from "./design";
-import { hoursShortfallReason } from "./dayHours";
+import { hoursShortfallReason } from "../../../engine/dayHours";
 import type { GameState } from "./gameState";
 import { leaveHours } from "./hourCost";
 import { icingIssues } from "./icing";
@@ -70,6 +70,6 @@ export function canAdvance(state: GameState): ActionCheck {
   if (isCounterDay(state.calendar.day)) return actionCheck([COUNTER_DAY_REST]);
   const issues = stageCompletionIssues(state, run);
   if (issues.length > 0) return actionCheck(issues);
-  const hours = hoursShortfallReason(state, leaveHours(run));
+  const hours = hoursShortfallReason(state.calendar, leaveHours(run));
   return actionCheck(hours === null ? [] : [hours]);
 }

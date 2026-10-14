@@ -1,6 +1,7 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { weeklyRent } from "../../../engine/difficulty";
-import { expireOffers } from "../../../engine/gigBoard";
+import { expireStaleOffers } from "../../../engine/gigBoardState";
+import { workPaidShift } from "../../../engine/paidShift";
 import { decayBuzz } from "../../../engine/standing";
 import { careerById } from "./catalog";
 import { hoursPerDay } from "./dayHours";
@@ -36,11 +37,6 @@ function settleWeek(state: GameState): GameState {
   return bankrupt ? queueStoryTrigger(settled, "bankrupt") : settled;
 }
 
-function expireStaleOffers(state: GameState): GameState {
-  const gigs = expireOffers(state.gigs, state.calendar.day);
-  return gigs === state.gigs ? state : { ...state, gigs };
-}
-
 export function endDay(state: GameState): GameState {
   const endedDay = state.calendar.day;
   const advanced: GameState = {
@@ -58,6 +54,5 @@ export function canWorkShift(state: GameState): ActionCheck {
 }
 
 export function workShift(state: GameState): GameState {
-  if (!canWorkShift(state).ok) return state;
-  return endDay({ ...state, coins: state.coins + careerById(state.profile.career).shiftPay });
+  return workPaidShift(state, canWorkShift(state), careerById(state.profile.career).shiftPay, endDay);
 }

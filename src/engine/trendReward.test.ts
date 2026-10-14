@@ -33,3 +33,16 @@ describe("trend rewards", () => {
     expect(dreamerFlair(2, ["classic"])).toBe(false);
   });
 });
+
+describe("trend reward options", () => {
+  it("uses custom bonus labels and adds extra buzz", () => {
+    const dreamer: TrendRewardTerms = { ...TERMS, trait: "dreamer", colourCount: 3 };
+    const reward = settleTrendReward({
+      ...dreamer,
+      labels: { trend: "Crowd pleaser", dreamer: "Wild streak" },
+      extraBuzz: 4,
+    });
+    expect(reward.lines.map((line) => line.label)).toEqual(["Fee", "Crowd pleaser", "Wild streak"]);
+    expect(reward.buzz).toBe(settleTrendReward(dreamer).buzz + 4);
+  });
+});

@@ -19,3 +19,9 @@ export function hoursShortfallReason(clock: DayClock, hours: number): string | n
   if (hasHours(clock, hours)) return null;
   return `This needs ${hours} ${hours === 1 ? "hour" : "hours"} and only ${clock.hoursLeft} ${clock.hoursLeft === 1 ? "is" : "are"} left today. End the day to continue.`;
 }
+
+export function spendHours<S extends { readonly calendar: DayClock }>(state: S, hours: number): S | null {
+  const calendar = spendCalendarHours(state.calendar, hours);
+  if (calendar === null) return null;
+  return calendar === state.calendar ? state : { ...state, calendar };
+}

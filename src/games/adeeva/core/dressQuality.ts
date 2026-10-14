@@ -1,3 +1,4 @@
+import { roundShare } from "../../../engine/roundShare";
 import type { StyleTag } from "../../../engine/styleTag";
 import { average } from "../../../engine/average";
 import type { Brief } from "./brief";
@@ -15,10 +16,6 @@ export interface QualityBreakdown {
   readonly grain: number;
   readonly materialFit: number;
   readonly quality: number;
-}
-
-function roundShare(value: number): number {
-  return Math.round(value * 1000) / 1000;
 }
 
 export function materialFits(materialTags: readonly StyleTag[], brief: Brief, avoided: boolean): boolean {

@@ -1,11 +1,12 @@
-import type { FabricDef } from "../../../content/fabric";
-import type { PatternPieceDef } from "../../../content/garmentPart";
-import { polygonBounds, type Rotation } from "../../../core";
+import type { PieceOutline } from "../../../content/garmentPart";
+import type { Cloth } from "../../../../../ui/art/cloth/Cloth";
+import { polygonBounds } from "../../../../../engine/geometry/polygonPlacement";
+import type { Rotation } from "../../../../../engine/geometry/rotation";
 import { PatternPieceShape } from "../../art/PatternPieceShape";
 
 export interface PieceThumbProps {
-  readonly piece: PatternPieceDef;
-  readonly fabric: FabricDef | undefined;
+  readonly piece: PieceOutline;
+  readonly fabric: Cloth | undefined;
   readonly rotation?: Rotation | undefined;
   readonly size?: number | undefined;
   readonly cut?: boolean | undefined;

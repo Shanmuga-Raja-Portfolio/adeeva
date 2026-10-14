@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type PointerEvent } from "react";
-import type { FabricDef } from "../../../content/fabric";
-import { seamAccuracy, type Action, type SeamProgress } from "../../../core";
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { seamAccuracy } from "../../../core/seamAccuracy";
+import type { SeamProgress } from "../../../core/dressRun";
+import type { Cloth } from "../../../../../ui/art/cloth/Cloth";
 import { SEAM_VIEW, seamLength } from "../../art/SeamStrip";
 import { SewingStage } from "../../art/SewingStage";
 import { Button } from "../../../../../ui/kit/Button";
@@ -8,16 +9,18 @@ import { useTickLoop } from "../../../../../ui/kit/useTickLoop";
 import { resumeSimulation, sewSpeed, sewTick, STEER_LIMIT, type SewSimulation } from "./seamSimulation";
 
 export interface SewingMachineProps {
-  readonly seamId: string;
   readonly seamName: string;
   readonly profile: readonly number[];
-  readonly fabric: FabricDef;
+  readonly fabric: Cloth;
   readonly band: number;
   readonly stored: SeamProgress | undefined;
   readonly assisted: boolean;
-  readonly dispatch: (action: Action) => void;
+  readonly onRecord: (sample: SeamProgress) => void;
+  readonly onReset: () => void;
   readonly onNext: (() => void) | null;
 }
+
+const KEY_STEER = 0.12;
 
 interface Press {
   readonly pointerId: number;
@@ -27,14 +30,14 @@ interface Press {
 }
 
 export function SewingMachine({
-  seamId,
   seamName,
   profile,
   fabric,
   band,
   stored,
   assisted,
-  dispatch,
+  onRecord,
+  onReset,
   onNext,
 }: SewingMachineProps) {
   const [sim, setSim] = useState<SewSimulation>(() => resumeSimulation(stored));
@@ -49,9 +52,7 @@ export function SewingMachine({
   const record = useRef((latest: SewSimulation) => {
     if (latest.ticks <= recordedTicks.current) return;
     recordedTicks.current = latest.ticks;
-    dispatch({
-      type: "recordSeam",
-      seamId,
+    onRecord({
       progress: latest.progress,
       ticks: latest.ticks,
       insideTicks: latest.insideTicks,
@@ -121,8 +122,49 @@ export function SewingMachine({
     record.current(simRef.current);
   };
 
+  const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      event.preventDefault();
+      const step = event.key === "ArrowLeft" ? -KEY_STEER : KEY_STEER;
+      input.current.steer = Math.max(-STEER_LIMIT, Math.min(STEER_LIMIT, input.current.steer + step));
+      return;
+    }
+    if (event.key !== " " && event.key !== "Enter") return;
+    event.preventDefault();
+    if (done || input.current.held) return;
+    input.current.held = true;
+    setHeld(true);
+  };
+
+  const stopKeySewing = useRef(() => {
+    if (!input.current.held || press.current !== null) return;
+    input.current.held = false;
+    setHeld(false);
+    record.current(simRef.current);
+  });
+
+  useEffect(() => {
+    if (!held) return;
+    const stop = stopKeySewing.current;
+    const hidden = () => {
+      if (document.visibilityState === "hidden") stop();
+    };
+    window.addEventListener("blur", stop);
+    document.addEventListener("visibilitychange", hidden);
+    return () => {
+      window.removeEventListener("blur", stop);
+      document.removeEventListener("visibilitychange", hidden);
+    };
+  }, [held]);
+
+  const keyUp = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== " " && event.key !== "Enter") return;
+    event.preventDefault();
+    stopKeySewing.current();
+  };
+
   const restart = () => {
-    if (stored !== undefined || recordedTicks.current > 0) dispatch({ type: "resetSeam", seamId });
+    if (stored !== undefined || recordedTicks.current > 0) onReset();
     recordedTicks.current = 0;
     input.current = { held: false, steer: 0 };
     const fresh = resumeSimulation(undefined);
@@ -159,6 +201,12 @@ export function SewingMachine({
         onPointerMove={move}
         onPointerUp={release}
         onPointerCancel={release}
+        onKeyDown={keyDown}
+        onKeyUp={keyUp}
+        onBlur={() => stopKeySewing.current()}
+        tabIndex={0}
+        role="button"
+        aria-label={`Sew the ${seamName.toLowerCase()}: hold Space, steer with the arrow keys`}
         data-testid="sewing-bed"
         data-progress={sim.progress.toFixed(3)}
       >

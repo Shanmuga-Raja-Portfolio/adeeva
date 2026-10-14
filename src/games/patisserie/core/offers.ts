@@ -4,8 +4,8 @@ import {
   declineOffer as declineBoardOffer,
   freeClients,
   offerAcceptIssue as boardAcceptIssue,
-  rollOffers as rollBoardOffers,
 } from "../../../engine/gigBoard";
+import { rollStateOffers } from "../../../engine/gigBoardState";
 import { CLIENTS, FIRST_DAY_CLIENT_IDS, GUIDED_CLIENT_ID, type ClientDef } from "../content/client";
 import { rollClientBrief } from "./brief";
 import { clientById, difficultyById } from "./catalog";
@@ -41,16 +41,12 @@ export function rollOffers(state: GameState): GameState {
     minQualityBonus: difficultyById(state.profile.difficulty).minQualityBonus,
     hotTags: state.trends.current,
   };
-  const rolled = rollBoardOffers(state.gigs, eligibleClients(state), {
-    day: state.calendar.day,
-    buzz: state.buzz,
-    rng: state.rng,
-    rollBrief: (client, day, rng) => rollClientBrief(client, { ...roll, day }, rng),
-  });
-  if (rolled.board === state.gigs) return state;
-  const next: GameState = { ...state, rng: rolled.rng, gigs: rolled.board };
-  const gated = rolled.arrived.find((client) => client.traitGate === state.profile.trait);
-  return gated === undefined ? next : queueTraitBeat(next, state.profile.trait);
+  return rollStateOffers(
+    state,
+    eligibleClients(state),
+    (client, day, rng) => rollClientBrief(client, { ...roll, day }, rng),
+    queueTraitBeat,
+  );
 }
 
 export function offerAcceptIssue(state: GameState, offerId: string): string | null {

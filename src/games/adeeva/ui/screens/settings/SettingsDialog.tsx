@@ -5,7 +5,7 @@ import { ASSIST_SEW_ACCURACY_CAP } from "../../../core";
 import { Button } from "../../../../../ui/kit/Button";
 import { Dialog } from "../../../../../ui/kit/Dialog";
 import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
-import { slotSummary } from "../title/slotSummary";
+import { slotSummary } from "../../../../../studio/slotSummary";
 import "./settings.css";
 
 export interface SettingsDialogProps {

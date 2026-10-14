@@ -75,7 +75,7 @@ export function FabricShop({ state, run, dispatch, onExit }: FabricShopProps) {
     owned: state.inventory.fabricMetres[fabricId] ?? 0,
   }));
   const visitIssue = shopVisitIssue(state);
-  const hoursIssue = hoursShortfallReason(state, SHOP_VISIT_HOURS);
+  const hoursIssue = hoursShortfallReason(state.calendar, SHOP_VISIT_HOURS);
   const shown = FABRICS.filter((fabric) => matches(state, fabric, filters, design)).sort(
     (a, b) => Number(design.includes(b.id)) - Number(design.includes(a.id)),
   );

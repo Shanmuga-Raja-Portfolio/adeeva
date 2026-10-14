@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { completeBeat, headBeatId, queueTrigger, type StoryBeat, type StoryState } from "./story";
+import {
+  completeBeat,
+  headBeatId,
+  markBeatSeen,
+  queueTrigger,
+  type StoryBeat,
+  type StoryState,
+} from "./story";
 import { beatLines } from "./storyVoice";
 
 const firstDay: StoryBeat<"open" | "sale", "party"> = {
@@ -51,5 +58,24 @@ describe("beatLines", () => {
       { speaker: "Ada", text: "Leave it with me, Gran!", isPlayer: true },
     ]);
     expect(beatLines(beat, "dreamer", "Ada")[1]?.text).toBe("I will look after it.");
+  });
+});
+
+describe("markBeatSeen", () => {
+  const known = (id: string) => beats.find((beat) => beat.id === id);
+
+  it("completes a queued, known beat", () => {
+    const state = { story: { ...fresh, queue: ["first-day"] } };
+    expect(markBeatSeen(state, "first-day", known).story).toEqual({
+      seen: ["first-day"],
+      flags: [],
+      queue: [],
+    });
+  });
+
+  it("returns the same state for a beat that is not queued or not known", () => {
+    const state = { story: { ...fresh, queue: ["ghost"] } };
+    expect(markBeatSeen(state, "first-day", known)).toBe(state);
+    expect(markBeatSeen(state, "ghost", known)).toBe(state);
   });
 });

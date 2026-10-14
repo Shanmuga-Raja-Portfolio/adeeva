@@ -34,6 +34,7 @@ export interface GameModule extends GameCard {
   readonly status: "live";
   readonly load: () => Promise<{ readonly default: ComponentType<GameScreenProps> }>;
   readonly reputationOf: (rawSave: unknown) => number;
+  readonly parentNote?: string | undefined;
 }
 
 export interface WorkshopGame extends GameCard {

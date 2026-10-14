@@ -20,8 +20,11 @@ import {
   countParser,
   dayParser,
   knownIdParser,
+  shareParser,
   styleTagParser,
 } from "../../../engine/stateParsers";
+
+export { shareParser };
 import type { ToppingRequirement } from "../content/client";
 import { FILLING_IDS } from "../content/filling";
 import { MIX_IDS } from "../content/mix";
@@ -46,7 +49,6 @@ import { RUN_STAGES } from "./runStage";
 import { MAX_WEIGH_ACTIONS } from "./weighAccuracy";
 import { CAKE_CANVAS } from "./toppingPlacement";
 
-export const shareParser = rangeParser(0, 1);
 export const nonNegativeParser = refined(numberParser, (value) => value >= 0, "zero or more");
 export const clientIdParser = knownIdParser(clientById, "client");
 const mixIdParser = oneOf(MIX_IDS);

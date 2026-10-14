@@ -37,9 +37,10 @@ import {
   stringParser,
   type Parser,
 } from "../../../engine/parse";
+import { nonNegativeParser, shareParser } from "../../../engine/stateParsers";
+import { keysWithin } from "../../../engine/keysWithin";
 
-export const shareParser = rangeParser(0, 1);
-export const nonNegativeParser = rangeParser(0, Number.MAX_SAFE_INTEGER);
+export { nonNegativeParser, shareParser };
 const positiveIntegerParser = integerRangeParser(1, Number.MAX_SAFE_INTEGER);
 const catalogPieceIds = new Set(GARMENT_PARTS.flatMap((part) => part.pieces.map((piece) => piece.id)));
 const catalogSeamIds = new Set(GARMENT_PARTS.flatMap((part) => part.seams.map((seam) => seam.id)));
@@ -122,10 +123,6 @@ export const runPurposeParser: Parser<RunPurpose> = (input, path) => {
   }
   return failed(`${path}.kind`, "gig or look");
 };
-
-function keysWithin(record: Readonly<Record<string, unknown>>, allowed: readonly string[]): boolean {
-  return Object.keys(record).every((key) => allowed.includes(key));
-}
 
 function runKeysMatchDesign(run: DressRun): boolean {
   const pieceIds = requiredPieces(run.design).map((entry) => entry.piece.id);

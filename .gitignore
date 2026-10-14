@@ -6,3 +6,4 @@ playwright-report/
 *.local
 dressmaker_ide_build_spec_DELETE_when_done.md
 
+.claude/

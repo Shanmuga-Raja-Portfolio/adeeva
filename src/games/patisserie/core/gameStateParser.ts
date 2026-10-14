@@ -1,6 +1,4 @@
-import { avatarLookParser } from "../../../engine/avatar";
 import { BASE_DAY_HOURS, type DayClock } from "../../../engine/dayHours";
-import { DIFFICULTY_IDS } from "../../../engine/difficulty";
 import { MAX_BUZZ } from "../../../engine/standing";
 import {
   arrayOf,
@@ -13,7 +11,6 @@ import {
   objectOf,
   oneOf,
   refined,
-  stringParser,
 } from "../../../engine/parse";
 import { isColourId } from "../../../engine/palette";
 import {
@@ -21,26 +18,19 @@ import {
   dayParser,
   gigBoardParser,
   knownIdParser,
+  profileParser,
   rngParser,
   storyStateParser,
   trendStateParser,
 } from "../../../engine/stateParsers";
-import { TRAIT_IDS } from "../../../engine/trait";
 import { FILLING_IDS } from "../content/filling";
 import { INGREDIENT_IDS } from "../content/ingredient";
 import { TOPPING_IDS } from "../content/topping";
 import { UPGRADE_IDS } from "../content/upgrade";
 import { bakeRunParser, briefParser, clientIdParser } from "./bakeRunParser";
 import { storyBeatById } from "./catalog";
-import { SCHEMA_VERSION, type GameState, type Pantry, type Profile } from "./gameState";
+import { SCHEMA_VERSION, type GameState, type Pantry } from "./gameState";
 import { bakeBookEntryParser, counterParser, logEntryParser } from "./resultParsers";
-
-const profileParser = objectOf<Profile>({
-  name: refined(stringParser, (name) => name.trim().length > 0, "a name"),
-  look: avatarLookParser,
-  trait: oneOf(TRAIT_IDS),
-  difficulty: oneOf(DIFFICULTY_IDS),
-});
 
 const calendarParser = objectOf<DayClock>({
   day: dayParser,

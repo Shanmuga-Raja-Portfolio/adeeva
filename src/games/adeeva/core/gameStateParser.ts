@@ -1,7 +1,4 @@
-import { avatarLookParser } from "../../../engine/avatar";
 import { CAREER_IDS } from "../content/career";
-import { DIFFICULTY_IDS } from "../../../engine/difficulty";
-import { TRAIT_IDS } from "../../../engine/trait";
 import { TRIM_IDS } from "../content/trim";
 import { UPGRADE_IDS } from "../content/upgrade";
 import { fabricById } from "./catalog";
@@ -11,6 +8,7 @@ import {
   countParser,
   dayParser,
   gigBoardParser,
+  profileShape,
   rngParser,
   storyStateParser,
   trendStateParser,
@@ -43,13 +41,7 @@ import {
   type Parser,
 } from "../../../engine/parse";
 
-const profileParser = objectOf<Profile>({
-  name: refined(stringParser, (name) => name.trim().length > 0, "a name"),
-  look: avatarLookParser,
-  trait: oneOf(TRAIT_IDS),
-  difficulty: oneOf(DIFFICULTY_IDS),
-  career: oneOf(CAREER_IDS),
-});
+const profileParser = objectOf<Profile>({ ...profileShape, career: oneOf(CAREER_IDS) });
 
 const calendarParser = objectOf<CalendarState>({
   day: dayParser,

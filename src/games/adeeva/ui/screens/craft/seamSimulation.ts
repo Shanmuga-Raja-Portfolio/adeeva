@@ -1,4 +1,5 @@
-import { isNeedleOnLine, type SeamProgress } from "../../../core";
+import { isNeedleOnLine } from "../../../core/seamLine";
+import type { SeamProgress } from "../../../core/dressRun";
 import { TICK_SECONDS } from "../../../../../ui/kit/useTickLoop";
 
 const MIN_SPEED = 70;

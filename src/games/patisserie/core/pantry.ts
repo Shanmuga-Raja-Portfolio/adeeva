@@ -13,7 +13,7 @@ import {
   isToppingId,
   toppingById,
 } from "./catalog";
-import { hoursShortfallReason, spendHours } from "./dayHours";
+import { hoursShortfallReason, spendHours } from "../../../engine/dayHours";
 import type { GameState, Pantry } from "./gameState";
 
 export const GEL_POT_PRICE = 5;
@@ -78,7 +78,7 @@ export function canBuy(state: GameState, cart: PantryCart): ActionCheck {
   const reasons: string[] = [];
   const cost = cartCost(cart);
   if (cost > state.coins) reasons.push(`That costs ${cost} coins and you have ${state.coins}.`);
-  const hours = hoursShortfallReason(state, pantryVisitHours(state));
+  const hours = hoursShortfallReason(state.calendar, pantryVisitHours(state));
   if (hours !== null) reasons.push(hours);
   return actionCheck(reasons);
 }

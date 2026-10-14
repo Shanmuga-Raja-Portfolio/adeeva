@@ -7,7 +7,7 @@ import { Dialog } from "../../../../../ui/kit/Dialog";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { weekdayName } from "../../../../../engine/weekday";
 import { SaveSlotCard } from "./SaveSlotCard";
-import { slotSummary } from "./slotSummary";
+import { slotSummary } from "../../../../../studio/slotSummary";
 import { Wordmark } from "./Wordmark";
 import "./title.css";
 

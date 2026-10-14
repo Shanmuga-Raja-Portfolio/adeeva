@@ -1,5 +1,5 @@
-import type { FabricDef } from "../../content/fabric";
-import type { PatternPieceDef } from "../../content/garmentPart";
+import type { PieceOutline } from "../../content/garmentPart";
+import type { Cloth } from "../../../../ui/art/cloth/Cloth";
 import { FabricPattern, fabricFill, fabricSheenFill } from "../../../../ui/art/cloth/FabricPattern";
 import { fabricLook } from "../../../../ui/art/cloth/fabricLook";
 import { useSvgId } from "../../../../ui/art/useSvgId";
@@ -7,12 +7,12 @@ import { useSvgId } from "../../../../ui/art/useSvgId";
 export type PatternPieceState = "idle" | "selected" | "invalid" | "cut";
 
 export interface PatternPieceShapeProps {
-  piece: PatternPieceDef;
+  piece: PieceOutline;
   x?: number | undefined;
   y?: number | undefined;
   rotation?: number | undefined;
   scale?: number | undefined;
-  fabric?: FabricDef | undefined;
+  fabric?: Cloth | undefined;
   state?: PatternPieceState | undefined;
   mirrored?: boolean | undefined;
   showLabel?: boolean | undefined;

@@ -15,7 +15,7 @@ import type { IconName } from "../../../../../ui/kit/IconSet";
 import { DIFFICULTIES } from "../../../content/difficulty";
 import { STORY_BEATS } from "../../../content/storyBeat";
 import { TRAITS } from "../../../content/trait";
-import { beatLines } from "../../../core";
+import { playerVoiceSample } from "../../../../../engine/storyVoice";
 import { CareerStep } from "./CareerStep";
 import { draftSettings, NEW_GAME_STEPS, playerDraft, stepIssue, type NewGameDraft } from "./newGameDraft";
 import "./newGame.css";
@@ -61,9 +61,11 @@ const difficultyIcons: Record<DifficultyId, IconName> = {
 };
 
 function voiceSample(trait: TraitId, name: string): string {
-  const intro = STORY_BEATS.find((beat) => beat.trigger === "intro-student");
-  if (intro === undefined) return "";
-  return beatLines(intro, trait, name).find((line) => line.isPlayer)?.text ?? "";
+  return playerVoiceSample(
+    STORY_BEATS.find((beat) => beat.trigger === "intro-student"),
+    trait,
+    name,
+  );
 }
 
 export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: NewGameFlowProps) {
