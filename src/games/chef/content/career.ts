@@ -159,3 +159,69 @@ export const TESTS: readonly TestDef[] = [
     pitch: "A small plate, a main and a side from three cuisines. Each plate needs to reach the mark.",
   },
 ];
+
+export const PATH_SERVICE_KINDS = ["night", "festival", "launch"] as const;
+export type PathServiceKind = (typeof PATH_SERVICE_KINDS)[number];
+
+function pathService(railSize: number, tickets: number, maxDishesPerTicket: number): ServiceRules {
+  return {
+    wage: 0,
+    bonusFee: 0,
+    railSize,
+    tickets,
+    maxDishesPerTicket,
+    ticketTargetSeconds: 65,
+    serviceMinimum: 65,
+    cuisinesPerShift: 0,
+    helpers: 0,
+  };
+}
+
+export const PATH_SERVICE: Readonly<Record<PathServiceKind, ServiceRules>> = {
+  night: pathService(4, 10, 3),
+  festival: pathService(3, 8, 2),
+  launch: pathService(4, 6, 1),
+};
+
+export const PATH_RULES = {
+  crossroadsReputation: 85,
+  crossroadsPasses: 12,
+  relaxedCostShare: 0.5,
+  serviceHours: 6,
+  segmentPrepHours: 2,
+  segmentHours: 4,
+  segmentsPerWeek: 2,
+  segmentBaseFee: 120,
+  segmentStarFee: 30,
+  segmentClockSeconds: 480,
+  segmentMinimum: 65,
+  bookOfferSegments: 2,
+  bookAdvance: 250,
+  chapterFee: 150,
+  menuMin: 4,
+  menuMax: 8,
+  menuCuisines: 2,
+  menuTags: 3,
+  parMax: 30,
+  defaultPar: 8,
+  truckMenu: 3,
+  fridge: 40,
+  festivalHelperFee: 25,
+  baseSeats: 16,
+  seatsPerCook: 6,
+  hostlessSeats: 20,
+  hostGuests: 3,
+  platesPerGuest: 1.5,
+  happyScore: 85,
+  tipPerGuest: 2,
+  seasonDays: 14,
+  ribbonScore: 85,
+  maxTeam: 4,
+  maxNights: 4,
+  crowdAppeal: 0.15,
+  maxReviews: 9,
+  maxNotes: 6,
+  notesPerNight: 2,
+  cleanTeamTarget: 1.1,
+  warmingPassHold: 30,
+} as const;

@@ -10,7 +10,7 @@ import type { GameState } from "./gameState";
 import { unlockedDishes } from "./mastery";
 import { runStartIssue } from "./runLifecycle";
 import { testStartIssues } from "./rung";
-import { admitTickets } from "./serviceRail";
+import { admitTickets, LAMP_HOLD_SECONDS } from "./serviceRail";
 import type { ServiceKind, ServicePlan, ServiceRun, ServiceTicket, Special } from "./service";
 import { specialIssues } from "./special";
 import { hireableHelpers } from "./staffing";
@@ -42,6 +42,8 @@ export function servicePlan(state: GameState, rules: ServiceRules): ServicePlan 
     wage: rules.wage,
     lengthSeconds,
     maxDishesPerTicket: rules.maxDishesPerTicket,
+    lampHoldSeconds: LAMP_HOLD_SECONDS,
+    pans: 1,
   };
 }
 
@@ -83,26 +85,29 @@ function rollTickets(plan: ServicePlan, pool: readonly DishId[], rng: RngState):
   return [tickets, state];
 }
 
-function openService(
-  state: GameState,
-  kind: ServiceKind,
-  cuisines: readonly CuisineId[],
-  plan: ServicePlan,
-  helpers: readonly string[],
-  special: Special | null,
-): GameState {
+export interface ServiceOpening {
+  readonly kind: ServiceKind;
+  readonly cuisines: readonly CuisineId[];
+  readonly plan: ServicePlan;
+  readonly helpers: readonly string[];
+  readonly special: Special | null;
+  readonly pool: readonly DishId[];
+}
+
+export function openService(state: GameState, opening: ServiceOpening): GameState {
   const spent = spendHours(state, CAREER.shiftHours);
-  if (spent === null) return state;
-  const [tickets, afterTickets] = rollTickets(plan, servicePool(state, cuisines), spent.rng);
+  if (spent === null || opening.pool.length === 0) return state;
+  const [tickets, afterTickets] = rollTickets(opening.plan, opening.pool, spent.rng);
   const [seed, rng] = drawSeed(afterTickets);
   const service: ServiceRun = {
     id: `service-${state.nextRunNumber}`,
-    kind,
-    cuisines,
-    plan,
+    kind: opening.kind,
+    cuisines: opening.cuisines,
+    plan: opening.plan,
     tickets,
-    staff: helpers.map((staffId) => ({ staffId, station: null, freeAt: 0 })),
-    special,
+    staff: opening.helpers.map((staffId) => ({ staffId, station: null, freeAt: 0 })),
+    special: opening.special,
+    spotlight: null,
     lastAt: 0,
     openSince: 0,
     seed,
@@ -148,7 +153,14 @@ export function startShift(state: GameState, offerId: string, setup: ShiftSetup)
   if (rules === null || offer === undefined || shiftIssues(state, offerId, setup).length > 0) return state;
   const helpers = state.rung === "sous" ? [TEO_ID] : setup.helpers;
   if (helpers.some((id) => staffById(id) === undefined)) return state;
-  return openService(state, "shift", offer.cuisines, servicePlan(state, rules), helpers, setup.special);
+  return openService(state, {
+    kind: "shift",
+    cuisines: offer.cuisines,
+    plan: servicePlan(state, rules),
+    helpers,
+    special: setup.special,
+    pool: servicePool(state, offer.cuisines),
+  });
 }
 
 export function stationTestIssues(state: GameState, cuisine: string): string[] {
@@ -168,5 +180,12 @@ export function startStationTest(state: GameState, cuisine: string): GameState {
     bonusFee: 0,
     wage: 0,
   };
-  return openService(state, "station-test", [counter], plan, [], null);
+  return openService(state, {
+    kind: "station-test",
+    cuisines: [counter],
+    plan,
+    helpers: [],
+    special: null,
+    pool: servicePool(state, [counter]),
+  });
 }

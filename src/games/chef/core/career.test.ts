@@ -6,7 +6,17 @@ import { emptyMastery } from "./mastery";
 import { reduce } from "./reduce";
 import { parseSave, serialize } from "./save";
 import { testStartIssues } from "./rung";
-import { cookDish, must, newTestGame, playTicket, settleStories, type CookPlan } from "./testPlaythrough";
+import { dishById } from "./catalog";
+import { MASTERY_CUISINES } from "./serviceEnd";
+import {
+  cookDish,
+  must,
+  newTestGame,
+  playTicket,
+  playWholeService,
+  settleStories,
+  type CookPlan,
+} from "./testPlaythrough";
 
 const ALL_MET = [...CUISINE_IDS];
 
@@ -120,7 +130,11 @@ describe("the line, sous and head chef rungs", () => {
     if (offer === undefined) throw new Error("no shift");
     expect(offer.cuisines).toHaveLength(2);
     expect(
-      reduce(sous, { type: "startShift", offerId: offer.id, setup: { special: null, helpers: [] } }),
+      reduce(sous, {
+        type: "startShift",
+        offerId: offer.id,
+        setup: { special: null, helpers: ["lin", "nilufar"] },
+      }),
     ).toBe(sous);
     expect(
       reduce(sous, {
@@ -179,6 +193,37 @@ describe("the line, sous and head chef rungs", () => {
     expect(
       open.service?.tickets.every((ticket) => ticket.dishes.every((dish) => menu.includes(dish.dishId))),
     ).toBe(true);
+  });
+
+  it("gives a head chef service's mastery to the two most-served cuisines", () => {
+    const head = settleStories(
+      must(settleStories(newTestGame({ start: "head" })), {
+        type: "setMenu",
+        dishIds: ["dal-tadka", "jollof-rice", "kelewele", "elote", "miso-soup", "ratatouille"],
+      }),
+    );
+    const offer = head.board.shifts[0];
+    if (offer === undefined) throw new Error("no shift");
+    const open = settleStories(
+      must(head, {
+        type: "startShift",
+        offerId: offer.id,
+        setup: { special: null, helpers: ["lin", "nilufar"] },
+      }),
+    );
+    const served = (open.service?.tickets ?? []).flatMap((ticket) =>
+      ticket.dishes.map((dish) => dishById(dish.dishId).cuisine),
+    );
+    const count = (cuisine: string) => served.filter((entry) => entry === cuisine).length;
+    expect(new Set(served).size).toBeGreaterThan(MASTERY_CUISINES);
+    const entry = playWholeService(open).log.at(-1);
+    if (entry?.kind !== "service") throw new Error("no service entry");
+    expect(entry.mastery).toHaveLength(MASTERY_CUISINES);
+    const least = Math.min(...entry.mastery.map((gain) => count(gain.cuisine)));
+    const skipped = [...new Set(served)].filter(
+      (cuisine) => !entry.mastery.some((gain) => gain.cuisine === cuisine),
+    );
+    expect(skipped.every((cuisine) => count(cuisine) <= least)).toBe(true);
   });
 
   it("lets helpers on a station cook ready steps after eight seconds", () => {

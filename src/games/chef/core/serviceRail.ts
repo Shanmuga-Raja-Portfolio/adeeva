@@ -55,8 +55,8 @@ export function dishFinished(dish: ServiceDish): boolean {
 export function lampFactor(service: ServiceRun, dish: ServiceDish, sentAt: number): number {
   if (!hasClock(service) || dish.doneAt === null) return 1;
   const wait = sentAt - dish.doneAt;
-  if (wait <= LAMP_HOLD_SECONDS) return 1;
-  return Math.max(LAMP_FLOOR, 1 - LAMP_DROP_PER_SECOND * (wait - LAMP_HOLD_SECONDS));
+  if (wait <= service.plan.lampHoldSeconds) return 1;
+  return Math.max(LAMP_FLOOR, 1 - LAMP_DROP_PER_SECOND * (wait - service.plan.lampHoldSeconds));
 }
 
 export function ticketOnTime(service: ServiceRun, ticket: ServiceTicket): number {

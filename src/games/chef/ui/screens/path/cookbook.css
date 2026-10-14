@@ -1,0 +1,150 @@
+.ck-letters__list,
+.ck-chapters {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ck-segment-desk__last {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--ck-chalk);
+}
+
+.ck-cookbook__offer {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ck-chapter {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  border-left: 8px solid var(--ck-chapter);
+}
+
+.ck-chapter__head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.ck-chapter__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.ck-chapter__add {
+  min-width: 96px;
+  min-height: 120px;
+  border: 2px dashed var(--ck-chapter);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ck-chapter__review {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: var(--space-2) 0 0;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.ck-recipe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: 12px;
+  background: #fffdf6;
+  border: 3px solid var(--ck-chapter);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.ck-recipe--full {
+  width: 260px;
+}
+
+.ck-recipe--mini {
+  width: 112px;
+  padding: 6px;
+  gap: 2px;
+}
+
+.ck-recipe__banner {
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--ck-chapter);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-align: center;
+}
+
+.ck-recipe--mini .ck-recipe__banner {
+  font-size: 0.7rem;
+}
+
+.ck-recipe__plate {
+  width: 100%;
+  max-width: 180px;
+}
+
+.ck-recipe__steps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ck-recipe--mini .ck-recipe__steps svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ck-recipe__ready {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 35%, #4f8a3c 0 6px, transparent 7px),
+    radial-gradient(circle at 65% 60%, #d9472b 0 6px, transparent 7px), #f3f0e8;
+}
+
+.ck-recipe--mini .ck-recipe__ready {
+  width: 16px;
+  height: 16px;
+}
+
+.ck-recipe--mini .ck-recipe__badge {
+  padding: 2px 6px;
+  font-size: 0.56rem;
+  white-space: nowrap;
+}
+
+.ck-recipe__tip {
+  position: relative;
+  margin: 4px 0;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: var(--ck-basil-soft);
+  font-size: 0.9rem;
+}

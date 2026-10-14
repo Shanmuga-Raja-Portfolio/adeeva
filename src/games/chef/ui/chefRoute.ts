@@ -1,7 +1,7 @@
-import type { GameState } from "../core";
+import { crossroadsOpen, type GameState } from "../core";
 import type { SaveSlotId } from "./chefSlots";
 
-export type PlayView = "hub" | "dish" | "service" | "diary";
+export type PlayView = "hub" | "dish" | "service" | "diary" | "crossroads";
 
 export type AppRoute =
   | { readonly name: "title" }
@@ -23,5 +23,6 @@ export function resolveScreen(route: AppRoute, game: GameState | null): Resolved
   )
     return { name: "service", game };
   if (route.view === "diary") return { name: "diary", game };
+  if (route.view === "crossroads" && crossroadsOpen(game)) return { name: "crossroads", game };
   return { name: "hub", game };
 }

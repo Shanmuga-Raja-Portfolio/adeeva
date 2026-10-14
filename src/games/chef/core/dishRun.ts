@@ -1,5 +1,6 @@
 import type { FollowProgress } from "../../../engine/followRecord";
 import type { CuisineId } from "../content/cuisine";
+import type { CueKind } from "../content/cueCard";
 import type { CookStepKind, DishDef, DishId } from "../content/dish";
 import type { IngredientId } from "../content/ingredient";
 import type { TasteTag } from "../content/tasteTag";
@@ -20,7 +21,18 @@ export type RunPurpose =
   | { readonly kind: "lesson"; readonly cuisine: CuisineId; readonly fee: number }
   | { readonly kind: "test"; readonly test: TestRunKind; readonly index: number }
   | { readonly kind: "order"; readonly gigId: string }
-  | { readonly kind: "practice" };
+  | { readonly kind: "practice" }
+  | {
+      readonly kind: "segment";
+      readonly cards: readonly SegmentCard[];
+      readonly cueRight: boolean;
+      readonly kindTips: number;
+    };
+
+export interface SegmentCard {
+  readonly cue: CueKind;
+  readonly tip: number;
+}
 
 export interface DishBrief {
   readonly minQuality: number;

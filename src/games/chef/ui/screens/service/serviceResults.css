@@ -28,27 +28,6 @@
   margin: 0;
 }
 
-.ck-service-results__meters {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.ck-service-results__meters li {
-  display: grid;
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  background: #f1ece0;
-}
-
-.ck-service-results__meters strong {
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-}
-
 .ck-service-results__special {
   padding: var(--space-3);
   border-radius: var(--radius-md);
@@ -64,8 +43,70 @@
   .ck-service-results {
     padding: var(--space-3);
   }
+}
 
-  .ck-service-results__meters {
-    grid-template-columns: 1fr;
-  }
+.ck-path-report {
+  display: grid;
+  gap: var(--space-2);
+  text-align: left;
+}
+
+.ck-path-report__lead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.ck-path-report__ribbon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: #e3eefc;
+  color: #1e4f8f;
+  font-weight: 700;
+  animation: ck-pop var(--duration-slow) var(--ease-out) both;
+}
+
+.ck-ribbon {
+  width: 26px;
+  height: 34px;
+  background:
+    radial-gradient(circle at 50% 35%, #3d84d6 0 11px, transparent 12px),
+    linear-gradient(160deg, transparent 45%, #2f6fb5 46% 60%, transparent 61%),
+    linear-gradient(200deg, transparent 45%, #2f6fb5 46% 60%, transparent 61%);
+}
+
+.ck-path-report__review {
+  display: grid;
+  gap: 4px;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--ck-amber-soft);
+}
+
+.ck-path-report__review p {
+  margin: 0;
+}
+
+.ck-sales {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.ck-sales th,
+.ck-sales td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--paper-edge);
+  text-align: right;
+}
+
+.ck-sales th[scope="row"],
+.ck-sales thead th:first-child {
+  text-align: left;
 }

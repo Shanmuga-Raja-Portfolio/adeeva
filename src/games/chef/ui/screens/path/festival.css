@@ -1,0 +1,88 @@
+.ck-festival-week {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ck-festival-map__art {
+  width: 100%;
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.ck-festival-map__hint {
+  margin: 0;
+  color: var(--ck-steel);
+}
+
+.ck-festival-week__day {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--ck-chalk);
+}
+
+.ck-festival-week__day .ck-muted {
+  color: var(--ck-steel);
+}
+
+.ck-festival-week__day--today {
+  background: rgba(242, 169, 59, 0.22);
+  outline: 2px solid var(--ck-amber);
+}
+
+.ck-pin--today .ck-pulse {
+  animation: ck-map-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes ck-map-pulse {
+  50% {
+    opacity: 0.1;
+  }
+}
+
+.ck-bunting {
+  animation: ck-bunting 2.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: top center;
+}
+
+@keyframes ck-bunting {
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+.ck-hatch__dish {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ck-pin--today .ck-pulse,
+  .ck-bunting {
+    animation: none;
+  }
+}
+
+.ck-truck-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ck-festival-map__last {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--ck-amber-soft);
+}

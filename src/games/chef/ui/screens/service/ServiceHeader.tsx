@@ -1,8 +1,10 @@
-import { cuisineById, hasClock, type ServiceRun } from "../../../core";
+import { hasClock, type ServiceRun } from "../../../core";
+import type { ServiceHeading } from "./serviceHeading";
 import { formatClock } from "./serviceView";
 
 export interface ServiceHeaderProps {
   readonly service: ServiceRun;
+  readonly heading: ServiceHeading;
   readonly now: number;
   readonly paused: boolean;
   readonly reducedMotion: boolean;
@@ -13,6 +15,7 @@ export interface ServiceHeaderProps {
 
 export function ServiceHeader({
   service,
+  heading,
   now,
   paused,
   reducedMotion,
@@ -22,14 +25,11 @@ export function ServiceHeader({
 }: ServiceHeaderProps) {
   const clocked = hasClock(service);
   const share = clocked ? Math.max(0, 1 - now / service.plan.lengthSeconds) : 1;
-  const counters = service.cuisines.map((cuisine) => cuisineById(cuisine).counter).join(" + ");
   return (
     <header className="ck-service__bar">
       <div>
-        <span className="ad-eyebrow">
-          {service.kind === "station-test" ? "Station Test" : "Service Rush"}
-        </span>
-        <h1 className="ck-service__title">{counters.length === 0 ? "Hall dinner service" : counters}</h1>
+        <span className="ad-eyebrow">{heading.eyebrow}</span>
+        <h1 className="ck-service__title">{heading.title}</h1>
       </div>
       <div
         className={reducedMotion ? "ck-lamp ck-lamp--still" : "ck-lamp"}

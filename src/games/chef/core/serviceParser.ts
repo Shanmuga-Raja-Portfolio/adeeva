@@ -71,6 +71,8 @@ const planParser = objectOf<ServicePlan>({
   wage: countParser,
   lengthSeconds: countParser,
   maxDishesPerTicket: integerRangeParser(1, 3),
+  lampHoldSeconds: countParser,
+  pans: integerRangeParser(1, 2),
 });
 
 export const serviceRunParser = objectOf<ServiceRun>({
@@ -81,6 +83,7 @@ export const serviceRunParser = objectOf<ServiceRun>({
   tickets: arrayOf(ticketParser),
   staff: arrayOf(staffParser),
   special: nullable(specialParser),
+  spotlight: nullable(stringParser),
   lastAt: rangeParser(0, Number.MAX_SAFE_INTEGER),
   openSince: nonNegativeParser,
   seed: rngParser,

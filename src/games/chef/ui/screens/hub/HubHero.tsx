@@ -1,19 +1,9 @@
-import { daysUntilWeekEnd } from "../../../../../engine/weekday";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
-import { Button } from "../../../../../ui/kit/Button";
-import { TagPill } from "../../../../../ui/kit/TagPill";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
-import { CAREER } from "../../../content/career";
-import {
-  canEndDay,
-  canPotWash,
-  isFamilyMeal,
-  rungById,
-  visibleNextTrends,
-  weeklyBill,
-  type GameState,
-} from "../../../core";
+import { isFamilyMeal, rungById, type GameState } from "../../../core";
 import { KitchenBackdrop } from "../../art/KitchenBackdrop";
+import { HeroCravings } from "./HeroCravings";
+import { HeroDayActions } from "./HeroDayActions";
 
 export interface HubHeroProps {
   readonly state: GameState;
@@ -24,10 +14,6 @@ export interface HubHeroProps {
 export function HubHero({ state, onPotWash, onEndDay }: HubHeroProps) {
   const rung = rungById(state.rung);
   const scene = state.rung === "student" ? "school" : state.rung === "line" ? "hall" : "kitchen";
-  const next = visibleNextTrends(state);
-  const rentIn = daysUntilWeekEnd(state.calendar.day);
-  const potWash = canPotWash(state);
-  const endDay = canEndDay(state);
   return (
     <section className="ck-hero" aria-labelledby="ck-hero-title">
       <KitchenBackdrop scene={scene} className="ck-hero__backdrop" />
@@ -51,44 +37,8 @@ export function HubHero({ state, onPotWash, onEndDay }: HubHeroProps) {
             ? "No shifts or tests today. Practise any dish, visit the shop, and rest."
             : rung.goal}
         </p>
-        <div className="ck-hero__cravings" aria-label="Town cravings">
-          <span className="ck-hero__label">Town cravings</span>
-          {state.trends.current.map((tag) => (
-            <TagPill key={tag} tone="hot">
-              {tag}
-            </TagPill>
-          ))}
-          {next === null ? null : (
-            <>
-              <span className="ck-hero__label">Next week</span>
-              {next.map((tag) => (
-                <TagPill key={tag} tone="next">
-                  {tag}
-                </TagPill>
-              ))}
-            </>
-          )}
-        </div>
-        <p className="ck-hero__rent">
-          {weeklyBill(state) === 0
-            ? `No rent for ${rung.home} on this difficulty.`
-            : rentIn === 0
-              ? `Rent of ${weeklyBill(state)} coins for ${rung.home} is due tonight.`
-              : `Rent for ${rung.home}: ${weeklyBill(state)} coins in ${rentIn} ${rentIn === 1 ? "day" : "days"}.`}
-        </p>
-        <div className="ck-hero__actions">
-          <Button
-            variant="secondary"
-            onClick={onPotWash}
-            disabledReason={potWash.reasons[0]}
-            data-testid="pot-wash"
-          >
-            Pot-wash day (+{CAREER.potWashPay})
-          </Button>
-          <Button icon="calendar" onClick={onEndDay} disabledReason={endDay.reasons[0]} data-testid="end-day">
-            End the day
-          </Button>
-        </div>
+        <HeroCravings state={state} />
+        <HeroDayActions state={state} home={rung.home} onPotWash={onPotWash} onEndDay={onEndDay} />
       </div>
     </section>
   );

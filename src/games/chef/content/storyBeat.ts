@@ -17,6 +17,18 @@ export const STORY_TRIGGERS = [
   "tasting-day",
   "head-chef-start",
   "first-menu-written",
+  "crossroads",
+  "restaurant-start",
+  "first-critic-visit",
+  "first-restaurant-week",
+  "three-path-awards",
+  "truck-start",
+  "first-festival-favourite",
+  "three-ribbons-eight-festivals",
+  "tv-start",
+  "first-letter",
+  "book-launched",
+  "larkspur-ladle",
   "trait-dreamer",
   "trait-perfectionist",
   "trait-trendsetter",
@@ -124,6 +136,75 @@ export const STORY_BEATS: readonly StoryBeatDef[] = [
   ]),
   beat("ch-first-menu", "first-menu-written", "A Menu Is a Promise", [
     said("Haruka", "A menu is a promise. Keep it small and keep it well."),
+  ]),
+  beat("ch-crossroads", "crossroads", "Three Doors", [
+    said(
+      "Hollis",
+      "Three doors, chef. A table of your own, a truck and the open road, or a studio kitchen and a book.",
+    ),
+    said("Hollis", "Peek through each door once. When you choose, it's yours for this save."),
+  ]),
+  beat("rs-keys", "restaurant-start", "Your Name Over the Door", [
+    said("Narrator", "Quayside Lane. Your name, painted over the door."),
+    you(
+      "My name, my table. Let's cook.",
+      "I can already see the lamps glowing at night.",
+      "Every table set the same. Every rim wiped.",
+      "Quayside Lane is about to get busy.",
+      "I hope the neighbours pop in to say hello.",
+    ),
+  ]),
+  beat("rs-first-critic", "first-critic-visit", "Table 7", [
+    said("Narrator", "Table 7 has a notebook."),
+    said("Esme", "Same as always, chef. Clean rims."),
+  ]),
+  beat("rs-first-week-money", "first-restaurant-week", "This Week's Money", [
+    said("Hollis", "Money in, money out, and what's left keeps the lights on. You did fine."),
+  ]),
+  beat("rs-chapter-end", "three-path-awards", "To Quayside Lane!", [
+    said("All mentors", "To Quayside Lane!"),
+    you(
+      "To everyone who cooked here with me.",
+      "To every plate that looked like a little painting.",
+      "To five good nights a week, every week.",
+      "To the next thing Larkspur falls for.",
+      "To every guest who came back and said hi.",
+    ),
+  ]),
+  beat("tr-clementine", "truck-start", "Clementine", [
+    said("Narrator", "Clementine coughs, then purrs. Your truck."),
+    you(
+      "Come on, Clementine. Let's go feed some festivals.",
+      "She's the colour of a sunrise. Let's go!",
+      "Fridge checked, hatch checked. Ready to roll.",
+      "Every festival in town is about to know us.",
+      "Hello, Clementine. Let's go meet everybody.",
+    ),
+  ]),
+  beat("tr-first-ribbon", "first-festival-favourite", "A Blue Ribbon", [
+    said("Narrator", "A blue ribbon, tied to the hatch by a kid in a kite hat."),
+  ]),
+  beat("tr-chapter-end", "three-ribbons-eight-festivals", "Eight Festivals", [
+    said("Rafael", "Eight festivals. You fed the whole town, chef."),
+  ]),
+  beat("tv-first-segment", "tv-start", "Spoon & Story", [
+    said("Producer Mo", "Just cook and talk like you'd teach a friend."),
+  ]),
+  beat("tv-first-letter", "first-letter", "A Letter in Crayon", [
+    said("Narrator", 'A letter in crayon: "My aunt and me tasted as we went. Our soup was good!"'),
+  ]),
+  beat("tv-chapter-end", "book-launched", "On the Library Shelf", [
+    said("Haruka", "Your book is on the library shelf, next to mine."),
+    you(
+      "Right next to yours? I'll take good care of it.",
+      "My plates, on paper, on a shelf. Like a dream.",
+      "Every card tested. Every tip a kind one.",
+      "I hope every kid in town borrows it.",
+      "Next to yours. That's the nicest shelf in town.",
+    ),
+  ]),
+  beat("ch-ladle", "larkspur-ladle", "The Larkspur Ladle", [
+    said("Hollis", "All three, chef. This brass ladle has been waiting for a wall like yours."),
   ]),
   beat("ch-trait-dreamer", "trait-dreamer", "Moonlight", [
     said("Isadora", "Cook me a plate that looks like moonlight."),

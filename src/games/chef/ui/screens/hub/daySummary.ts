@@ -3,10 +3,14 @@ import { arrivedClientIds, lapsedClientIds } from "../../../../../engine/gigBoar
 import { isWeekEnd } from "../../../../../engine/week";
 import { CAREER } from "../../../content/career";
 import {
+  awardById,
   clientById,
   cuisineById,
+  festivalById,
   isFamilyMeal,
+  isServiceNight,
   mentorFor,
+  pathById,
   rungById,
   weeklyBill,
   type GameState,
@@ -20,17 +24,32 @@ export interface DaySummary {
   readonly lines: readonly string[];
 }
 
+function pathLines(previous: GameState, next: GameState): string[] {
+  const path = next.path;
+  if (path === null) return [];
+  const lines: string[] = [];
+  const won = path.awards.filter((award) => !(previous.path?.awards ?? []).includes(award));
+  for (const award of won) lines.push(`You won the ${awardById(award).name} award!`);
+  if (path.kind === "restaurant" && isServiceNight(next.calendar.day))
+    lines.push("Tonight is a service night on Quayside Lane.");
+  if (path.kind === "truck" && previous.path?.kind === "truck" && path.board !== previous.path.board)
+    lines.push(
+      `This week's festivals: ${path.board.map((slot) => festivalById(slot.festivalId).name).join(", ")}.`,
+    );
+  return lines;
+}
+
 export function daySummary(previous: GameState, next: GameState, kind: DayEndKind): DaySummary {
   const lines: string[] = [];
   if (kind === "potwash")
     lines.push(`You washed pots at the Hall all day and earned ${CAREER.potWashPay} coins.`);
   if (isWeekEnd(previous.calendar.day)) {
     const rent = weeklyBill(previous);
-    lines.push(
-      rent === 0
-        ? "A new week begins. No rent to pay."
-        : `Rent paid for ${rungById(previous.rung).home}: ${rent} coins.`,
-    );
+    const paid =
+      previous.path === null
+        ? `Rent paid for ${rungById(previous.rung).home}`
+        : `Paid for ${pathById(previous.path.kind).home}`;
+    lines.push(rent === 0 ? "A new week begins. No rent to pay." : `${paid}: ${rent} coins.`);
     lines.push(`This week Larkspur is craving: ${next.trends.current.join(" and ")}.`);
   }
   if (isFamilyMeal(next.calendar.day))
@@ -50,6 +69,7 @@ export function daySummary(previous: GameState, next: GameState, kind: DayEndKin
   const lapsed = lapsedClientIds(previous.gigs, next.gigs);
   if (lapsed.length > 0)
     lines.push(`${clientNames(lapsed, clientById)} found another cook in time. There will be other orders!`);
+  lines.push(...pathLines(previous, next));
   if (lines.length === 0) lines.push("A quiet night. The lamps dim and the Hall sleeps.");
   return { kind, toDay: next.calendar.day, lines };
 }

@@ -7,6 +7,7 @@ import type { TrendState } from "../../../engine/trendMarket";
 import type { AwardId } from "../content/award";
 import type { RungId, StartId } from "../content/career";
 import type { CuisineId } from "../content/cuisine";
+import type { PathId } from "../content/path";
 import type { DishId } from "../content/dish";
 import type { TasteTag } from "../content/tasteTag";
 import type { UpgradeId } from "../content/upgrade";
@@ -15,11 +16,12 @@ import type { DiaryEntry, PlatingCard } from "./dishDiary";
 import type { DishRun } from "./dishRun";
 import type { LogEntry } from "./log";
 import type { OrderBrief, OrderDish } from "./orderBrief";
+import type { PathState } from "./path";
 import type { ServiceRun } from "./service";
 import type { TasteMemory } from "./tasteMemory";
 import type { TestDay } from "./testDay";
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export interface Profile extends ProfileBase {
   readonly start: StartId;
@@ -67,5 +69,7 @@ export interface GameState {
   readonly lastShiftDay: number;
   readonly guide: boolean;
   readonly nextRunNumber: number;
+  readonly path: PathState | null;
+  readonly peeked: readonly PathId[];
   readonly rng: RngState;
 }

@@ -7,7 +7,7 @@ import type { GameState } from "./gameState";
 export type Reward = TrendReward<TasteTag>;
 
 const REWARD_LABELS = { trend: "Town craving", dreamer: "Colour on the plate" } as const;
-const STRONG_STARS = 4;
+export const STRONG_STARS = 4;
 const GOOD_STARS = 3;
 
 export interface RewardInput {
@@ -37,7 +37,7 @@ export function kindSoftFail(fee: number): Reward {
     coins: amount,
     reputation: 0,
     buzz: 0,
-    lines: [{ label: "Part of the bonus", amount }],
+    lines: amount === 0 ? [] : [{ label: "Part of the bonus", amount }],
     trendMatches: [],
   };
 }

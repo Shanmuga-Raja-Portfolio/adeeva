@@ -13,6 +13,7 @@ import {
 import type { FollowProgress } from "../../../engine/followRecord";
 import { ROTATIONS } from "../../../engine/geometry/rotation";
 import { countParser, dayParser, shareParser } from "../../../engine/stateParsers";
+import { CUE_KINDS } from "../content/cueCard";
 import { CUISINE_IDS } from "../content/cuisine";
 import { DISH_IDS } from "../content/dish";
 import { INGREDIENT_IDS } from "../content/ingredient";
@@ -26,6 +27,7 @@ import {
   type DishRun,
   type PlatedDish,
   type RunPurpose,
+  type SegmentCard,
   type SimmerProgress,
 } from "./dishRun";
 import {
@@ -68,7 +70,7 @@ export const plateColourParser = oneOf(PLATE_COLOURS);
 
 const purposeParser: Parser<RunPurpose> = (input, path) => {
   const kind = objectOf<{ kind: RunPurpose["kind"] }>({
-    kind: oneOf(["lesson", "test", "order", "practice"]),
+    kind: oneOf(["lesson", "test", "order", "practice", "segment"]),
   })(input, path);
   if (!kind.ok) return kind;
   switch (kind.value.kind) {
@@ -91,6 +93,13 @@ const purposeParser: Parser<RunPurpose> = (input, path) => {
       );
     case "practice":
       return objectOf<RunPurpose & { kind: "practice" }>({ kind: oneOf(["practice"]) })(input, path);
+    case "segment":
+      return objectOf<RunPurpose & { kind: "segment" }>({
+        kind: oneOf(["segment"]),
+        cards: arrayOf(objectOf<SegmentCard>({ cue: oneOf(CUE_KINDS), tip: integerRangeParser(0, 2) })),
+        cueRight: booleanParser,
+        kindTips: integerRangeParser(0, 3),
+      })(input, path);
   }
 };
 

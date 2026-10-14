@@ -1,7 +1,7 @@
 import { weekdayName } from "../../../../../engine/weekday";
 import { Button } from "../../../../../ui/kit/Button";
 import { StatChip } from "../../../../../ui/kit/StatChip";
-import { rungById, type GameState } from "../../../core";
+import { pathById, rungById, type GameState } from "../../../core";
 import { Wordmark } from "../../art/Wordmark";
 
 export interface HubTopBarProps {
@@ -31,7 +31,9 @@ export function HubTopBar({ state, onOpenSettings, onExit }: HubTopBarProps) {
         <span data-testid="stat-buzz">
           <StatChip kind="buzz" value={state.buzz} />
         </span>
-        <span className="ck-bar__rung">{rungById(state.rung).name}</span>
+        <span className="ck-bar__rung">
+          {state.path === null ? rungById(state.rung).name : pathById(state.path.kind).venue}
+        </span>
       </div>
       <div className="ck-bar__actions">
         <Button variant="ghost" size="sm" onClick={onOpenSettings}>

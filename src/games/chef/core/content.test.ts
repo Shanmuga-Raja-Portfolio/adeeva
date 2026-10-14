@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { hasUniqueIds } from "../../../engine/uniqueIds";
 import { CLIENTS } from "../content/client";
+import { CUE_CARDS } from "../content/cueCard";
 import { CUISINES, CUISINE_IDS } from "../content/cuisine";
 import { DISHES } from "../content/dish";
 import { INGREDIENTS } from "../content/ingredient";
@@ -117,9 +118,20 @@ describe("Six Kitchens content", () => {
   });
 
   it("never uses words the culture checklist rules out", () => {
-    const text = JSON.stringify([DISHES, MENTORS, CLIENTS, STORY_BEATS, INGREDIENTS]);
+    const text = JSON.stringify([DISHES, MENTORS, CLIENTS, STORY_BEATS, INGREDIENTS, CUE_CARDS]);
     expect(text).not.toMatch(
-      /\b(exotic|ethnic|authentic|weird|spicy foreigners?|wine|beer|sake|mirin|healthy|guilt)\b/i,
+      /\b(exotic|ethnic|authentic|weird|spicy foreigners?|wine|beer|sake|mirin|healthy|guilt|light)\b/i,
     );
+  });
+
+  it("writes cue card tips that are kind or just unclear, never careless or rude", () => {
+    for (const card of CUE_CARDS) {
+      expect(new Set(card.tips.map((tip) => tip.text)).size, card.id).toBe(3);
+      expect(
+        card.tips.filter((tip) => tip.kind),
+        card.id,
+      ).toHaveLength(1);
+    }
+    expect(JSON.stringify(CUE_CARDS)).not.toMatch(/\b(bother|nobody|guess|whatever|walk away|at once)\b/i);
   });
 });

@@ -64,7 +64,9 @@ function Host({ state, run }: { readonly state: GameState; readonly run: DishRun
       <p>
         {run.purpose.kind === "test"
           ? `${run.purpose.test === "graduation" ? "Graduation Practical" : "Tasting Day"}: dish ${run.purpose.index + 1} of 3. You've got this.`
-          : "Practice kitchen: no pay, no pressure. Just cooking."}
+          : run.purpose.kind === "segment"
+            ? "Spoon & Story is live: cook it with your cue cards."
+            : "Practice kitchen: no pay, no pressure. Just cooking."}
       </p>
     </div>
   );

@@ -39,7 +39,7 @@ function shiftBoard(state: GameState, perShift: number): GameState {
 
 export function rollDayBoard(state: GameState): GameState {
   const day = state.calendar.day;
-  if (isFamilyMeal(day)) return { ...state, board: { day, lesson: null, shifts: [] } };
+  if (isFamilyMeal(day) || state.path !== null) return { ...state, board: { day, lesson: null, shifts: [] } };
   if (state.rung === "student") return lessonBoard(state);
   if (state.rung === "line") return shiftBoard(state, 1);
   if (state.rung === "sous") return shiftBoard(state, 2);

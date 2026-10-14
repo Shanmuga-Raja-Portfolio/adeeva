@@ -11,6 +11,7 @@ import { MiseStage } from "./MiseStage";
 import { PassStage } from "./PassStage";
 import { PlateStage } from "./PlateStage";
 import { ResultsStage } from "./ResultsStage";
+import { SegmentCueStrip } from "./SegmentCueStrip";
 import { StageRail } from "./StageRail";
 import { TicketChecklist } from "./TicketChecklist";
 import { TicketStage } from "./TicketStage";
@@ -63,6 +64,7 @@ export function DishFlow({ state, dispatch, onExit }: DishFlowProps) {
     <main className="ck-dish ad-screen" data-stage={run.stage}>
       <DishHeader state={state} run={run} onExit={onExit} onSetAside={() => setSettingAside(true)} />
       <StageRail state={state} run={run} dispatch={dispatch} />
+      <SegmentCueStrip run={run} />
       <CoachBubble
         show={state.guide && state.diary.length < 2 && run.stage === "ticket"}
         text={COACH_LINES.ticket}
@@ -75,7 +77,7 @@ export function DishFlow({ state, dispatch, onExit }: DishFlowProps) {
       </div>
       <SetAsideDialog
         open={settingAside}
-        test={run.purpose.kind === "test"}
+        purpose={run.purpose.kind}
         onConfirm={() => {
           setSettingAside(false);
           if (dispatch({ type: "abandonRun" })) onExit();

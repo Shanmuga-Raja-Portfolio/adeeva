@@ -63,4 +63,29 @@ export type Action =
   | { readonly type: "potWash" }
   | { readonly type: "buyUpgrade"; readonly upgradeId: UpgradeId }
   | { readonly type: "setGuide"; readonly on: boolean }
-  | { readonly type: "markBeatSeen"; readonly beatId: string };
+  | { readonly type: "markBeatSeen"; readonly beatId: string }
+  | { readonly type: "peekPath"; readonly path: string }
+  | { readonly type: "choosePath"; readonly path: string; readonly nameCard: string | null }
+  | { readonly type: "setPathMenu"; readonly dishIds: readonly string[] }
+  | { readonly type: "setPrice"; readonly dishId: string; readonly price: number }
+  | { readonly type: "setPar"; readonly dishId: string; readonly count: number }
+  | { readonly type: "askHollis"; readonly desk: string }
+  | { readonly type: "hireStaff"; readonly staffId: string }
+  | { readonly type: "partWays"; readonly staffId: string }
+  | { readonly type: "toggleShift"; readonly staffId: string; readonly night: number }
+  | { readonly type: "openNight" }
+  | { readonly type: "openFestival"; readonly helperId: string }
+  | { readonly type: "prepSegment"; readonly dishId: string }
+  | { readonly type: "placeCue"; readonly cue: string }
+  | { readonly type: "clearCues" }
+  | { readonly type: "pickTip"; readonly index: number; readonly tip: number }
+  | { readonly type: "dropSegment" }
+  | { readonly type: "startSegment" }
+  | { readonly type: "startBook" }
+  | {
+      readonly type: "addRecipeCard";
+      readonly chapterId: string;
+      readonly dishId: string;
+      readonly tip: number;
+    }
+  | { readonly type: "launchBook" };

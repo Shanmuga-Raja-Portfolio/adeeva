@@ -4,7 +4,6 @@ import { Button } from "../../../../../ui/kit/Button";
 import { Dialog } from "../../../../../ui/kit/Dialog";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import type { DishId } from "../../../content/dish";
-import { STATION_DEFS } from "../../../content/station";
 import { HINTS } from "../../../content/hints";
 import {
   cuisineById,
@@ -20,6 +19,7 @@ import {
   type ShiftSetup,
 } from "../../../core";
 import { chefWhites } from "../../art/chefWhites";
+import { staffRoleLine } from "../path/staffRole";
 import { DishPicker } from "./DishPicker";
 import "./dialogs.css";
 
@@ -113,7 +113,6 @@ function HelperPicker({
     <div className="ck-helpers" role="group" aria-label="Helpers for tonight">
       {hireableHelpers().map((member) => {
         const on = chosen.includes(member.id);
-        const best = STATION_DEFS.find((station) => station.id === member.best);
         return (
           <button
             key={member.id}
@@ -131,11 +130,7 @@ function HelperPicker({
               frameColour="#dfe5e8"
             />
             <span className="ck-helper__name">{member.name}</span>
-            <span className="ck-muted">
-              {best === undefined
-                ? `Every station ${Math.round(member.bestSkill * 100)}%`
-                : `${best.name} ${Math.round(member.bestSkill * 100)}%`}
-            </span>
+            <span className="ck-muted">{staffRoleLine(member)}</span>
             <span className="ck-helper__note">{member.note}</span>
           </button>
         );

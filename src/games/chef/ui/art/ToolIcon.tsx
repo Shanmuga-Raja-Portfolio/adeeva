@@ -1,4 +1,5 @@
 import type { UpgradeId } from "../../content/upgrade";
+import { KitchenUpgradeGlyph } from "./KitchenUpgradeGlyph";
 
 export function ToolIcon({ tool }: { readonly tool: UpgradeId }) {
   return (
@@ -71,6 +72,7 @@ export function ToolIcon({ tool }: { readonly tool: UpgradeId }) {
           />
         </g>
       ) : null}
+      <KitchenUpgradeGlyph tool={tool} />
     </svg>
   );
 }

@@ -27,7 +27,7 @@ function minimumBonus(state: GameState): number {
   return difficultyById(state.profile.difficulty).minQualityBonus;
 }
 
-function withRun(
+export function withRun(
   state: GameState,
   purpose: RunPurpose,
   dishId: DishId,

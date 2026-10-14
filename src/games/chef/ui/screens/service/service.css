@@ -495,3 +495,28 @@
     display: none;
   }
 }
+
+.ck-slip--critic {
+  outline: 3px solid var(--ck-amber);
+  box-shadow:
+    0 0 0 6px rgba(242, 169, 59, 0.25),
+    0 8px 16px rgba(0, 0, 0, 0.35);
+}
+
+.ck-slip__critic {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--ck-charcoal);
+  color: var(--ck-amber);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ck-hob-pans {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ck-hob-pans--two {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}

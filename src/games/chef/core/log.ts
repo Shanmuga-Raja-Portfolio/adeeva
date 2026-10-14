@@ -7,7 +7,7 @@ import type { ServiceKind, Special } from "./service";
 
 export const LOG_SIZE = 30;
 
-export type DishPurposeKind = "lesson" | "test" | "order" | "practice";
+export type DishPurposeKind = "lesson" | "test" | "order" | "practice" | "segment";
 
 export interface MasteryGain {
   readonly cuisine: CuisineId;

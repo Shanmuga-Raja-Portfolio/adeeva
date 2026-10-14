@@ -1,6 +1,8 @@
 import { clientIsOpen, freeClients } from "../../../engine/gigBoard";
 import {
+  acceptStateOffer,
   rollStateOffers,
+  stateOfferAcceptIssue,
   stateOfferViews,
   type OfferView as BoardOfferView,
 } from "../../../engine/gigBoardState";
@@ -11,11 +13,20 @@ import { isDishUnlocked } from "./mastery";
 import { rollOrderBrief, type OrderBrief } from "./orderBrief";
 import { queueTraitBeat } from "./storyQueue";
 
-export {
-  acceptStateOffer as acceptOffer,
-  declineStateOffer as declineOffer,
-  stateOfferAcceptIssue as offerAcceptIssue,
-} from "../../../engine/gigBoardState";
+export { declineStateOffer as declineOffer } from "../../../engine/gigBoardState";
+
+export const SMALL_KITCHEN_ORDERS = 1;
+
+export function offerAcceptIssue(state: GameState, offerId: string): string | null {
+  const kind = state.path?.kind;
+  if ((kind === "truck" || kind === "tv") && state.gigs.active.length >= SMALL_KITCHEN_ORDERS)
+    return "A small kitchen takes one order at a time. Finish the open one first.";
+  return stateOfferAcceptIssue(state, offerId);
+}
+
+export function acceptOffer(state: GameState, offerId: string): GameState {
+  return offerAcceptIssue(state, offerId) === null ? acceptStateOffer(state, offerId) : state;
+}
 
 export type OfferView = BoardOfferView<OrderBrief, ClientDef>;
 

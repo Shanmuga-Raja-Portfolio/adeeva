@@ -107,7 +107,7 @@ export const CLIENTS: readonly ClientDef[] = [
       },
     ),
     lines: {
-      request: "Something light and fresh to go with a good story.",
+      request: "Something fresh and bright to go with a good story.",
       delighted: "We talked about your food more than the book!",
       nearMiss: "Lovely, thank you. The club enjoyed it.",
     },

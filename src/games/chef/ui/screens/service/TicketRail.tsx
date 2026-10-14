@@ -24,12 +24,17 @@ export function TicketRail({ service, now, clocked }: TicketRailProps) {
           return (
             <article
               key={ticket.id}
-              className="ck-slip"
+              className={ticket.id === service.spotlight ? "ck-slip ck-slip--critic" : "ck-slip"}
               style={{ ["--ck-tilt" as string]: `${index % 2 === 0 ? -2 : 2}deg` }}
               data-testid={`slip-${ticket.id}`}
             >
               <header className="ck-slip__head">
                 <strong>Table {ticket.table}</strong>
+                {ticket.id === service.spotlight ? (
+                  <span className="ck-slip__critic" title="A quiet guest with a notebook">
+                    Notebook
+                  </span>
+                ) : null}
                 {clocked ? <span className="ck-slip__time">{formatClock(age)}</span> : null}
               </header>
               <ul className="ck-slip__dishes">

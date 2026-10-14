@@ -21,6 +21,7 @@ import { chefWhites } from "../../art/chefWhites";
 import { KitchenBackdrop } from "../../art/KitchenBackdrop";
 import { PlateArt } from "../../art/PlateArt";
 import type { StageProps } from "./stageProps";
+import { SegmentSummary } from "./SegmentSummary";
 import "./results.css";
 
 function Totals({ reward, instant }: { readonly reward: Reward; readonly instant: boolean }) {
@@ -123,11 +124,14 @@ export function ResultsStage({ state, run, dispatch, onExit }: StageProps) {
   const title = headline(
     entries,
     mentor === null
-      ? `${dish.name}, served!`
+      ? run.purpose.kind === "segment"
+        ? "That's a wrap!"
+        : `${dish.name}, served!`
       : lessonPassed
         ? `${mentor.name} is proud!`
         : `${mentor.name} says well tried`,
   );
+  const segment = run.purpose.kind === "segment" && state.path?.kind === "tv" ? state.path.lastSegment : null;
   const testDay = state.testDay;
   const nextTest =
     testDay !== null && run.purpose.kind === "test" ? testDay.dishIds[testDay.qualities.length] : undefined;
@@ -169,11 +173,17 @@ export function ResultsStage({ state, run, dispatch, onExit }: StageProps) {
         ) : null}
       </div>
       <section className="ck-results__card ck-card">
-        <span className="ad-eyebrow">{title.eyebrow}</span>
+        <span className="ad-eyebrow">{segment === null ? title.eyebrow : "Spoon & Story, live"}</span>
         <h1>{title.title}</h1>
         <div className="ck-results__stars">
-          <StarRating stars={evaluation?.stars ?? stars} size={28} />
-          <strong>{evaluation === null ? `Quality ${quality}` : `${evaluation.score} / 100`}</strong>
+          <StarRating stars={segment?.stars ?? evaluation?.stars ?? stars} size={28} />
+          <strong>
+            {segment !== null
+              ? `Segment ${segment.score} / 100`
+              : evaluation === null
+                ? `Quality ${quality}`
+                : `${evaluation.score} / 100`}
+          </strong>
         </div>
         <p className="ck-results__quality">
           <Icon name="heart" size={16} /> Dish quality {quality}
@@ -182,6 +192,7 @@ export function ResultsStage({ state, run, dispatch, onExit }: StageProps) {
             : ""}
         </p>
         {evaluation !== null ? <Criteria evaluation={evaluation} /> : null}
+        <SegmentSummary state={state} run={run} />
         {testEntry?.kind === "test" ? (
           <div className="ck-results__test">
             <p>

@@ -91,7 +91,7 @@ const dishEntryParser = objectOf<DishLogEntry>({
   runId: stringParser,
   day: dayParser,
   dishId: dishIdParser,
-  purpose: oneOf(["lesson", "test", "order", "practice"]),
+  purpose: oneOf(["lesson", "test", "order", "practice", "segment"]),
   quality: qualityParser,
   stars: starsParser,
   evaluation: nullable(dishEvaluationParser),

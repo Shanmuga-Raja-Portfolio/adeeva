@@ -59,6 +59,8 @@ export function createGame(settings: NewGameSettings): GameState {
     lastShiftDay: 0,
     guide: true,
     nextRunNumber: 1,
+    path: null,
+    peeked: [],
     rng,
   };
   return rollOffers(rollDayBoard(queueStoryTrigger(base, head ? "head-chef-start" : "intro")));

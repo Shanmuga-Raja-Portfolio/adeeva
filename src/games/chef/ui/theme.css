@@ -321,6 +321,67 @@
   flex: none;
 }
 
+.ck-meters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ck-meters li {
+  display: grid;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: #f1ece0;
+}
+
+.ck-meters strong {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+}
+
+.ck-letter {
+  padding: var(--space-3);
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 22px, rgba(61, 111, 180, 0.18) 22px 23px), #fffdf2;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transform: rotate(var(--ck-tilt, 0deg));
+}
+
+.ck-letter__text {
+  margin: 0;
+  font-family: "Comic Sans MS", "Segoe Print", var(--font-body);
+  color: #2e4a7a;
+}
+
+.ck-letter__from {
+  margin: 6px 0 0;
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.ck-cue__badge,
+.ck-recipe__badge {
+  display: inline-block;
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--ck-tomato);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 600px) {
+  .ck-meters {
+    grid-template-columns: 1fr;
+  }
+}
+
 @keyframes ck-rise {
   from {
     opacity: 0;

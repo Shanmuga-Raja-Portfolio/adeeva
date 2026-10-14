@@ -8,14 +8,30 @@ import { isWeekEnd } from "../../../engine/week";
 import { settleWeek } from "../../../engine/weekSettlement";
 import { CAREER } from "../content/career";
 import { TASTE_TAGS } from "../content/tasteTag";
-import { rungById } from "./catalog";
+import { pathById, rungById } from "./catalog";
 import { rollDayBoard } from "./dayBoardRoll";
 import type { GameState } from "./gameState";
 import { rollOffers } from "./offers";
+import { pathNewDay } from "./pathDay";
+import { recordMoney } from "./path";
 import { queueStoryTrigger } from "./storyQueue";
 
-export function weeklyBill(state: Pick<GameState, "profile" | "rung">): number {
-  return weeklyRent(rungById(state.rung).rent, state.profile.difficulty);
+export const BIGGER_ROOM_RENT = 40;
+
+export function baseRent(state: Pick<GameState, "rung" | "path" | "upgrades">): number {
+  const path = state.path;
+  if (path === null) return rungById(state.rung).rent;
+  const bigger = path.kind === "restaurant" && state.upgrades.includes("bigger-room") ? BIGGER_ROOM_RENT : 0;
+  return pathById(path.kind).rent + bigger;
+}
+
+export function weeklyBill(state: Pick<GameState, "profile" | "rung" | "path" | "upgrades">): number {
+  return weeklyRent(baseRent(state), state.profile.difficulty);
+}
+
+export function rentDue(state: GameState): number {
+  const bill = weeklyBill(state);
+  return state.path === null ? bill : Math.min(bill, Math.max(0, state.coins));
 }
 
 export function canEndDay(state: GameState): ActionCheck {
@@ -42,9 +58,12 @@ export function endDay(state: GameState): GameState {
     buzz: decayBuzz(state.buzz),
     calendar: { day: endedDay + 1, hoursLeft: BASE_DAY_HOURS },
   });
-  const settled = isWeekEnd(endedDay)
-    ? settleWeek(advanced, weeklyBill(advanced), TASTE_TAGS, queueStoryTrigger)
-    : advanced;
+  const bill = rentDue(advanced);
+  const settled = pathNewDay(
+    isWeekEnd(endedDay) ? settleWeek(advanced, bill, TASTE_TAGS, queueStoryTrigger) : advanced,
+    endedDay,
+    bill,
+  );
   const lapsed = keepOpenOrders(
     lapseOverdueState(expireStaleOffers(settled), (run) =>
       run.purpose.kind === "order" ? run.purpose.gigId : null,
@@ -64,5 +83,7 @@ export function canPotWash(state: GameState): ActionCheck {
 }
 
 export function potWash(state: GameState): GameState {
-  return workPaidShift(state, canPotWash(state), CAREER.potWashPay, endDay);
+  const check = canPotWash(state);
+  if (!check.ok) return state;
+  return workPaidShift(recordMoney(state, "work", CAREER.potWashPay), check, CAREER.potWashPay, endDay);
 }

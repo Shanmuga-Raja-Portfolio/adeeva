@@ -1,3 +1,4 @@
+import { PATH_SERVICE_KINDS } from "../content/career";
 import type { CuisineId } from "../content/cuisine";
 import type { DishId } from "../content/dish";
 import type { StationId } from "../content/station";
@@ -39,7 +40,7 @@ export interface Special {
   readonly price: number;
 }
 
-export const SERVICE_KINDS = ["shift", "station-test"] as const;
+export const SERVICE_KINDS = ["shift", "station-test", ...PATH_SERVICE_KINDS] as const;
 export type ServiceKind = (typeof SERVICE_KINDS)[number];
 
 export interface ServicePlan {
@@ -51,6 +52,8 @@ export interface ServicePlan {
   readonly wage: number;
   readonly lengthSeconds: number;
   readonly maxDishesPerTicket: number;
+  readonly lampHoldSeconds: number;
+  readonly pans: number;
 }
 
 export interface ServiceRun {
@@ -61,6 +64,7 @@ export interface ServiceRun {
   readonly tickets: readonly ServiceTicket[];
   readonly staff: readonly ServiceStaff[];
   readonly special: Special | null;
+  readonly spotlight: string | null;
   readonly lastAt: number;
   readonly openSince: number;
   readonly seed: number;

@@ -3,7 +3,7 @@ import { Icon } from "../../../../../ui/kit/IconSet";
 import { CLEAN_PASS_STREAK } from "../../../content/award";
 import { CAREER } from "../../../content/career";
 import { CUISINES } from "../../../content/cuisine";
-import { masteryLevel, mentorFor, type GameState } from "../../../core";
+import { CLEAN_STARS, masteryLevel, mentorFor, type GameState } from "../../../core";
 import { chefWhites } from "../../art/chefWhites";
 
 const LEVEL_NAMES = { learner: "Learner", confident: "Confident", expert: "Expert" } as const;
@@ -79,7 +79,8 @@ export function MasteryPanel({ state }: { readonly state: GameState }) {
         </p>
       ) : (
         <p className="ck-muted ck-mastery__hint">
-          Clean pass streak: {state.cleanStreak} of {CLEAN_PASS_STREAK} services with every dish at 4 stars.
+          Clean pass streak: {state.cleanStreak} of {CLEAN_PASS_STREAK} services with every dish at{" "}
+          {CLEAN_STARS} stars.
         </p>
       )}
     </section>

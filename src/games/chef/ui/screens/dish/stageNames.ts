@@ -25,5 +25,7 @@ export function purposeLabel(run: DishRun): string {
       return "Private order";
     case "practice":
       return "Practice kitchen";
+    case "segment":
+      return "Spoon & Story";
   }
 }

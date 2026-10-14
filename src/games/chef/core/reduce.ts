@@ -1,7 +1,6 @@
-import { buyUpgrade } from "../../../engine/upgrades";
 import type { Action } from "./action";
+import { askHollis } from "./askHollis";
 import { endDay, potWash } from "./calendar";
-import { knownUpgrade } from "./catalog";
 import {
   chopItem,
   cookSizzle,
@@ -11,12 +10,18 @@ import {
   stopSimmer,
   tasteDish,
 } from "./cookActions";
+import { addRecipeCard, launchBook, startBook } from "./cookbook";
+import { choosePath, peekPath, withCrossroadsBeat } from "./crossroads";
 import { declineLesson } from "./dayBoardRoll";
 import type { GameState } from "./gameState";
+import { buyKitUpgrade } from "./kitShop";
 import { setGuide, setMenu } from "./menu";
 import { createGame, newGameIssues } from "./newGame";
 import { acceptOffer, declineOffer } from "./offers";
 import { ringBell } from "./passBell";
+import { setPar, setPathMenu, setPrice } from "./pathMenu";
+import { openNight } from "./restaurantNight";
+import { hireStaff, partWays, toggleShift } from "./restaurantTeam";
 import {
   abandonRun,
   startLesson,
@@ -25,13 +30,15 @@ import {
   startPractice,
   startTest,
 } from "./runLifecycle";
+import { clearCues, dropSegment, pickTip, placeCue, prepSegment, startSegment } from "./segment";
 import { assignStaff, serviceStep, staffStep } from "./serviceActions";
 import { endService } from "./serviceEnd";
 import { startShift, startStationTest } from "./serviceSetup";
 import { goToStage } from "./stageNavigation";
 import { seeBeat } from "./storyQueue";
+import { openFestival } from "./truckDay";
 
-export function reduce(state: GameState, action: Action): GameState {
+function kitchenStep(state: GameState, action: Action): GameState {
   switch (action.type) {
     case "newGame":
       return newGameIssues(action).length > 0 ? state : createGame(action);
@@ -90,12 +97,64 @@ export function reduce(state: GameState, action: Action): GameState {
     case "potWash":
       return potWash(state);
     case "buyUpgrade":
-      return buyUpgrade(state, knownUpgrade(action.upgradeId));
+      return buyKitUpgrade(state, action.upgradeId);
     case "setGuide":
       return setGuide(state, action.on);
     case "markBeatSeen":
       return seeBeat(state, action.beatId);
     default:
+      return pathStep(state, action);
+  }
+}
+
+function pathStep(state: GameState, action: Action): GameState {
+  switch (action.type) {
+    case "peekPath":
+      return peekPath(state, action.path);
+    case "choosePath":
+      return choosePath(state, action.path, action.nameCard);
+    case "setPathMenu":
+      return setPathMenu(state, action.dishIds);
+    case "setPrice":
+      return setPrice(state, action.dishId, action.price);
+    case "setPar":
+      return setPar(state, action.dishId, action.count);
+    case "askHollis":
+      return askHollis(state, action.desk);
+    case "hireStaff":
+      return hireStaff(state, action.staffId);
+    case "partWays":
+      return partWays(state, action.staffId);
+    case "toggleShift":
+      return toggleShift(state, action.staffId, action.night);
+    case "openNight":
+      return openNight(state);
+    case "openFestival":
+      return openFestival(state, action.helperId);
+    case "prepSegment":
+      return prepSegment(state, action.dishId);
+    case "placeCue":
+      return placeCue(state, action.cue);
+    case "clearCues":
+      return clearCues(state);
+    case "pickTip":
+      return pickTip(state, action.index, action.tip);
+    case "dropSegment":
+      return dropSegment(state);
+    case "startSegment":
+      return startSegment(state);
+    case "startBook":
+      return startBook(state);
+    case "addRecipeCard":
+      return addRecipeCard(state, action.chapterId, action.dishId, action.tip);
+    case "launchBook":
+      return launchBook(state);
+    default:
       return state;
   }
+}
+
+export function reduce(state: GameState, action: Action): GameState {
+  const next = kitchenStep(state, action);
+  return next === state || action.type === "newGame" ? next : withCrossroadsBeat(next);
 }

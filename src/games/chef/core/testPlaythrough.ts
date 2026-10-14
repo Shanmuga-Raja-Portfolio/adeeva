@@ -14,6 +14,7 @@ import { quickTasteStart, QUICK_SIMMER_LAPS, type QuickRecord } from "./serviceQ
 import { progressAtTarget, TICKS_PER_LAP } from "./simmer";
 import { pieceRate, quickSizzle, TICKS_PER_SIDE, type SizzleRecord } from "./sizzle";
 import { currentBeat } from "./storyQueue";
+import { withCrossroadsBeat } from "./crossroads";
 import { bestPinches, cuisineJars, dishTasteStart } from "./taste";
 
 export const TEST_LOOK: AvatarLook = {
@@ -143,7 +144,7 @@ function cookStepActions(state: GameState, plan: CookPlan): Action[] {
   }
 }
 
-export function cookDish(state: GameState, plan: CookPlan = GOOD_COOK): GameState {
+export function cookDish(state: GameState, plan: CookPlan = GOOD_COOK, ring = true): GameState {
   let next = state;
   for (let guard = 0; guard < 16; guard += 1) {
     const run = next.activeRun;
@@ -177,7 +178,7 @@ export function cookDish(state: GameState, plan: CookPlan = GOOD_COOK): GameStat
         next = must(next, { type: "goToStage", stage: "pass" });
         break;
       case "pass":
-        return must(next, { type: "ringBell" });
+        return ring ? must(next, { type: "ringBell" }) : next;
     }
   }
   throw new Error("The dish never finished");
@@ -231,4 +232,27 @@ export function playTicket(state: GameState, ticketIndex: number, at: number): G
     });
   }
   throw new Error("The ticket never went out");
+}
+
+export function crossroadsReady(overrides: Partial<NewGameSettings> = {}, coins = 2000): GameState {
+  const head = settleStories(newTestGame({ start: "head", ...overrides }));
+  return settleStories(
+    withCrossroadsBeat({ ...head, reputation: 90, coins, passes: { ...head.passes, head: 12 } }),
+  );
+}
+
+export function playWholeService(state: GameState): GameState {
+  let next = state;
+  const tickets = state.service?.tickets.length ?? 0;
+  for (let index = 0; index < tickets; index += 1) {
+    const service = next.service;
+    const ticket = service?.tickets[index];
+    if (service === null || ticket === undefined) break;
+    if (ticket.sentAt !== null) continue;
+    next = playTicket(next, index, Math.max(service.lastAt, ticket.arrival) + 1);
+  }
+  const done = next.service;
+  if (done === null) throw new Error("No service to end");
+  const at = done.plan.lengthSeconds > 0 ? Math.max(done.lastAt, done.plan.lengthSeconds) : done.lastAt;
+  return settleStories(must(next, { type: "endService", at }));
 }

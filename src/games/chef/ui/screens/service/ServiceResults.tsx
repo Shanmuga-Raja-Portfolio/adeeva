@@ -5,17 +5,28 @@ import { StarRating } from "../../../../../ui/kit/StarRating";
 import { useCountUp } from "../../../../../ui/kit/useCountUp";
 import { cuisineById, dishById, type GameState, type ServiceLogEntry } from "../../../core";
 import { KitchenBackdrop } from "../../art/KitchenBackdrop";
+import { PathBackdrop } from "../../art/PathBackdrop";
+import { pathCoins, PathReport } from "./PathReport";
 import "../dish/results.css";
 import "./serviceResults.css";
 
-function Totals({ entry, instant }: { readonly entry: ServiceLogEntry; readonly instant: boolean }) {
-  const total = entry.wage + entry.reward.coins + (entry.special?.bonus ?? 0);
+function Totals({
+  entry,
+  extra,
+  instant,
+}: {
+  readonly entry: ServiceLogEntry;
+  readonly extra: number;
+  readonly instant: boolean;
+}) {
+  const total = entry.wage + entry.reward.coins + (entry.special?.bonus ?? 0) + extra;
   const coins = useCountUp(total, 900, 300, instant);
   const rep = entry.reward.reputation + (entry.special?.soldOut === true ? 1 : 0);
   return (
     <div className="ck-results__totals" data-testid="reward-totals">
       <span>
-        <Icon name="coin" size={20} /> +{coins} coins
+        <Icon name="coin" size={20} /> {coins >= 0 ? "+" : ""}
+        {coins} coins
       </span>
       <span>
         <Icon name="star" size={20} /> {rep >= 0 ? "+" : ""}
@@ -26,6 +37,14 @@ function Totals({ entry, instant }: { readonly entry: ServiceLogEntry; readonly 
       </span>
     </div>
   );
+}
+
+function eyebrow(entry: ServiceLogEntry, counters: string): string {
+  if (entry.service === "station-test") return "Station Test";
+  if (entry.service === "night") return "Tonight's service";
+  if (entry.service === "festival") return "Hatch Rush";
+  if (entry.service === "launch") return "Book launch at the Larkspur Library";
+  return counters.length > 0 ? `Service at ${counters}` : "Hall dinner service";
 }
 
 export function ServiceResults({
@@ -48,17 +67,19 @@ export function ServiceResults({
   const counters = entry.cuisines.map((cuisine) => cuisineById(cuisine).counter).join(" + ");
   return (
     <main className="ck-service-results ad-screen" data-testid="service-results">
-      <KitchenBackdrop scene="kitchen" className="ck-service-results__backdrop" />
+      {state.path === null ? (
+        <KitchenBackdrop scene="kitchen" className="ck-service-results__backdrop" />
+      ) : (
+        <PathBackdrop state={state} className="ck-service-results__backdrop" />
+      )}
       <section className="ck-service-results__card ck-card">
-        <span className="ad-eyebrow">
-          {test ? "Station Test" : counters.length > 0 ? `Service at ${counters}` : "Hall dinner service"}
-        </span>
+        <span className="ad-eyebrow">{eyebrow(entry, counters)}</span>
         <h1>{entry.passed ? (test ? "Your counter, chef!" : "What a service!") : "Everyone got fed"}</h1>
         <div className="ck-results__stars">
           <StarRating stars={entry.stars} size={28} />
           <strong>{entry.score} / 100</strong>
         </div>
-        <ul className="ck-service-results__meters">
+        <ul className="ck-meters">
           <li>
             <span>Dish quality</span>
             <strong>{entry.averageQuality}</strong>
@@ -78,6 +99,7 @@ export function ServiceResults({
             </strong>
           </li>
         </ul>
+        <PathReport state={state} entry={entry} />
         {entry.feedback.length > 0 ? (
           <div className="ck-results__feedback">
             {entry.feedback.map((line) => (
@@ -121,7 +143,7 @@ export function ServiceResults({
         {test && !entry.passed ? (
           <p className="ck-muted">Try the Station Test again tomorrow. No penalty.</p>
         ) : null}
-        <Totals entry={entry} instant={reducedMotion} />
+        <Totals entry={entry} extra={pathCoins(state, entry)} instant={reducedMotion} />
         <Button size="lg" onClick={onExit} data-testid="service-exit">
           Back to the kitchen
         </Button>

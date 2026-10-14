@@ -53,15 +53,19 @@ export function oneOf<const T extends string | number>(options: readonly T[]): P
   };
 }
 
+export function distinctBy<T>(
+  parser: Parser<readonly T[]>,
+  key: (value: T) => unknown,
+  expectation: string,
+): Parser<readonly T[]> {
+  return refined(parser, (values) => new Set(values.map(key)).size === values.length, expectation);
+}
+
 export function distinctListOf<const T extends string>(
   options: readonly T[],
   label: string,
 ): Parser<readonly T[]> {
-  return refined(
-    arrayOf(oneOf(options)),
-    (values) => new Set(values).size === values.length,
-    `each ${label} at most once`,
-  );
+  return distinctBy(arrayOf(oneOf(options)), (value) => value, `each ${label} at most once`);
 }
 
 export function nullable<T>(parser: Parser<T>): Parser<T | null> {

@@ -17,7 +17,7 @@ function chefReputation(rawSave: unknown): number {
 export const chefModule: GameModule = {
   id: "chef",
   title: "Six Kitchens",
-  tagline: "Cook your way from student to head chef across six kitchens.",
+  tagline: "Cook your way from student to head chef, then choose your own kitchen.",
   ages: "8–15+",
   tileArt: ChefTileArt,
   load: () => import("./ui/ChefGame").then((module) => ({ default: module.ChefGame })),

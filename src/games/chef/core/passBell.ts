@@ -13,6 +13,8 @@ import { addMastery } from "./mastery";
 import type { OrderDish } from "./orderBrief";
 import { dishTags, masteryGain, settleChefReward } from "./rewards";
 import { nextRung, promote } from "./rung";
+import { notePathOrder } from "./pathAwards";
+import { finishSegment, noteTested } from "./segment";
 import { queueStoryTrigger } from "./storyQueue";
 import { rememberTaste } from "./tasteMemory";
 
@@ -34,6 +36,8 @@ function noteFor(state: GameState, run: DishRun): string {
     }
     case "practice":
       return "Practice kitchen";
+    case "segment":
+      return "Spoon & Story segment";
   }
 }
 
@@ -238,7 +242,7 @@ function finishOrderDish(state: GameState, run: DishRun, gigId: string, quality:
       reward,
     }),
   };
-  return applyStanding(delivered, reward);
+  return notePathOrder(applyStanding(delivered, reward), gig.clientId, reward);
 }
 
 export function ringBell(state: GameState): GameState {
@@ -249,12 +253,14 @@ export function ringBell(state: GameState): GameState {
   const plated = recordPlate(state, run, starsForScore(quality));
   switch (run.purpose.kind) {
     case "lesson":
-      return finishLesson(plated, run, run.purpose.cuisine, run.purpose.fee);
+      return noteTested(finishLesson(plated, run, run.purpose.cuisine, run.purpose.fee), run, quality);
     case "practice":
-      return finishPractice(plated, run, quality);
+      return noteTested(finishPractice(plated, run, quality), run, quality);
     case "test":
       return finishTestDish(plated, run, quality);
     case "order":
-      return finishOrderDish(plated, run, run.purpose.gigId, quality);
+      return noteTested(finishOrderDish(plated, run, run.purpose.gigId, quality), run, quality);
+    case "segment":
+      return finishSegment(plated, run, quality);
   }
 }

@@ -1,0 +1,67 @@
+.ck-cue-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 auto var(--space-3);
+  max-width: 1280px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(79, 138, 60, 0.18);
+  border: 1px solid rgba(79, 138, 60, 0.5);
+}
+
+.ck-cue-strip__cards {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ck-cue-strip__card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 var(--space-2);
+  flex: 1 1 200px;
+  padding: var(--space-2);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.ck-cue-strip__card span:last-child {
+  grid-column: 2;
+}
+
+.ck-cue-strip__card--now {
+  opacity: 1;
+  outline: 3px solid var(--ck-amber);
+  box-shadow: 0 0 18px rgba(242, 169, 59, 0.45);
+}
+
+.ck-cue-strip__step {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ck-basil);
+  color: #fff;
+  font-weight: 700;
+}
+
+.ck-segment-summary__kinder {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  background: rgba(79, 138, 60, 0.12);
+  border: 1px solid rgba(79, 138, 60, 0.4);
+}

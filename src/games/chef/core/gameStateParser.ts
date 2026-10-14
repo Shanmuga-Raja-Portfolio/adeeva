@@ -26,6 +26,7 @@ import {
 import { AWARD_IDS } from "../content/award";
 import { CAREER, RUNG_IDS, START_IDS } from "../content/career";
 import { CUISINE_IDS } from "../content/cuisine";
+import { PATH_IDS } from "../content/path";
 import { UPGRADE_IDS } from "../content/upgrade";
 import { clientById, storyBeatById } from "./catalog";
 import { SCHEMA_VERSION, type GameState, type Passes, type Profile } from "./gameState";
@@ -41,6 +42,7 @@ import {
   tasteMemoryParser,
   testDayParser,
 } from "./resultParsers";
+import { pathStateParser } from "./pathParser";
 import { dishIdParser, dishRunParser, tasteTagParser } from "./runParser";
 import { serviceRunParser } from "./serviceParser";
 
@@ -89,6 +91,8 @@ const shapeParser = objectOf<GameState>({
   lastShiftDay: integerRangeParser(0, Number.MAX_SAFE_INTEGER),
   guide: booleanParser,
   nextRunNumber: dayParser,
+  path: nullable(pathStateParser),
+  peeked: distinctListOf(PATH_IDS, "door"),
   rng: rngParser,
 });
 
@@ -116,6 +120,17 @@ function orderDishesFit(state: GameState): boolean {
   });
 }
 
+function pathFits(state: GameState): boolean {
+  const path = state.path;
+  const kind = state.service?.kind;
+  if (path === null) return kind !== "night" && kind !== "festival" && kind !== "launch";
+  if (state.rung !== "head") return false;
+  const nightOpen = path.kind === "restaurant" && path.tonight !== null;
+  const festivalOpen = path.kind === "truck" && path.today !== null;
+  if (nightOpen !== (kind === "night") || festivalOpen !== (kind === "festival")) return false;
+  return kind !== "launch" || (path.kind === "tv" && path.book !== null);
+}
+
 function oneThingAtATime(state: GameState): boolean {
   const cooking = state.activeRun !== null && state.activeRun.stage !== "done";
   if (state.service !== null && cooking) return false;
@@ -129,6 +144,7 @@ export const gameStateParser = refined(
     orderRunFits(state) &&
     orderDishesFit(state) &&
     oneThingAtATime(state) &&
+    pathFits(state) &&
     state.board.day === state.calendar.day,
   "a kitchen whose counters and hours fit together",
 );

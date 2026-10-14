@@ -23,6 +23,10 @@ const DishFlow = lazy(() =>
 const ServiceRush = lazy(() =>
   import("./screens/service/ServiceRush").then((module) => ({ default: module.ServiceRush })),
 );
+const CrossroadsScreen = lazy(() =>
+  import("./screens/crossroads/CrossroadsScreen").then((module) => ({ default: module.CrossroadsScreen })),
+);
+const PathHub = lazy(() => import("./screens/path/PathHub").then((module) => ({ default: module.PathHub })));
 const DishDiary = lazy(() =>
   import("./screens/diary/DishDiary").then((module) => ({ default: module.DishDiary })),
 );
@@ -122,7 +126,7 @@ export function ChefGame({ player, lookOptions, onPlayerChange, onExit }: GameSc
               onCancel={() => setRoute({ name: "title" })}
             />
           ) : null}
-          {screen.name === "hub" ? (
+          {screen.name === "hub" && screen.game.path === null ? (
             <KitchenHub
               state={screen.game}
               dispatch={dispatch}
@@ -132,6 +136,18 @@ export function ChefGame({ player, lookOptions, onPlayerChange, onExit }: GameSc
             />
           ) : null}
           <ViewLoadBoundary>
+            {screen.name === "hub" && screen.game.path !== null ? (
+              <PathHub
+                state={screen.game}
+                dispatch={dispatch}
+                onOpen={open}
+                onOpenSettings={openSettings}
+                onExitToTitle={saveAndExit}
+              />
+            ) : null}
+            {screen.name === "crossroads" ? (
+              <CrossroadsScreen state={screen.game} dispatch={dispatch} onBack={toHub} onChosen={toHub} />
+            ) : null}
             {screen.name === "dish" ? (
               <DishFlow state={screen.game} dispatch={dispatch} onExit={toHub} />
             ) : null}

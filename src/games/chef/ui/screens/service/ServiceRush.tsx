@@ -23,6 +23,7 @@ import { panDone, panNeedsYou, panRecord, startPan, stepPan, type PanSim } from 
 import { HobPan, HobStart } from "./HobPanel";
 import { QuickChop, QuickPass, QuickSimmer, QuickTaste } from "./QuickStations";
 import { ServiceHeader } from "./ServiceHeader";
+import { serviceHeading } from "./serviceHeading";
 import { StoryOverlay } from "../story/StoryOverlay";
 import { ServiceResults } from "./ServiceResults";
 import { dishInSlot, railView, slotKey, waitingAt, type WaitingDish } from "./serviceView";
@@ -66,8 +67,8 @@ function LiveService({
   const [ending, setEnding] = useState(false);
   const [station, setStation] = useState<StationId>("board");
   const [picked, setPicked] = useState<Readonly<Record<StationId, string | null>>>(NOTHING_PICKED);
-  const [pan, setPan] = useState<Pan | null>(null);
-  const panRef = useRef<Pan | null>(null);
+  const [pans, setPans] = useState<readonly Pan[]>([]);
+  const pansRef = useRef<readonly Pan[]>([]);
   const [heat, setHeat] = useState(3);
   const [assigning, setAssigning] = useState<string | null>(null);
   const [chopAssist] = useAssist("chop");
@@ -92,10 +93,11 @@ function LiveService({
     StationId,
     number
   >;
-  const panDish = pan === null ? null : dishInSlot(service, pan.slot);
-  const active = waiting[station];
+  const panKeys = new Set(pans.map((entry) => slotKey(entry.slot)));
+  const active = waiting[station].filter((dish) => station !== "hob" || !panKeys.has(dish.key));
   const chosen = active.find((dish) => dish.key === picked[station]) ?? active[0] ?? null;
-  const busy = new Set([pan === null ? "" : slotKey(pan.slot), chosen === null ? "" : chosen.key]);
+  const busy = new Set([...panKeys, chosen === null ? "" : chosen.key]);
+  const hobFull = pans.length >= service.plan.pans;
 
   const moment = () => {
     const at = Math.max(service.lastAt, Math.round(nowRef.current * 100) / 100);
@@ -109,9 +111,9 @@ function LiveService({
     if (dispatch({ type: "serviceStep", slot, at: moment(), record: quick })) play("chime");
     setPicked((current) => ({ ...current, [station]: null }));
   };
-  const updatePan = (next: Pan | null) => {
-    panRef.current = next;
-    setPan(next);
+  const updatePans = (next: readonly Pan[]) => {
+    pansRef.current = next;
+    setPans(next);
   };
 
   const storyOpen = currentBeat(state) !== null;
@@ -119,15 +121,20 @@ function LiveService({
     const next = Math.min(clocked ? service.plan.lengthSeconds : Infinity, nowRef.current + seconds);
     nowRef.current = next;
     setNow(next);
-    const current = panRef.current;
-    const def = current === null ? null : dishInSlot(service, current.slot);
-    if (current !== null && def !== null && def.sizzle !== null) {
-      const sim = stepPan(current.sim, quickSizzle(def.sizzle), count);
-      if (panDone(sim)) {
-        updatePan(null);
+    if (pansRef.current.length > 0) {
+      const cooking: Pan[] = [];
+      for (const current of pansRef.current) {
+        const def = dishInSlot(service, current.slot);
+        if (def === null || def.sizzle === null) continue;
+        const sim = stepPan(current.sim, quickSizzle(def.sizzle), count);
+        if (!panDone(sim)) {
+          cooking.push({ ...current, sim });
+          continue;
+        }
         const quick: QuickRecord = { kind: "sizzle", record: panRecord(sim, current.assisted) };
         if (dispatch({ type: "serviceStep", slot: current.slot, at: moment(), record: quick })) play("chime");
-      } else updatePan({ ...current, sim });
+      }
+      updatePans(cooking);
     }
     for (const member of service.staff) {
       if (member.station === null) continue;
@@ -145,29 +152,29 @@ function LiveService({
   });
 
   const chosenDish = chosen === null ? null : dishById(chosen.dishId);
-  const alerts: StationId[] =
-    pan !== null &&
-    panDish !== null &&
-    panDish.sizzle !== null &&
-    panNeedsYou(pan.sim, quickSizzle(panDish.sizzle))
-      ? ["hob"]
-      : [];
-  const changePan = (change: (sim: PanSim) => PanSim) => {
-    const current = panRef.current;
-    if (current === null) return;
-    const sim = change(current.sim);
-    if (sim !== current.sim) play("flip");
-    updatePan({ ...current, sim });
+  const alerts: StationId[] = pans.some((entry) => {
+    const def = dishInSlot(service, entry.slot);
+    return def !== null && def.sizzle !== null && panNeedsYou(entry.sim, quickSizzle(def.sizzle));
+  })
+    ? ["hob"]
+    : [];
+  const changePan = (key: string, change: (sim: PanSim) => PanSim) => {
+    const next = pansRef.current.map((entry) => {
+      if (slotKey(entry.slot) !== key) return entry;
+      const sim = change(entry.sim);
+      if (sim !== entry.sim) play("flip");
+      return { ...entry, sim };
+    });
+    updatePans(next);
   };
   const startHob = () => {
-    if (chosen === null || chosenDish === null || chosenDish.sizzle === null) return;
+    if (chosen === null || chosenDish === null || chosenDish.sizzle === null || hobFull) return;
     play("pop");
     const dots = sizzleAssist ? chosenDish.sizzle.idealDots : heat;
-    updatePan({
-      slot: chosen.slot,
-      sim: startPan(quickSizzle(chosenDish.sizzle), dots),
-      assisted: sizzleAssist,
-    });
+    updatePans([
+      ...pansRef.current,
+      { slot: chosen.slot, sim: startPan(quickSizzle(chosenDish.sizzle), dots), assisted: sizzleAssist },
+    ]);
     setPicked((current) => ({ ...current, hob: null }));
   };
   const stationBody = () => {
@@ -178,15 +185,41 @@ function LiveService({
           <p>Paused. Everything waits for you.</p>
         </div>
       );
-    if (station === "hob" && pan !== null && panDish !== null)
-      return (
-        <HobPan
-          dish={panDish}
-          sim={pan.sim}
-          assisted={pan.assisted}
-          reducedMotion={reducedMotion}
-          onChange={changePan}
+    const hobStart =
+      station === "hob" &&
+      !hobFull &&
+      chosen !== null &&
+      chosenDish !== null &&
+      chosenDish.sizzle !== null ? (
+        <HobStart
+          waiting={chosen}
+          dish={chosenDish}
+          ideal={chosenDish.sizzle.idealDots}
+          heat={heat}
+          assisted={sizzleAssist}
+          onHeat={setHeat}
+          onStart={startHob}
         />
+      ) : null;
+    if (station === "hob" && pans.length > 0)
+      return (
+        <div className={pans.length > 1 ? "ck-hob-pans ck-hob-pans--two" : "ck-hob-pans"}>
+          {pans.map((entry) => {
+            const def = dishInSlot(service, entry.slot);
+            const key = slotKey(entry.slot);
+            return def === null ? null : (
+              <HobPan
+                key={key}
+                dish={def}
+                sim={entry.sim}
+                assisted={entry.assisted}
+                reducedMotion={reducedMotion}
+                onChange={(change) => changePan(key, change)}
+              />
+            );
+          })}
+          {hobStart}
+        </div>
       );
     if (chosen === null || chosenDish === null)
       return (
@@ -207,17 +240,7 @@ function LiveService({
       case "board":
         return <QuickChop key={chosen.key} {...props} assisted={chopAssist} />;
       case "hob":
-        return chosenDish.sizzle === null ? null : (
-          <HobStart
-            waiting={chosen}
-            dish={chosenDish}
-            ideal={chosenDish.sizzle.idealDots}
-            heat={heat}
-            assisted={sizzleAssist}
-            onHeat={setHeat}
-            onStart={startHob}
-          />
-        );
+        return hobStart;
       case "pot":
         return <QuickSimmer key={chosen.key} {...props} assisted={simmerAssist} />;
       case "spice":
@@ -231,6 +254,7 @@ function LiveService({
     <main className="ck-service ad-screen" data-testid="service-rush" data-now={now.toFixed(1)}>
       <ServiceHeader
         service={service}
+        heading={serviceHeading(state, service)}
         now={now}
         paused={paused}
         reducedMotion={reducedMotion}
@@ -256,7 +280,7 @@ function LiveService({
                 type="button"
                 className={chosen?.key === dish.key ? "ck-queue__chip ck-queue__chip--on" : "ck-queue__chip"}
                 onClick={() => setPicked((current) => ({ ...current, [station]: dish.key }))}
-                disabled={paused || (station === "hob" && pan !== null)}
+                disabled={paused || (station === "hob" && hobFull)}
                 data-testid={`queue-${dish.key}`}
               >
                 <strong>T{dish.table}</strong> {dish.dishName}

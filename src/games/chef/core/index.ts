@@ -1,7 +1,16 @@
 export type { Action } from "./action";
 export { canEndDay, canPotWash, weeklyBill } from "./calendar";
+export { hollisIssue } from "./askHollis";
 export {
+  awardById,
+  chapterById,
   clientById,
+  criticById,
+  cueCardById,
+  festivalById,
+  letterById,
+  nameCardById,
+  pathById,
   componentById,
   cuisineById,
   difficultyById,
@@ -26,13 +35,33 @@ export {
   type ChopRecord,
 } from "./chop";
 export type { ShiftOffer } from "./dayBoard";
+export { bookOfferIssue, chapterFits, launchIssues, recipeCardIssue } from "./cookbook";
+export {
+  choosePathIssues,
+  crossroadsGoals,
+  crossroadsOpen,
+  pathStartCost,
+  peekIssue,
+  previewPath,
+} from "./crossroads";
 export { cardFor } from "./dishDiary";
 export { dishCost, fairPrice } from "./dishCost";
 export type { DishEvaluation, OrderEvaluation } from "./dishEvaluate";
 export { runAccuracies } from "./dishQuality";
-export { cookSteps, currentCookStep, stageIndex, stepDone, type DishRun, type RunStage } from "./dishRun";
+export {
+  cookSteps,
+  currentCookStep,
+  stageIndex,
+  stepDone,
+  type DishRun,
+  type RunPurpose,
+  type RunStage,
+} from "./dishRun";
 export { SCHEMA_VERSION, type GameState, type Gig } from "./gameState";
 export { entriesFor, type LogEntry, type ServiceLogEntry } from "./log";
+export { festivalToday } from "./festivalBoard";
+export { kitUpgradeIssues, upgradeShown } from "./kitShop";
+export { ledgerMoney, type Ledger } from "./ledger";
 export { isDishUnlocked, masteryLevel } from "./mastery";
 export { menuIssues } from "./menu";
 export { createGame, newGameIssues, type NewGameSettings } from "./newGame";
@@ -55,8 +84,23 @@ export {
   WELL_RADIUS,
   type PlacedComponent,
 } from "./plate";
+export {
+  type MenuDish,
+  type PathState,
+  type RestaurantState,
+  type SalePlan,
+  type SegmentPrep,
+  type TruckState,
+  type TvState,
+} from "./path";
+export { isServiceNight, nightOfWeek, SERVICE_NIGHTS } from "./pathCalendar";
+export { menuPortions } from "./menuPortions";
+export { parIssue, pathMenuIssues } from "./pathMenu";
 export { reduce } from "./reduce";
-export type { Reward } from "./rewards";
+export { forecastNight, openNightIssues } from "./restaurantNight";
+export { hireIssue, onShift, shiftIssue, nightsWithoutCook } from "./restaurantTeam";
+export { STRONG_STARS, type Reward } from "./rewards";
+export { CLEAN_STARS } from "./serviceScore";
 export { isFamilyMeal, testFor, testGoals, testHours, testStartIssues } from "./rung";
 export {
   lessonStartIssue,
@@ -66,6 +110,7 @@ export {
   testDishIssues,
 } from "./runLifecycle";
 export { parseSave, serialize } from "./save";
+export { kinderTips, segmentDeskIssue, segmentPrepIssue, segmentsUsed, startSegmentIssues } from "./segment";
 export { hasClock, type ServiceRun, type ServiceTicket, type Special } from "./service";
 export { staffStepIssue, type DishSlot } from "./serviceActions";
 export { quickTasteStart, QUICK_SIMMER_LAPS, type QuickRecord } from "./serviceQuick";
@@ -83,7 +128,7 @@ export {
   type SizzleRecord,
 } from "./sizzle";
 export { priceRange, specialForecast } from "./special";
-export { hireableHelpers, staffSkill, STEP_STATIONS } from "./staffing";
+export { hireableHelpers, staffSkill, STEP_STATIONS, teamStaff } from "./staffing";
 export { canAdvance, canGoBack } from "./stageNavigation";
 export { currentBeat } from "./storyQueue";
 export {
@@ -97,6 +142,6 @@ export {
   type TasteState,
 } from "./taste";
 export { toleranceFor } from "./tolerance";
-export { upgradePurchaseIssues } from "../../../engine/upgrades";
+export { festivalCost, forecastFestival, openFestivalIssues } from "./truckDay";
 export { visibleNextTrends } from "../../../engine/trendMarket";
 export { beatLines } from "../../../engine/storyVoice";

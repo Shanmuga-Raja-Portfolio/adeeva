@@ -1,0 +1,237 @@
+.ck-path-hub--restaurant {
+  --ck-path: var(--ck-tomato);
+}
+
+.ck-path-hub--truck {
+  --ck-path: #f28c28;
+}
+
+.ck-path-hub--tv {
+  --ck-path: var(--ck-basil);
+}
+
+.ck-path-hub .ck-hero {
+  border: 3px solid color-mix(in srgb, var(--ck-path) 60%, transparent);
+}
+
+.ck-path-hub .ck-hero__shade {
+  background: linear-gradient(
+    90deg,
+    rgba(29, 37, 40, 0.05) 0%,
+    rgba(29, 37, 40, 0.62) 20%,
+    rgba(29, 37, 40, 0.72) 48%,
+    rgba(29, 37, 40, 0.1) 80%
+  );
+}
+
+.ck-path-hub .ck-hero__copy {
+  max-width: 660px;
+}
+
+@media (max-width: 900px) {
+  .ck-path-hub .ck-hero__shade {
+    background: rgba(29, 37, 40, 0.72);
+  }
+
+  .ck-path-hub .ck-hero__copy {
+    max-width: none;
+  }
+}
+
+.ck-hub__column--wide {
+  grid-column: span 1;
+}
+
+.ck-peek {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 auto var(--space-3);
+  max-width: 1280px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background: linear-gradient(180deg, #fff3d6, var(--ck-amber-soft));
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.ck-peek p {
+  flex: 1;
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.ck-peek .ad-eyebrow {
+  display: block;
+}
+
+.ck-path-awards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ck-path-award {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--ck-chalk);
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.ck-path-award--won {
+  background: linear-gradient(180deg, #ffd387, var(--ck-amber));
+  color: var(--ck-charcoal-deep);
+  font-weight: 700;
+  box-shadow: 0 0 16px rgba(242, 169, 59, 0.6);
+}
+
+.ck-tonight__desks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ck-tonight__desks .ad-button {
+  flex: 1 1 150px;
+  white-space: nowrap;
+}
+
+.ck-tonight__critic {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 6px;
+  background: #2e3a40;
+  color: var(--ck-chalk);
+  font-style: italic;
+}
+
+.ck-money-card__columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+}
+
+.ck-money {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  border: 1px dashed var(--paper-edge);
+}
+
+.ck-money__lines {
+  display: grid;
+  gap: 4px;
+  margin: var(--space-2) 0;
+}
+
+.ck-money__lines dd {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.ck-money__heading {
+  margin-top: var(--space-2);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.ck-money__left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding-top: var(--space-2);
+  border-top: 2px solid var(--paper-edge);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.ck-money__left--up span:first-child {
+  color: var(--ck-basil);
+}
+
+.ck-money__left--down span:first-child {
+  color: var(--ck-tomato);
+}
+
+.ck-money__unserved {
+  margin: var(--space-2) 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.ck-spoons {
+  display: inline-flex;
+  gap: 2px;
+  vertical-align: middle;
+}
+
+.ck-reviews__list,
+.ck-notes {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ck-review {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+}
+
+.ck-review__line {
+  margin: 4px 0 0;
+  font-size: 0.92rem;
+}
+
+.ck-reviews__notes-title {
+  margin: var(--space-2) 0 0;
+  font-size: 1rem;
+}
+
+.ck-note {
+  padding: var(--space-2) var(--space-3);
+  border-radius: 4px;
+  background: #fff6c9;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  font-size: 0.92rem;
+  transform: rotate(-0.8deg);
+}
+
+.ck-note:nth-child(even) {
+  background: #e3f1dc;
+  transform: rotate(0.7deg);
+}
+
+.ck-flicker {
+  animation: ck-flicker 1.8s ease-in-out infinite;
+}
+
+@keyframes ck-flicker {
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ck-flicker {
+    animation: none;
+  }
+}

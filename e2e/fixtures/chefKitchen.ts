@@ -101,7 +101,7 @@ async function clockAtLeast(page: Page, value: number): Promise<void> {
   );
 }
 
-export async function chopByHand(page: Page): Promise<void> {
+export async function chopMarksByHand(page: Page): Promise<boolean> {
   const board = page.getByTestId("chop-board");
   await page.getByTestId("chop-start").click();
   const surface = page.getByTestId("chop-surface");
@@ -114,14 +114,19 @@ export async function chopByHand(page: Page): Promise<void> {
     await page.mouse.down();
     await clockAtLeast(page, stretch[1] - 15);
     await page.mouse.up();
-    return;
+    return false;
   }
   const marks = JSON.parse((await board.getAttribute("data-marks")) ?? "[]") as number[];
   for (const mark of marks) {
     await clockAtLeast(page, mark - 20);
     await page.mouse.click(x, y);
   }
-  await expect(board).toHaveAttribute("data-phase", "done", { timeout: 10_000 });
+  return true;
+}
+
+export async function chopByHand(page: Page): Promise<void> {
+  if (await chopMarksByHand(page))
+    await expect(page.getByTestId("chop-board")).toHaveAttribute("data-phase", "done", { timeout: 10_000 });
 }
 
 export async function simmerByHand(page: Page): Promise<void> {

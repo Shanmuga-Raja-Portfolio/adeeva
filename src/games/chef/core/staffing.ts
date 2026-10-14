@@ -21,6 +21,10 @@ export function staffSkill(staff: StaffDef, station: StationId, trait: TraitId):
   return Math.min(ASSIST_ACCURACY_CAP, Math.round((base + warm) * 100) / 100);
 }
 
-export function hireableHelpers(): StaffDef[] {
+export function teamStaff(): StaffDef[] {
   return STAFF.filter((member) => member.id !== TEO_ID);
+}
+
+export function hireableHelpers(): StaffDef[] {
+  return teamStaff().filter((member) => member.role === "cook");
 }
