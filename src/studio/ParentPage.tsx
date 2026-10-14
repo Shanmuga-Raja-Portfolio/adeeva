@@ -4,7 +4,7 @@ import { Dialog } from "../ui/kit/Dialog";
 import { Icon } from "../ui/kit/IconSet";
 import type { GameModule } from "./gameModule";
 import { playtimeLabel, readPlaytime } from "./playtime";
-import { LIVE_GAMES } from "./registry";
+import { GAMES } from "./registry";
 import { clearGameSaves, readRawSlots } from "./slotStore";
 import "./parent.css";
 
@@ -21,10 +21,10 @@ const PROMISES = [
 export function ParentPage() {
   const [playtime] = useState(readPlaytime);
   const [saveCounts, setSaveCounts] = useState(() =>
-    Object.fromEntries(LIVE_GAMES.map((game) => [game.id, readRawSlots(game.id).length])),
+    Object.fromEntries(GAMES.map((game) => [game.id, readRawSlots(game.id).length])),
   );
   const [clearing, setClearing] = useState<GameModule | null>(null);
-  const total = LIVE_GAMES.reduce((sum, game) => sum + (playtime[game.id] ?? 0), 0);
+  const total = GAMES.reduce((sum, game) => sum + (playtime[game.id] ?? 0), 0);
 
   const confirmClear = () => {
     if (clearing === null) return;
@@ -70,7 +70,7 @@ export function ParentPage() {
         </h2>
         <p className="st-muted">Time only counts while a game is open and on screen.</p>
         <dl className="st-parent__times">
-          {LIVE_GAMES.map((game) => (
+          {GAMES.map((game) => (
             <div key={game.id} className="st-parent__time" data-testid={`playtime-${game.id}`}>
               <dt>{game.title}</dt>
               <dd>{playtimeLabel(playtime[game.id] ?? 0)}</dd>
@@ -98,7 +98,7 @@ export function ParentPage() {
           everything.
         </p>
         <ul className="st-parent__games">
-          {LIVE_GAMES.map((game) => (
+          {GAMES.map((game) => (
             <li key={game.id}>
               <span>
                 <strong>{game.title}</strong>

@@ -1,4 +1,4 @@
-import { requireById } from "../../../engine/catalog";
+import { memberOf, requireById } from "../../../engine/catalog";
 import type { DifficultyDef, DifficultyId } from "../../../engine/difficulty";
 import { CLIENTS, type ClientDef } from "../content/client";
 import { CUISINES, type CuisineDef, type CuisineId } from "../content/cuisine";
@@ -13,12 +13,8 @@ import { STAFF, type StaffDef } from "../content/staff";
 import { STORY_BEATS, type StoryBeatDef } from "../content/storyBeat";
 import { UPGRADE_IDS, UPGRADES, type UpgradeDef, type UpgradeId } from "../content/upgrade";
 
-function member<T extends string>(ids: readonly T[]): (value: string) => value is T {
-  return (value: string): value is T => ids.some((id) => id === value);
-}
-
-export const isDishId = member(DISH_IDS);
-export const isUpgradeId = member(UPGRADE_IDS);
+export const isDishId = memberOf(DISH_IDS);
+export const isUpgradeId = memberOf(UPGRADE_IDS);
 
 export function dishById(id: DishId): Dish {
   return requireById(DISHES, id, "dish");

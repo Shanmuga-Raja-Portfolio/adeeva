@@ -1,11 +1,12 @@
+import { zeroCounts } from "../../../engine/count";
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import { profileIssues, type ProfileSettings } from "../../../engine/profile";
 import { STYLE_TAGS } from "../../../engine/styleTag";
 import { rollTrendState } from "../../../engine/trendMarket";
 import { CAREER } from "../content/career";
-import { FILLING_IDS, type FillingId } from "../content/filling";
+import { FILLING_IDS } from "../content/filling";
 import { INGREDIENT_IDS, type IngredientId } from "../content/ingredient";
-import { TOPPING_IDS, type ToppingId } from "../content/topping";
+import { TOPPING_IDS } from "../content/topping";
 import { ingredientById } from "./catalog";
 import { EMPTY_COUNTER } from "./counter";
 import { SCHEMA_VERSION, type GameState, type Pantry } from "./gameState";
@@ -24,8 +25,8 @@ function starterPantry(): Pantry {
       INGREDIENT_IDS.map((id) => [id, (CAREER.starterPacks[id] ?? 0) * ingredientById(id).packAmount]),
     ) as Record<IngredientId, number>,
     gels: {},
-    fillings: Object.fromEntries(FILLING_IDS.map((id) => [id, 0])) as Record<FillingId, number>,
-    toppings: Object.fromEntries(TOPPING_IDS.map((id) => [id, 0])) as Record<ToppingId, number>,
+    fillings: zeroCounts(FILLING_IDS),
+    toppings: zeroCounts(TOPPING_IDS),
   };
 }
 

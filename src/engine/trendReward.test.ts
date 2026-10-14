@@ -31,6 +31,9 @@ describe("trend rewards", () => {
     expect(dreamerFlair(3, [])).toBe(true);
     expect(dreamerFlair(1, ["bold"])).toBe(true);
     expect(dreamerFlair(2, ["classic"])).toBe(false);
+    expect(dreamerFlair(3, [], 4)).toBe(false);
+    expect(dreamerFlair(4, [], 4)).toBe(true);
+    expect(dreamerFlair(1, ["dreamy"], 4)).toBe(true);
   });
 });
 

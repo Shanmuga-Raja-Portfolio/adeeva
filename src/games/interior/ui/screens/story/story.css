@@ -1,0 +1,141 @@
+.is-story {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: end center;
+  padding: var(--space-5);
+}
+
+.is-story__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.is-story__veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(30, 40, 70, 0.05) 25%, rgba(30, 40, 70, 0.55));
+}
+
+.is-story__tap {
+  position: absolute;
+  inset: 0;
+}
+
+.is-story__panel {
+  position: relative;
+  width: min(760px, 100%);
+  max-height: 80dvh;
+  overflow: auto;
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  animation: ad-rise var(--duration-slow) var(--ease-out) both;
+}
+
+.is-story__title {
+  margin: 0;
+  color: var(--is-blue-deep);
+}
+
+.is-story__history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.is-story__line {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+  animation: ad-rise var(--duration-base) var(--ease-out) both;
+}
+
+.is-story__line--player {
+  flex-direction: row-reverse;
+}
+
+.is-story__portrait {
+  flex: none;
+  width: 96px;
+  height: 96px;
+}
+
+.is-story__portrait--narrator {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff3d0;
+  background: radial-gradient(circle at 40% 35%, #5a86c2, var(--is-blue-deep));
+}
+
+.is-story__bubble {
+  position: relative;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 18px;
+  background: var(--is-blue-soft);
+  max-width: 520px;
+}
+
+.is-story__line--player .is-story__bubble {
+  background: var(--is-sun-soft);
+}
+
+.is-story__line--narrator .is-story__bubble {
+  background: transparent;
+  font-family: var(--font-display);
+  font-style: italic;
+  padding-left: 0;
+}
+
+.is-story__bubble p {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.is-story__speaker {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--is-blue-deep);
+}
+
+.is-story__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.is-story__pips {
+  display: flex;
+  gap: 6px;
+}
+
+.is-story__pip {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--paper-edge);
+}
+
+.is-story__pip--on {
+  background: var(--is-terracotta);
+}
+
+@media (max-width: 600px) {
+  .is-story__portrait {
+    width: 64px;
+    height: 64px;
+  }
+}

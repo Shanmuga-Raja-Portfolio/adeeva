@@ -1,3 +1,4 @@
+import { setAsideActiveRun } from "../../../engine/activeRunUpdate";
 import { TRAY_PRODUCT_IDS, type TrayProductId } from "../content/product";
 import { createBakeRun, type BakeRun, type RunPurpose } from "./bakeRun";
 import type { Brief } from "./brief";
@@ -39,7 +40,5 @@ export function startTray(state: GameState, productId: TrayProductId): GameState
 }
 
 export function abandonRun(state: GameState): GameState {
-  const run = state.activeRun;
-  if (run === null || run.stage === "done") return state;
-  return { ...state, activeRun: null };
+  return setAsideActiveRun(state);
 }

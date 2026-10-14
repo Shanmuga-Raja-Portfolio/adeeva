@@ -7,7 +7,7 @@ import { nextPerk, PERKS, studioReputation, unlockedPerks } from "./perks";
 import { PerksPanel } from "./PerksPanel";
 import type { GameId } from "./gameModule";
 import type { StudioProfile } from "./profile";
-import { GAMES, LIVE_GAMES } from "./registry";
+import { GAMES } from "./registry";
 import { ReputationCard } from "./ReputationCard";
 import { readRawSlots } from "./slotStore";
 import { StudioMark } from "./StudioMark";
@@ -27,7 +27,7 @@ function previousThreshold(reputation: number): number {
 
 export function HomeScreen({ profile, returnedFrom, onProfileChange }: HomeScreenProps) {
   const toast = useToast();
-  const [reputation] = useState(() => studioReputation(LIVE_GAMES, readRawSlots));
+  const [reputation] = useState(() => studioReputation(GAMES, readRawSlots));
   const unlocked = unlockedPerks(reputation, profile.perks);
   const fresh = unlocked.filter((id) => !profile.perks.includes(id)).join(" ");
   const announced = useRef("");

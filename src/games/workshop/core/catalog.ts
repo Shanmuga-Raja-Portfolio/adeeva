@@ -1,4 +1,4 @@
-import { requireById } from "../../../engine/catalog";
+import { memberOf, requireById } from "../../../engine/catalog";
 import type { DifficultyDef, DifficultyId } from "../../../engine/difficulty";
 import { BOARD_SIZES, type BoardSizeDef, type BoardSizeId } from "../content/boardSize";
 import { CLIENTS, type ClientDef } from "../content/client";
@@ -15,12 +15,8 @@ import { STORY_BEATS, type StoryBeatDef } from "../content/storyBeat";
 import { UPGRADE_IDS, UPGRADES, type UpgradeDef, type UpgradeId } from "../content/upgrade";
 import { WOODS, type WoodDef, type WoodId } from "../content/wood";
 
-function member<T extends string>(ids: readonly T[]): (value: string) => value is T {
-  return (value: string): value is T => ids.some((id) => id === value);
-}
-
-export const isUpgradeId = member(UPGRADE_IDS);
-export const isDecorId = member(DECOR_IDS);
+export const isUpgradeId = memberOf(UPGRADE_IDS);
+export const isDecorId = memberOf(DECOR_IDS);
 
 export function woodById(id: WoodId): WoodDef {
   return requireById(WOODS, id, "wood");

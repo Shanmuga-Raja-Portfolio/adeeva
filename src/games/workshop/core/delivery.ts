@@ -1,4 +1,5 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
+import { latestEntryFor } from "../../../engine/runLog";
 import { applyStanding } from "../../../engine/standing";
 import type { GameState, LogEntry } from "./gameState";
 import { evaluatePiece } from "./pieceEvaluate";
@@ -42,5 +43,5 @@ export function deliver(state: GameState): GameState {
 }
 
 export function lastResult(state: GameState, runId: string): LogEntry | null {
-  return [...state.log].reverse().find((entry) => entry.runId === runId) ?? null;
+  return latestEntryFor(state.log, runId);
 }

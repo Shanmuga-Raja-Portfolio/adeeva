@@ -9,7 +9,15 @@ import {
   refined,
   stringParser,
 } from "../../../engine/parse";
-import { colourIdParser, countParser, dayParser, styleTagParser } from "../../../engine/stateParsers";
+import {
+  colourIdParser,
+  countParser,
+  criterionParserOf,
+  dayParser,
+  styleTagParser,
+  trendRewardShape,
+  wholeRewardLineParser,
+} from "../../../engine/stateParsers";
 import { FILLING_IDS } from "../content/filling";
 import { MIX_IDS } from "../content/mix";
 import { PATTERN_CHOICES } from "../content/pipePattern";
@@ -26,19 +34,13 @@ import type {
   OrderCard,
   TrayKind,
 } from "./counter";
-import { CRITERION_IDS, type Criterion } from "./criterion";
+import { CRITERION_IDS } from "./criterion";
 import type { LogEntry } from "./gameState";
-import type { Reward, RewardLine } from "./rewards";
+import type { Reward } from "./rewards";
 
 const scoreParser = integerRangeParser(0, 100);
 
-const criterionParser = objectOf<Criterion>({
-  id: oneOf(CRITERION_IDS),
-  label: stringParser,
-  passed: booleanParser,
-  detail: stringParser,
-  weight: nonNegativeParser,
-});
+const criterionParser = criterionParserOf(CRITERION_IDS, nonNegativeParser);
 
 const qualityParser = objectOf<QualityBreakdown>({
   weigh: shareParser,
@@ -60,16 +62,7 @@ const evaluationParser = objectOf<Evaluation>({
   feedback: arrayOf(stringParser),
 });
 
-const rewardLineParser = objectOf<RewardLine>({ label: stringParser, amount: integerParser });
-
-const rewardParser = objectOf<Reward>({
-  outcome: oneOf(["pass", "soft-fail", "fail"] as const),
-  coins: integerParser,
-  reputation: integerParser,
-  buzz: integerParser,
-  lines: arrayOf(rewardLineParser),
-  trendMatches: arrayOf(styleTagParser),
-});
+const rewardParser = objectOf<Reward>(trendRewardShape(styleTagParser, integerParser, wholeRewardLineParser));
 
 export const logEntryParser = objectOf<LogEntry>({
   runId: stringParser,

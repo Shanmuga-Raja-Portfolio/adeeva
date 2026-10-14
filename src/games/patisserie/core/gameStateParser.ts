@@ -1,8 +1,10 @@
 import { BASE_DAY_HOURS, type DayClock } from "../../../engine/dayHours";
+import { runIdsBelow } from "../../../engine/idNumber";
 import { MAX_BUZZ } from "../../../engine/standing";
 import {
   arrayOf,
   booleanParser,
+  distinctListOf,
   fixedRecordOf,
   integerParser,
   integerRangeParser,
@@ -44,11 +46,7 @@ const pantryParser = objectOf<Pantry>({
   toppings: fixedRecordOf(TOPPING_IDS, countParser),
 });
 
-const upgradesParser = refined(
-  arrayOf(oneOf(UPGRADE_IDS)),
-  (upgrades) => new Set(upgrades).size === upgrades.length,
-  "each upgrade at most once",
-);
+const upgradesParser = distinctListOf(UPGRADE_IDS, "upgrade");
 
 const gameStateShapeParser = objectOf<GameState>({
   schemaVersion: oneOf([SCHEMA_VERSION]),
@@ -72,15 +70,10 @@ const gameStateShapeParser = objectOf<GameState>({
   rng: rngParser,
 });
 
-function runNumber(runId: string): number {
-  const match = /^run-(\d+)$/.exec(runId);
-  return match?.[1] === undefined ? 0 : Number(match[1]);
-}
-
 function runNumbersBelowNext(state: GameState): boolean {
   const ids = [...state.log.map((entry) => entry.runId), ...state.bakeBook.map((entry) => entry.runId)];
   if (state.activeRun !== null) ids.push(state.activeRun.id);
-  return ids.every((id) => runNumber(id) < state.nextRunNumber);
+  return runIdsBelow(ids, state.nextRunNumber);
 }
 
 export const gameStateParser = refined(

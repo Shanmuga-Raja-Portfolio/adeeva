@@ -1,0 +1,122 @@
+.is-light {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.is-light__work {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(260px, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.is-light__board {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  overflow: auto;
+}
+
+.is-light__hint {
+  margin: 0;
+  font-weight: 700;
+  color: var(--is-blue-deep);
+}
+
+.is-light__grid {
+  max-width: 100%;
+  height: auto;
+  touch-action: none;
+  filter: drop-shadow(0 8px 14px rgba(30, 50, 90, 0.25));
+}
+
+.is-light__bulb {
+  cursor: grab;
+  touch-action: none;
+}
+
+.is-light__bulb:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 0 6px #ffffff);
+}
+
+.is-light__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.is-light__preview {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  background: #1d2140;
+}
+
+.is-light__tray {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.is-light-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 52px;
+  padding: 6px 10px;
+  border: 2px solid var(--paper-edge);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: grab;
+  touch-action: none;
+}
+
+.is-light-chip > span:nth-child(2) {
+  flex: 1;
+}
+
+.is-light-chip--placed {
+  border-color: var(--is-olive);
+  background: var(--is-olive-soft);
+}
+
+.is-light-chip__bulb {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #3b2a33;
+}
+
+.is-light-chip__bulb--warm {
+  background: radial-gradient(circle at 40% 35%, #fff4c2, #f2b632);
+}
+
+.is-light-chip__bulb--cool {
+  background: radial-gradient(circle at 40% 35%, #ffffff, #9fd0ee);
+}
+
+.is-light-chip__state {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  color: var(--is-blue-deep);
+}
+
+@media (max-width: 1240px) {
+  .is-light__work {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

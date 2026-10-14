@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hoursShortfallReason, spendCalendarHours, spendHours } from "./dayHours";
+import { dayGreeting, hoursShortfallReason, spendCalendarHours, spendHours } from "./dayHours";
 
 describe("day hours", () => {
   const clock = { day: 2, hoursLeft: 3 };
@@ -25,5 +25,14 @@ describe("spendHours", () => {
     expect(spendHours(state, 2)).toEqual({ coins: 5, calendar: { day: 2, hoursLeft: 1 } });
     expect(spendHours(state, 0)).toBe(state);
     expect(spendHours(state, 4)).toBeNull();
+  });
+});
+
+describe("dayGreeting", () => {
+  it("greets by how much of the day is left", () => {
+    expect(dayGreeting(8, 8)).toBe("Good morning");
+    expect(dayGreeting(4, 8)).toBe("Good afternoon");
+    expect(dayGreeting(2, 8)).toBe("Good evening");
+    expect(dayGreeting(0, 8)).toBe("Good evening");
   });
 });

@@ -1,7 +1,7 @@
 import { RUNWAY_LIGHTS } from "../content/runwayLight";
 import { RUNWAY_MOODS } from "../content/runwayMood";
 import { colourIdParser, materialIdParser, styleTagParser, themeIdParser } from "./catalogIdParsers";
-import { CRITERION_IDS, type Criterion } from "./criterion";
+import { CRITERION_IDS } from "./criterion";
 import type { QualityBreakdown } from "./dressQuality";
 import {
   decorationParser,
@@ -24,7 +24,12 @@ import {
   type RunwayResult,
   type SubScore,
 } from "./runwayScore";
-import { dayParser, rewardLineParser } from "../../../engine/stateParsers";
+import {
+  criterionParserOf,
+  dayParser,
+  rewardLineParser,
+  trendRewardShape,
+} from "../../../engine/stateParsers";
 import {
   arrayOf,
   booleanParser,
@@ -66,13 +71,7 @@ const snapshotParser = objectOf<DressSnapshot>({
   materials: arrayOf(materialIdParser),
 });
 
-const criterionParser = objectOf<Criterion>({
-  id: oneOf(CRITERION_IDS),
-  label: stringParser,
-  passed: booleanParser,
-  detail: stringParser,
-  weight: nonNegativeParser,
-});
+const criterionParser = criterionParserOf(CRITERION_IDS, nonNegativeParser);
 
 const qualityParser = objectOf<QualityBreakdown>({
   cut: shareParser,
@@ -92,14 +91,7 @@ const evaluationParser = objectOf<Evaluation>({
   feedback: arrayOf(stringParser),
 });
 
-const rewardParser = objectOf<Reward>({
-  outcome: oneOf(["pass", "soft-fail", "fail"]),
-  coins: nonNegativeParser,
-  reputation: integerParser,
-  buzz: integerParser,
-  trendMatches: arrayOf(styleTagParser),
-  lines: arrayOf(rewardLineParser),
-});
+const rewardParser = objectOf<Reward>(trendRewardShape(styleTagParser, nonNegativeParser, rewardLineParser));
 
 export const logEntryParser = objectOf<LogEntry>({
   runId: stringParser,

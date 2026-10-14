@@ -31,14 +31,19 @@ export interface TrendRewardTerms<T extends string = StyleTag> {
   readonly hotTags: readonly T[];
   readonly tags: readonly T[];
   readonly colourCount: number;
+  readonly dreamerColours?: number | undefined;
   readonly labels?: TrendRewardLabels | undefined;
   readonly extraBuzz?: number | undefined;
   readonly extraLines?: readonly RewardLine[] | undefined;
   readonly extraReputation?: number | undefined;
 }
 
-export function dreamerFlair(colourCount: number, tags: readonly string[]): boolean {
-  return colourCount >= DREAMER_COLOUR_COUNT || tags.some((tag) => DREAMER_TAGS.has(tag));
+export function dreamerFlair(
+  colourCount: number,
+  tags: readonly string[],
+  coloursNeeded = DREAMER_COLOUR_COUNT,
+): boolean {
+  return colourCount >= coloursNeeded || tags.some((tag) => DREAMER_TAGS.has(tag));
 }
 
 function bonusLines<T extends string>(terms: TrendRewardTerms<T>, matches: number): RewardLine[] {
@@ -48,7 +53,7 @@ function bonusLines<T extends string>(terms: TrendRewardTerms<T>, matches: numbe
   if (matches > 0) lines.push({ label: labels.trend, amount: Math.round(fee * TREND_FEE_BONUS) });
   if (trait === "trendsetter" && matches > 0)
     lines.push({ label: "Trendsetter eye", amount: Math.round(fee * TRENDSETTER_FEE_PER_MATCH * matches) });
-  if (trait === "dreamer" && dreamerFlair(terms.colourCount, terms.tags))
+  if (trait === "dreamer" && dreamerFlair(terms.colourCount, terms.tags, terms.dreamerColours))
     lines.push({ label: labels.dreamer, amount: Math.round(fee * DREAMER_FEE_BONUS) });
   return [...lines, ...(terms.extraLines ?? [])];
 }

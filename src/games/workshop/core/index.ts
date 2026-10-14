@@ -71,7 +71,7 @@ export {
   surfaceSmooth,
 } from "./sanding";
 export { type SawCut } from "./sawPath";
-export { cutKey, fitSawSamples, isPartSawn, isSawComplete, partCuts, sawCoverage } from "./sawRecord";
+export { cutKey, fitSawSamples, isPartSawn, partCuts } from "./sawRecord";
 export { parseSave, serialize } from "./save";
 export { canGoBack } from "./stageNavigation";
 export { canAdvance } from "./stageReadiness";

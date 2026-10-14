@@ -7,3 +7,7 @@ export function requireById<T extends { readonly id: string }>(
   if (found === undefined) throw new Error(`Missing ${kind} in catalog: ${id}`);
   return found;
 }
+
+export function memberOf<T extends string>(ids: readonly T[]): (value: string) => value is T {
+  return (value: string): value is T => ids.some((id) => id === value);
+}

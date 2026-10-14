@@ -3,6 +3,7 @@ import {
   judgeDeadline,
   judgedEvaluation,
   judgeQuality,
+  judgeStyle,
   type Evaluation as JudgedEvaluation,
   type Judged as JudgedCriterion,
 } from "../../../engine/criterionJudge";
@@ -47,15 +48,6 @@ function judgeConstruction(snapshot: DressSnapshot): Judged {
   const passed = isConstructionComplete(snapshot);
   const detail = `${count.piecesCut}/${count.piecesTotal} pieces cut, ${count.piecesAssembled}/${count.piecesTotal} on the form, ${count.seamsSewn}/${count.seamsTotal} seams sewn.`;
   return judged("construction", "Construction", passed, detail, constructionFeedback(count));
-}
-
-function judgeStyle(snapshot: DressSnapshot, brief: Brief): Judged {
-  const missing = brief.requiredTags.filter((tag) => !snapshot.tags.includes(tag));
-  const detail =
-    missing.length === 0
-      ? `Feels ${brief.requiredTags.join(" and ")}, just as asked.`
-      : `Still missing: ${missing.join(", ")}.`;
-  return judged("style", "Style", missing.length === 0, detail, styleFeedback(missing));
 }
 
 function judgeColours(snapshot: DressSnapshot, brief: Brief, favouredUsed: number): Judged {
@@ -104,7 +96,7 @@ export function evaluate(snapshot: DressSnapshot, brief: Brief, context: Evaluat
   const results = [
     judgeConstruction(snapshot),
     judgeQuality(judged, quality.quality, brief.minQuality, qualityFeedback(quality, brief.minQuality)),
-    judgeStyle(snapshot, brief),
+    judgeStyle(judged, brief.requiredTags, snapshot.tags, styleFeedback),
     judgeColours(snapshot, brief, favouredColoursUsed),
     judgeTrims(snapshot, brief),
     judgeBudget(snapshot, brief),

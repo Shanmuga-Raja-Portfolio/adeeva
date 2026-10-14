@@ -2,8 +2,6 @@ import { expect, test, type Page } from "@playwright/test";
 import { ADEEVA_URL } from "./fixtures/adeevaPage";
 import { finishStories } from "./fixtures/story";
 
-const WORKSHOP_GAMES = ["interior"] as const;
-
 function watchOutsideRequests(page: Page): string[] {
   const outside: string[] = [];
   page.on("request", (request) => {
@@ -43,15 +41,13 @@ test("the home screen shows seven games and ADEEVA opens and returns home", asyn
   await freshStudio(page);
   await expect(page.getByRole("heading", { name: "Welcome to Maker Studio" })).toBeVisible();
   await expect(page.locator("[data-testid^='tile-']")).toHaveCount(7);
-  for (const id of WORKSHOP_GAMES) {
-    const tile = page.getByTestId(`tile-${id}`);
-    await expect(tile).toContainText("In the workshop");
-    await expect(tile.getByRole("link")).toHaveCount(0);
-  }
+  await expect(page.locator("a[data-testid^='tile-']")).toHaveCount(7);
   await expect(page.getByTestId("tile-thrift-flip")).toContainText("Thrift-Flip Studio");
   await expect(page.getByTestId("tile-thrift-flip")).toHaveAttribute("href", "#/thrift-flip");
   await expect(page.getByTestId("tile-jewellery")).toContainText("Jewellery Bench");
   await expect(page.getByTestId("tile-jewellery")).toHaveAttribute("href", "#/jewellery");
+  await expect(page.getByTestId("tile-interior")).toContainText("Interior Studio");
+  await expect(page.getByTestId("tile-interior")).toHaveAttribute("href", "#/interior");
   await expect(page.getByTestId("tile-chef")).toContainText("Six Kitchens");
   await expect(page.getByTestId("tile-chef")).toHaveAttribute("href", "#/chef");
   await expect(page.getByTestId("studio-reputation")).toContainText("Studio reputation");
@@ -121,9 +117,9 @@ test("the parent page shows the promise, playtime and how to clear saves", async
   expect(outside).toEqual([]);
 });
 
-test("a game still in the workshop or an unknown page leads home with a tidy address", async ({ page }) => {
+test("an unknown page leads home with a tidy address", async ({ page }) => {
   await freshStudio(page);
-  for (const hash of ["#/interior", "#/nowhere"]) {
+  for (const hash of ["#/nowhere", "#/attic-of-dreams"]) {
     await page.evaluate((next) => {
       window.location.hash = next;
     }, hash);

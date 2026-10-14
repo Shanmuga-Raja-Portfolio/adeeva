@@ -1,0 +1,90 @@
+import { Button } from "../../../../../ui/kit/Button";
+import { coachOn, type Action, type GameState, type MakeoverRun } from "../../../core";
+import { CoachBubble } from "../CoachBubble";
+import { BriefChecklist } from "./BriefChecklist";
+import { BriefStage } from "./BriefStage";
+import { FloorStage } from "./FloorStage";
+import { LightStage } from "./LightStage";
+import { MakeoverHeader } from "./MakeoverHeader";
+import { PaintStage } from "./PaintStage";
+import { PlanStage } from "./PlanStage";
+import { ResultsStage } from "./ResultsStage";
+import { RevealStage } from "./RevealStage";
+import { ShopStage } from "./ShopStage";
+import { COACH } from "./stageNames";
+import { StageRail } from "./StageRail";
+import { StyleStage } from "./StyleStage";
+import "./makeover.css";
+
+interface MakeoverFlowProps {
+  readonly state: GameState;
+  readonly dispatch: (action: Action) => boolean;
+  readonly onExit: () => void;
+}
+
+interface MakeoverScreenProps extends MakeoverFlowProps {
+  readonly onOpenSettings: () => void;
+}
+
+function StageView(props: MakeoverFlowProps & { readonly run: MakeoverRun }) {
+  switch (props.run.stage) {
+    case "brief":
+      return <BriefStage {...props} />;
+    case "plan":
+      return <PlanStage {...props} />;
+    case "shop":
+      return <ShopStage {...props} />;
+    case "paint":
+      return <PaintStage {...props} />;
+    case "floor":
+      return <FloorStage {...props} />;
+    case "light":
+      return <LightStage {...props} />;
+    case "style":
+      return <StyleStage {...props} />;
+    case "reveal":
+      return <RevealStage {...props} />;
+    case "done":
+      return <ResultsStage {...props} />;
+  }
+}
+
+export function MakeoverFlow({ state, dispatch, onExit, onOpenSettings }: MakeoverScreenProps) {
+  const run = state.activeRun;
+  if (run === null) {
+    return (
+      <main className="is-makeover is-makeover--empty ad-screen">
+        <h1>The drawing table is clear</h1>
+        <p className="is-muted">Pick a letter in the loft to start a new room.</p>
+        <Button onClick={onExit}>Back to the loft</Button>
+      </main>
+    );
+  }
+  if (run.stage === "done" || run.stage === "reveal") {
+    return (
+      <main className="is-makeover ad-screen" data-stage={run.stage}>
+        <StageView state={state} run={run} dispatch={dispatch} onExit={onExit} />
+      </main>
+    );
+  }
+  const coach = COACH[run.stage];
+  return (
+    <main className="is-makeover ad-screen" data-stage={run.stage}>
+      <MakeoverHeader
+        state={state}
+        run={run}
+        dispatch={dispatch}
+        onExit={onExit}
+        onOpenSettings={onOpenSettings}
+      />
+      <StageRail state={state} run={run} dispatch={dispatch} />
+      {coach !== undefined ? <CoachBubble show={coachOn(state)} text={coach} /> : null}
+      <div className="is-makeover__body">
+        <section className="is-makeover__stage" key={run.stage} aria-label={`${run.stage} step`}>
+          <StageView state={state} run={run} dispatch={dispatch} onExit={onExit} />
+        </section>
+        <BriefChecklist state={state} run={run} />
+      </div>
+    </main>
+  );
+}

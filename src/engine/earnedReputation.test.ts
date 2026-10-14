@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { earnedReputation, traitGatedStart } from "./earnedReputation";
+import {
+  earnedReputation,
+  fixedStartReputation,
+  traitGatedReputation,
+  traitGatedStart,
+} from "./earnedReputation";
 
 const fromZero = () => 0;
 
@@ -25,5 +30,12 @@ describe("earned reputation from a raw save", () => {
     expect(earnedReputation({ schemaVersion: 1.5, reputation: 5, profile: {} }, 2, fromZero)).toBe(0);
     expect(earnedReputation({ schemaVersion: 1, reputation: 1e15 + 0.5, profile: {} }, 1, fromZero)).toBe(0);
     expect(earnedReputation({ schemaVersion: 1, reputation: -3, profile: {} }, 1, fromZero)).toBe(0);
+  });
+
+  it("builds a studio reader for fixed and trait-gated starts", () => {
+    const save = { schemaVersion: 1, reputation: 30, profile: { trait: "charmer" } };
+    expect(fixedStartReputation(1, 10)(save)).toBe(20);
+    expect(traitGatedReputation(1, 10)(save)).toBe(20);
+    expect(traitGatedReputation(1, 10)({ ...save, profile: { trait: "wizard" } })).toBe(0);
   });
 });

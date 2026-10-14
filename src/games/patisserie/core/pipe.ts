@@ -35,10 +35,6 @@ function segmentsOf(path: PipePathDef): [Point, Point][] {
   });
 }
 
-export function pathLength(path: PipePathDef): number {
-  return segmentsOf(path).reduce((sum, [a, b]) => sum + Math.hypot(b[0] - a[0], b[1] - a[1]), 0);
-}
-
 export function checkpoints(path: PipePathDef): Point[] {
   const result: Point[] = [];
   let carry = 0;

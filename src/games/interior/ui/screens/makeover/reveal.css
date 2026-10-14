@@ -1,0 +1,192 @@
+.is-reveal {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5) var(--space-6);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(246, 215, 122, 0.35), transparent 55%),
+    linear-gradient(180deg, #2a4f82 0%, #3c6aa8 40%, #fbf5ee 40.2%);
+}
+
+.is-reveal__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: #ffffff;
+}
+
+.is-reveal__header .ad-button--ghost {
+  color: #ffffff;
+}
+
+.is-reveal__header .ad-eyebrow {
+  color: var(--is-sun);
+}
+
+.is-reveal__header h1 {
+  margin: 0;
+  color: #ffffff;
+}
+
+.is-reveal__scene {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-areas:
+    "client frame"
+    "client track"
+    "client hint"
+    "client button";
+  justify-items: center;
+  align-items: start;
+  gap: var(--space-3) var(--space-4);
+  width: min(1180px, 100%, calc((100dvh - 250px) * 1.52 + 230px));
+  margin: 0 auto;
+}
+
+.is-reveal__client {
+  grid-area: client;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-6);
+}
+
+.is-reveal__scene > .ad-button,
+.is-reveal__scene > .ad-button-wrap {
+  grid-area: button;
+}
+
+.is-reveal__face {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.is-reveal__hands {
+  position: absolute;
+  inset: 0;
+  width: 150px;
+  height: 150px;
+}
+
+.is-reveal__bubble {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 4px 18px 18px 18px;
+  text-align: center;
+  background: #ffffff;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  box-shadow: var(--shadow-md);
+}
+
+.is-reveal__frame {
+  grid-area: frame;
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: linear-gradient(180deg, #fffaf2, #f6e4db);
+  box-shadow:
+    0 0 0 10px #ffffff,
+    var(--shadow-lg);
+}
+
+.is-reveal__room {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.is-reveal__after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #fffaf2, #f6e4db);
+}
+
+.is-reveal__tag {
+  position: absolute;
+  top: 12px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(43, 34, 48, 0.75);
+  color: #ffffff;
+  font-weight: 800;
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+.is-reveal__tag--before {
+  right: 12px;
+}
+
+.is-reveal__tag--after {
+  left: 12px;
+  background: var(--is-terracotta);
+}
+
+.is-reveal__track {
+  grid-area: track;
+  position: relative;
+  width: calc(100% - 56px);
+  height: 56px;
+  margin: 0 28px;
+  border-radius: var(--radius-pill);
+  background:
+    repeating-linear-gradient(90deg, rgba(43, 34, 48, 0.35) 0 2px, transparent 2px 22px), var(--is-sun-soft);
+  box-shadow: inset 0 2px 4px rgba(43, 34, 48, 0.2);
+  touch-action: none;
+  cursor: pointer;
+}
+
+.is-reveal__handle {
+  position: absolute;
+  top: 0;
+  width: 56px;
+  height: 56px;
+  margin-left: -28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #e2876b, var(--is-terracotta));
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 800;
+  cursor: grab;
+  touch-action: none;
+  box-shadow:
+    0 0 0 4px #ffffff,
+    var(--shadow-md);
+}
+
+.is-reveal__handle--dragging {
+  cursor: grabbing;
+  transform: scale(1.08);
+}
+
+.is-reveal__hint {
+  grid-area: hint;
+  margin: 0;
+  font-weight: 700;
+  color: var(--is-blue-deep);
+}
+
+@media (max-width: 900px) {
+  .is-reveal__scene {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "client"
+      "frame"
+      "track"
+      "hint"
+      "button";
+    width: min(100%, calc((100dvh - 420px) * 1.52));
+    min-width: min(100%, 320px);
+  }
+
+  .is-reveal__client {
+    flex-direction: row;
+    padding-top: 0;
+  }
+}

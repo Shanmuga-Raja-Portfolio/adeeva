@@ -29,6 +29,7 @@ export { counterCapacity, isCounterDay, kindKey, type CounterTray, type TrayKind
 export { canDeliver, lastResult } from "./delivery";
 export { batchName, maxColours, mixOptions, productOptions } from "./design";
 export { SCHEMA_VERSION, type GameState, type Gig, type Pantry } from "./gameState";
+export { coachOn } from "../../../engine/guide";
 export { createGame, newGameIssues, type NewGameSettings } from "./newGame";
 export { offerAcceptIssue, offersFor, type OfferView } from "./offers";
 export {

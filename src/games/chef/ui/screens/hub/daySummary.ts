@@ -1,3 +1,5 @@
+import { clientNames } from "../../../../../engine/clientNames";
+import { arrivedClientIds, lapsedClientIds } from "../../../../../engine/gigBoardChanges";
 import { isWeekEnd } from "../../../../../engine/week";
 import { CAREER } from "../../../content/career";
 import {
@@ -16,10 +18,6 @@ export interface DaySummary {
   readonly kind: DayEndKind;
   readonly toDay: number;
   readonly lines: readonly string[];
-}
-
-function names(ids: readonly string[]): string {
-  return ids.map((id) => clientById(id)?.name ?? "A neighbour").join(", ");
 }
 
 export function daySummary(previous: GameState, next: GameState, kind: DayEndKind): DaySummary {
@@ -46,13 +44,12 @@ export function daySummary(previous: GameState, next: GameState, kind: DayEndKin
         .map((shift) => shift.cuisines.map((cuisine) => cuisineById(cuisine).counter).join(" + "))
         .join(" or ")}.`,
     );
-  const before = new Set(previous.gigs.offers.map((offer) => offer.id));
-  const arrived = next.gigs.offers.filter((offer) => !before.has(offer.id)).map((offer) => offer.clientId);
+  const arrived = arrivedClientIds(previous.gigs, next.gigs);
   if (arrived.length > 0)
-    lines.push(`New ${arrived.length === 1 ? "order" : "orders"} from ${names(arrived)}.`);
-  const lapsed = next.gigs.lapsed.slice(previous.gigs.lapsed.length).map((entry) => entry.clientId);
+    lines.push(`New ${arrived.length === 1 ? "order" : "orders"} from ${clientNames(arrived, clientById)}.`);
+  const lapsed = lapsedClientIds(previous.gigs, next.gigs);
   if (lapsed.length > 0)
-    lines.push(`${names(lapsed)} found another cook in time. There will be other orders!`);
+    lines.push(`${clientNames(lapsed, clientById)} found another cook in time. There will be other orders!`);
   if (lines.length === 0) lines.push("A quiet night. The lamps dim and the Hall sleeps.");
   return { kind, toDay: next.calendar.day, lines };
 }

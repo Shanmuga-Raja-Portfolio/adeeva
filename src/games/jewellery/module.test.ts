@@ -21,7 +21,6 @@ describe("studio reputation", () => {
   });
 
   it("is live in the studio with its own save keys", () => {
-    expect(jewelleryModule.status).toBe("live");
     expect(jewelleryModule.id).toBe("jewellery");
   });
 });

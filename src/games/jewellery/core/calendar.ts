@@ -1,8 +1,8 @@
-import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
+import type { ActionCheck } from "../../../engine/actionCheck";
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import { weeklyRent } from "../../../engine/difficulty";
 import { expireStaleOffers, lapseOverdueState } from "../../../engine/gigBoardState";
-import { workPaidShift } from "../../../engine/paidShift";
+import { freshDayCheck, workPaidShift } from "../../../engine/paidShift";
 import { decayBuzz } from "../../../engine/standing";
 import { isWeekEnd } from "../../../engine/week";
 import { settleWeek } from "../../../engine/weekSettlement";
@@ -47,8 +47,7 @@ export function endDay(state: GameState): GameState {
 }
 
 export function canWorkShift(state: GameState): ActionCheck {
-  const fresh = state.calendar.hoursLeft >= dayLength(state);
-  return actionCheck(fresh ? [] : ["A shift takes the whole day. Start it first thing in the morning."]);
+  return freshDayCheck(state.calendar.hoursLeft, dayLength(state));
 }
 
 export function workShift(state: GameState): GameState {

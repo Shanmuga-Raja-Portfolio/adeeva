@@ -1,7 +1,9 @@
 import { BASE_DAY_HOURS, type DayClock } from "../../../engine/dayHours";
+import { runIdsBelow } from "../../../engine/idNumber";
 import {
   arrayOf,
   booleanParser,
+  distinctListOf,
   fixedRecordOf,
   integerParser,
   integerRangeParser,
@@ -51,14 +53,6 @@ const stockParser = objectOf<Stock>({
   clips: countParser,
 });
 
-function uniqueList<T extends string>(options: readonly T[], label: string) {
-  return refined(
-    arrayOf(oneOf(options)),
-    (values) => new Set(values).size === values.length,
-    `each ${label} at most once`,
-  );
-}
-
 const gameStateShapeParser = objectOf<GameState>({
   schemaVersion: oneOf([SCHEMA_VERSION]),
   profile: profileParser,
@@ -67,8 +61,8 @@ const gameStateShapeParser = objectOf<GameState>({
   reputation: countParser,
   buzz: integerRangeParser(0, MAX_BUZZ),
   stock: stockParser,
-  upgrades: uniqueList(UPGRADE_IDS, "upgrade"),
-  decor: uniqueList(DECOR_IDS, "decoration"),
+  upgrades: distinctListOf(UPGRADE_IDS, "upgrade"),
+  decor: distinctListOf(DECOR_IDS, "decoration"),
   guide: booleanParser,
   trends: trendStateParserOf(jewelTagParser),
   marketTheme: oneOf(THEME_IDS),
@@ -92,15 +86,10 @@ const gameStateShapeParser = objectOf<GameState>({
   rng: rngParser,
 });
 
-function runNumber(runId: string): number {
-  const match = /^run-(\d+)$/.exec(runId);
-  return match?.[1] === undefined ? 0 : Number(match[1]);
-}
-
 function runNumbersBelowNext(state: GameState): boolean {
   const ids = state.log.map((entry) => entry.runId);
   if (state.activeRun !== null) ids.push(state.activeRun.id);
-  return ids.every((id) => runNumber(id) < state.nextRunNumber);
+  return runIdsBelow(ids, state.nextRunNumber);
 }
 
 function orderRunMatchesGig(state: GameState): boolean {

@@ -1,4 +1,4 @@
-import { requireById } from "../../../engine/catalog";
+import { memberOf, requireById } from "../../../engine/catalog";
 import type { DifficultyDef, DifficultyId } from "../../../engine/difficulty";
 import { CLIENTS, type ClientDef } from "../content/client";
 import { DIFFICULTIES } from "../content/difficulty";
@@ -10,16 +10,12 @@ import { STORY_BEATS, type StoryBeatDef } from "../content/storyBeat";
 import { TOPPING_IDS, TOPPINGS, type ToppingDef, type ToppingId } from "../content/topping";
 import { UPGRADE_IDS, UPGRADES, type UpgradeDef, type UpgradeId } from "../content/upgrade";
 
-function member<T extends string>(ids: readonly T[]): (value: string) => value is T {
-  return (value: string): value is T => ids.some((id) => id === value);
-}
-
-export const isIngredientId = member(INGREDIENT_IDS);
-export const isMixId = member(MIX_IDS);
-export const isFillingId = member(FILLING_IDS);
-export const isProductId = member(PRODUCT_IDS);
-export const isToppingId = member(TOPPING_IDS);
-export const isUpgradeId = member(UPGRADE_IDS);
+export const isIngredientId = memberOf(INGREDIENT_IDS);
+export const isMixId = memberOf(MIX_IDS);
+export const isFillingId = memberOf(FILLING_IDS);
+export const isProductId = memberOf(PRODUCT_IDS);
+export const isToppingId = memberOf(TOPPING_IDS);
+export const isUpgradeId = memberOf(UPGRADE_IDS);
 
 export function ingredientById(id: IngredientId): IngredientDef {
   return requireById(INGREDIENTS, id, "ingredient");

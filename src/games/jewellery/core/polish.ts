@@ -2,6 +2,7 @@ import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { cappedAccuracy } from "../../../engine/assistCap";
 import { average } from "../../../engine/average";
 import type { Point } from "../../../engine/geometry/point";
+import { polylineLength } from "../../../engine/geometry/polylineLength";
 import { recordWithout } from "../../../engine/recordWithout";
 import type { PartDef } from "../content/product";
 import { productById, productPart } from "./catalog";
@@ -85,15 +86,6 @@ function strokeCells(samples: readonly Point[], width: number, height: number): 
   return cells;
 }
 
-function strokeLengthPx(samples: readonly Point[], pxPerMm: number): number {
-  return (
-    samples.reduce((sum, point, index) => {
-      const previous = samples[index - 1];
-      return previous === undefined ? sum : sum + Math.hypot(point[0] - previous[0], point[1] - previous[1]);
-    }, 0) * pxPerMm
-  );
-}
-
 export function emptyPolish(): PolishRecord {
   return { passes: Array.from({ length: POLISH_CELLS }, () => 0), strokes: 0, assisted: false };
 }
@@ -141,7 +133,7 @@ export function polishStroke(
   return updateActiveRun(state, "polish", (run) => {
     const part = productPart(run.design.productId, partKey);
     if (part === undefined || !samplesAreValid(samples, part)) return null;
-    if (strokeLengthPx(samples, pxPerMm) < MIN_STROKE_PX) return null;
+    if (polylineLength(samples) * pxPerMm < MIN_STROKE_PX) return null;
     const before = run.polish[partKey] ?? emptyPolish();
     if (before.assisted || before.strokes >= MAX_POLISH_STROKES) return null;
     const record = rubbed(before, partMask(run, part), samples, part);

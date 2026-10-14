@@ -1,4 +1,5 @@
 import { updateActiveRun } from "../../../engine/activeRunUpdate";
+import { idNumber } from "../../../engine/idNumber";
 import type { ColourId } from "../../../engine/palette";
 import { isOnCanvas, isValidPose, samePose, topLayer, type PlacedPose } from "../../../engine/placedPose";
 import { EXTRA_IDS, type ExtraId } from "../content/extra";
@@ -12,8 +13,7 @@ export const EXTRA_ROTATION_STEP = 15;
 const MAX_EXTRAS = 12;
 
 export function extraNumber(placedId: string): number {
-  const match = /^extra-(\d+)$/.exec(placedId);
-  return match?.[1] === undefined ? 0 : Number(match[1]);
+  return idNumber(placedId, "extra");
 }
 
 export function finishPrice(choice: FinishChoice): number {

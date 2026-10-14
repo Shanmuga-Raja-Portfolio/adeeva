@@ -1,3 +1,4 @@
+import { idNumber } from "../../../engine/idNumber";
 import type { BoardSizeId } from "../content/boardSize";
 import type { WoodId } from "../content/wood";
 
@@ -17,6 +18,5 @@ export interface OwnedBoard {
 }
 
 export function boardNumber(boardId: string): number {
-  const match = /^board-(\d+)$/.exec(boardId);
-  return match?.[1] === undefined ? 0 : Number(match[1]);
+  return idNumber(boardId, "board");
 }

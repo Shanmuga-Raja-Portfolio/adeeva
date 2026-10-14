@@ -1,7 +1,9 @@
 import type { DayClock } from "../../../engine/dayHours";
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
+import { runIdsBelow } from "../../../engine/idNumber";
 import {
   arrayOf,
+  distinctListOf,
   integerParser,
   integerRangeParser,
   nullable,
@@ -22,7 +24,6 @@ import {
 import { UPGRADE_IDS } from "../content/upgrade";
 import { dayHours, SKYLIGHT_HOURS } from "./calendar";
 import { storyBeatById } from "./catalog";
-import { runNumber } from "./commissionRun";
 import { SCHEMA_VERSION, type GameState } from "./gameState";
 import { boardNumber } from "./ownedBoard";
 import { decorParser, logEntryParser, woodTrendsParser } from "./resultParsers";
@@ -48,7 +49,7 @@ const gameStateShapeParser = objectOf<GameState>({
   gigs: gigBoardParser(briefParser, clientIdParser),
   story: storyStateParser(knownIdParser(storyBeatById, "story beat")),
   boards: arrayOf(ownedBoardParser),
-  upgrades: refined(arrayOf(oneOf(UPGRADE_IDS)), unique, "each upgrade at most once"),
+  upgrades: distinctListOf(UPGRADE_IDS, "upgrade"),
   decor: refined(arrayOf(decorParser), (decor) => unique(decor.map((entry) => entry.id)), "each decor once"),
   activeRun: nullable(runParser),
   log: arrayOf(logEntryParser),
@@ -65,7 +66,7 @@ function countersAhead(state: GameState): boolean {
   ];
   const boardIds = [...state.boards, ...(state.activeRun?.usedBoards ?? [])].map((board) => board.id);
   return (
-    runIds.every((id) => runNumber(id) < state.nextRunNumber) &&
+    runIdsBelow(runIds, state.nextRunNumber) &&
     boardIds.every((id) => boardNumber(id) < state.nextBoardNumber) &&
     unique(boardIds)
   );

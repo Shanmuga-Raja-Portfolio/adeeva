@@ -1,0 +1,37 @@
+.is-coach {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: fit-content;
+  max-width: min(640px, 100%);
+  min-height: 56px;
+  margin: 0 auto var(--space-3);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+  border: 2px solid rgba(60, 106, 168, 0.4);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, #ffffff, #eef3f8);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  animation: is-pop 500ms var(--ease-out) both;
+}
+
+.is-coach__face {
+  flex: none;
+}
+
+.is-coach__text {
+  font-weight: 600;
+}
+
+.is-coach__ok {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--is-blue);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+}

@@ -1,5 +1,6 @@
 import { dressGarment } from "../../art/avatarDress";
 import type { CSSProperties } from "react";
+import { latestEntryFor } from "../../../../../engine/runLog";
 import { useSettings } from "../../../../../studio/SettingsContext";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { DressPreview } from "../../art/DressPreview";
@@ -23,7 +24,7 @@ function signed(amount: number): string {
 
 export function ResultsStage({ state, run, onExit }: StageProps) {
   const { reducedMotion } = useSettings();
-  const entry = [...state.log].reverse().find((logEntry) => logEntry.runId === run.id) ?? null;
+  const entry = latestEntryFor(state.log, run.id);
   const score = useCountUp(entry?.evaluation.score ?? 0, 1400, 500, reducedMotion);
   const { client, theme } = briefOwner(run.brief);
   const dress = {

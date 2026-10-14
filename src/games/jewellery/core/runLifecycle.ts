@@ -1,4 +1,5 @@
-import { nextRandom } from "../../../engine/rng";
+import { setAsideActiveRun } from "../../../engine/activeRunUpdate";
+import { drawSeed } from "../../../engine/rngDraw";
 import type { ProductId, StallProductId } from "../content/product";
 import type { Brief } from "./brief";
 import { isStallProductId } from "./catalog";
@@ -19,13 +20,13 @@ function withNewRun(
   brief: Brief | null,
   productId: ProductId,
 ): GameState {
-  const [roll, rng] = nextRandom(state.rng);
+  const [seed, rng] = drawSeed(state.rng);
   const run = createPieceRun({
     id: `run-${state.nextRunNumber}`,
     purpose,
     brief,
     day: state.calendar.day,
-    seed: Math.floor(roll * 2147483647),
+    seed,
     productId,
     options: defaultOptions(productId),
   });
@@ -50,7 +51,5 @@ export function startStall(state: GameState, productId: StallProductId): GameSta
 }
 
 export function abandonRun(state: GameState): GameState {
-  const run = state.activeRun;
-  if (run === null || run.stage === "done") return state;
-  return { ...state, activeRun: null };
+  return setAsideActiveRun(state);
 }

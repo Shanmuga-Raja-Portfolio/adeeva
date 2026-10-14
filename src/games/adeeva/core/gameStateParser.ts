@@ -1,3 +1,4 @@
+import { runIdsBelow } from "../../../engine/idNumber";
 import { CAREER_IDS } from "../content/career";
 import { TRIM_IDS } from "../content/trim";
 import { UPGRADE_IDS } from "../content/upgrade";
@@ -28,17 +29,18 @@ import { labelSeasonParser, logEntryParser } from "./resultParsers";
 import {
   arrayOf,
   booleanParser,
+  distinctListOf,
   fixedRecordOf,
   integerParser,
   integerRangeParser,
   nullable,
   objectOf,
   oneOf,
+  type Parser,
   rangeParser,
   recordOf,
   refined,
   stringParser,
-  type Parser,
 } from "../../../engine/parse";
 
 const profileParser = objectOf<Profile>({ ...profileShape, career: oneOf(CAREER_IDS) });
@@ -61,11 +63,7 @@ const inventoryParser = objectOf<Inventory>({
 });
 
 const studioParser = objectOf<StudioState>({
-  upgrades: refined(
-    arrayOf(oneOf(UPGRADE_IDS)),
-    (upgrades) => new Set(upgrades).size === upgrades.length,
-    "each upgrade at most once",
-  ),
+  upgrades: distinctListOf(UPGRADE_IDS, "upgrade"),
   assistantHired: booleanParser,
   assistantPaidThroughDay: countParser,
 });
@@ -95,15 +93,10 @@ const gameStateShapeParser = objectOf<GameState>({
   rng: rngParser,
 });
 
-function runNumber(runId: string): number {
-  const match = /^run-(\d+)$/.exec(runId);
-  return match?.[1] === undefined ? 0 : Number(match[1]);
-}
-
 function runNumbersBelowNext(state: GameState): boolean {
   const ids = [...state.deliveredRunIds, ...state.log.map((entry) => entry.runId)];
   if (state.activeRun !== null) ids.push(state.activeRun.id);
-  return ids.every((id) => runNumber(id) < state.nextRunNumber);
+  return runIdsBelow(ids, state.nextRunNumber);
 }
 
 function lookRunHasSeason(state: GameState): boolean {

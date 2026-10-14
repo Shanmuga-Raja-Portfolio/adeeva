@@ -33,7 +33,7 @@ export { metalLocked, slotOptions, stoneLocked } from "./design";
 export { canDeliver, canFinishStall, lastResult } from "./delivery";
 export { availableCharms, CHARM_ROTATION_STEP, DISPLAY_CANVAS, MAX_CHARM_SCALE } from "./displayChoice";
 export { SCHEMA_VERSION, type GameState, type Gig, type LogEntry } from "./gameState";
-export { coachOn } from "./guide";
+export { coachOn } from "../../../engine/guide";
 export { leaveHours } from "./hourCost";
 export {
   COLD_LAMP,

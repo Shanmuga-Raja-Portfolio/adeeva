@@ -1,4 +1,3 @@
-import type { Criterion } from "../../../engine/score";
 import {
   arrayOf,
   booleanParser,
@@ -12,11 +11,18 @@ import {
   stringParser,
   type Parser,
 } from "../../../engine/parse";
-import { countParser, dayParser, rewardLineParser, shareParser } from "../../../engine/stateParsers";
+import {
+  countParser,
+  criterionParserOf,
+  dayParser,
+  rewardLineParser,
+  shareParser,
+  trendRewardShape,
+} from "../../../engine/stateParsers";
 import { TEST_IDS } from "../content/career";
 import { STEP_KINDS } from "../content/dish";
 import type { LessonOffer, ShiftOffer, DayBoard } from "./dayBoard";
-import { CRITERION_IDS, type CriterionId } from "./criterion";
+import { CRITERION_IDS } from "./criterion";
 import type { DiaryEntry, PlatingCard } from "./dishDiary";
 import type { DishEvaluation, DishQualityBreakdown, OrderEvaluation, OrderQuality } from "./dishEvaluate";
 import { TEST_RUN_KINDS } from "./dishRun";
@@ -48,22 +54,11 @@ import { MAX_SAVOURY } from "./taste";
 import type { TasteMemory } from "./tasteMemory";
 import type { TestDay } from "./testDay";
 
-export const rewardParser = objectOf<Reward>({
-  outcome: oneOf(["pass", "soft-fail", "fail"]),
-  coins: integerParser,
-  reputation: integerParser,
-  buzz: integerParser,
-  lines: arrayOf(rewardLineParser),
-  trendMatches: arrayOf(tasteTagParser),
-});
+export const rewardParser = objectOf<Reward>(
+  trendRewardShape(tasteTagParser, integerParser, rewardLineParser),
+);
 
-const criterionParser = objectOf<Criterion<CriterionId>>({
-  id: oneOf(CRITERION_IDS),
-  label: stringParser,
-  passed: booleanParser,
-  detail: stringParser,
-  weight: countParser,
-});
+const criterionParser = criterionParserOf(CRITERION_IDS, countParser);
 
 function evaluationShape<Q>(quality: Parser<Q>) {
   return {

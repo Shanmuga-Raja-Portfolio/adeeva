@@ -30,26 +30,16 @@ export interface GameScreenProps {
   readonly onExit: () => void;
 }
 
-interface GameCard {
+export interface GameModule {
   readonly id: GameId;
   readonly title: string;
   readonly tagline: string;
   readonly ages: string;
   readonly tileArt: ComponentType<TileArtProps>;
-}
-
-export interface GameModule extends GameCard {
-  readonly status: "live";
   readonly load: () => Promise<{ readonly default: ComponentType<GameScreenProps> }>;
   readonly reputationOf: (rawSave: unknown) => number;
   readonly parentNote?: string | undefined;
 }
-
-export interface WorkshopGame extends GameCard {
-  readonly status: "workshop";
-}
-
-export type StudioGame = GameModule | WorkshopGame;
 
 export function isGameId(value: string): value is GameId {
   return GAME_IDS.some((id) => id === value);

@@ -209,6 +209,7 @@ export function SewingMachine({
         aria-label={`Sew the ${seamName.toLowerCase()}: hold Space, steer with the arrow keys`}
         data-testid="sewing-bed"
         data-progress={sim.progress.toFixed(3)}
+        data-done={done ? "true" : "false"}
       >
         <SewingStage
           profile={profile}

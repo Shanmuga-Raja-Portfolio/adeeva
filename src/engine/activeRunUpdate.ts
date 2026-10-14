@@ -13,3 +13,11 @@ export function updateActiveRun<S extends { readonly activeRun: { readonly stage
   if (next === null || next === run) return state;
   return { ...state, activeRun: next };
 }
+
+export function setAsideActiveRun<S extends { readonly activeRun: { readonly stage: string } | null }>(
+  state: S,
+): S {
+  const run = state.activeRun;
+  if (run === null || run.stage === "done") return state;
+  return { ...state, activeRun: null };
+}

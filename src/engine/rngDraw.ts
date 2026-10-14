@@ -23,3 +23,7 @@ export function drawDistinct<T>(rng: RngState, items: readonly T[], count: numbe
   }
   return [picked, state];
 }
+
+export function drawSeed(rng: RngState): [number, RngState] {
+  return drawInt(rng, 0, 2147483646);
+}

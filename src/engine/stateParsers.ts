@@ -3,6 +3,7 @@ import { avatarLookParser } from "./avatar";
 import { DIFFICULTY_IDS } from "./difficulty";
 import {
   arrayOf,
+  booleanParser,
   integerParser,
   integerRangeParser,
   numberParser,
@@ -15,7 +16,8 @@ import {
 } from "./parse";
 import { COLOURS } from "./palette";
 import type { ProfileBase } from "./profile";
-import type { RewardLine } from "./reward";
+import type { RewardLine, RewardOutcome } from "./reward";
+import type { Criterion } from "./score";
 import type { StoryState } from "./story";
 import { STYLE_TAGS } from "./styleTag";
 import { TRAIT_IDS } from "./trait";
@@ -64,6 +66,37 @@ export function storyStateParser(beatId: Parser<string>): Parser<StoryState> {
 }
 
 export const rewardLineParser = objectOf<RewardLine>({ label: stringParser, amount: numberParser });
+export const wholeRewardLineParser = objectOf<RewardLine>({ label: stringParser, amount: integerParser });
+
+const REWARD_OUTCOMES: readonly RewardOutcome[] = ["pass", "soft-fail", "fail"];
+
+export function trendRewardShape<T extends string>(
+  trendTag: Parser<T>,
+  coins: Parser<number>,
+  line: Parser<RewardLine>,
+) {
+  return {
+    outcome: oneOf(REWARD_OUTCOMES),
+    coins,
+    reputation: integerParser,
+    buzz: integerParser,
+    lines: arrayOf(line),
+    trendMatches: arrayOf(trendTag),
+  };
+}
+
+export function criterionParserOf<Id extends string>(
+  ids: readonly Id[],
+  weight: Parser<number>,
+): Parser<Criterion<Id>> {
+  return objectOf<Criterion<Id>>({
+    id: oneOf(ids),
+    label: stringParser,
+    passed: booleanParser,
+    detail: stringParser,
+    weight,
+  });
+}
 
 export const profileShape = {
   name: refined(stringParser, (name) => name.trim().length > 0, "a name"),

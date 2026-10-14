@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { requireById } from "./catalog";
+import { memberOf, requireById } from "./catalog";
 
 const shelf = [
   { id: "oak", grain: "straight" },
@@ -13,5 +13,13 @@ describe("requireById", () => {
 
   it("names the kind and id when an entry is missing", () => {
     expect(() => requireById(shelf, "pine", "wood")).toThrow("Missing wood in catalog: pine");
+  });
+});
+
+describe("memberOf", () => {
+  it("guards a string to one of the known ids", () => {
+    const isFruit = memberOf(["apple", "pear"] as const);
+    expect(isFruit("pear")).toBe(true);
+    expect(isFruit("plum")).toBe(false);
   });
 });

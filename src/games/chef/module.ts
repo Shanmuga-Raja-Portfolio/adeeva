@@ -15,7 +15,6 @@ function chefReputation(rawSave: unknown): number {
 }
 
 export const chefModule: GameModule = {
-  status: "live",
   id: "chef",
   title: "Six Kitchens",
   tagline: "Cook your way from student to head chef across six kitchens.",

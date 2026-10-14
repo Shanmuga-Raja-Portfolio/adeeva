@@ -1,3 +1,4 @@
+import { zeroCounts } from "../../../engine/count";
 import { EXTRA_IDS, type ExtraId } from "../content/extra";
 import { METAL_IDS, type MetalId } from "../content/metal";
 import { STOCK_SIZE_IDS, type StockSizeId } from "../content/stockSize";
@@ -13,18 +14,14 @@ export interface Stock {
   readonly clips: number;
 }
 
-function zeroes<K extends string>(ids: readonly K[]): Record<K, number> {
-  return Object.fromEntries(ids.map((id) => [id, 0])) as Record<K, number>;
-}
-
 export function emptyStock(): Stock {
   return {
-    metal: Object.fromEntries(METAL_IDS.map((id) => [id, zeroes(STOCK_SIZE_IDS)])) as Record<
+    metal: Object.fromEntries(METAL_IDS.map((id) => [id, zeroCounts(STOCK_SIZE_IDS)])) as Record<
       MetalId,
       MetalStock
     >,
-    stones: zeroes(STONE_IDS),
-    extras: zeroes(EXTRA_IDS),
+    stones: zeroCounts(STONE_IDS),
+    extras: zeroCounts(EXTRA_IDS),
     clips: 0,
   };
 }

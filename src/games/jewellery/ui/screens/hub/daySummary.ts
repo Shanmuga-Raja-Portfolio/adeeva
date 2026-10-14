@@ -1,3 +1,5 @@
+import { clientNames } from "../../../../../engine/clientNames";
+import { arrivedClientIds, lapsedClientIds } from "../../../../../engine/gigBoardChanges";
 import { isWeekEnd } from "../../../../../engine/week";
 import { CAREER } from "../../../content/career";
 import { clientById, themeById, weeklyBill, type GameState } from "../../../core";
@@ -8,10 +10,6 @@ export interface DaySummary {
   readonly kind: DayEndKind;
   readonly toDay: number;
   readonly lines: readonly string[];
-}
-
-function names(ids: readonly string[]): string {
-  return ids.map((id) => clientById(id)?.name ?? "A neighbour").join(", ");
 }
 
 export function daySummary(previous: GameState, next: GameState, kind: DayEndKind): DaySummary {
@@ -25,13 +23,14 @@ export function daySummary(previous: GameState, next: GameState, kind: DayEndKin
     lines.push(`This week shoppers love: ${next.trends.current.join(" and ")}.`);
     lines.push(`Next Market Day theme: ${themeById(next.marketTheme).name}.`);
   }
-  const before = new Set(previous.gigs.offers.map((offer) => offer.id));
-  const arrived = next.gigs.offers.filter((offer) => !before.has(offer.id)).map((offer) => offer.clientId);
+  const arrived = arrivedClientIds(previous.gigs, next.gigs);
   if (arrived.length > 0)
-    lines.push(`New order ${arrived.length === 1 ? "tag" : "tags"} pinned up by ${names(arrived)}.`);
-  const lapsed = next.gigs.lapsed.slice(previous.gigs.lapsed.length).map((entry) => entry.clientId);
+    lines.push(
+      `New order ${arrived.length === 1 ? "tag" : "tags"} pinned up by ${clientNames(arrived, clientById)}.`,
+    );
+  const lapsed = lapsedClientIds(previous.gigs, next.gigs);
   if (lapsed.length > 0)
-    lines.push(`${names(lapsed)} found another gift in time. There will be other orders!`);
+    lines.push(`${clientNames(lapsed, clientById)} found another gift in time. There will be other orders!`);
   if (lines.length === 0) lines.push("A quiet night. The lanterns dim and the arcade sleeps.");
   return { kind, toDay: next.calendar.day, lines };
 }

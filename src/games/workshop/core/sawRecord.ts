@@ -2,8 +2,8 @@ import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { average } from "../../../engine/average";
 import type { Point } from "../../../engine/geometry/point";
 import { ASSIST_CUT_ACCURACY, traceAccuracy } from "../../../engine/geometry/traceAccuracy";
-import { binCoverage, traceReach } from "../../../engine/geometry/traceCoverage";
-import { traceTrack, visitedBins, type TraceTrack } from "../../../engine/geometry/traceTrack";
+import { isPathTraced } from "../../../engine/geometry/pathTrace";
+import { fitSamples, samplesFit } from "../../../engine/geometry/traceSamples";
 import { polygonBounds } from "../../../engine/geometry/polygonPlacement";
 import type { PartDef } from "../content/product";
 import { boardSizeById } from "./catalog";
@@ -12,11 +12,9 @@ import { partPolygon, runBoardById } from "./boardLayout";
 import type { GameState } from "./gameState";
 import type { OwnedBoard } from "./ownedBoard";
 import { designParts, findPart } from "./pieceParts";
-import { cutLength, sawCuts, type SawCut } from "./sawPath";
+import { sawCuts, type SawCut } from "./sawPath";
 import { sawTolerance } from "./tolerance";
 
-const SAW_COVERAGE_SHARE = 0.9;
-const MIN_SAMPLES_PER_CM = 1;
 const MAX_SAW_SAMPLES = 20000;
 const SPARE_MIN_LENGTH_CM = 60;
 
@@ -51,37 +49,8 @@ export function runSawAccuracy(state: GameState, run: CommissionRun): number {
   return parts.length === 0 ? 0 : average(parts.map((part) => partSawAccuracy(state, run, part)));
 }
 
-function sawTrack(cut: SawCut): TraceTrack {
-  const loop = traceTrack(cut.points);
-  if (cut.closed) return loop;
-  const segments = loop.segments.slice(0, -1);
-  return { segments, perimeter: segments.reduce((sum, segment) => sum + segment.length, 0) };
-}
-
-export function sawCoverage(cut: SawCut, samples: readonly Point[], tolerance: number): number {
-  if (samples.length === 0) return 0;
-  return binCoverage(visitedBins(sawTrack(cut), samples, traceReach(tolerance)));
-}
-
-export function isSawComplete(cut: SawCut, samples: readonly Point[], tolerance: number): boolean {
-  return (
-    samples.length >= Math.ceil(cutLength(cut) * MIN_SAMPLES_PER_CM) &&
-    sawCoverage(cut, samples, tolerance) >= SAW_COVERAGE_SHARE
-  );
-}
-
 export function fitSawSamples(samples: readonly Point[]): readonly Point[] {
-  if (samples.length <= MAX_SAW_SAMPLES) return samples;
-  const step = Math.ceil(samples.length / (MAX_SAW_SAMPLES - 1));
-  return samples.filter((_, index) => index % step === 0 || index === samples.length - 1);
-}
-
-function wellFormed(samples: readonly Point[]): boolean {
-  return (
-    samples.length > 0 &&
-    samples.length <= MAX_SAW_SAMPLES &&
-    samples.every((point) => Number.isFinite(point[0]) && Number.isFinite(point[1]))
-  );
+  return fitSamples(samples, MAX_SAW_SAMPLES);
 }
 
 function sparePiece(board: OwnedBoard, run: CommissionRun, number: number): OwnedBoard | null {
@@ -137,7 +106,7 @@ export function sawCut(
   cutIndex: number,
   samples: readonly Point[],
 ): GameState {
-  if (!wellFormed(samples) || !Number.isInteger(cutIndex)) return state;
+  if (!samplesFit(samples, MAX_SAW_SAMPLES) || !Number.isInteger(cutIndex)) return state;
   const run = state.activeRun;
   const woodId = run?.design.woodId ?? null;
   if (run === null || woodId === null) return state;
@@ -147,7 +116,7 @@ export function sawCut(
     const cut = part === undefined ? undefined : partCuts(state, current, part)[cutIndex];
     const key = cutKey(partId, cutIndex);
     if (cut === undefined || cutRecord(current, key) !== undefined) return null;
-    if (!isSawComplete(cut, samples, tolerance)) return null;
+    if (!isPathTraced(cut, samples, tolerance)) return null;
     const accuracy = traceAccuracy(samples, cut.points, tolerance, cut.closed);
     return { ...current, cuts: { ...current.cuts, [key]: { accuracy, assisted: false } } };
   });

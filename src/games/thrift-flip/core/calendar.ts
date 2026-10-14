@@ -2,7 +2,7 @@ import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import { weeklyRent } from "../../../engine/difficulty";
 import { expireStaleOffers, lapseOverdueState } from "../../../engine/gigBoardState";
-import { workPaidShift } from "../../../engine/paidShift";
+import { freshDayCheck, workPaidShift } from "../../../engine/paidShift";
 import { decayBuzz } from "../../../engine/standing";
 import { isWeekEnd } from "../../../engine/week";
 import { STYLE_TAGS } from "../../../engine/styleTag";
@@ -41,8 +41,7 @@ export function endDay(state: GameState): GameState {
 export function canWorkShift(state: GameState): ActionCheck {
   const stall = stallDayIssue(state.calendar.day);
   if (stall !== null) return actionCheck(["Stall Day is for selling. The swap shop is closed."]);
-  const fresh = state.calendar.hoursLeft >= BASE_DAY_HOURS;
-  return actionCheck(fresh ? [] : ["A shift takes the whole day. Start it first thing in the morning."]);
+  return freshDayCheck(state.calendar.hoursLeft, BASE_DAY_HOURS);
 }
 
 export function workShift(state: GameState): GameState {

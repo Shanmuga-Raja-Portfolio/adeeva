@@ -1,3 +1,4 @@
+import { dayGreeting } from "../../../../../engine/dayHours";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
 import { canWorkShift, careerById, hoursPerDay, weeklyBill, type GameState } from "../../../core";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
@@ -11,13 +12,6 @@ export interface HubHeroProps {
   state: GameState;
   onWorkShift: (event: ClickLike) => void;
   onEndDay: (event: ClickLike) => void;
-}
-
-function greeting(hoursLeft: number, dayHours: number): string {
-  const share = hoursLeft / dayHours;
-  if (share > 0.66) return "Good morning";
-  if (share > 0.3) return "Good afternoon";
-  return "Good evening";
 }
 
 function billNote(state: GameState): string {
@@ -47,7 +41,7 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
           Week {weekNumber(calendar.day)} · {weekdayName(calendar.day)} · {career.studioName}
         </span>
         <h1 className="ad-hub-hero__title">
-          {greeting(calendar.hoursLeft, dayHours)}, {profile.name}
+          {dayGreeting(calendar.hoursLeft, dayHours)}, {profile.name}
         </h1>
       </div>
       <div className="ad-hub-hero__day">

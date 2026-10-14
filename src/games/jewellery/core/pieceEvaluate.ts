@@ -1,12 +1,14 @@
 import {
   criterionJudge,
+  judgeAvoidedColours,
   judgeDeadline,
   judgedEvaluation,
   judgeQuality,
+  judgeStyle,
   type Evaluation as JudgedEvaluation,
   type Judged as JudgedCriterion,
 } from "../../../engine/criterionJudge";
-import { budgetFeedback, coloursFeedback } from "../../../engine/kindFeedback";
+import { budgetFeedback } from "../../../engine/kindFeedback";
 import type { ExtraRequirement } from "../content/client";
 import { isCharmId } from "../content/extra";
 import { jewelColourById } from "../content/jewelColour";
@@ -56,25 +58,10 @@ function judgeConstruction(run: PieceRun): Judged {
   );
 }
 
-function judgeStyle(run: PieceRun, brief: Brief): Judged {
-  const tags = pieceTags(runSource(run));
-  const missing = brief.requiredTags.filter((tag) => !tags.includes(tag));
-  const detail =
-    missing.length === 0
-      ? `Feels ${brief.requiredTags.join(" and ")}, just as asked.`
-      : `Still missing: ${missing.join(", ")}.`;
-  return judged("style", "Style", missing.length === 0, detail, styleFeedback(missing));
-}
-
-function judgeColours(run: PieceRun, brief: Brief, favouredUsed: number): Judged {
-  const avoided = pieceColours(runSource(run))
+function avoidedColourNames(run: PieceRun, brief: Brief): string[] {
+  return pieceColours(runSource(run))
     .filter((colour) => brief.avoidColours.includes(colour))
     .map((colour) => jewelColourById(colour).name);
-  const detail =
-    avoided.length === 0
-      ? `No unwanted colours. ${favouredUsed} favourite ${favouredUsed === 1 ? "colour" : "colours"} used.`
-      : `Shows ${avoided.join(", ")}, which they hoped to avoid.`;
-  return judged("colours", "Colours", avoided.length === 0, detail, coloursFeedback(avoided));
 }
 
 function judgeExtras(run: PieceRun, brief: Brief): Judged {
@@ -118,8 +105,8 @@ export function evaluatePiece(
   const results = [
     judgeConstruction(run),
     judgeQuality(judged, quality.quality, brief.minQuality, qualityFeedback(quality, brief.minQuality)),
-    judgeStyle(run, brief),
-    judgeColours(run, brief, favouredColoursUsed),
+    judgeStyle(judged, brief.requiredTags, pieceTags(runSource(run)), styleFeedback),
+    judgeAvoidedColours(judged, avoidedColourNames(run, brief), favouredColoursUsed),
     judgeExtras(run, brief),
     judgeBudget(spend, brief),
     judgeDeadline(judged, "On time", deliveredDay, brief.deadlineDay),

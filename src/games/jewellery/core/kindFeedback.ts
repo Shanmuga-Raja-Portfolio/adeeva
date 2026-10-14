@@ -1,3 +1,4 @@
+import { qualityTipLine, type QualityTip } from "../../../engine/qualityTip";
 import type { ConstructionCount } from "./construction";
 import type { QualityBreakdown } from "./pieceQuality";
 
@@ -20,14 +21,13 @@ export function constructionFeedback(count: ConstructionCount): string {
 }
 
 export function qualityFeedback(breakdown: QualityBreakdown, minimum: number): string {
-  const tips: [number, string][] = [
+  const tips: QualityTip[] = [
     [breakdown.cut, "cutting slowly and turning at each dot"],
     [breakdown.join, "letting go of the lamp before the glow turns orange"],
     [breakdown.polish, "rubbing every dull corner until it shines"],
   ];
   if (breakdown.hasStones) tips.push([breakdown.set, "nudging the stone right into its seat"]);
-  const weakest = tips.reduce((lowest, tip) => (tip[0] < lowest[0] ? tip : lowest));
-  return `The finish reached ${breakdown.quality}, a little under the ${minimum} hoped for. Try ${weakest[1]}.`;
+  return qualityTipLine("The finish", breakdown.quality, minimum, tips);
 }
 
 export function styleFeedback(missingTags: readonly string[]): string {

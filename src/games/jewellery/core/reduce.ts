@@ -1,3 +1,4 @@
+import { withGuide } from "../../../engine/guide";
 import { buyUpgrade } from "../../../engine/upgrades";
 import type { Action } from "./action";
 import { endDay, workShift } from "./calendar";
@@ -8,7 +9,6 @@ import { deliver, finishStall } from "./delivery";
 import { chooseMetal, chooseOption, chooseStone } from "./design";
 import { addCharm, chooseChain, chooseFinish, moveCharm, removeCharm } from "./displayChoice";
 import type { GameState } from "./gameState";
-import { setGuide } from "./guide";
 import { recordJoin, restartJoin } from "./joinRecord";
 import { showTray } from "./marketDay";
 import { createGame, newGameIssues } from "./newGame";
@@ -112,7 +112,7 @@ export function reduce(state: GameState, action: Action): GameState {
     case "buyDecor":
       return buyDecor(state, action.decorId);
     case "setGuide":
-      return setGuide(state, action.on);
+      return withGuide(state, action.on);
     case "markBeatSeen":
       return seeBeat(state, action.beatId);
   }

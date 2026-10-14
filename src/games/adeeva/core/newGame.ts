@@ -1,6 +1,7 @@
+import { zeroCounts } from "../../../engine/count";
 import { profileIssues, type ProfileSettings } from "../../../engine/profile";
 import { CAREER_IDS, type CareerId } from "../content/career";
-import { TRIM_IDS, type TrimId } from "../content/trim";
+import { TRIM_IDS } from "../content/trim";
 import { careerById } from "./catalog";
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import { SCHEMA_VERSION, type GameState } from "./gameState";
@@ -38,7 +39,7 @@ export function createGame(settings: NewGameSettings): GameState {
     buzz: 0,
     inventory: {
       fabricMetres: {},
-      trims: Object.fromEntries(TRIM_IDS.map((id) => [id, 0])) as Record<TrimId, number>,
+      trims: zeroCounts(TRIM_IDS),
     },
     studio: { upgrades: [], assistantHired: false, assistantPaidThroughDay: 0 },
     trends,

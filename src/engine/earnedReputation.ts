@@ -17,3 +17,12 @@ export function earnedReputation(rawSave: unknown, schemaVersion: number, startO
   const start = startOf(profile);
   return start === null ? 0 : Math.max(0, reputation - start);
 }
+
+export function traitGatedReputation(schemaVersion: number, start: number): (rawSave: unknown) => number {
+  const startOf = traitGatedStart(start);
+  return (rawSave) => earnedReputation(rawSave, schemaVersion, startOf);
+}
+
+export function fixedStartReputation(schemaVersion: number, start: number): (rawSave: unknown) => number {
+  return (rawSave) => earnedReputation(rawSave, schemaVersion, () => start);
+}

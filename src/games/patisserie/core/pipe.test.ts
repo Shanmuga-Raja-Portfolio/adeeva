@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { pathLength } from "../../../engine/geometry/pathTrace";
 import type { Point } from "../../../engine/geometry/point";
 import { PIPE_PATTERNS } from "../content/pipePattern";
 import type { GameState } from "./gameState";
-import { areSamplesValid, checkpoints, coverage, pathLength, pipeAccuracy, pipeTolerance } from "./pipe";
+import { areSamplesValid, checkpoints, coverage, pipeAccuracy, pipeTolerance } from "./pipe";
 import { reduce } from "./reduce";
 import {
   GOOD_PLAN,

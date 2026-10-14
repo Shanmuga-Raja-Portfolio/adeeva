@@ -3,6 +3,7 @@ import {
   judgeDeadline,
   judgedEvaluation,
   judgeQuality,
+  judgeStyle,
   type Evaluation as JudgedEvaluation,
   type Judged as JudgedCriterion,
 } from "../../../engine/criterionJudge";
@@ -42,7 +43,6 @@ export function evaluatePiece(state: GameState, run: CommissionRun, deliveredDay
   const colours = pieceColours(run);
   const spend = runSpend(state, run);
   const favouredColoursUsed = colours.filter((colour) => brief.favouredColours.includes(colour)).length;
-  const missingTags = brief.requiredTags.filter((tag) => !tags.includes(tag));
   const avoided = colours.filter((colour) => brief.avoidColours.includes(colour));
   const tallies = extraTallies(run);
   const short = tallies.filter((tally) => tally.placed < tally.needed);
@@ -55,15 +55,7 @@ export function evaluatePiece(state: GameState, run: CommissionRun, deliveredDay
       constructionFeedback(count),
     ),
     judgeQuality(judged, quality.quality, brief.minQuality, qualityFeedback(quality, brief.minQuality)),
-    judged(
-      "style",
-      "Style",
-      missingTags.length === 0,
-      missingTags.length === 0
-        ? `Feels ${brief.requiredTags.join(" and ")}, just as asked.`
-        : `Still missing: ${missingTags.join(", ")}.`,
-      styleFeedback(missingTags),
-    ),
+    judgeStyle(judged, brief.requiredTags, tags, styleFeedback),
     judged(
       "colours",
       "Colours",

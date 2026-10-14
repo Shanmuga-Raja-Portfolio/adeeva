@@ -1,8 +1,9 @@
+import { zeroCounts } from "../../../engine/count";
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import { profileIssues, type ProfileSettings } from "../../../engine/profile";
 import { STYLE_TAGS } from "../../../engine/styleTag";
 import { rollTrendState } from "../../../engine/trendMarket";
-import { TRIM_IDS, type TrimId } from "../../adeeva/content/trim";
+import { TRIM_IDS } from "../../adeeva/content/trim";
 import { CAREER } from "../content/career";
 import { fabricById } from "./catalog";
 import { SCHEMA_VERSION, type GameState } from "./gameState";
@@ -54,7 +55,7 @@ export function createGame(settings: NewGameSettings): GameState {
     rail: [],
     stock: {
       finds: [],
-      savedTrims: Object.fromEntries(TRIM_IDS.map((id) => [id, 0])) as Record<TrimId, number>,
+      savedTrims: zeroCounts(TRIM_IDS),
       scraps: tin.scraps,
     },
     upgrades: [],

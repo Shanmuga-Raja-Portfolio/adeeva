@@ -36,7 +36,6 @@ describe("studio reputation", () => {
   });
 
   it("is live in the studio as Six Kitchens", () => {
-    expect(chefModule.status).toBe("live");
     expect(chefModule.id).toBe("chef");
     expect(chefModule.title).toBe("Six Kitchens");
   });

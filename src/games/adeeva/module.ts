@@ -12,7 +12,6 @@ function careerReputation(rawSave: unknown): number {
 }
 
 export const adeevaModule: GameModule = {
-  status: "live",
   id: "adeeva",
   title: "ADEEVA",
   tagline: "Design, cut and sew dresses for clients, then launch your own label.",

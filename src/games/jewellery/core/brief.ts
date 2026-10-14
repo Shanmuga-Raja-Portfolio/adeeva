@@ -1,3 +1,4 @@
+import { sameList } from "../../../engine/sameList";
 import type { RngState } from "../../../engine/rng";
 import { drawDistinct, drawInt } from "../../../engine/rngDraw";
 import type { ClientDef, ExtraRequirement } from "../content/client";
@@ -57,18 +58,6 @@ export function rollClientBrief(client: ClientDef, roll: BriefRoll, rng: RngStat
   ];
 }
 
-function sameList<T>(a: readonly T[], b: readonly T[], same: (x: T, y: T) => boolean): boolean {
-  return (
-    a.length === b.length &&
-    a.every((entry, index) => {
-      const other = b[index];
-      return other !== undefined && same(entry, other);
-    })
-  );
-}
-
-const identical = <T>(x: T, y: T): boolean => x === y;
-
 export function sameBrief(a: Brief, b: Brief): boolean {
   return (
     a.clientId === b.clientId &&
@@ -78,10 +67,10 @@ export function sameBrief(a: Brief, b: Brief): boolean {
     a.budget === b.budget &&
     a.fee === b.fee &&
     a.minQuality === b.minQuality &&
-    sameList(a.requiredTags, b.requiredTags, identical) &&
-    sameList(a.favouredColours, b.favouredColours, identical) &&
-    sameList(a.avoidColours, b.avoidColours, identical) &&
-    sameList(a.avoidMetals, b.avoidMetals, identical) &&
+    sameList(a.requiredTags, b.requiredTags) &&
+    sameList(a.favouredColours, b.favouredColours) &&
+    sameList(a.avoidColours, b.avoidColours) &&
+    sameList(a.avoidMetals, b.avoidMetals) &&
     sameList(a.requiredExtras, b.requiredExtras, (x, y) => x.extraId === y.extraId && x.count === y.count)
   );
 }

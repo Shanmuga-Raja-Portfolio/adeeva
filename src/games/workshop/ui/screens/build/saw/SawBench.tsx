@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { clamp } from "../../../../../../engine/clamp";
+import { isPathTraced, pathCoverage } from "../../../../../../engine/geometry/pathTrace";
 import type { Point } from "../../../../../../engine/geometry/point";
 import { distanceToOutline } from "../../../../../../engine/geometry/traceAccuracy";
 import { pointOnTrack, traceTrack } from "../../../../../../engine/geometry/traceTrack";
@@ -11,9 +12,7 @@ import {
   boardNumber,
   boardSizeById,
   fitSawSamples,
-  isSawComplete,
   partPolygon,
-  sawCoverage,
   type OwnedBoard,
   type PartPlacement,
   type SawCut,
@@ -95,7 +94,7 @@ export function SawBench({
   const viewWidth = maxX - minX;
   const viewHeight = maxY - minY;
   const pxPerCm = clamp(containerWidth / viewWidth, 6, 16);
-  const coverage = cut === undefined ? 0 : sawCoverage(cut, samples, tolerance);
+  const coverage = cut === undefined ? 0 : pathCoverage(cut, samples, tolerance);
   const rideDone = useRef(onRideDone);
   const openCuts = useRef<readonly SawCut[]>([]);
 
@@ -162,7 +161,7 @@ export function SawBench({
         ]);
       }
     }
-    if (next.length % 4 === 0 && isSawComplete(cut, next, tolerance)) {
+    if (next.length % 4 === 0 && isPathTraced(cut, next, tolerance)) {
       onComplete(fitSawSamples(next));
       reset();
     }
@@ -200,10 +199,10 @@ export function SawBench({
     if (!sawing) return;
     setSawing(false);
     if (cut !== undefined && samplesRef.current.length > 0) {
-      if (isSawComplete(cut, samplesRef.current, tolerance)) {
+      if (isPathTraced(cut, samplesRef.current, tolerance)) {
         onComplete(fitSawSamples(samplesRef.current));
         reset();
-      } else onPaused(sawCoverage(cut, samplesRef.current, tolerance));
+      } else onPaused(pathCoverage(cut, samplesRef.current, tolerance));
     }
   };
 

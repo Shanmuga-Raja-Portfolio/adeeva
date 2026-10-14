@@ -106,8 +106,3 @@ export function createRun(id: string, gigId: string, brief: Brief, day: number):
     cushion: null,
   };
 }
-
-export function runNumber(runId: string): number {
-  const match = /^run-(\d+)$/.exec(runId);
-  return match?.[1] === undefined ? 0 : Number(match[1]);
-}

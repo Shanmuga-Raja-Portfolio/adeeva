@@ -147,6 +147,7 @@ export function StirBowl({ batch, mix, halfWidth, assisted, stored, dispatch }: 
         aria-label="Mixing bowl. Drag round it to stir, or hold the left or right arrow key for a steady stir that counts up to 80%."
         data-testid="stir-bowl"
         data-progress={sim.progress.toFixed(3)}
+        data-laps-done={lapsDone}
       >
         <MixingBowl
           colour={mix.colour}

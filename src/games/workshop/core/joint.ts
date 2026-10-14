@@ -1,11 +1,12 @@
 import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { average } from "../../../engine/average";
 import { clamp } from "../../../engine/clamp";
+import { runNumber } from "../../../engine/idNumber";
 import { nextRandom } from "../../../engine/rng";
 import { recordWithout } from "../../../engine/recordWithout";
 import type { JointDef } from "../content/product";
 import { jointKindById } from "./catalog";
-import { runNumber, type CommissionRun, type JointRecord, type PieceDesign } from "./commissionRun";
+import type { CommissionRun, JointRecord, PieceDesign } from "./commissionRun";
 import type { GameState } from "./gameState";
 import { designJoints, findJoint } from "./pieceParts";
 import { jointTolerance, type JointTolerance } from "./tolerance";

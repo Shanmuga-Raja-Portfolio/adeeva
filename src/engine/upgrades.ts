@@ -19,6 +19,32 @@ export function upgradeIssues(
   return issues;
 }
 
+type Shelf<K extends string> = { readonly coins: number; readonly reputation: number } & {
+  readonly [P in K]: readonly string[];
+};
+
+export function shelfPurchaseIssues<K extends string>(
+  state: Shelf<K>,
+  shelf: K,
+  item: UpgradeCore | undefined,
+  missing: string,
+): string[] {
+  if (item === undefined) return [missing];
+  return upgradeIssues(state[shelf], item, state.coins, state.reputation);
+}
+
+export function buyForShelf<K extends string, S extends Shelf<K>>(
+  state: S,
+  shelf: K,
+  item: UpgradeCore | undefined,
+  missing: string,
+): S {
+  if (item === undefined || shelfPurchaseIssues(state, shelf, item, missing).length > 0) return state;
+  return { ...state, coins: state.coins - item.price, [shelf]: [...state[shelf], item.id] };
+}
+
+const MISSING_UPGRADE = "That upgrade does not exist.";
+
 export interface UpgradeShop<U extends string> {
   readonly coins: number;
   readonly reputation: number;
@@ -31,14 +57,12 @@ export function upgradePurchaseIssues<U extends string>(
   state: UpgradeShop<U>,
   upgrade: ShopUpgrade<U> | undefined,
 ): string[] {
-  if (upgrade === undefined) return ["That upgrade does not exist."];
-  return upgradeIssues(state.upgrades, upgrade, state.coins, state.reputation);
+  return shelfPurchaseIssues(state, "upgrades", upgrade, MISSING_UPGRADE);
 }
 
 export function buyUpgrade<U extends string, S extends UpgradeShop<U>>(
   state: S,
   upgrade: ShopUpgrade<U> | undefined,
 ): S {
-  if (upgrade === undefined || upgradePurchaseIssues(state, upgrade).length > 0) return state;
-  return { ...state, coins: state.coins - upgrade.price, upgrades: [...state.upgrades, upgrade.id] };
+  return buyForShelf(state, "upgrades", upgrade, MISSING_UPGRADE);
 }

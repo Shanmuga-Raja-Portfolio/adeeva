@@ -194,14 +194,3 @@ export function sawCuts(
   const main = openOutline(outline, board);
   return [main, ...accentCuts(part, design).map(place)].filter((cut) => cut.points.length >= 2);
 }
-
-export function cutLength(cut: SawCut): number {
-  const segments = cut.closed ? cut.points.length : cut.points.length - 1;
-  let total = 0;
-  for (let index = 0; index < segments; index += 1) {
-    const start = cut.points[index];
-    const end = cut.points[(index + 1) % cut.points.length];
-    if (start !== undefined && end !== undefined) total += Math.hypot(end[0] - start[0], end[1] - start[1]);
-  }
-  return total;
-}

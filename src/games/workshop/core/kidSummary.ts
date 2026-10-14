@@ -1,60 +1,52 @@
+import { criterionPassed, kidSkillLine, type KidBands, type KidLine } from "../../../engine/kidLine";
 import type { CommissionRun } from "./commissionRun";
-import type { CriterionId } from "./criterion";
 import type { Evaluation } from "./pieceEvaluate";
 import { extraTallies } from "./requiredExtras";
 
-interface KidLine {
-  readonly id: string;
-  readonly label: string;
-  readonly verdict: string;
-  readonly good: boolean;
-}
-
-const GREAT = 0.85;
-const GOOD = 0.65;
-
-function skillLine(
-  id: string,
-  label: string,
-  value: number,
-  words: readonly [string, string, string],
-): KidLine {
-  const verdict = value >= GREAT ? words[0] : value >= GOOD ? words[1] : words[2];
-  return { id, label, verdict, good: value >= GOOD };
-}
-
-function passed(evaluation: Evaluation, id: CriterionId): boolean {
-  return evaluation.criteria.find((criterion) => criterion.id === id)?.passed === true;
-}
+const BANDS: KidBands = { great: 0.85, good: 0.65 };
 
 export function kidSummary(evaluation: Evaluation, run: CommissionRun): KidLine[] {
   const { quality } = evaluation;
   const missing = extraTallies(run).reduce((sum, tally) => sum + Math.max(0, tally.needed - tally.placed), 0);
   const over = evaluation.spend - run.brief.budget;
   return [
-    skillLine("saw", "Sawing", quality.saw, ["right on the line!", "nice and steady", "a bit wobbly"]),
-    skillLine("join", "Joints", quality.join, ["snug!", "holding well", "a little loose"]),
-    skillLine("sand", "Sanding", quality.sand, ["silky smooth!", "smooth", "a few rough spots"]),
-    skillLine("grain", "Wood lines", quality.grain, ["great!", "mostly running long", "some run across"]),
+    kidSkillLine(
+      "saw",
+      "Sawing",
+      quality.saw,
+      ["right on the line!", "nice and steady", "a bit wobbly"],
+      BANDS,
+    ),
+    kidSkillLine("join", "Joints", quality.join, ["snug!", "holding well", "a little loose"], BANDS),
+    kidSkillLine("sand", "Sanding", quality.sand, ["silky smooth!", "smooth", "a few rough spots"], BANDS),
+    kidSkillLine(
+      "grain",
+      "Wood lines",
+      quality.grain,
+      ["great!", "mostly running long", "some run across"],
+      BANDS,
+    ),
     {
       id: "style",
       label: "Style",
-      verdict: passed(evaluation, "style") ? "just what they wanted!" : "not quite their style",
-      good: passed(evaluation, "style"),
+      verdict: criterionPassed(evaluation.criteria, "style")
+        ? "just what they wanted!"
+        : "not quite their style",
+      good: criterionPassed(evaluation.criteria, "style"),
     },
     {
       id: "colours",
       label: "Colours",
-      verdict: passed(evaluation, "colours") ? "lovely!" : "one colour they hoped to avoid",
-      good: passed(evaluation, "colours"),
+      verdict: criterionPassed(evaluation.criteria, "colours") ? "lovely!" : "one colour they hoped to avoid",
+      good: criterionPassed(evaluation.criteria, "colours"),
     },
     {
       id: "extras",
       label: "Extras",
-      verdict: passed(evaluation, "extras")
+      verdict: criterionPassed(evaluation.criteria, "extras")
         ? "all there!"
         : `${missing} more ${missing === 1 ? "extra" : "extras"} needed`,
-      good: passed(evaluation, "extras"),
+      good: criterionPassed(evaluation.criteria, "extras"),
     },
     {
       id: "budget",
@@ -65,8 +57,8 @@ export function kidSummary(evaluation: Evaluation, run: CommissionRun): KidLine[
     {
       id: "deadline",
       label: "Delivery",
-      verdict: passed(evaluation, "deadline") ? "right on time!" : "a little late",
-      good: passed(evaluation, "deadline"),
+      verdict: criterionPassed(evaluation.criteria, "deadline") ? "right on time!" : "a little late",
+      good: criterionPassed(evaluation.criteria, "deadline"),
     },
   ];
 }

@@ -1,6 +1,6 @@
 import { hoursShortfallReason, spendHours } from "../../../engine/dayHours";
-import { nextRandom, type RngState } from "../../../engine/rng";
-import { drawDistinct, drawInt } from "../../../engine/rngDraw";
+import type { RngState } from "../../../engine/rng";
+import { drawDistinct, drawInt, drawSeed } from "../../../engine/rngDraw";
 import { CAREER, type ServiceRules } from "../content/career";
 import { CUISINE_IDS, type CuisineId } from "../content/cuisine";
 import type { DishId } from "../content/dish";
@@ -94,7 +94,7 @@ function openService(
   const spent = spendHours(state, CAREER.shiftHours);
   if (spent === null) return state;
   const [tickets, afterTickets] = rollTickets(plan, servicePool(state, cuisines), spent.rng);
-  const [roll, rng] = nextRandom(afterTickets);
+  const [seed, rng] = drawSeed(afterTickets);
   const service: ServiceRun = {
     id: `service-${state.nextRunNumber}`,
     kind,
@@ -105,7 +105,7 @@ function openService(
     special,
     lastAt: 0,
     openSince: 0,
-    seed: Math.floor(roll * 2147483647),
+    seed,
   };
   const opened: GameState = {
     ...spent,

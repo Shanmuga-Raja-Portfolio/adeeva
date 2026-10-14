@@ -1,3 +1,4 @@
+import { dayGreeting } from "../../../../../engine/dayHours";
 import { daysUntilWeekEnd, weekdayName, weekNumber } from "../../../../../engine/weekday";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
@@ -13,13 +14,6 @@ export interface HubHeroProps {
   readonly state: GameState;
   readonly onWorkShift: (event: ClickLike) => void;
   readonly onEndDay: (event: ClickLike) => void;
-}
-
-function greeting(hoursLeft: number, total: number): string {
-  const share = hoursLeft / total;
-  if (share > 0.66) return "Good morning";
-  if (share > 0.3) return "Good afternoon";
-  return "Good evening";
 }
 
 function rentNote(state: GameState): string {
@@ -50,7 +44,7 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
           Week {weekNumber(calendar.day)} · {weekdayName(calendar.day)} · {CAREER.arcadeName}
         </span>
         <h1 className="jb-hub-hero__title">
-          {greeting(calendar.hoursLeft, total)}, {profile.name}
+          {dayGreeting(calendar.hoursLeft, total)}, {profile.name}
         </h1>
         {market ? (
           <p className="jb-hub-hero__market">

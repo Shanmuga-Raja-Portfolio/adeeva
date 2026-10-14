@@ -1,4 +1,4 @@
-import { deadlineFeedback } from "./kindFeedback";
+import { coloursFeedback, deadlineFeedback } from "./kindFeedback";
 import { gatePassed, judgedScore, starsForScore, type Criterion, type ScoreRule } from "./score";
 
 export interface Judged<Id extends string> {
@@ -39,6 +39,32 @@ export function judgeQuality<Id extends string>(
 ): Judged<Id | "quality"> {
   const detail = `Quality ${quality} against a minimum of ${minQuality}.`;
   return judged("quality", "Quality", quality >= minQuality, detail, feedback);
+}
+
+export function judgeStyle<Id extends string, T extends string>(
+  judged: CriterionJudge<Id | "style">,
+  requiredTags: readonly T[],
+  tags: readonly T[],
+  feedback: (missing: readonly T[]) => string,
+): Judged<Id | "style"> {
+  const missing = requiredTags.filter((tag) => !tags.includes(tag));
+  const detail =
+    missing.length === 0
+      ? `Feels ${requiredTags.join(" and ")}, just as asked.`
+      : `Still missing: ${missing.join(", ")}.`;
+  return judged("style", "Style", missing.length === 0, detail, feedback(missing));
+}
+
+export function judgeAvoidedColours<Id extends string>(
+  judged: CriterionJudge<Id | "colours">,
+  avoidedNames: readonly string[],
+  favouredUsed: number,
+): Judged<Id | "colours"> {
+  const detail =
+    avoidedNames.length === 0
+      ? `No unwanted colours. ${favouredUsed} favourite ${favouredUsed === 1 ? "colour" : "colours"} used.`
+      : `Shows ${avoidedNames.join(", ")}, which they hoped to avoid.`;
+  return judged("colours", "Colours", avoidedNames.length === 0, detail, coloursFeedback(avoidedNames));
 }
 
 export function judgeDeadline<Id extends string>(

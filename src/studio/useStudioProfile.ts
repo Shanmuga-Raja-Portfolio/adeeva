@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react";
 import { loadProfile, writeProfile, type StudioProfile } from "./profile";
-import { LIVE_GAMES } from "./registry";
+import { GAMES } from "./registry";
 import { readLastRawSlot } from "./slotStore";
 
 function lastPlayedSave(): unknown {
-  return LIVE_GAMES.map((game) => readLastRawSlot(game.id)).find((raw) => raw !== null) ?? null;
+  return GAMES.map((game) => readLastRawSlot(game.id)).find((raw) => raw !== null) ?? null;
 }
 
 export type ProfileChange = Partial<Omit<StudioProfile, "version">>;

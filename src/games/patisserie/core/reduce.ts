@@ -1,10 +1,10 @@
+import { withGuide } from "../../../engine/guide";
 import type { Action } from "./action";
 import { closeCounter, openCounter, sellBox } from "./boxItUp";
 import { endDay, workShift } from "./calendar";
 import { deliver } from "./delivery";
 import { chooseFilling, chooseMix, choosePattern, chooseProduct, toggleColour } from "./design";
 import type { GameState } from "./gameState";
-import { setGuide } from "./guide";
 import { createGame, newGameIssues } from "./newGame";
 import { acceptOffer, declineOffer } from "./offers";
 import { bakeBatch } from "./oven";
@@ -105,7 +105,7 @@ export function reduce(state: GameState, action: Action): GameState {
     case "buyUpgrade":
       return buyUpgrade(state, knownUpgrade(action.upgradeId));
     case "setGuide":
-      return setGuide(state, action.on);
+      return withGuide(state, action.on);
     case "markBeatSeen":
       return markBeatSeen(state, action.beatId, storyBeatById);
   }

@@ -1,7 +1,6 @@
 import {
   arrayOf,
   booleanParser,
-  integerParser,
   integerRangeParser,
   nullable,
   objectOf,
@@ -9,9 +8,9 @@ import {
   rangeParser,
   stringParser,
 } from "../../../engine/parse";
-import { rewardLineParser } from "../../../engine/stateParsers";
+import { criterionParserOf, rewardLineParser, trendRewardShape } from "../../../engine/stateParsers";
 import { countParser, nonNegativeParser, positiveIntegerParser, shareParser } from "./briefParser";
-import { CRITERION_IDS, type Criterion } from "./criterion";
+import { CRITERION_IDS } from "./criterion";
 import type { FlipEvaluation } from "./flipEvaluate";
 import type { QualityBreakdown } from "./flipQuality";
 import { designParser, placedFinishParser } from "./flipRunParser";
@@ -31,13 +30,7 @@ import type { LeavesBreakdown } from "./sustainability";
 
 const scoreParser = rangeParser(0, 100);
 
-const criterionParser = objectOf<Criterion>({
-  id: oneOf(CRITERION_IDS),
-  label: stringParser,
-  passed: booleanParser,
-  detail: stringParser,
-  weight: nonNegativeParser,
-});
+const criterionParser = criterionParserOf(CRITERION_IDS, nonNegativeParser);
 
 const qualityParser = objectOf<QualityBreakdown>({
   unpick: shareParser,
@@ -72,12 +65,7 @@ const evaluationParser = objectOf<FlipEvaluation>({
 });
 
 const rewardParser = objectOf<Reward>({
-  outcome: oneOf(["pass", "soft-fail", "fail"] as const),
-  coins: nonNegativeParser,
-  reputation: integerParser,
-  buzz: integerParser,
-  lines: arrayOf(rewardLineParser),
-  trendMatches: arrayOf(styleTagParser),
+  ...trendRewardShape(styleTagParser, nonNegativeParser, rewardLineParser),
   leafPick: booleanParser,
 });
 

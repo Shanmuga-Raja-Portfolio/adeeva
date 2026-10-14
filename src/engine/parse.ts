@@ -53,6 +53,17 @@ export function oneOf<const T extends string | number>(options: readonly T[]): P
   };
 }
 
+export function distinctListOf<const T extends string>(
+  options: readonly T[],
+  label: string,
+): Parser<readonly T[]> {
+  return refined(
+    arrayOf(oneOf(options)),
+    (values) => new Set(values).size === values.length,
+    `each ${label} at most once`,
+  );
+}
+
 export function nullable<T>(parser: Parser<T>): Parser<T | null> {
   return (input, path) => (input === null ? parsed(null) : parser(input, path));
 }

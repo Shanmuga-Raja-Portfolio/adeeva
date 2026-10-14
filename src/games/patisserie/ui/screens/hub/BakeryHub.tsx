@@ -9,6 +9,7 @@ import type { ProductId, TrayProductId } from "../../../content/product";
 import type { UpgradeId } from "../../../content/upgrade";
 import {
   clientById,
+  coachOn,
   currentBeat,
   offersFor,
   productById,
@@ -98,10 +99,7 @@ export function BakeryHub({ state, dispatch, onOpen, onOpenSettings, onExitToTit
             onWorkShift={(event) => endDay(event, "shift")}
             onEndDay={(event) => endDay(event, "rest")}
           />
-          <GuideBubble
-            show={state.guide && state.ordersDelivered === 0 && onBench === null}
-            text={guideLine(state)}
-          />
+          <GuideBubble show={coachOn(state) && onBench === null} text={guideLine(state)} />
           <div className="pa-hub__grid">
             <div className="pa-hub__column">
               <section className="pa-board" aria-labelledby="pa-board-title">

@@ -354,11 +354,6 @@
   height: 100%;
 }
 
-.st-tile--workshop .st-tile__svg {
-  filter: saturate(0.62) brightness(1.03);
-  opacity: 0.88;
-}
-
 .st-tile__badge {
   position: absolute;
   top: 12px;
@@ -401,20 +396,6 @@
   margin: 0;
   font-size: var(--text-sm);
   color: var(--ink-soft);
-}
-
-.st-tile--workshop .st-tile__title {
-  color: var(--ink-soft);
-}
-
-.st-tile__soon {
-  align-self: flex-start;
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  background: var(--paper-deep);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  color: var(--ink-faint);
 }
 
 .st-tile__play {

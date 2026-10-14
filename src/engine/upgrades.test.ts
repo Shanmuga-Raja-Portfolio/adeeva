@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { buyUpgrade, upgradeIssues, upgradePurchaseIssues } from "./upgrades";
+import {
+  buyForShelf,
+  buyUpgrade,
+  shelfPurchaseIssues,
+  upgradeIssues,
+  upgradePurchaseIssues,
+} from "./upgrades";
 
 describe("upgradeIssues", () => {
   const lamp = { id: "lamp", name: "Lamp", price: 50, minReputation: 4 };
@@ -32,5 +38,25 @@ describe("upgrade purchase", () => {
     expect(buyUpgrade(shop, undefined)).toBe(shop);
     const poor = { ...shop, coins: 10 };
     expect(buyUpgrade(poor, lamp)).toBe(poor);
+  });
+});
+
+describe("a named shelf of owned items", () => {
+  const vase = { id: "vase", name: "Vase", price: 15, minReputation: 2 };
+  const loft = { coins: 20, reputation: 3, decor: [] as readonly string[], upgrades: ["lamp"] };
+
+  it("buys onto the named shelf and leaves the others alone", () => {
+    expect(shelfPurchaseIssues(loft, "decor", vase, "Missing.")).toEqual([]);
+    expect(buyForShelf(loft, "decor", vase, "Missing.")).toEqual({ ...loft, coins: 5, decor: ["vase"] });
+  });
+
+  it("returns the same state for an unknown, owned or unaffordable item", () => {
+    expect(shelfPurchaseIssues(loft, "decor", undefined, "Missing.")).toEqual(["Missing."]);
+    expect(buyForShelf(loft, "decor", undefined, "Missing.")).toBe(loft);
+    const owned = { ...loft, decor: ["vase"] };
+    expect(buyForShelf(owned, "decor", vase, "Missing.")).toBe(owned);
+    const poor = { ...loft, coins: 1 };
+    expect(shelfPurchaseIssues(poor, "decor", vase, "Missing.")).toEqual(["Vase costs 15 coins."]);
+    expect(buyForShelf(poor, "decor", vase, "Missing.")).toBe(poor);
   });
 });

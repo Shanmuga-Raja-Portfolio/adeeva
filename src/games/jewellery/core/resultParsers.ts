@@ -9,11 +9,19 @@ import {
   stringParser,
   type Parser,
 } from "../../../engine/parse";
-import { countParser, dayParser, nonNegativeParser, shareParser } from "../../../engine/stateParsers";
+import {
+  countParser,
+  criterionParserOf,
+  dayParser,
+  nonNegativeParser,
+  shareParser,
+  trendRewardShape,
+  wholeRewardLineParser,
+} from "../../../engine/stateParsers";
 import { THEME_IDS, type ThemeId } from "../content/marketTheme";
 import { TRAY_CLOTHS } from "../content/stallTray";
 import { clientIdParser, jewelColourParser, jewelTagParser } from "./briefParser";
-import { CRITERION_IDS, type Criterion } from "./criterion";
+import { CRITERION_IDS } from "./criterion";
 import type { LogEntry } from "./gameState";
 import type { KeepsakeEntry, KeepsakeSource } from "./keepsakeCase";
 import type { MarketState, MarketSummary, SoldPiece } from "./marketDay";
@@ -27,13 +35,7 @@ const scoreParser = integerRangeParser(0, 100);
 const starsParser = integerRangeParser(1, 5);
 const themeIdParser = oneOf(THEME_IDS);
 
-const criterionParser = objectOf<Criterion>({
-  id: oneOf(CRITERION_IDS),
-  label: stringParser,
-  passed: booleanParser,
-  detail: stringParser,
-  weight: nonNegativeParser,
-});
+const criterionParser = criterionParserOf(CRITERION_IDS, nonNegativeParser);
 
 const qualityParser = objectOf<QualityBreakdown>({
   cut: shareParser,
@@ -56,16 +58,7 @@ const evaluationParser = objectOf<Evaluation>({
   feedback: arrayOf(stringParser),
 });
 
-const rewardLineParser = objectOf({ label: stringParser, amount: integerParser });
-
-const rewardParser = objectOf<Reward>({
-  outcome: oneOf(["pass", "soft-fail", "fail"] as const),
-  coins: integerParser,
-  reputation: integerParser,
-  buzz: integerParser,
-  lines: arrayOf(rewardLineParser),
-  trendMatches: arrayOf(jewelTagParser),
-});
+const rewardParser = objectOf<Reward>(trendRewardShape(jewelTagParser, integerParser, wholeRewardLineParser));
 
 export const logEntryParser = objectOf<LogEntry>({
   runId: stringParser,
@@ -117,7 +110,7 @@ const summaryParser = objectOf<MarketSummary>({
   sign: integerRangeParser(0, 2),
   slots: arrayOf(nullable(stallPieceParser)),
   sold: arrayOf(soldParser),
-  lines: arrayOf(rewardLineParser),
+  lines: arrayOf(wholeRewardLineParser),
   coins: countParser,
   reputation: countParser,
   buzz: countParser,

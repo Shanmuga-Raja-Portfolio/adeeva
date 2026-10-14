@@ -2,16 +2,17 @@ import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import {
   arrayOf,
   booleanParser,
+  distinctListOf,
   fixedRecordOf,
   integerParser,
   integerRangeParser,
   nullable,
   objectOf,
   oneOf,
+  type Parser,
   rangeParser,
   refined,
   stringParser,
-  type Parser,
 } from "../../../engine/parse";
 import {
   gigBoardParser,
@@ -23,6 +24,7 @@ import {
 import { hasUniqueIds } from "../../../engine/uniqueIds";
 import { TRIM_IDS } from "../../adeeva/content/trim";
 import { MAX_SCRAPS } from "../content/finish";
+import { UPGRADE_IDS } from "../content/upgrade";
 import { briefParser, countParser, positiveIntegerParser } from "./briefParser";
 import { flipRunParser, ownedFindParser, scrapParser } from "./flipRunParser";
 import {
@@ -34,13 +36,7 @@ import {
   type RailSlot,
   type Stock,
 } from "./gameState";
-import {
-  clientIdParser,
-  conditionParser,
-  findIdParser,
-  storyBeatIdParser,
-  upgradeIdParser,
-} from "./idParsers";
+import { clientIdParser, conditionParser, findIdParser, storyBeatIdParser } from "./idParsers";
 import { stageIndex, type FlipStage } from "./flipStage";
 import { slotPrice } from "./marketRail";
 import { rackPieceParser, stallResultParser, logEntryParser } from "./resultParsers";
@@ -91,11 +87,7 @@ const shapeParser = objectOf<GameState>({
   story: storyStateParser(storyBeatIdParser),
   rail: arrayOf(railSlotParser),
   stock: stockParser,
-  upgrades: refined(
-    arrayOf(upgradeIdParser),
-    (upgrades) => new Set(upgrades).size === upgrades.length,
-    "each upgrade at most once",
-  ),
+  upgrades: distinctListOf(UPGRADE_IDS, "upgrade"),
   activeRun: nullable(flipRunParser),
   rack: arrayOf(rackPieceParser),
   stall: nullable(stallResultParser),

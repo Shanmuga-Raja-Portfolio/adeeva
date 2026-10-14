@@ -1,4 +1,4 @@
-import { requireById } from "../../../engine/catalog";
+import { memberOf, requireById } from "../../../engine/catalog";
 import type { DifficultyDef, DifficultyId } from "../../../engine/difficulty";
 import { CLIENTS, type ClientDef } from "../content/client";
 import { DECOR, DECOR_IDS, type DecorDef, type DecorId } from "../content/decor";
@@ -21,20 +21,16 @@ import { STONE_IDS, STONES, type StoneDef, type StoneId } from "../content/stone
 import { STORY_BEATS, type StoryBeatDef } from "../content/storyBeat";
 import { UPGRADE_IDS, UPGRADES, type UpgradeDef, type UpgradeId } from "../content/upgrade";
 
-function member<T extends string>(ids: readonly T[]): (value: string) => value is T {
-  return (value: string): value is T => ids.some((id) => id === value);
-}
-
-export const isMetalId = member(METAL_IDS);
-export const isStoneId = member(STONE_IDS);
-export const isProductId = member(PRODUCT_IDS);
-export const isStallProductId = member(STALL_PRODUCT_IDS);
-export const isOptionId = member(OPTION_IDS);
-export const isStockSizeId = member(STOCK_SIZE_IDS);
-export const isFinishId = member(FINISH_IDS);
-export const isExtraId = member(EXTRA_IDS);
-export const isUpgradeId = member(UPGRADE_IDS);
-export const isDecorId = member(DECOR_IDS);
+export const isMetalId = memberOf(METAL_IDS);
+export const isStoneId = memberOf(STONE_IDS);
+export const isProductId = memberOf(PRODUCT_IDS);
+export const isStallProductId = memberOf(STALL_PRODUCT_IDS);
+export const isOptionId = memberOf(OPTION_IDS);
+export const isStockSizeId = memberOf(STOCK_SIZE_IDS);
+export const isFinishId = memberOf(FINISH_IDS);
+export const isExtraId = memberOf(EXTRA_IDS);
+export const isUpgradeId = memberOf(UPGRADE_IDS);
+export const isDecorId = memberOf(DECOR_IDS);
 
 export function metalById(id: MetalId): MetalDef {
   return requireById(METALS, id, "metal");

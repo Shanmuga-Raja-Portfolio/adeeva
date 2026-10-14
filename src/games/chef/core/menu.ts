@@ -1,3 +1,4 @@
+import { withGuide } from "../../../engine/guide";
 import { CAREER } from "../content/career";
 import { dishById, isDishId } from "./catalog";
 import type { GameState } from "./gameState";
@@ -24,6 +25,5 @@ export function setMenu(state: GameState, dishIds: readonly string[]): GameState
 }
 
 export function setGuide(state: GameState, on: boolean): GameState {
-  if (typeof on !== "boolean" || state.guide === on) return state;
-  return { ...state, guide: on };
+  return withGuide(state, on);
 }

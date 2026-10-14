@@ -25,3 +25,10 @@ export function spendHours<S extends { readonly calendar: DayClock }>(state: S, 
   if (calendar === null) return null;
   return calendar === state.calendar ? state : { ...state, calendar };
 }
+
+export function dayGreeting(hoursLeft: number, dayHours: number): string {
+  const share = hoursLeft / dayHours;
+  if (share > 0.66) return "Good morning";
+  if (share > 0.3) return "Good afternoon";
+  return "Good evening";
+}

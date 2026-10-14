@@ -224,7 +224,7 @@ for (const viewport of VIEWPORTS) {
             .toBeGreaterThan(0.2);
           await shot("11-sew-running");
         }
-        await expect(bed).toHaveAttribute("data-progress", "1.000", { timeout: 20_000 });
+        await expect(bed).toHaveAttribute("data-done", "true", { timeout: 20_000 });
         await page.mouse.up();
         if (seam === 0) await shot("12-sew-seam-done");
         const next = page.getByTestId("next-seam");

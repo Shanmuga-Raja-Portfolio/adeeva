@@ -310,7 +310,7 @@ test("turning Assist sew on mid-seam keeps the machine running and marks the sea
   await expect(assist).toHaveAttribute("aria-checked", "true");
   const afterToggle = Number(await bed.getAttribute("data-progress"));
   await expect.poll(async () => Number(await bed.getAttribute("data-progress"))).toBeGreaterThan(afterToggle);
-  await expect(bed).toHaveAttribute("data-progress", "1.000", { timeout: 20_000 });
+  await expect(bed).toHaveAttribute("data-done", "true", { timeout: 20_000 });
   await page.mouse.up();
   await expect
     .poll(() => savedState(page, (state) => state.activeRun?.seams[seamId]))

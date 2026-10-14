@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { isPathTraced } from "../../../engine/geometry/pathTrace";
 import { ASSIST_CUT_ACCURACY, distanceToOutline } from "../../../engine/geometry/traceAccuracy";
 import { findPart } from "./pieceParts";
 import { reduce } from "./reduce";
 import { parseSave, serialize } from "./save";
-import { cutKey, fitSawSamples, isSawComplete, partCuts } from "./sawRecord";
+import { cutKey, fitSawSamples, partCuts } from "./sawRecord";
 import { canGoBack } from "./stageNavigation";
 import {
   BIRDHOUSE_PLAN,
@@ -59,7 +60,7 @@ describe("sawing", () => {
     const sparse = full.filter((_, index) => index % 20 === 0);
     expect(reduce(state, { type: "sawCut", partId: "roof-1", cut: 0, samples: half })).toBe(state);
     expect(reduce(state, { type: "sawCut", partId: "roof-1", cut: 0, samples: sparse })).toBe(state);
-    expect(isSawComplete(cut, sparse, 1)).toBe(false);
+    expect(isPathTraced(cut, sparse, 1)).toBe(false);
     const sawn = reduce(state, { type: "sawCut", partId: "roof-1", cut: 0, samples: full });
     expect(runOf(sawn).cuts[cutKey("roof-1", 0)]).toEqual({ accuracy: 1, assisted: false });
     expect(reduce(sawn, { type: "sawCut", partId: "roof-1", cut: 0, samples: full })).toBe(sawn);

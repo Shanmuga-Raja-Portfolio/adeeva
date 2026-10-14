@@ -1,4 +1,5 @@
 import type { Point } from "./point";
+import { projectOnSegment } from "./segmentProjection";
 
 interface TrackSegment {
   readonly start: Point;
@@ -32,20 +33,7 @@ export function traceTrack(outline: readonly Point[]): TraceTrack {
 export function projectOnTrack(track: TraceTrack, point: Point): TrackProjection {
   let best: TrackProjection = { along: 0, distance: Infinity };
   for (const segment of track.segments) {
-    const dx = segment.end[0] - segment.start[0];
-    const dy = segment.end[1] - segment.start[1];
-    const squared = dx * dx + dy * dy;
-    const t =
-      squared === 0
-        ? 0
-        : Math.max(
-            0,
-            Math.min(1, ((point[0] - segment.start[0]) * dx + (point[1] - segment.start[1]) * dy) / squared),
-          );
-    const distance = Math.hypot(
-      point[0] - (segment.start[0] + t * dx),
-      point[1] - (segment.start[1] + t * dy),
-    );
+    const { t, distance } = projectOnSegment(point, segment.start, segment.end);
     if (distance < best.distance) best = { along: segment.offset + t * segment.length, distance };
   }
   return best;

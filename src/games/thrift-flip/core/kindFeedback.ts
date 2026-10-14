@@ -1,3 +1,4 @@
+import { qualityTipLine, type QualityTip } from "../../../engine/qualityTip";
 import type { QualityBreakdown, QualityTerm } from "./flipQuality";
 
 export interface ConstructionGap {
@@ -30,8 +31,8 @@ export function constructionFeedback(gap: ConstructionGap): string {
 
 export function qualityFeedback(breakdown: QualityBreakdown, minimum: number): string {
   const terms = Object.keys(TIPS) as QualityTerm[];
-  const weakest = terms.reduce((lowest, term) => (breakdown[term] < breakdown[lowest] ? term : lowest));
-  return `The finish reached ${breakdown.quality}, a little under the ${minimum} hoped for. Try ${TIPS[weakest]}.`;
+  const tips = terms.map((term): QualityTip => [breakdown[term], TIPS[term]]);
+  return qualityTipLine("The finish", breakdown.quality, minimum, tips);
 }
 
 export function styleFeedback(missingTags: readonly string[]): string {

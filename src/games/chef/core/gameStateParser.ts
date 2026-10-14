@@ -1,7 +1,9 @@
 import { BASE_DAY_HOURS, type DayClock } from "../../../engine/dayHours";
+import { idNumber } from "../../../engine/idNumber";
 import {
   arrayOf,
   booleanParser,
+  distinctListOf,
   fixedRecordOf,
   integerParser,
   integerRangeParser,
@@ -47,14 +49,6 @@ const calendarParser = objectOf<DayClock>({
   hoursLeft: integerRangeParser(0, BASE_DAY_HOURS),
 });
 
-function uniqueList<T extends string>(options: readonly T[], label: string) {
-  return refined(
-    arrayOf(oneOf(options)),
-    (values) => new Set(values).size === values.length,
-    `each ${label} at most once`,
-  );
-}
-
 const profileParser = objectOf<Profile>({ ...profileShape, start: oneOf(START_IDS) });
 
 const shapeParser = objectOf<GameState>({
@@ -66,9 +60,9 @@ const shapeParser = objectOf<GameState>({
   buzz: integerRangeParser(0, MAX_BUZZ),
   rung: oneOf(RUNG_IDS),
   mastery: fixedRecordOf(CUISINE_IDS, integerRangeParser(0, MAX_MASTERY)),
-  mentorsMet: uniqueList(CUISINE_IDS, "mentor"),
+  mentorsMet: distinctListOf(CUISINE_IDS, "mentor"),
   passes: objectOf<Passes>({ line: countParser, sous: countParser, head: countParser }),
-  upgrades: uniqueList(UPGRADE_IDS, "upgrade"),
+  upgrades: distinctListOf(UPGRADE_IDS, "upgrade"),
   trends: trendStateParserOf(tasteTagParser),
   board: dayBoardParser,
   gigs: gigBoardParser(orderBriefParser, knownIdParser(clientById, "client")),
@@ -90,7 +84,7 @@ const shapeParser = objectOf<GameState>({
     "a Dish Diary that fits",
   ),
   log: refined(arrayOf(logEntryParser), (log) => log.length <= LOG_SIZE, "a short results log"),
-  awards: uniqueList(AWARD_IDS, "award"),
+  awards: distinctListOf(AWARD_IDS, "award"),
   cleanStreak: countParser,
   lastShiftDay: integerRangeParser(0, Number.MAX_SAFE_INTEGER),
   guide: booleanParser,
@@ -99,8 +93,7 @@ const shapeParser = objectOf<GameState>({
 });
 
 function runNumber(id: string): number {
-  const match = /^(?:run|service)-(\d+)$/.exec(id);
-  return match?.[1] === undefined ? 0 : Number(match[1]);
+  return Math.max(idNumber(id, "run"), idNumber(id, "service"));
 }
 
 function countersFit(state: GameState): boolean {

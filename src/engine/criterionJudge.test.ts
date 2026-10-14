@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { criterionJudge, judgeDeadline, judgedEvaluation, judgeQuality } from "./criterionJudge";
+import {
+  criterionJudge,
+  judgeAvoidedColours,
+  judgeDeadline,
+  judgedEvaluation,
+  judgeQuality,
+  judgeStyle,
+} from "./criterionJudge";
 import type { ScoreRule } from "./score";
 
 type Id = "construction" | "quality" | "deadline";
@@ -46,5 +53,44 @@ describe("criterion judge", () => {
       "deadline",
     ]);
     expect(judgedEvaluation(results, { quality: 80 }, 0, rule, ["deadline"]).passed).toBe(false);
+  });
+});
+
+describe("style and colour judges", () => {
+  const judge = criterionJudge<"style" | "colours">({ style: 2, colours: 1 });
+
+  it("checks every asked-for tag is there", () => {
+    const feedback = (missing: readonly string[]) => `missing ${missing.length}`;
+    expect(judgeStyle(judge, ["cosy", "bold"], ["bold", "cosy", "calm"], feedback)).toEqual({
+      criterion: {
+        id: "style",
+        label: "Style",
+        passed: true,
+        detail: "Feels cosy and bold, just as asked.",
+        weight: 2,
+      },
+      feedback: "missing 0",
+    });
+    const short = judgeStyle(judge, ["cosy", "bold"], ["cosy"], feedback);
+    expect(short.criterion.passed).toBe(false);
+    expect(short.criterion.detail).toBe("Still missing: bold.");
+    expect(short.feedback).toBe("missing 1");
+  });
+
+  it("names the colours they hoped to avoid and counts favourites otherwise", () => {
+    expect(judgeAvoidedColours(judge, [], 1).criterion).toEqual({
+      id: "colours",
+      label: "Colours",
+      passed: true,
+      detail: "No unwanted colours. 1 favourite colour used.",
+      weight: 1,
+    });
+    expect(judgeAvoidedColours(judge, [], 2).criterion.detail).toBe(
+      "No unwanted colours. 2 favourite colours used.",
+    );
+    const avoided = judgeAvoidedColours(judge, ["Mustard", "Grey"], 0);
+    expect(avoided.criterion.passed).toBe(false);
+    expect(avoided.criterion.detail).toBe("Shows Mustard, Grey, which they hoped to avoid.");
+    expect(avoided.feedback).toContain("Mustard and Grey");
   });
 });
