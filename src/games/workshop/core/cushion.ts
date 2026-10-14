@@ -1,3 +1,4 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import {
   followAccuracy,
   recordFollow,
@@ -8,7 +9,6 @@ import { CUSHION_FABRIC_IDS, type CushionFabricId } from "../content/cushionFabr
 import { cushionFabricById, productById } from "./catalog";
 import type { CommissionRun, CushionWork } from "./commissionRun";
 import type { GameState } from "./gameState";
-import { updateRun } from "./runUpdate";
 
 const MIN_SEAM_TICKS = 60;
 const MAX_SEAM_TICKS = 1200;
@@ -65,7 +65,7 @@ export function chooseCushion(state: GameState, fabricId: CushionFabricId | null
 }
 
 export function recordCushionSeam(state: GameState, sample: FollowProgress): GameState {
-  return updateRun(state, "finish", (run) => {
+  return updateActiveRun(state, "finish", (run) => {
     const cushion = run.cushion;
     if (cushion === null) return null;
     const seam = recordFollow(cushion.seam ?? undefined, sample, CUSHION_SEAM_BOUNDS);
@@ -74,7 +74,7 @@ export function recordCushionSeam(state: GameState, sample: FollowProgress): Gam
 }
 
 export function resetCushionSeam(state: GameState): GameState {
-  return updateRun(state, "finish", (run) => {
+  return updateActiveRun(state, "finish", (run) => {
     const cushion = run.cushion;
     if (cushion === null || cushion.seam === null) return null;
     return { ...run, cushion: { ...cushion, seam: null } };

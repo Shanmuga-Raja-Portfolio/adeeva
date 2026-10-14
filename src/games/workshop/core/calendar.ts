@@ -1,9 +1,9 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import { weeklyRent } from "../../../engine/difficulty";
-import { expireOffers, lapseOverdue } from "../../../engine/gigBoard";
+import { expireStaleOffers, lapseOverdueState } from "../../../engine/gigBoardState";
 import { workPaidShift } from "../../../engine/paidShift";
-import { applyStanding, decayBuzz } from "../../../engine/standing";
+import { decayBuzz } from "../../../engine/standing";
 import { isWeekEnd } from "../../../engine/week";
 import { settleWeek, type WeekTrigger } from "../../../engine/weekSettlement";
 import { CAREER } from "../content/career";
@@ -27,15 +27,6 @@ function queueWeekBeat(state: GameState, trigger: WeekTrigger): GameState {
   return trigger === "first-week" ? queueTraitBeat(queued, "trendsetter") : queued;
 }
 
-function lapseOverdueCommissions(state: GameState): GameState {
-  const lapse = lapseOverdue(state.gigs, state.calendar.day, state.profile.difficulty, state.profile.trait);
-  if (lapse === null) return state;
-  const run = state.activeRun;
-  const runLapsed = run !== null && run.stage !== "done" && lapse.lapsedIds.has(run.gigId);
-  const updated: GameState = { ...state, activeRun: runLapsed ? null : run, gigs: lapse.board };
-  return applyStanding(updated, { coins: 0, reputation: lapse.reputation, buzz: 0 });
-}
-
 export function endDay(state: GameState): GameState {
   const endedDay = state.calendar.day;
   const advanced: GameState = {
@@ -46,8 +37,10 @@ export function endDay(state: GameState): GameState {
   const settled = isWeekEnd(endedDay)
     ? settleWeek(advanced, weeklyBill(advanced), WOOD_TAGS, queueWeekBeat)
     : advanced;
-  const expired = expireOffers(settled.gigs, settled.calendar.day);
-  return rollOffers(lapseOverdueCommissions({ ...settled, gigs: expired }));
+  const lapsed = lapseOverdueState(expireStaleOffers(settled), (run) =>
+    run.stage === "done" ? null : run.gigId,
+  );
+  return rollOffers(lapsed);
 }
 
 export function canWorkShift(state: GameState): ActionCheck {

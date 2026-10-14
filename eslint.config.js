@@ -25,6 +25,10 @@ const DYNAMIC_IMPORT_SYNTAX = {
   selector: "ImportExpression",
   message: "Pure code loads nothing at runtime.",
 };
+const FIXED_IMPORT_SYNTAX = {
+  selector: "ImportExpression[source.type!='Literal']",
+  message: "Load a module only by a fixed path.",
+};
 
 function folderSource(folders) {
   return `^([.]{1,2}/)*[.][.]/(.*/)?(${folders.join("|")})(/|$)`;
@@ -96,7 +100,7 @@ export default tseslint.config(
       files: [`src/games/${gameId}/**/*.{ts,tsx}`],
       rules: {
         "no-restricted-imports": ["error", { patterns: folderPatterns(otherGames(gameId)) }],
-        "no-restricted-syntax": ["error", RANDOM_SYNTAX, ...otherGameSyntax(gameId)],
+        "no-restricted-syntax": ["error", RANDOM_SYNTAX, FIXED_IMPORT_SYNTAX, ...otherGameSyntax(gameId)],
       },
     },
     {

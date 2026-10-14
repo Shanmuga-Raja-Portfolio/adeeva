@@ -1,16 +1,17 @@
 import { clientIsOpen, freeClients } from "../../../engine/gigBoard";
-import { rollStateOffers } from "../../../engine/gigBoardState";
+import {
+  rollStateOffers,
+  stateOfferViews,
+  type OfferView as BoardOfferView,
+} from "../../../engine/gigBoardState";
 import { CLIENTS, type ClientDef } from "../content/client";
 import { TRAIT_STORY_TRIGGERS } from "../../../engine/trait";
-import { rollClientBrief } from "./brief";
+import { rollClientBrief, type Brief } from "./brief";
 import { clientById, difficultyById } from "./catalog";
-import type { GameState, Offer } from "./gameState";
+import type { GameState } from "./gameState";
 import { queueStoryTrigger } from "./storyQueue";
 
-export interface OfferView {
-  readonly offer: Offer;
-  readonly client: ClientDef;
-}
+export type OfferView = BoardOfferView<Brief, ClientDef>;
 
 export function clientIsEligible(client: ClientDef, state: GameState): boolean {
   const { profile } = state;
@@ -22,10 +23,7 @@ export function eligibleClients(state: GameState): ClientDef[] {
 }
 
 export function offersFor(state: GameState): OfferView[] {
-  return state.gigs.offers.flatMap((offer) => {
-    const client = clientById(offer.clientId);
-    return client === undefined ? [] : [{ offer, client }];
-  });
+  return stateOfferViews(state, clientById);
 }
 
 export function rollOffers(state: GameState): GameState {

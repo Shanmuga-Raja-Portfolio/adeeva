@@ -73,7 +73,7 @@ export { MAX_NAME_LENGTH } from "../../../engine/profile";
 export { colourById } from "../../../engine/palette";
 export { offerAcceptIssue } from "./offerResponse";
 export { clientIsEligible, eligibleClients, offersFor, type OfferView } from "./offers";
-export { paletteCohesion } from "./paletteCohesion";
+export { paletteCohesion } from "../../../engine/paletteCohesion";
 export {
   BOLT_WIDTH_CM,
   boltLengthCm,

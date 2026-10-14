@@ -1,6 +1,6 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { cappedAccuracy } from "../../../engine/assistCap";
 import type { MixDef } from "../content/mix";
-import { updateActiveRun } from "./activeRunUpdate";
 import type { BakeAttempt, BakeRecord } from "./bakeRun";
 import type { GameState } from "./gameState";
 import { skillTolerance } from "./skillTolerance";

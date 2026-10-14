@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { DifficultyId } from "./difficulty";
 import { STYLE_TAGS } from "./styleTag";
 import type { TrendState } from "./trendMarket";
-import { settleWeek, type WeekTrigger } from "./weekSettlement";
+import { settleWeek, type WeekLedger, type WeekTrigger } from "./weekSettlement";
 
 interface Ledger {
   readonly coins: number;
@@ -40,5 +40,21 @@ describe("settleWeek", () => {
       "bankrupt",
     ]);
     expect(settleWeek(ledger(10, "standard"), 30, STYLE_TAGS, queue).queued).toEqual(["first-week"]);
+  });
+
+  it("draws next week's trends from a game's own tag list when given one", () => {
+    type OwnTag = "dainty" | "nature" | "sparkly" | "bold";
+    const own: WeekLedger<OwnTag> = {
+      coins: 50,
+      trends: { current: ["dainty", "nature"], next: ["sparkly", "bold"] },
+      rng: 7,
+      profile: { difficulty: "standard" },
+    };
+    const settled = settleWeek(own, 20, ["dainty", "nature", "sparkly", "bold"] as const, (state) => state);
+    expect(settled.coins).toBe(30);
+    expect(settled.trends.current).toEqual(["sparkly", "bold"]);
+    expect(settled.trends.next.every((tag) => ["dainty", "nature", "sparkly", "bold"].includes(tag))).toBe(
+      true,
+    );
   });
 });

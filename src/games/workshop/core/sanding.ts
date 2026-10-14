@@ -1,9 +1,9 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import type { Point } from "../../../engine/geometry/point";
 import { recordWithout } from "../../../engine/recordWithout";
 import type { CommissionRun, SandRecord } from "./commissionRun";
 import type { GameState } from "./gameState";
 import { designSurfaces } from "./pieceParts";
-import { updateRun } from "./runUpdate";
 import { sandAngleLimit } from "./tolerance";
 
 export const SAND_CANVAS = { width: 320, height: 160 } as const;
@@ -212,7 +212,7 @@ export function sandDrag(
 ): GameState {
   if (!wellFormed(points)) return state;
   const limit = sandAngleLimit(state);
-  return updateRun(state, "sand", (run) => {
+  return updateActiveRun(state, "sand", (run) => {
     if (!designSurfaces(run.design).some((part) => part.id === surfaceId)) return null;
     const before = sandRecordOf(run, surfaceId);
     if (isSurfaceDone(before) && before.passes.every((passes) => passes >= MAX_PASSES)) return null;
@@ -223,7 +223,7 @@ export function sandDrag(
 }
 
 export function resetSurface(state: GameState, surfaceId: string): GameState {
-  return updateRun(state, "sand", (run) =>
+  return updateActiveRun(state, "sand", (run) =>
     Object.hasOwn(run.sanding, surfaceId) ? { ...run, sanding: recordWithout(run.sanding, surfaceId) } : null,
   );
 }

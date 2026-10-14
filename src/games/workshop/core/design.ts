@@ -1,10 +1,10 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { PART_OPTION_IDS, type PartOptionId, type PartSlot } from "../content/partOption";
 import type { ProductId } from "../content/product";
 import { WOOD_IDS, type WoodId } from "../content/wood";
 import { partOptionById, productById, woodById } from "./catalog";
 import type { CommissionRun } from "./commissionRun";
 import type { GameState } from "./gameState";
-import { updateRun } from "./runUpdate";
 
 export function woodLockReason(state: Pick<GameState, "reputation">, woodId: WoodId): string | null {
   const wood = woodById(woodId);
@@ -24,7 +24,7 @@ export function designIssues(run: CommissionRun): string[] {
 }
 
 export function chooseProduct(state: GameState, productId: ProductId): GameState {
-  return updateRun(state, "design", (run) => {
+  return updateActiveRun(state, "design", (run) => {
     if (!run.brief.products.includes(productId) || run.design.productId === productId) return null;
     return { ...run, design: { ...run.design, productId, options: {} }, placements: {} };
   });
@@ -32,7 +32,7 @@ export function chooseProduct(state: GameState, productId: ProductId): GameState
 
 export function chooseOption(state: GameState, slot: PartSlot, optionId: PartOptionId): GameState {
   if (!PART_OPTION_IDS.includes(optionId) || partOptionById(optionId).slot !== slot) return state;
-  return updateRun(state, "design", (run) => {
+  return updateActiveRun(state, "design", (run) => {
     const productId = run.design.productId;
     if (productId === null || !productById(productId).slots.includes(slot)) return null;
     if (run.design.options[slot] === optionId) return null;
@@ -42,7 +42,7 @@ export function chooseOption(state: GameState, slot: PartSlot, optionId: PartOpt
 
 export function chooseWood(state: GameState, woodId: WoodId): GameState {
   if (!WOOD_IDS.includes(woodId) || woodLockReason(state, woodId) !== null) return state;
-  return updateRun(state, "design", (run) =>
+  return updateActiveRun(state, "design", (run) =>
     run.design.woodId === woodId ? null : { ...run, design: { ...run.design, woodId }, placements: {} },
   );
 }

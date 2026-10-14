@@ -1,0 +1,80 @@
+.jb-design__layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 380px) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.jb-design__preview {
+  position: sticky;
+  top: 84px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.jb-design__piece {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.jb-design__preview figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.jb-design__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+
+.jb-design__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.jb-design__group {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.jb-design__group h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-md);
+  color: var(--jb-plum);
+}
+
+.jb-design__group .jb-hint {
+  margin-top: var(--space-2);
+}
+
+.jb-design__warn {
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-weight: 700;
+}
+
+@media (max-width: 860px) {
+  .jb-design__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .jb-design__preview {
+    position: static;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}

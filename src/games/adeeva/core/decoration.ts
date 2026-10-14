@@ -1,5 +1,5 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import type { TrimId } from "../content/trim";
-import { updateActiveRun } from "./activeRunUpdate";
 import { isTrimId } from "./catalog";
 import type { Decoration } from "./dressRun";
 import type { GameState } from "./gameState";

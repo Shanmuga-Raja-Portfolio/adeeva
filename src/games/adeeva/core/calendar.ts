@@ -1,12 +1,11 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { weeklyRent } from "../../../engine/difficulty";
-import { expireStaleOffers } from "../../../engine/gigBoardState";
+import { expireStaleOffers, lapseOverdueState } from "../../../engine/gigBoardState";
 import { workPaidShift } from "../../../engine/paidShift";
 import { decayBuzz } from "../../../engine/standing";
 import { careerById } from "./catalog";
 import { hoursPerDay } from "./dayHours";
 import type { GameState } from "./gameState";
-import { lapseOverdueGigs } from "./gigDeadline";
 import { rollOffers } from "./offers";
 import { queueStoryTrigger } from "./storyQueue";
 import { assistantWage } from "./studio";
@@ -46,7 +45,10 @@ export function endDay(state: GameState): GameState {
     calendar: { day: endedDay + 1, hoursLeft: hoursPerDay(state.studio), shopOpen: false },
   };
   const weekSettled = isWeekEnd(endedDay) ? settleWeek(advanced) : advanced;
-  return rollOffers(lapseOverdueGigs(expireStaleOffers(weekSettled)));
+  const lapsed = lapseOverdueState(expireStaleOffers(weekSettled), (run) =>
+    run.purpose.kind === "gig" ? run.purpose.gigId : null,
+  );
+  return rollOffers(lapsed);
 }
 
 export function canWorkShift(state: GameState): ActionCheck {

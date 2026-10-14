@@ -1,0 +1,74 @@
+.jb-cut-loupe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.jb-cut-loupe .jb-loupe__glass svg {
+  cursor: crosshair;
+}
+
+.jb-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.jb-dot--pulse {
+  animation: jb-dot-pulse 900ms ease-in-out infinite;
+}
+
+@keyframes jb-dot-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+}
+
+.jb-start-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: jb-dot-pulse 1.4s ease-in-out infinite;
+}
+
+.jb-saw--working {
+  animation: jb-saw-buzz 120ms linear infinite;
+}
+
+@keyframes jb-saw-buzz {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 0.25px;
+  }
+}
+
+.jb-shaving {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: jb-shaving-fall 900ms ease-in forwards;
+}
+
+@keyframes jb-shaving-fall {
+  from {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--jb-fall-x), 4px) rotate(var(--jb-spin));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jb-dot--pulse,
+  .jb-start-ring,
+  .jb-saw--working,
+  .jb-shaving {
+    animation: none;
+  }
+}

@@ -1,5 +1,5 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { recordFollow, type FollowBounds } from "../../../engine/followRecord";
-import { updateActiveRun } from "./activeRunUpdate";
 import type { SeamProgress } from "./dressRun";
 import type { GameState } from "./gameState";
 import { ownEntry } from "../../../engine/ownEntry";

@@ -1,9 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { earnedReputation } from "./earnedReputation";
+import { earnedReputation, traitGatedStart } from "./earnedReputation";
 
 const fromZero = () => 0;
 
 describe("earned reputation from a raw save", () => {
+  it("starts trait careers only for a known trait", () => {
+    const start = traitGatedStart(12);
+    expect(start({ trait: "charmer" })).toBe(12);
+    expect(start({ trait: "wizard" })).toBeNull();
+    expect(start({})).toBeNull();
+  });
+
   it("counts reputation above the career start", () => {
     const save = { schemaVersion: 2, reputation: 30, profile: { career: "label" } };
     expect(earnedReputation(save, 2, () => 20)).toBe(10);

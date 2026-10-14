@@ -1,6 +1,6 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { recordFollow, type FollowProgress } from "../../../engine/followRecord";
 import type { MixDef } from "../content/mix";
-import { updateActiveRun } from "./activeRunUpdate";
 import type { GameState } from "./gameState";
 import { skillTolerance } from "./skillTolerance";
 import { batchMix } from "./weigh";

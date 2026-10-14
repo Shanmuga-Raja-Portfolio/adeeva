@@ -1,3 +1,4 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import {
   isOnCanvas,
   isValidPose,
@@ -7,7 +8,6 @@ import {
   type PlacedPose,
 } from "../../../engine/placedPose";
 import type { ToppingId } from "../content/topping";
-import { updateActiveRun } from "./activeRunUpdate";
 import type { PlacedTopping } from "./bakeRun";
 import { isToppingId } from "./catalog";
 import type { GameState } from "./gameState";

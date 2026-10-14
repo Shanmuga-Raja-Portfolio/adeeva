@@ -1,9 +1,9 @@
 import { adeevaModule } from "../games/adeeva/module";
+import { jewelleryModule } from "../games/jewellery/module";
 import { patisserieModule } from "../games/patisserie/module";
 import { thriftFlipModule } from "../games/thrift-flip/module";
 import { workshopModule } from "../games/workshop/module";
 import { InteriorTileArt } from "../ui/art/tiles/InteriorTileArt";
-import { JewelleryTileArt } from "../ui/art/tiles/JewelleryTileArt";
 import type { GameId, GameModule, StudioGame } from "./gameModule";
 
 export const GAMES: readonly StudioGame[] = [
@@ -20,14 +20,7 @@ export const GAMES: readonly StudioGame[] = [
     ages: "8+",
     tileArt: InteriorTileArt,
   },
-  {
-    status: "workshop",
-    id: "jewellery",
-    title: "Jewellery Bench",
-    tagline: "Design rings and pendants, saw, solder and set stones, then build a market-stall collection.",
-    ages: "8+",
-    tileArt: JewelleryTileArt,
-  },
+  jewelleryModule,
 ];
 
 export const LIVE_GAMES: readonly GameModule[] = GAMES.filter((game) => game.status === "live");

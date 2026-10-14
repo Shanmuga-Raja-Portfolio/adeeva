@@ -1,22 +1,23 @@
+import { clientIsOpen, freeClients } from "../../../engine/gigBoard";
 import {
-  acceptOffer as acceptBoardOffer,
-  clientIsOpen,
-  declineOffer as declineBoardOffer,
-  freeClients,
-  offerAcceptIssue as boardAcceptIssue,
-} from "../../../engine/gigBoard";
-import { rollStateOffers } from "../../../engine/gigBoardState";
+  rollStateOffers,
+  stateOfferViews,
+  type OfferView as BoardOfferView,
+} from "../../../engine/gigBoardState";
 import { TRAIT_STORY_TRIGGERS } from "../../../engine/trait";
 import { CLIENTS, STARTER_CLIENT_IDS, type ClientDef } from "../content/client";
-import { rollClientBrief } from "./brief";
+import { rollClientBrief, type Brief } from "./brief";
 import { clientById, difficultyById } from "./catalog";
-import type { GameState, Offer } from "./gameState";
+import type { GameState } from "./gameState";
 import { queueStoryTrigger } from "./storyQueue";
 
-export interface OfferView {
-  readonly offer: Offer;
-  readonly client: ClientDef;
-}
+export {
+  acceptStateOffer as acceptOffer,
+  declineStateOffer as declineOffer,
+  stateOfferAcceptIssue as offerAcceptIssue,
+} from "../../../engine/gigBoardState";
+
+export type OfferView = BoardOfferView<Brief, ClientDef>;
 
 export function clientIsEligible(client: ClientDef, state: GameState): boolean {
   return clientIsOpen(client, state.reputation, state.profile.trait);
@@ -32,10 +33,7 @@ export function eligibleClients(state: GameState): ClientDef[] {
 }
 
 export function offersFor(state: GameState): OfferView[] {
-  return state.gigs.offers.flatMap((offer) => {
-    const client = clientById(offer.clientId);
-    return client === undefined ? [] : [{ offer, client }];
-  });
+  return stateOfferViews(state, clientById);
 }
 
 export function rollOffers(state: GameState): GameState {
@@ -46,18 +44,4 @@ export function rollOffers(state: GameState): GameState {
     (client, day, rng) => rollClientBrief(client, day, rng, minQualityBonus),
     (next, trait) => queueStoryTrigger(next, TRAIT_STORY_TRIGGERS[trait]),
   );
-}
-
-export function offerAcceptIssue(state: GameState, offerId: string): string | null {
-  return boardAcceptIssue(state.gigs, offerId);
-}
-
-export function acceptOffer(state: GameState, offerId: string): GameState {
-  const gigs = acceptBoardOffer(state.gigs, offerId, state.calendar.day);
-  return gigs === state.gigs ? state : { ...state, gigs };
-}
-
-export function declineOffer(state: GameState, offerId: string): GameState {
-  const gigs = declineBoardOffer(state.gigs, offerId);
-  return gigs === state.gigs ? state : { ...state, gigs };
 }

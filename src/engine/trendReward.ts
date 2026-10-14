@@ -34,6 +34,7 @@ export interface TrendRewardTerms<T extends string = StyleTag> {
   readonly labels?: TrendRewardLabels | undefined;
   readonly extraBuzz?: number | undefined;
   readonly extraLines?: readonly RewardLine[] | undefined;
+  readonly extraReputation?: number | undefined;
 }
 
 export function dreamerFlair(colourCount: number, tags: readonly string[]): boolean {
@@ -65,5 +66,6 @@ export function settleTrendReward<T extends string>(terms: TrendRewardTerms<T>):
     bonusLines: bonusLines(terms, matches.length),
     extraBuzz: matches.length * TREND_BUZZ_PER_MATCH + (terms.extraBuzz ?? 0),
   });
-  return { ...core, trendMatches: core.outcome === "pass" ? matches : [] };
+  if (core.outcome !== "pass") return { ...core, trendMatches: [] };
+  return { ...core, reputation: core.reputation + (terms.extraReputation ?? 0), trendMatches: matches };
 }

@@ -1,7 +1,12 @@
 import { isCount } from "./count";
 import { isPlainObject } from "./parse";
+import { TRAIT_IDS } from "./trait";
 
 export type StartReputation = (profile: Readonly<Record<string, unknown>>) => number | null;
+
+export function traitGatedStart(start: number): StartReputation {
+  return (profile) => (TRAIT_IDS.some((trait) => trait === profile.trait) ? start : null);
+}
 
 export function earnedReputation(rawSave: unknown, schemaVersion: number, startOf: StartReputation): number {
   if (!isPlainObject(rawSave) || !isPlainObject(rawSave.profile)) return 0;

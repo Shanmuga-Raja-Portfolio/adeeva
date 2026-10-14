@@ -1,0 +1,113 @@
+.jb-cabinet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background:
+    repeating-linear-gradient(90deg, rgba(85, 54, 32, 0.06) 0 2px, transparent 2px 18px),
+    linear-gradient(180deg, #a87b55, var(--jb-walnut));
+  box-shadow:
+    inset 0 0 0 6px var(--jb-walnut-deep),
+    var(--shadow-md);
+}
+
+.jb-cabinet__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.jb-cabinet__head h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+  color: var(--jb-plum);
+}
+
+.jb-cabinet__head p {
+  margin: 0;
+}
+
+.jb-cabinet__ready {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--jb-teal);
+}
+
+.jb-drawer-row {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #f6ead6, #ead8bc);
+  box-shadow:
+    inset 0 -4px 0 rgba(85, 54, 32, 0.2),
+    0 3px 0 var(--jb-walnut-deep);
+}
+
+.jb-drawer-row h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-md);
+  color: var(--jb-walnut-deep);
+}
+
+.jb-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jb-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-3) var(--space-2) var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 2px solid transparent;
+  text-align: center;
+}
+
+.jb-item--fits {
+  border-color: var(--jb-amber);
+  box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.25);
+}
+
+.jb-item__badge {
+  position: absolute;
+  top: -10px;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--jb-amber);
+  color: var(--jb-plum-deep);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.jb-item__art svg {
+  width: 84px;
+  height: 44px;
+}
+
+.jb-item__name {
+  font-size: var(--text-sm);
+}
+
+.jb-item__owned {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}

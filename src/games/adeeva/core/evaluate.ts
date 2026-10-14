@@ -1,11 +1,19 @@
-import { gatePassed, judgedScore, starsForScore, type ScoreRule } from "../../../engine/score";
+import {
+  criterionJudge,
+  judgeDeadline,
+  judgedEvaluation,
+  judgeQuality,
+  type Evaluation as JudgedEvaluation,
+  type Judged as JudgedCriterion,
+} from "../../../engine/criterionJudge";
+import type { ScoreRule } from "../../../engine/score";
 import type { Brief } from "./brief";
 import { colourById } from "../../../engine/palette";
 import { trimById } from "./catalog";
-import { CRITERION_WEIGHTS, type Criterion, type CriterionId } from "./criterion";
+import { CRITERION_WEIGHTS, type CriterionId } from "./criterion";
 import { dressQuality, type QualityBreakdown } from "./dressQuality";
 import { constructionCount, isConstructionComplete, type DressSnapshot } from "./dressSnapshot";
-import { budgetFeedback, coloursFeedback, deadlineFeedback } from "../../../engine/kindFeedback";
+import { budgetFeedback, coloursFeedback } from "../../../engine/kindFeedback";
 import {
   constructionFeedback,
   qualityFeedback,
@@ -28,36 +36,17 @@ export interface EvaluationContext {
   readonly deliveredDay: number;
 }
 
-export interface Evaluation {
-  readonly criteria: readonly Criterion[];
-  readonly quality: QualityBreakdown;
-  readonly favouredColoursUsed: number;
-  readonly score: number;
-  readonly stars: number;
-  readonly passed: boolean;
-  readonly feedback: readonly string[];
-}
+export type Evaluation = JudgedEvaluation<CriterionId, QualityBreakdown>;
 
-interface Judged {
-  readonly criterion: Criterion;
-  readonly feedback: string;
-}
+type Judged = JudgedCriterion<CriterionId>;
 
-function judged(id: CriterionId, label: string, passed: boolean, detail: string, feedback: string): Judged {
-  return { criterion: { id, label, passed, detail, weight: CRITERION_WEIGHTS[id] }, feedback };
-}
+const judged = criterionJudge(CRITERION_WEIGHTS);
 
 function judgeConstruction(snapshot: DressSnapshot): Judged {
   const count = constructionCount(snapshot);
   const passed = isConstructionComplete(snapshot);
   const detail = `${count.piecesCut}/${count.piecesTotal} pieces cut, ${count.piecesAssembled}/${count.piecesTotal} on the form, ${count.seamsSewn}/${count.seamsTotal} seams sewn.`;
   return judged("construction", "Construction", passed, detail, constructionFeedback(count));
-}
-
-function judgeQuality(quality: QualityBreakdown, brief: Brief): Judged {
-  const passed = quality.quality >= brief.minQuality;
-  const detail = `Quality ${quality.quality} against a minimum of ${brief.minQuality}.`;
-  return judged("quality", "Quality", passed, detail, qualityFeedback(quality, brief.minQuality));
 }
 
 function judgeStyle(snapshot: DressSnapshot, brief: Brief): Judged {
@@ -107,18 +96,6 @@ function judgeBudget(snapshot: DressSnapshot, brief: Brief): Judged {
   return judged("budget", "Budget", passed, detail, budgetFeedback(snapshot.spend, brief.budget));
 }
 
-function judgeDeadline(brief: Brief, context: EvaluationContext): Judged {
-  const passed = context.deliveredDay <= brief.deadlineDay;
-  const detail = `Delivered on day ${context.deliveredDay}, due by day ${brief.deadlineDay}.`;
-  return judged(
-    "deadline",
-    "Deadline",
-    passed,
-    detail,
-    deadlineFeedback(context.deliveredDay, brief.deadlineDay),
-  );
-}
-
 export function evaluate(snapshot: DressSnapshot, brief: Brief, context: EvaluationContext): Evaluation {
   const quality = dressQuality(snapshot, brief);
   const favouredColoursUsed = snapshot.colours.filter((colour) =>
@@ -126,23 +103,12 @@ export function evaluate(snapshot: DressSnapshot, brief: Brief, context: Evaluat
   ).length;
   const results = [
     judgeConstruction(snapshot),
-    judgeQuality(quality, brief),
+    judgeQuality(judged, quality.quality, brief.minQuality, qualityFeedback(quality, brief.minQuality)),
     judgeStyle(snapshot, brief),
     judgeColours(snapshot, brief, favouredColoursUsed),
     judgeTrims(snapshot, brief),
     judgeBudget(snapshot, brief),
-    judgeDeadline(brief, context),
+    judgeDeadline(judged, "Deadline", context.deliveredDay, brief.deadlineDay),
   ];
-  const criteria = results.map((result) => result.criterion);
-  const score = judgedScore(criteria, quality.quality, favouredColoursUsed, SCORE_RULE);
-  const passed = gatePassed(criteria, PASS_GATE);
-  return {
-    criteria,
-    quality,
-    favouredColoursUsed,
-    score,
-    stars: starsForScore(score),
-    passed,
-    feedback: results.filter((result) => !result.criterion.passed).map((result) => result.feedback),
-  };
+  return judgedEvaluation(results, quality, favouredColoursUsed, SCORE_RULE, PASS_GATE);
 }

@@ -1,0 +1,49 @@
+.jb-review {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(280px, 420px);
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.jb-review__box {
+  position: relative;
+  width: min(100%, 440px);
+  margin: 0 auto;
+  aspect-ratio: 1;
+}
+
+.jb-review__gift {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.jb-review__piece {
+  position: absolute;
+  left: 22%;
+  top: 14%;
+  width: 56%;
+  height: auto;
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  animation: jb-pop 700ms var(--ease-out) both;
+}
+
+.jb-review__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+
+.jb-review__panel h2 {
+  margin: 0;
+  color: var(--jb-plum);
+}
+
+@media (max-width: 860px) {
+  .jb-review {
+    grid-template-columns: 1fr;
+  }
+}

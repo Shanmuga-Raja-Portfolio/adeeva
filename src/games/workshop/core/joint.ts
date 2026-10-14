@@ -1,3 +1,4 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { average } from "../../../engine/average";
 import { clamp } from "../../../engine/clamp";
 import { nextRandom } from "../../../engine/rng";
@@ -7,7 +8,6 @@ import { jointKindById } from "./catalog";
 import { runNumber, type CommissionRun, type JointRecord, type PieceDesign } from "./commissionRun";
 import type { GameState } from "./gameState";
 import { designJoints, findJoint } from "./pieceParts";
-import { updateRun } from "./runUpdate";
 import { jointTolerance, type JointTolerance } from "./tolerance";
 
 export const ASSIST_JOINT_ACCURACY_CAP = 0.7;
@@ -123,7 +123,7 @@ export function seatJoint(
   goodTaps: number,
   assisted: boolean,
 ): GameState {
-  return updateRun(state, "join", (run) => {
+  return updateActiveRun(state, "join", (run) => {
     const joint = findJoint(run.design, jointId);
     if (joint === undefined || Object.hasOwn(run.joints, jointId)) return null;
     const tolerance = runJointTolerance(state, run, joint);
@@ -141,7 +141,7 @@ export function seatJoint(
 }
 
 export function resetJoint(state: GameState, jointId: string): GameState {
-  return updateRun(state, "join", (run) =>
+  return updateActiveRun(state, "join", (run) =>
     Object.hasOwn(run.joints, jointId) ? { ...run, joints: recordWithout(run.joints, jointId) } : null,
   );
 }

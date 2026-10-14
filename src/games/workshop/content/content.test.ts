@@ -3,7 +3,7 @@ import { BOARD_SIZES } from "./boardSize";
 import { CLIENTS } from "./client";
 import { COACH_HINTS, HINTS } from "./hint";
 import { PRODUCTS } from "./product";
-import { STORY_BEATS } from "./storyBeat";
+import { BEAT_BUZZ, STORY_BEATS } from "./storyBeat";
 import { hammersFor, WOODS } from "./wood";
 import { EXTRAS } from "./extra";
 import { FINISHES } from "./finish";
@@ -18,6 +18,11 @@ function sentences(text: string): number {
 }
 
 describe("workshop content", () => {
+  it("gives buzz only for beats that play once", () => {
+    const buzzBeats = STORY_BEATS.filter((beat) => Object.hasOwn(BEAT_BUZZ, beat.id));
+    expect(buzzBeats).toHaveLength(Object.keys(BEAT_BUZZ).length);
+    for (const beat of buzzBeats) expect(beat.repeatable, beat.id).toBe(false);
+  });
   it("keeps every hint to 12 words or fewer", () => {
     for (const hint of [...Object.values(HINTS), ...Object.values(COACH_HINTS)])
       expect(words(hint ?? ""), hint).toBeLessThanOrEqual(12);

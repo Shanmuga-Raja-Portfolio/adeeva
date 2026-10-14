@@ -1,3 +1,4 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { OVERLAP_EPSILON } from "../../../engine/geometry/overlapEpsilon";
 import type { Point } from "../../../engine/geometry/point";
 import { polygonsOverlap } from "../../../engine/geometry/polygonOverlap";
@@ -11,7 +12,6 @@ import { QUARTER_TURNS, type CommissionRun, type PartPlacement, type QuarterTurn
 import type { GameState } from "./gameState";
 import type { OwnedBoard } from "./ownedBoard";
 import { designParts, findPart } from "./pieceParts";
-import { updateRun } from "./runUpdate";
 
 type LayoutIssueKind = "unplaced" | "off-board" | "knot" | "overlap" | "wrong-wood";
 
@@ -116,7 +116,7 @@ export function placePart(
   rotation: number,
 ): GameState {
   if (!Number.isFinite(x) || !Number.isFinite(y) || !isQuarterTurn(rotation)) return state;
-  return updateRun(state, "layout", (run) => {
+  return updateActiveRun(state, "layout", (run) => {
     const part = findPart(run.design, partId);
     if (part === undefined) return null;
     const placement: PartPlacement = { boardId, x, y, rotation, assisted: false };
@@ -135,7 +135,7 @@ export function placePart(
 }
 
 export function removePart(state: GameState, partId: string): GameState {
-  return updateRun(state, "layout", (run) => {
+  return updateActiveRun(state, "layout", (run) => {
     if (!Object.hasOwn(run.placements, partId)) return null;
     return { ...run, placements: recordWithout(run.placements, partId) };
   });
@@ -191,7 +191,7 @@ export function showMeSpot(
 }
 
 export function showMe(state: GameState, partId: string | null): GameState {
-  return updateRun(state, "layout", (run) => {
+  return updateActiveRun(state, "layout", (run) => {
     const part = unplacedPart(run, partId);
     const placement = showMeSpot(state, run, partId);
     if (part === undefined || placement === null) return null;

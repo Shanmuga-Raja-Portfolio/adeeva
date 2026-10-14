@@ -1,5 +1,5 @@
-import { applyStanding } from "../../../engine/standing";
-import { headBeatId, markBeatSeen, queueTrigger } from "../../../engine/story";
+import { seeBeatWithBuzz } from "../../../engine/beatBuzz";
+import { headBeatId, queueTrigger } from "../../../engine/story";
 import { TRAIT_STORY_TRIGGERS, type TraitId } from "../../../engine/trait";
 import { BEAT_BUZZ, STORY_BEATS, type StoryBeatDef, type StoryTrigger } from "../content/storyBeat";
 import { storyBeatById } from "./catalog";
@@ -20,8 +20,5 @@ export function currentBeat(state: GameState): StoryBeatDef | null {
 }
 
 export function seeBeat(state: GameState, beatId: string): GameState {
-  const seen = markBeatSeen(state, beatId, storyBeatById);
-  if (seen === state) return seen;
-  const buzz = Object.hasOwn(BEAT_BUZZ, beatId) ? (BEAT_BUZZ[beatId] ?? 0) : 0;
-  return buzz === 0 ? seen : applyStanding(seen, { coins: 0, reputation: 0, buzz });
+  return seeBeatWithBuzz(state, beatId, storyBeatById, BEAT_BUZZ);
 }

@@ -1,5 +1,5 @@
-import { type KeyboardEvent, useRef } from "react";
 import { Icon, type IconName } from "./IconSet";
+import { useRovingRadio } from "./useRovingRadio";
 
 export interface SegmentedOption<T extends string> {
   value: T;
@@ -23,32 +23,7 @@ export function SegmentedControl<T extends string>({
   onChange,
   className,
 }: SegmentedControlProps<T>) {
-  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
-
-  const move = (from: number, step: number) => {
-    const count = options.length;
-    for (let offset = 1; offset <= count; offset += 1) {
-      const index = (from + step * offset + count * count) % count;
-      const option = options[index];
-      if (option && !option.disabled) {
-        onChange(option.value);
-        buttons.current[index]?.focus();
-        return;
-      }
-    }
-  };
-
-  const handleKey = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-      event.preventDefault();
-      move(index, 1);
-    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-      event.preventDefault();
-      move(index, -1);
-    }
-  };
-
-  const anyChecked = options.some((option) => option.value === value);
+  const roving = useRovingRadio(options, value, onChange);
 
   return (
     <div
@@ -61,17 +36,15 @@ export function SegmentedControl<T extends string>({
         return (
           <button
             key={option.value}
-            ref={(element) => {
-              buttons.current[index] = element;
-            }}
+            ref={roving.buttonRef(index)}
             type="button"
             role="radio"
             aria-checked={checked}
-            tabIndex={checked || (!anyChecked && index === 0) ? 0 : -1}
+            tabIndex={roving.tabIndex(index)}
             disabled={option.disabled === true}
             className="ad-segmented__option"
             onClick={() => onChange(option.value)}
-            onKeyDown={(event) => handleKey(event, index)}
+            onKeyDown={(event) => roving.handleKey(event, index)}
           >
             {option.icon ? <Icon name={option.icon} size={16} /> : null}
             {option.label}

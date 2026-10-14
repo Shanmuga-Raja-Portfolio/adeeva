@@ -66,4 +66,13 @@ describe("trend rewards over a game's own tags", () => {
     ]);
     expect(reward.trendMatches).toEqual(["rustic"]);
   });
+
+  it("adds the game's extra reputation only when the work passes", () => {
+    const passed = settleTrendReward({ ...TERMS, extraReputation: 1 });
+    expect(passed.reputation).toBe(settleTrendReward(TERMS).reputation + 1);
+    const missed = { ...TERMS, passed: false, difficulty: "standard" as const };
+    expect(settleTrendReward({ ...missed, extraReputation: 1 }).reputation).toBe(
+      settleTrendReward(missed).reputation,
+    );
+  });
 });

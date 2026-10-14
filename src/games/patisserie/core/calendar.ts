@@ -1,9 +1,9 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { BASE_DAY_HOURS } from "../../../engine/dayHours";
 import { weeklyRent } from "../../../engine/difficulty";
-import { expireOffers, lapseOverdue } from "../../../engine/gigBoard";
+import { expireStaleOffers, lapseOverdueState } from "../../../engine/gigBoardState";
 import { workPaidShift } from "../../../engine/paidShift";
-import { applyStanding, decayBuzz } from "../../../engine/standing";
+import { decayBuzz } from "../../../engine/standing";
 import { isWeekEnd } from "../../../engine/week";
 import { STYLE_TAGS } from "../../../engine/styleTag";
 import { settleWeek } from "../../../engine/weekSettlement";
@@ -18,15 +18,6 @@ export function weeklyBill(state: GameState): number {
   return weeklyRent(CAREER.weeklyRent, state.profile.difficulty);
 }
 
-function lapseOverdueOrders(state: GameState): GameState {
-  const lapse = lapseOverdue(state.gigs, state.calendar.day, state.profile.difficulty, state.profile.trait);
-  if (lapse === null) return state;
-  const run = state.activeRun;
-  const runLapsed = run !== null && run.purpose.kind === "order" && lapse.lapsedIds.has(run.purpose.gigId);
-  const updated: GameState = { ...state, activeRun: runLapsed ? null : run, gigs: lapse.board };
-  return applyStanding(updated, { coins: 0, reputation: lapse.reputation, buzz: 0 });
-}
-
 export function endDay(state: GameState): GameState {
   const endedDay = state.calendar.day;
   const closed = closeCounter(state);
@@ -38,8 +29,10 @@ export function endDay(state: GameState): GameState {
   const weekSettled = isWeekEnd(endedDay)
     ? settleWeek(advanced, weeklyBill(advanced), STYLE_TAGS, queueStoryTrigger)
     : advanced;
-  const expired = expireOffers(weekSettled.gigs, weekSettled.calendar.day);
-  const withOffers = rollOffers(lapseOverdueOrders({ ...weekSettled, gigs: expired }));
+  const lapsed = lapseOverdueState(expireStaleOffers(weekSettled), (run) =>
+    run.purpose.kind === "order" ? run.purpose.gigId : null,
+  );
+  const withOffers = rollOffers(lapsed);
   return isCounterDay(withOffers.calendar.day)
     ? queueStoryTrigger(withOffers, "first-counter-day")
     : withOffers;

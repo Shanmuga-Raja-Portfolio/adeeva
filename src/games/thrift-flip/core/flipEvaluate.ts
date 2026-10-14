@@ -1,12 +1,19 @@
-import { clamp } from "../../../engine/clamp";
+import {
+  criterionJudge,
+  judgeDeadline,
+  judgedEvaluation,
+  judgeQuality,
+  type Evaluation as JudgedEvaluation,
+  type Judged as JudgedCriterion,
+} from "../../../engine/criterionJudge";
 import { colourById, type ColourId } from "../../../engine/palette";
-import { gatePassed, passMix, starsForScore } from "../../../engine/score";
-import { budgetFeedback, coloursFeedback, deadlineFeedback } from "../../../engine/kindFeedback";
+import { starsForScore, type ScoreRule } from "../../../engine/score";
+import { budgetFeedback, coloursFeedback } from "../../../engine/kindFeedback";
 import type { StyleTag } from "../../../engine/styleTag";
 import type { FinishRequirement } from "../content/client";
 import type { Brief } from "./brief";
 import { findById, patchById, trimById } from "./catalog";
-import { CRITERION_WEIGHTS, PASS_GATE, type Criterion, type CriterionId } from "./criterion";
+import { CRITERION_WEIGHTS, PASS_GATE, type CriterionId } from "./criterion";
 import { finishSpend } from "./finishing";
 import { flipPieces, flipSeams } from "./flipPieces";
 import { flipQuality, type QualityBreakdown } from "./flipQuality";
@@ -28,30 +35,24 @@ import { findLines, isLineDone, lineRecord } from "./unpick";
 
 export const FAVOURED_COLOUR_BONUS = 2;
 export const MAX_FAVOURED_COLOUR_BONUS = 4;
+const SCORE_RULE: ScoreRule = {
+  passMixWeight: 0.3,
+  qualityWeight: 0.7,
+  colourBonusPer: FAVOURED_COLOUR_BONUS,
+  maxColourBonus: MAX_FAVOURED_COLOUR_BONUS,
+};
 
-export interface FlipEvaluation {
+export interface FlipEvaluation extends JudgedEvaluation<CriterionId, QualityBreakdown> {
   readonly kind: "gig" | "own";
-  readonly criteria: readonly Criterion[];
-  readonly quality: QualityBreakdown;
   readonly leaves: LeavesBreakdown;
-  readonly favouredColoursUsed: number;
-  readonly score: number;
-  readonly stars: number;
-  readonly passed: boolean;
-  readonly feedback: readonly string[];
   readonly tags: readonly StyleTag[];
   readonly colours: readonly ColourId[];
   readonly spend: number;
 }
 
-interface Judged {
-  readonly criterion: Criterion;
-  readonly feedback: string;
-}
+type Judged = JudgedCriterion<CriterionId>;
 
-function judged(id: CriterionId, label: string, passed: boolean, detail: string, feedback: string): Judged {
-  return { criterion: { id, label, passed, detail, weight: CRITERION_WEIGHTS[id] }, feedback };
-}
+const judged = criterionJudge(CRITERION_WEIGHTS);
 
 export function flipSpend(run: FlipRun): number {
   return run.finds.reduce((sum, owned) => sum + owned.price, 0) + finishSpend(run);
@@ -160,13 +161,7 @@ export function evaluateFlip(state: GameState, run: FlipRun, deliveredDay: numbe
         : `${gap.stitchLines} stitch lines, ${gap.pieces} pieces and ${gap.seams} seams left to do.`,
       constructionFeedback(gap),
     ),
-    judged(
-      "quality",
-      "Quality",
-      quality.quality >= brief.minQuality,
-      `Quality ${quality.quality} against a minimum of ${brief.minQuality}.`,
-      qualityFeedback(quality, brief.minQuality),
-    ),
+    judgeQuality(judged, quality.quality, brief.minQuality, qualityFeedback(quality, brief.minQuality)),
     judgeStyle(run, brief, tags),
     judgeColours(colours, brief, favoured),
     judgeFinishes(run, brief),
@@ -177,13 +172,7 @@ export function evaluateFlip(state: GameState, run: FlipRun, deliveredDay: numbe
       `Spent ${spend} of ${brief.budget} coins.`,
       budgetFeedback(spend, brief.budget),
     ),
-    judged(
-      "deadline",
-      "Deadline",
-      deliveredDay <= brief.deadlineDay,
-      `Delivered on day ${deliveredDay}, due by day ${brief.deadlineDay}.`,
-      deadlineFeedback(deliveredDay, brief.deadlineDay),
-    ),
+    judgeDeadline(judged, "Deadline", deliveredDay, brief.deadlineDay),
     judged(
       "sustainability",
       "Leaves",
@@ -194,19 +183,10 @@ export function evaluateFlip(state: GameState, run: FlipRun, deliveredDay: numbe
       SUSTAINABILITY_FEEDBACK,
     ),
   ];
-  const criteria = results.map((result) => result.criterion);
-  const colourBonus = Math.min(MAX_FAVOURED_COLOUR_BONUS, FAVOURED_COLOUR_BONUS * favoured);
-  const score = clamp(Math.round(0.3 * passMix(criteria) + 0.7 * quality.quality + colourBonus), 0, 100);
   return {
+    ...judgedEvaluation(results, quality, favoured, SCORE_RULE, PASS_GATE),
     kind: "gig",
-    criteria,
-    quality,
     leaves,
-    favouredColoursUsed: favoured,
-    score,
-    stars: starsForScore(score),
-    passed: gatePassed(criteria, PASS_GATE),
-    feedback: results.filter((result) => !result.criterion.passed).map((result) => result.feedback),
     tags,
     colours,
     spend,

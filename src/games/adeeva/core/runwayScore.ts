@@ -8,7 +8,7 @@ import { trimById } from "./catalog";
 import { clamp } from "../../../engine/clamp";
 import { garmentTags } from "./dressTags";
 import type { FinishedLook } from "./finishedLook";
-import { paletteCohesion } from "./paletteCohesion";
+import { paletteCohesion } from "../../../engine/paletteCohesion";
 import { pressQuote } from "./pressQuote";
 
 export const PANEL_IDS = ["critics", "buyers", "audience"] as const;

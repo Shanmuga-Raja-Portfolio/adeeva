@@ -1,5 +1,5 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import type { GarmentSlot } from "../content/garmentSlot";
-import { updateActiveRun } from "./activeRunUpdate";
 import { isGarmentSlot } from "./catalog";
 import type { DressRun } from "./dressRun";
 import type { GameState } from "./gameState";

@@ -1,3 +1,4 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import type { ColourId } from "../../../engine/palette";
 import { isOnCanvas, isValidPose, samePose, topLayer, type PlacedPose } from "../../../engine/placedPose";
 import { EXTRA_IDS, type ExtraId } from "../content/extra";
@@ -5,7 +6,6 @@ import { FINISH_IDS, PAINT_COLOURS, type FinishId } from "../content/finish";
 import { extraById, finishById } from "./catalog";
 import type { CommissionRun, FinishChoice } from "./commissionRun";
 import type { GameState } from "./gameState";
-import { updateRun } from "./runUpdate";
 
 export const FINISH_CANVAS = { width: 400, height: 300 } as const;
 export const EXTRA_ROTATION_STEP = 15;
@@ -47,7 +47,7 @@ export function addExtra(state: GameState, extraId: ExtraId, x: number, y: numbe
   if (!EXTRA_IDS.includes(extraId) || !isOnCanvas(FINISH_CANVAS, x, y)) return state;
   const price = extraById(extraId).price;
   if (price > state.coins) return state;
-  const added = updateRun(state, "finish", (run) => {
+  const added = updateActiveRun(state, "finish", (run) => {
     if (run.extras.length >= MAX_EXTRAS) return null;
     return {
       ...run,
@@ -81,7 +81,7 @@ function validPose(pose: PlacedPose): boolean {
 
 export function moveExtra(state: GameState, placedId: string, pose: PlacedPose): GameState {
   if (!validPose(pose)) return state;
-  return updateRun(state, "finish", (run) => {
+  return updateActiveRun(state, "finish", (run) => {
     const current = run.extras.find((placed) => placed.id === placedId);
     if (current === undefined || samePose(current, pose)) return null;
     return {
@@ -94,7 +94,7 @@ export function moveExtra(state: GameState, placedId: string, pose: PlacedPose):
 export function removeExtra(state: GameState, placedId: string): GameState {
   const placed = state.activeRun?.extras.find((entry) => entry.id === placedId);
   if (placed === undefined) return state;
-  const removed = updateRun(state, "finish", (run) => ({
+  const removed = updateActiveRun(state, "finish", (run) => ({
     ...run,
     extras: run.extras.filter((entry) => entry.id !== placedId),
   }));

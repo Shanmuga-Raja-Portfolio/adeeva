@@ -1,6 +1,6 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import type { IngredientId } from "../content/ingredient";
 import type { MixDef } from "../content/mix";
-import { updateActiveRun } from "./activeRunUpdate";
 import type { BakeRun, BatchState, WeighAttempt, WeighRecord } from "./bakeRun";
 import { ingredientValue } from "./bakeSpend";
 import { ingredientById, isIngredientId, mixById } from "./catalog";

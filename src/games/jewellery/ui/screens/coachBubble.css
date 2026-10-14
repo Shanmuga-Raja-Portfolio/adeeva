@@ -1,0 +1,37 @@
+.jb-coach {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: fit-content;
+  max-width: min(640px, 100%);
+  min-height: 56px;
+  margin: 0 auto var(--space-3);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+  border: 2px solid rgba(232, 163, 61, 0.55);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, #fff8ea, #fbe9c8);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  animation: jb-pop 500ms var(--ease-out) both;
+}
+
+.jb-coach__face {
+  flex: none;
+}
+
+.jb-coach__text {
+  font-weight: 600;
+}
+
+.jb-coach__ok {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--jb-teal);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+}

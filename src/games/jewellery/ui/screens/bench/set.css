@@ -1,0 +1,48 @@
+.jb-stone-bench {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.jb-stone-bench .jb-loupe__glass {
+  background: radial-gradient(circle at 40% 30%, #2f6d7b, var(--jb-teal-deep) 75%);
+}
+
+.jb-stone-bench svg {
+  touch-action: none;
+}
+
+.jb-stone--loose {
+  cursor: grab;
+}
+
+.jb-stone:focus-visible,
+.jb-claw:focus-visible {
+  outline: none;
+}
+
+.jb-stone:focus-visible circle:first-child,
+.jb-claw:focus-visible circle:first-child {
+  stroke: #e8a33d;
+  stroke-width: 0.3;
+}
+
+.jb-turn-handle,
+.jb-claw {
+  cursor: grab;
+}
+
+.jb-claw--snug path {
+  stroke: #e8a33d;
+  stroke-width: 0.35;
+}
+
+.jb-stone-bench [data-testid="press-claws"][aria-disabled="true"] {
+  opacity: 0.55;
+}
+
+.jb-hold-button {
+  min-height: 56px;
+  min-width: 56px;
+  touch-action: none;
+}

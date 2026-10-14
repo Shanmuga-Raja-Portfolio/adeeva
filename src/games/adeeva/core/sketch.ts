@@ -1,5 +1,5 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import type { PartCategory } from "../content/garmentPart";
-import { updateActiveRun } from "./activeRunUpdate";
 import { fabricById, isPartCategory, partById } from "./catalog";
 import type { DressRun, PiecePlacement } from "./dressRun";
 import type { GameState } from "./gameState";

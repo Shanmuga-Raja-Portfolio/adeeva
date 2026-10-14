@@ -1,6 +1,14 @@
-import { budgetFeedback, coloursFeedback, deadlineFeedback } from "../../../engine/kindFeedback";
+import {
+  criterionJudge,
+  judgeDeadline,
+  judgedEvaluation,
+  judgeQuality,
+  type Evaluation as JudgedEvaluation,
+  type Judged as JudgedCriterion,
+} from "../../../engine/criterionJudge";
+import { budgetFeedback, coloursFeedback } from "../../../engine/kindFeedback";
 import { colourById } from "../../../engine/palette";
-import { gatePassed, judgedScore, starsForScore, type ScoreRule } from "../../../engine/score";
+import type { ScoreRule } from "../../../engine/score";
 import { bakeQuality, type QualityBreakdown } from "./bakeQuality";
 import { designMixes } from "./bakeNeeds";
 import type { BakeRun } from "./bakeRun";
@@ -9,7 +17,7 @@ import { bakeTags } from "./bakeTags";
 import type { Brief } from "./brief";
 import { mixById, toppingById } from "./catalog";
 import { constructionCount, isConstructionComplete } from "./construction";
-import { CRITERION_WEIGHTS, PASS_GATE, type Criterion, type CriterionId } from "./criterion";
+import { CRITERION_WEIGHTS, PASS_GATE, type CriterionId } from "./criterion";
 import {
   constructionFeedback,
   qualityFeedback,
@@ -25,25 +33,13 @@ export const SCORE_RULE: ScoreRule = {
   maxColourBonus: 3,
 };
 
-export interface Evaluation {
-  readonly criteria: readonly Criterion[];
-  readonly quality: QualityBreakdown;
-  readonly favouredColoursUsed: number;
+export interface Evaluation extends JudgedEvaluation<CriterionId, QualityBreakdown> {
   readonly spend: number;
-  readonly score: number;
-  readonly stars: number;
-  readonly passed: boolean;
-  readonly feedback: readonly string[];
 }
 
-interface Judged {
-  readonly criterion: Criterion;
-  readonly feedback: string;
-}
+type Judged = JudgedCriterion<CriterionId>;
 
-function judged(id: CriterionId, label: string, passed: boolean, detail: string, feedback: string): Judged {
-  return { criterion: { id, label, passed, detail, weight: CRITERION_WEIGHTS[id] }, feedback };
-}
+const judged = criterionJudge(CRITERION_WEIGHTS);
 
 function judgeConstruction(run: BakeRun): Judged {
   const count = constructionCount(run);
@@ -55,12 +51,6 @@ function judgeConstruction(run: BakeRun): Judged {
     detail,
     constructionFeedback(count),
   );
-}
-
-function judgeQuality(quality: QualityBreakdown, brief: Brief): Judged {
-  const passed = quality.quality >= brief.minQuality;
-  const detail = `Quality ${quality.quality} against a minimum of ${brief.minQuality}.`;
-  return judged("quality", "Quality", passed, detail, qualityFeedback(quality, brief.minQuality));
 }
 
 function judgeStyle(run: BakeRun, brief: Brief): Judged {
@@ -122,12 +112,6 @@ function judgeBudget(spend: number, brief: Brief): Judged {
   return judged("budget", "Budget", spend <= brief.budget, detail, budgetFeedback(spend, brief.budget));
 }
 
-function judgeDeadline(brief: Brief, deliveredDay: number): Judged {
-  const passed = deliveredDay <= brief.deadlineDay;
-  const detail = `Delivered on day ${deliveredDay}, due by day ${brief.deadlineDay}.`;
-  return judged("deadline", "On time", passed, detail, deadlineFeedback(deliveredDay, brief.deadlineDay));
-}
-
 export function evaluateBake(run: BakeRun, brief: Brief, deliveredDay: number): Evaluation {
   const quality = bakeQuality(run);
   const spend = bakeSpend(run);
@@ -136,23 +120,12 @@ export function evaluateBake(run: BakeRun, brief: Brief, deliveredDay: number): 
   ).length;
   const results = [
     judgeConstruction(run),
-    judgeQuality(quality, brief),
+    judgeQuality(judged, quality.quality, brief.minQuality, qualityFeedback(quality, brief.minQuality)),
     judgeStyle(run, brief),
     judgeColours(run, brief, favouredColoursUsed),
     judgeToppings(run, brief),
     judgeBudget(spend, brief),
-    judgeDeadline(brief, deliveredDay),
+    judgeDeadline(judged, "On time", deliveredDay, brief.deadlineDay),
   ];
-  const criteria = results.map((result) => result.criterion);
-  const score = judgedScore(criteria, quality.quality, favouredColoursUsed, SCORE_RULE);
-  return {
-    criteria,
-    quality,
-    favouredColoursUsed,
-    spend,
-    score,
-    stars: starsForScore(score),
-    passed: gatePassed(criteria, PASS_GATE),
-    feedback: results.filter((result) => !result.criterion.passed).map((result) => result.feedback),
-  };
+  return { ...judgedEvaluation(results, quality, favouredColoursUsed, SCORE_RULE, PASS_GATE), spend };
 }

@@ -1,3 +1,4 @@
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { average } from "../../../engine/average";
 import type { Point } from "../../../engine/geometry/point";
 import { ASSIST_CUT_ACCURACY, traceAccuracy } from "../../../engine/geometry/traceAccuracy";
@@ -11,7 +12,6 @@ import { partPolygon, runBoardById } from "./boardLayout";
 import type { GameState } from "./gameState";
 import type { OwnedBoard } from "./ownedBoard";
 import { designParts, findPart } from "./pieceParts";
-import { updateRun } from "./runUpdate";
 import { cutLength, sawCuts, type SawCut } from "./sawPath";
 import { sawTolerance } from "./tolerance";
 
@@ -142,7 +142,7 @@ export function sawCut(
   const woodId = run?.design.woodId ?? null;
   if (run === null || woodId === null) return state;
   const tolerance = sawTolerance(state, woodId);
-  const recorded = updateRun(state, "saw", (current) => {
+  const recorded = updateActiveRun(state, "saw", (current) => {
     const part = findPart(current.design, partId);
     const cut = part === undefined ? undefined : partCuts(state, current, part)[cutIndex];
     const key = cutKey(partId, cutIndex);
@@ -155,7 +155,7 @@ export function sawCut(
 }
 
 export function sawAssist(state: GameState, partId: string): GameState {
-  const recorded = updateRun(state, "saw", (run) => {
+  const recorded = updateActiveRun(state, "saw", (run) => {
     const part = findPart(run.design, partId);
     if (part === undefined) return null;
     const open = partCuts(state, run, part)

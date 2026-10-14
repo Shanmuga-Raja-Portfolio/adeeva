@@ -1,9 +1,16 @@
-import { budgetFeedback, coloursFeedback, deadlineFeedback } from "../../../engine/kindFeedback";
-import { gatePassed, judgedScore, starsForScore } from "../../../engine/score";
+import {
+  criterionJudge,
+  judgeDeadline,
+  judgedEvaluation,
+  judgeQuality,
+  type Evaluation as JudgedEvaluation,
+  type Judged as JudgedCriterion,
+} from "../../../engine/criterionJudge";
+import { budgetFeedback, coloursFeedback } from "../../../engine/kindFeedback";
 import type { ShadeId } from "../content/shade";
 import { extraById, shadeById } from "./catalog";
 import type { CommissionRun } from "./commissionRun";
-import { CRITERION_WEIGHTS, PASS_GATE, SCORE_RULE, type Criterion, type CriterionId } from "./criterion";
+import { CRITERION_WEIGHTS, PASS_GATE, SCORE_RULE, type CriterionId } from "./criterion";
 import type { GameState } from "./gameState";
 import { constructionFeedback, extrasFeedback, qualityFeedback, styleFeedback } from "./kindFeedback";
 import { pieceColours } from "./pieceColours";
@@ -17,25 +24,11 @@ import { pieceTags } from "./pieceTags";
 import { extraTallies } from "./requiredExtras";
 import { runSpend } from "./runSpend";
 
-export interface Evaluation {
-  readonly criteria: readonly Criterion[];
-  readonly quality: QualityBreakdown;
-  readonly favouredColoursUsed: number;
+export interface Evaluation extends JudgedEvaluation<CriterionId, QualityBreakdown> {
   readonly spend: number;
-  readonly score: number;
-  readonly stars: number;
-  readonly passed: boolean;
-  readonly feedback: readonly string[];
 }
 
-interface Judged {
-  readonly criterion: Criterion;
-  readonly feedback: string;
-}
-
-function judged(id: CriterionId, label: string, passed: boolean, detail: string, feedback: string): Judged {
-  return { criterion: { id, label, passed, detail, weight: CRITERION_WEIGHTS[id] }, feedback };
-}
+const judged = criterionJudge(CRITERION_WEIGHTS);
 
 function shadeNames(ids: readonly ShadeId[]): string[] {
   return ids.map((id) => shadeById(id).name);
@@ -53,7 +46,7 @@ export function evaluatePiece(state: GameState, run: CommissionRun, deliveredDay
   const avoided = colours.filter((colour) => brief.avoidColours.includes(colour));
   const tallies = extraTallies(run);
   const short = tallies.filter((tally) => tally.placed < tally.needed);
-  const results: Judged[] = [
+  const results: JudgedCriterion<CriterionId>[] = [
     judged(
       "construction",
       "Built",
@@ -61,13 +54,7 @@ export function evaluatePiece(state: GameState, run: CommissionRun, deliveredDay
       `${count.sawn}/${count.parts} parts sawn, ${count.seated}/${count.joints} joints snug, ${count.sanded}/${count.surfaces} surfaces sanded.`,
       constructionFeedback(count),
     ),
-    judged(
-      "quality",
-      "Quality",
-      quality.quality >= brief.minQuality,
-      `Quality ${quality.quality} against a minimum of ${brief.minQuality}.`,
-      qualityFeedback(quality, brief.minQuality),
-    ),
+    judgeQuality(judged, quality.quality, brief.minQuality, qualityFeedback(quality, brief.minQuality)),
     judged(
       "style",
       "Style",
@@ -107,24 +94,7 @@ export function evaluatePiece(state: GameState, run: CommissionRun, deliveredDay
       `Used ${spend} of ${brief.budget} coins.`,
       budgetFeedback(spend, brief.budget),
     ),
-    judged(
-      "deadline",
-      "On time",
-      deliveredDay <= brief.deadlineDay,
-      `Delivered on day ${deliveredDay}, due by day ${brief.deadlineDay}.`,
-      deadlineFeedback(deliveredDay, brief.deadlineDay),
-    ),
+    judgeDeadline(judged, "On time", deliveredDay, brief.deadlineDay),
   ];
-  const criteria = results.map((result) => result.criterion);
-  const score = judgedScore(criteria, quality.quality, favouredColoursUsed, SCORE_RULE);
-  return {
-    criteria,
-    quality,
-    favouredColoursUsed,
-    spend,
-    score,
-    stars: starsForScore(score),
-    passed: gatePassed(criteria, PASS_GATE),
-    feedback: results.filter((result) => !result.criterion.passed).map((result) => result.feedback),
-  };
+  return { ...judgedEvaluation(results, quality, favouredColoursUsed, SCORE_RULE, PASS_GATE), spend };
 }

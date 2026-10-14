@@ -1,0 +1,37 @@
+import type { PieceLook } from "../../core";
+
+export const SHOWCASE_LOOKS: readonly PieceLook[] = [
+  {
+    productId: "stone-ring",
+    options: { band: "hammered-band" },
+    metalId: "gold",
+    stoneId: "garnet",
+    finish: "high-shine",
+    glaze: null,
+    chain: null,
+    cordColour: null,
+    charms: [],
+  },
+  {
+    productId: "shape-pendant",
+    options: { shape: "crescent", accent: "star-window" },
+    metalId: "silver",
+    stoneId: null,
+    finish: "high-shine",
+    glaze: null,
+    chain: "fine-chain",
+    cordColour: null,
+    charms: [],
+  },
+  {
+    productId: "clip-pair",
+    options: { shape: "heart" },
+    metalId: "rose-gold",
+    stoneId: "amethyst",
+    finish: "satin",
+    glaze: null,
+    chain: null,
+    cordColour: null,
+    charms: [],
+  },
+];

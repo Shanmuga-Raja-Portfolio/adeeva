@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { ADEEVA_URL } from "./fixtures/adeevaPage";
 import { finishStories } from "./fixtures/story";
 
-const WORKSHOP_GAMES = ["interior", "jewellery"] as const;
+const WORKSHOP_GAMES = ["interior"] as const;
 
 function watchOutsideRequests(page: Page): string[] {
   const outside: string[] = [];
@@ -51,6 +51,7 @@ test("the home screen shows six games and ADEEVA opens and returns home", async 
   await expect(page.getByTestId("tile-thrift-flip")).toContainText("Thrift-Flip Studio");
   await expect(page.getByTestId("tile-thrift-flip")).toHaveAttribute("href", "#/thrift-flip");
   await expect(page.getByTestId("tile-jewellery")).toContainText("Jewellery Bench");
+  await expect(page.getByTestId("tile-jewellery")).toHaveAttribute("href", "#/jewellery");
   await expect(page.getByTestId("studio-reputation")).toContainText("Studio reputation");
   await expect(page.getByTestId("perk-rose-gold-hair")).toContainText("Unlocks at 4 reputation");
 

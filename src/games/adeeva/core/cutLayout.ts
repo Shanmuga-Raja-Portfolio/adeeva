@@ -1,4 +1,4 @@
-import { updateActiveRun } from "./activeRunUpdate";
+import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import type { DressRun, PiecePlacement } from "./dressRun";
 import type { GameState } from "./gameState";
 import { ownEntry } from "../../../engine/ownEntry";

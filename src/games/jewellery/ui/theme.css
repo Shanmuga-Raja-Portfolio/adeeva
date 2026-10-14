@@ -1,0 +1,204 @@
+.jb-root {
+  --jb-teal: #1f4e5a;
+  --jb-teal-deep: #133540;
+  --jb-teal-soft: #d9e9ea;
+  --jb-plum: #4b2a4f;
+  --jb-plum-deep: #2f1832;
+  --jb-plum-soft: #eadcec;
+  --jb-amber: #e8a33d;
+  --jb-amber-deep: #b8741c;
+  --jb-amber-soft: #fbe9c8;
+  --jb-walnut: #7a5236;
+  --jb-walnut-deep: #553620;
+  --jb-silver: #c7ccd4;
+  --jb-copper: #c47a4a;
+  --jb-gold: #d9b23c;
+  --jb-velvet: #1f4e5a;
+  --rose: #c46a2a;
+  --rose-deep: #8c4515;
+  --rose-soft: #fbe9c8;
+  --sage: #4f8a8f;
+  --sage-deep: #2d6268;
+  --sage-soft: #dcecec;
+  --gold-soft: #fbefcb;
+  --ink: #2a1d2c;
+  --ink-soft: #5c4b5e;
+  --ink-faint: #6f5e71;
+  --paper: #f8f1e7;
+  --paper-deep: #efe3d3;
+  --paper-edge: #e2d1bb;
+  --card: #fffbf4;
+  --font-display: "Didot", "Bodoni MT", "Bodoni 72", Georgia, serif;
+  --focus-ring: 0 0 0 3px var(--paper), 0 0 0 6px rgba(31, 78, 90, 0.75);
+  min-height: 100dvh;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(circle at 8% 4%, rgba(232, 163, 61, 0.14), transparent 40%),
+    radial-gradient(circle at 94% 96%, rgba(31, 78, 90, 0.12), transparent 46%);
+}
+
+.jb-root .ad-button--primary:not(:disabled) {
+  background: linear-gradient(180deg, #f6c46f 0%, var(--jb-amber) 48%, #d48a26 100%);
+  color: #2f1832;
+  box-shadow:
+    0 2px 0 var(--jb-amber-deep),
+    0 6px 16px rgba(184, 116, 28, 0.3);
+  text-shadow: 0 1px 0 rgba(255, 240, 210, 0.7);
+}
+
+.jb-root .ad-button--primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f8cf86 0%, #eeae4f 48%, #da9433 100%);
+}
+
+.jb-root .ad-button--secondary:not(:disabled) {
+  background: var(--card);
+  border-color: rgba(31, 78, 90, 0.32);
+  color: var(--jb-teal);
+}
+
+.jb-root .ad-button--sm {
+  min-height: var(--tap);
+}
+
+.jb-root .ad-meter__fill {
+  background: linear-gradient(90deg, #f6c46f, var(--jb-amber));
+}
+
+.jb-root .ad-meter--sage .ad-meter__fill {
+  background: linear-gradient(90deg, #8fc1c4, var(--jb-teal));
+}
+
+.jb-root .ad-card {
+  border-color: rgba(75, 42, 79, 0.14);
+}
+
+.jb-root .ad-eyebrow {
+  color: var(--jb-plum);
+}
+
+.jb-muted {
+  color: var(--ink-soft);
+}
+
+.jb-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.jb-safety {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+}
+
+.jb-velvet-card {
+  position: relative;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.12), transparent 55%),
+    linear-gradient(160deg, #2a6573 0%, var(--jb-teal) 55%, var(--jb-teal-deep) 100%);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.08),
+    inset 0 -18px 30px rgba(0, 0, 0, 0.25),
+    var(--shadow-md);
+}
+
+.jb-measure {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.jb-measure::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1.5px dashed rgba(122, 82, 54, 0.32);
+  border-radius: calc(var(--radius-lg) - 4px);
+  pointer-events: none;
+}
+
+.jb-coin-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.jb-glints {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--jb-amber-deep);
+  font-size: 0.85em;
+  letter-spacing: -0.05em;
+}
+
+.jb-hammers {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--jb-walnut);
+}
+
+@keyframes jb-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes jb-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes jb-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.jb-twinkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: jb-twinkle 2.6s ease-in-out infinite;
+}
+
+.jb-sway {
+  transform-box: fill-box;
+  transform-origin: top center;
+  animation: jb-sway 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jb-twinkle,
+  .jb-sway {
+    animation: none;
+  }
+}

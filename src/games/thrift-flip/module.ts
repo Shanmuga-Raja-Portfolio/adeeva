@@ -1,13 +1,8 @@
-import { TRAIT_IDS } from "../../engine/trait";
-import { earnedReputation } from "../../engine/earnedReputation";
+import { earnedReputation, traitGatedStart } from "../../engine/earnedReputation";
 import type { GameModule } from "../../studio/gameModule";
 import { ThriftFlipTileArt } from "../../ui/art/tiles/ThriftFlipTileArt";
 import { CAREER } from "./content/career";
 import { SCHEMA_VERSION } from "./core/gameState";
-
-function startReputation(profile: Readonly<Record<string, unknown>>): number | null {
-  return TRAIT_IDS.some((trait) => trait === profile.trait) ? CAREER.startReputation : null;
-}
 
 export const thriftFlipModule: GameModule = {
   status: "live",
@@ -17,6 +12,7 @@ export const thriftFlipModule: GameModule = {
   ages: "8+",
   tileArt: ThriftFlipTileArt,
   load: () => import("./ui/ThriftFlipGame").then((module) => ({ default: module.ThriftFlipGame })),
-  reputationOf: (rawSave) => earnedReputation(rawSave, SCHEMA_VERSION, startReputation),
+  reputationOf: (rawSave) =>
+    earnedReputation(rawSave, SCHEMA_VERSION, traitGatedStart(CAREER.startReputation)),
   parentNote: "This game does not teach real sewing, washing or tool use.",
 };
