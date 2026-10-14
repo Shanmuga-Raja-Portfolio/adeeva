@@ -82,6 +82,8 @@ export function isPerkId(value: string): boolean {
   return PERK_IDS.includes(value);
 }
 
+export const PER_GAME_REPUTATION_CAP = 24;
+
 export interface ReputationSource {
   readonly id: GameId;
   readonly reputationOf: (rawSave: unknown) => number;
@@ -93,7 +95,7 @@ export function studioReputation(
 ): number {
   return games.reduce((sum, game) => {
     const best = rawSlots(game.id).reduce<number>((top, raw) => Math.max(top, game.reputationOf(raw)), 0);
-    return sum + best;
+    return sum + Math.min(PER_GAME_REPUTATION_CAP, best);
   }, 0);
 }
 

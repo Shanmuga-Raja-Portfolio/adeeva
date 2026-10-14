@@ -1,0 +1,87 @@
+import { requireById } from "../../../engine/catalog";
+import type { DifficultyDef, DifficultyId } from "../../../engine/difficulty";
+import { CLIENTS, type ClientDef } from "../content/client";
+import { CUISINES, type CuisineDef, type CuisineId } from "../content/cuisine";
+import { DISHES, DISH_IDS, type Dish, type DishId } from "../content/dish";
+import { DIFFICULTIES } from "../content/difficulty";
+import { INGREDIENTS, type IngredientDef, type IngredientId } from "../content/ingredient";
+import { MENTORS, type MentorDef } from "../content/mentor";
+import { PLATE_COMPONENTS, type ComponentId, type PlateComponentDef } from "../content/plateComponent";
+import { RUNGS, TESTS, type RungDef, type RungId, type TestDef, type TestId } from "../content/career";
+import { JARS, type JarDef, type JarId } from "../content/seasoning";
+import { STAFF, type StaffDef } from "../content/staff";
+import { STORY_BEATS, type StoryBeatDef } from "../content/storyBeat";
+import { UPGRADE_IDS, UPGRADES, type UpgradeDef, type UpgradeId } from "../content/upgrade";
+
+function member<T extends string>(ids: readonly T[]): (value: string) => value is T {
+  return (value: string): value is T => ids.some((id) => id === value);
+}
+
+export const isDishId = member(DISH_IDS);
+export const isUpgradeId = member(UPGRADE_IDS);
+
+export function dishById(id: DishId): Dish {
+  return requireById(DISHES, id, "dish");
+}
+
+export function ingredientById(id: IngredientId): IngredientDef {
+  return requireById(INGREDIENTS, id, "ingredient");
+}
+
+export function jarById(id: JarId): JarDef {
+  return requireById(JARS, id, "jar");
+}
+
+export function cuisineById(id: CuisineId): CuisineDef {
+  return requireById(CUISINES, id, "cuisine");
+}
+
+export function mentorFor(cuisine: CuisineId): MentorDef {
+  return requireById(MENTORS, cuisineById(cuisine).mentorId, "mentor");
+}
+
+export function componentById(id: ComponentId): PlateComponentDef {
+  return requireById(PLATE_COMPONENTS, id, "plate component");
+}
+
+export function upgradeById(id: UpgradeId): UpgradeDef {
+  return requireById(UPGRADES, id, "upgrade");
+}
+
+export function knownUpgrade(id: string): UpgradeDef | undefined {
+  return isUpgradeId(id) ? upgradeById(id) : undefined;
+}
+
+export function rungById(id: RungId): RungDef {
+  return requireById(RUNGS, id, "rung");
+}
+
+export function testById(id: TestId): TestDef {
+  return requireById(TESTS, id, "test");
+}
+
+export function difficultyById(id: DifficultyId): DifficultyDef {
+  return requireById(DIFFICULTIES, id, "difficulty");
+}
+
+export function clientById(id: string): ClientDef | undefined {
+  return CLIENTS.find((client) => client.id === id);
+}
+
+export function staffById(id: string): StaffDef | undefined {
+  return STAFF.find((member) => member.id === id);
+}
+
+export function storyBeatById(id: string): StoryBeatDef | undefined {
+  return STORY_BEATS.find((beat) => beat.id === id);
+}
+
+export function dishesOf(cuisine: CuisineId): Dish[] {
+  return DISHES.filter((dish) => dish.cuisine === cuisine);
+}
+
+export function lessonDish(cuisine: CuisineId): Dish {
+  const first = dishesOf(cuisine).find((dish) => dish.unlock === "learner");
+  if (first === undefined) throw new Error(`No lesson dish for ${cuisine}`);
+  return first;
+}

@@ -2,7 +2,15 @@ import type { ComponentType } from "react";
 import type { AvatarLook, HairColourId, OutfitStyleId } from "../engine/avatar";
 import type { TileArtProps } from "../ui/art/tiles/TileBackdrop";
 
-export const GAME_IDS = ["adeeva", "thrift-flip", "patisserie", "workshop", "interior", "jewellery"] as const;
+export const GAME_IDS = [
+  "adeeva",
+  "thrift-flip",
+  "patisserie",
+  "workshop",
+  "interior",
+  "jewellery",
+  "chef",
+] as const;
 export type GameId = (typeof GAME_IDS)[number];
 
 export interface StudioPlayer {

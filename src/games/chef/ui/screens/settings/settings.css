@@ -1,0 +1,30 @@
+.ck-settings__heading {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--text-md);
+}
+
+.ck-settings__note {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.ck-settings__slots {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ck-settings__slot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap);
+}
+
+.ck-settings__confirm {
+  display: flex;
+  gap: var(--space-2);
+}

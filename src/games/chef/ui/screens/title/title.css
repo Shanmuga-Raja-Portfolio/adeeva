@@ -1,0 +1,226 @@
+.ck-title {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+.ck-title__backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.ck-title__veil {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(29, 37, 40, 0.15) 0%,
+    rgba(29, 37, 40, 0.55) 55%,
+    rgba(29, 37, 40, 0.92) 100%
+  );
+  pointer-events: none;
+}
+
+.ck-title__content {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(20px, 4vh, 36px);
+}
+
+.ck-title__nav {
+  align-self: flex-start;
+}
+
+.ck-title__hero {
+  margin-top: clamp(16px, 6vh, 70px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) clamp(24px, 5vw, 64px) var(--space-5);
+  text-align: center;
+  animation: ck-rise var(--duration-slow) var(--ease-out) both;
+}
+
+.ck-title__plates {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: clamp(8px, 2vw, 24px);
+  margin: var(--space-2) 0;
+}
+
+.ck-title__plate {
+  width: clamp(100px, 15vw, 170px);
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.25));
+  animation: ck-rise 700ms var(--ease-out) both;
+}
+
+.ck-title__plate--0 {
+  transform: rotate(-6deg);
+  animation-delay: 150ms;
+}
+
+.ck-title__plate--1 {
+  width: clamp(120px, 18vw, 200px);
+  animation-delay: 300ms;
+}
+
+.ck-title__plate--2 {
+  transform: rotate(6deg);
+  animation-delay: 450ms;
+}
+
+.ck-title__menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ck-title__menu-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.ck-title__continue {
+  flex-direction: column;
+  gap: 2px;
+  min-width: 260px;
+  padding-block: var(--space-3);
+}
+
+.ck-title__continue-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+}
+
+.ck-title__continue-meta {
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.ck-title__offline {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  max-width: 560px;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.ck-title__slots {
+  width: 100%;
+}
+
+.ck-title__slots-heading {
+  margin-bottom: var(--space-3);
+  color: var(--ck-chalk);
+  text-align: center;
+}
+
+.ck-title__slot-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.ck-slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  animation: ck-rise var(--duration-slow) var(--ease-out) both;
+}
+
+.ck-slot--empty {
+  align-items: flex-start;
+  background: rgba(251, 247, 238, 0.9);
+  border: 2px dashed rgba(46, 58, 64, 0.25);
+}
+
+.ck-slot__empty {
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.ck-slot__head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.ck-slot__name {
+  margin: 0;
+}
+
+.ck-slot__day {
+  margin: 0;
+  font-weight: 600;
+}
+
+.ck-slot__stats,
+.ck-slot__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ck-slot__actions {
+  margin-top: auto;
+  justify-content: flex-end;
+}
+
+.ck-slot__warning {
+  display: flex;
+  gap: var(--space-2);
+  color: #8f2a14;
+}
+
+.ck-slot__error {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.ck-title__pick-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ck-title__pick {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  min-height: 56px;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1.5px solid rgba(46, 58, 64, 0.2);
+  background: var(--card);
+  cursor: pointer;
+}
+
+.ck-title__pick-warn {
+  color: #9a3a12;
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 860px) {
+  .ck-title__slot-row {
+    grid-template-columns: 1fr;
+  }
+}

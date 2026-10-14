@@ -78,7 +78,7 @@ export function HomeScreen({ profile, returnedFrom, onProfileChange }: HomeScree
               {name.length > 0 ? `Welcome back, ${name}` : "Welcome to Maker Studio"}
             </h1>
             <p className="st-hero__lead">
-              Six maker careers share one bright workshop. Your avatar and your reputation travel with you
+              Seven maker careers share one bright workshop. Your avatar and your reputation travel with you
               from bench to bench.
             </p>
             <ReputationCard

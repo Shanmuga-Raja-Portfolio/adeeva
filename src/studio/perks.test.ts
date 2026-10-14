@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_LOOK, HAIR_COLOURS, OUTFIT_STYLES } from "../engine/avatar";
 import { adeevaModule } from "../games/adeeva/module";
-import { lookAllowed, lookOptions, nextPerk, PERKS, studioReputation, unlockedPerks } from "./perks";
+import {
+  lookAllowed,
+  lookOptions,
+  nextPerk,
+  PER_GAME_REPUTATION_CAP,
+  PERKS,
+  studioReputation,
+  unlockedPerks,
+} from "./perks";
 
 function adeevaSave(reputation: unknown, career: unknown, schemaVersion: unknown = 3) {
   return { schemaVersion, reputation, profile: { career } };
@@ -16,6 +24,21 @@ describe("studio reputation", () => {
     const slots = { adeeva: [3, 9, "broken"], patisserie: [2] } as const;
     expect(studioReputation(games, (id) => (id === "adeeva" ? slots.adeeva : slots.patisserie))).toBe(13);
     expect(studioReputation(games, () => [])).toBe(0);
+  });
+
+  it("caps what any one game adds, so every perk needs play across at least three games", () => {
+    const flat = (raw: unknown) => (typeof raw === "number" ? raw : 0);
+    const three = [
+      { id: "adeeva" as const, reputationOf: flat },
+      { id: "patisserie" as const, reputationOf: flat },
+      { id: "chef" as const, reputationOf: flat },
+    ];
+    const last = PERKS[PERKS.length - 1]?.threshold ?? 0;
+    expect(studioReputation(three.slice(0, 1), () => [999])).toBe(PER_GAME_REPUTATION_CAP);
+    expect(studioReputation(three.slice(0, 2), () => [999])).toBeLessThan(last);
+    expect(studioReputation(three, () => [999])).toBeGreaterThanOrEqual(last);
+    expect(studioReputation(three, () => [5])).toBe(15);
+    expect(PER_GAME_REPUTATION_CAP).toBeGreaterThanOrEqual(PERKS[3]?.threshold ?? Infinity);
   });
 
   it("counts only the reputation earned in ADEEVA, never below zero", () => {

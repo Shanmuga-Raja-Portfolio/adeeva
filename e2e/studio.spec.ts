@@ -38,11 +38,11 @@ async function makeDesigner(page: Page, name: string): Promise<void> {
   await expect(page.getByTestId("studio-hub")).toBeVisible();
 }
 
-test("the home screen shows six games and ADEEVA opens and returns home", async ({ page }) => {
+test("the home screen shows seven games and ADEEVA opens and returns home", async ({ page }) => {
   const outside = watchOutsideRequests(page);
   await freshStudio(page);
   await expect(page.getByRole("heading", { name: "Welcome to Maker Studio" })).toBeVisible();
-  await expect(page.locator("[data-testid^='tile-']")).toHaveCount(6);
+  await expect(page.locator("[data-testid^='tile-']")).toHaveCount(7);
   for (const id of WORKSHOP_GAMES) {
     const tile = page.getByTestId(`tile-${id}`);
     await expect(tile).toContainText("In the workshop");
@@ -52,6 +52,8 @@ test("the home screen shows six games and ADEEVA opens and returns home", async 
   await expect(page.getByTestId("tile-thrift-flip")).toHaveAttribute("href", "#/thrift-flip");
   await expect(page.getByTestId("tile-jewellery")).toContainText("Jewellery Bench");
   await expect(page.getByTestId("tile-jewellery")).toHaveAttribute("href", "#/jewellery");
+  await expect(page.getByTestId("tile-chef")).toContainText("Six Kitchens");
+  await expect(page.getByTestId("tile-chef")).toHaveAttribute("href", "#/chef");
   await expect(page.getByTestId("studio-reputation")).toContainText("Studio reputation");
   await expect(page.getByTestId("perk-rose-gold-hair")).toContainText("Unlocks at 4 reputation");
 
@@ -146,6 +148,10 @@ test("several perks unlocked at once arrive as one message", async ({ page }) =>
   await page.evaluate(() => {
     const save = { schemaVersion: 3, reputation: 60, profile: { career: "student" } };
     window.localStorage.setItem("adeeva.save.1", JSON.stringify(save));
+    const jewellery = { schemaVersion: 1, reputation: 30, profile: { trait: "dreamer" } };
+    window.localStorage.setItem("jewellery.save.1", JSON.stringify(jewellery));
+    const chef = { schemaVersion: 1, reputation: 30, profile: { trait: "charmer", start: "student" } };
+    window.localStorage.setItem("chef.save.1", JSON.stringify(chef));
   });
   await page.reload();
   const toasts = page.locator(".ad-toast");

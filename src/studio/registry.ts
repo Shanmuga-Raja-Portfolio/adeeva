@@ -1,4 +1,5 @@
 import { adeevaModule } from "../games/adeeva/module";
+import { chefModule } from "../games/chef/module";
 import { jewelleryModule } from "../games/jewellery/module";
 import { patisserieModule } from "../games/patisserie/module";
 import { thriftFlipModule } from "../games/thrift-flip/module";
@@ -21,6 +22,7 @@ export const GAMES: readonly StudioGame[] = [
     tileArt: InteriorTileArt,
   },
   jewelleryModule,
+  chefModule,
 ];
 
 export const LIVE_GAMES: readonly GameModule[] = GAMES.filter((game) => game.status === "live");

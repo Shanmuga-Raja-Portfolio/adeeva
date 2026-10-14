@@ -9,7 +9,7 @@ const LATE_PENALTY_SHARE: Readonly<Record<DifficultyId, number>> = {
   standard: 0,
   challenging: 0.5,
 };
-const SOFT_FAIL_FEE_SHARE = 0.4;
+export const SOFT_FAIL_FEE_SHARE = 0.4;
 const SOFT_FAIL_REPUTATION = -1;
 const HARD_FAIL_REPUTATION = -3;
 const PASS_REPUTATION_MIN = 1;

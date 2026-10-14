@@ -1,0 +1,618 @@
+.ck-chop,
+.ck-sizzle,
+.ck-simmer,
+.ck-taste,
+.ck-plate {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ck-chop__hint {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--ck-charcoal);
+  color: var(--ck-chalk);
+  font-weight: 700;
+  text-align: center;
+}
+
+.ck-chop__board {
+  position: relative;
+  width: min(560px, 100%);
+  margin: 0 auto;
+  border-radius: 30px;
+  touch-action: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ck-chop__board:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.ck-chop__board--pressed .ck-chop__svg {
+  transform: translateY(2px);
+}
+
+.ck-chop__svg {
+  width: 100%;
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.3));
+}
+
+.ck-knife {
+  transition: transform 80ms ease-out;
+}
+
+.ck-knife--chop {
+  animation: ck-chop 220ms ease-out;
+}
+
+.ck-chop__piece {
+  animation: ck-hop 320ms var(--ease-out) both;
+}
+
+.ck-chop__flash {
+  position: absolute;
+  top: 10%;
+  left: 62%;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  pointer-events: none;
+  animation: ck-flash 600ms var(--ease-out) both;
+}
+
+.ck-chop__flash--perfect {
+  background: var(--ck-basil);
+  color: #fff;
+}
+
+.ck-chop__flash--good {
+  background: var(--ck-amber);
+  color: #1f262a;
+}
+
+.ck-chop__flash--miss {
+  background: var(--ck-chalk);
+  color: var(--ink);
+}
+
+.ck-chop__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ck-chop__count {
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.ck-sizzle__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.ck-sizzle__card {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--ck-paper);
+  border: 2px dashed var(--ck-tomato);
+}
+
+.ck-sizzle__start {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(circle at 50% 60%, #46545b, #1f272b);
+}
+
+.ck-heat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ck-heat__label {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: var(--text-xs);
+}
+
+.ck-heat__dot {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid #5f6c73;
+  background: #e6eaec;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ck-heat__dot--on {
+  background: radial-gradient(circle at 40% 35%, #ffd27a, #e8752a);
+  border-color: #b8461a;
+  color: #fff;
+}
+
+.ck-heat__dot:disabled {
+  cursor: default;
+}
+
+.ck-heat__ideal {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  width: 12px;
+  height: 6px;
+  transform: translateX(-50%);
+  border-radius: 3px;
+  background: var(--ck-tomato);
+}
+
+.ck-pan {
+  width: min(640px, 100%);
+  margin: 0 auto;
+  touch-action: none;
+  border-radius: var(--radius-lg);
+}
+
+.ck-pan:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.ck-pan__shimmer {
+  animation: ck-shimmer 1.6s ease-in-out infinite;
+}
+
+.ck-pan__pop {
+  animation: ck-oil 1.8s ease-out infinite;
+}
+
+.ck-pan__label {
+  fill: #c9d1d5;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ck-pan__tray-label {
+  fill: #2e3a40;
+  font-size: 22px;
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+
+.ck-pan__tray-count {
+  fill: #2e3a40;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.ck-piece {
+  cursor: grab;
+}
+
+.ck-piece--focus circle:first-child {
+  stroke: #f2a93b;
+  stroke-width: 3;
+  stroke-dasharray: 4 4;
+}
+
+.ck-piece__steam {
+  animation: ck-steam 1.4s ease-in-out infinite;
+}
+
+.ck-simmer__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ck-simmer__stats {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.ck-simmer__stats > span {
+  display: grid;
+}
+
+.ck-pot {
+  width: min(560px, 100%);
+  margin: 0 auto;
+  touch-action: none;
+  cursor: crosshair;
+  border-radius: var(--radius-lg);
+}
+
+.ck-pot:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.ck-pot__bubble {
+  animation: ck-bubble 2.2s ease-in-out infinite;
+}
+
+.ck-taste__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.ck-taste__compass {
+  width: 100%;
+  max-width: 420px;
+}
+
+.ck-taste__axis {
+  fill: #f3f0e8;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.ck-taste__mystery {
+  fill: #f3f0e8;
+  font-size: 42px;
+  font-weight: 800;
+  opacity: 0.4;
+}
+
+.ck-taste__puff {
+  animation: ck-steam 900ms ease-out both;
+}
+
+.ck-taste__side {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ck-taste__savoury {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ck-taste__dots {
+  display: flex;
+  gap: 6px;
+}
+
+.ck-taste__dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid #c9bca5;
+  background: #fff;
+}
+
+.ck-taste__dot--goal {
+  border-color: var(--ck-basil);
+}
+
+.ck-taste__dot--on {
+  background: #b98a5a;
+}
+
+.ck-taste__jars {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-2);
+}
+
+.ck-jar {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-height: 72px;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(46, 58, 64, 0.2);
+  background: #eef2f3;
+  font-weight: 700;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.ck-jar:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.ck-jar--hint {
+  border-color: var(--ck-amber-deep);
+  box-shadow: 0 0 0 3px var(--ck-amber);
+}
+
+.ck-jar__lid {
+  width: 56px;
+  height: 22px;
+  border-radius: 6px;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+}
+
+.ck-jar__key {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+}
+
+.ck-taste__pinches {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.ck-taste__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.ck-taste__count {
+  margin: 0;
+}
+
+.ck-plate__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.ck-plate__stage {
+  position: relative;
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #c9d1d5, #8c989e);
+}
+
+.ck-plate__svg {
+  width: 100%;
+  touch-action: none;
+}
+
+.ck-plate__piece {
+  cursor: grab;
+}
+
+.ck-plate__piece:focus-visible {
+  outline: 3px dashed #f2a93b;
+}
+
+.ck-plate__piece--on {
+  filter: drop-shadow(0 0 6px rgba(242, 169, 59, 0.95));
+}
+
+.ck-plate__cloth {
+  animation: ck-wipe 700ms ease-in-out both;
+}
+
+.ck-plate__carry {
+  position: fixed;
+  z-index: 50;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.35));
+}
+
+.ck-plate__side {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ck-plate__tray {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: var(--space-2);
+}
+
+.ck-tray-item {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-height: 92px;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(46, 58, 64, 0.18);
+  background: var(--card);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  cursor: grab;
+  touch-action: none;
+}
+
+.ck-tray-item--on {
+  opacity: 0.55;
+  border-style: dashed;
+}
+
+.ck-tray-item__role {
+  font-weight: 500;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+}
+
+.ck-plate__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--ck-amber-soft);
+}
+
+.ck-plate__colours {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ck-plate__swatch {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px rgba(46, 58, 64, 0.3);
+  cursor: pointer;
+}
+
+.ck-plate__swatch[aria-checked="true"] {
+  box-shadow: 0 0 0 4px var(--ck-amber-deep);
+}
+
+.ck-plate__checks {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.ck-plate__checks li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-soft);
+}
+
+.ck-plate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@keyframes ck-chop {
+  0% {
+    transform: translate(250px, 0);
+  }
+  40% {
+    transform: translate(250px, 70px);
+  }
+  100% {
+    transform: translate(250px, 0);
+  }
+}
+
+@keyframes ck-hop {
+  0% {
+    transform: translate(120px, -40px);
+    opacity: 0;
+  }
+  60% {
+    transform: translate(10px, -20px);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes ck-flash {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.8);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(0) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes ck-shimmer {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes ck-oil {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(1.4);
+  }
+}
+
+@keyframes ck-steam {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes ck-bubble {
+  0%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.4;
+  }
+}
+
+@keyframes ck-wipe {
+  0% {
+    transform: translate(-260px, 40px) rotate(-20deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(40px, 320px) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .ck-taste__layout,
+  .ck-plate__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ck-taste__compass {
+    margin: 0 auto;
+  }
+}
