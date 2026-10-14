@@ -1,5 +1,7 @@
 import { cappedAccuracy } from "../../../engine/assistCap";
 import type { IngredientDef } from "../content/ingredient";
+
+export type ScoopStyle = Pick<IngredientDef, "mode" | "pieceGrams">;
 import type { WeighAttempt } from "./bakeRun";
 import type { GameState } from "./gameState";
 import { skillTolerance } from "./skillTolerance";
@@ -42,11 +44,11 @@ export function scoopBackGrams(ingredient: IngredientDef, target: number): numbe
     : Math.max(1, Math.round(SCOOP_BACK_SHARE * target));
 }
 
-export function minimumActions(ingredient: IngredientDef, target: number): number {
+export function minimumActions(ingredient: ScoopStyle, target: number): number {
   return ingredient.mode === "piece" ? Math.ceil(target / ingredient.pieceGrams) : 1;
 }
 
-export function tidyFactor(ingredient: IngredientDef, target: number, actions: number): number {
+export function tidyFactor(ingredient: ScoopStyle, target: number, actions: number): number {
   const extra = actions - minimumActions(ingredient, target);
   return Math.max(TIDY_FLOOR, 1 - TIDY_STEP * Math.max(0, extra - TIDY_FREE_EXTRA));
 }
@@ -59,7 +61,7 @@ export function bandAccuracy(grams: number, target: number, band: number): numbe
 
 export function weighAccuracy(
   record: WeighAttempt,
-  ingredient: IngredientDef,
+  ingredient: ScoopStyle,
   target: number,
   band: number,
 ): number {

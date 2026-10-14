@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { easeOut, window01 } from "./easing";
+import { easeOut, window01 } from "../../../../../ui/kit/easing";
 
 export interface ShowTitleCardProps {
   t: number;

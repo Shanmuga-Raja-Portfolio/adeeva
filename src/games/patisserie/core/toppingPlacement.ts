@@ -7,10 +7,10 @@ import {
   topLayer,
   type PlacedPose,
 } from "../../../engine/placedPose";
-import type { ToppingId } from "../content/topping";
-import type { PlacedTopping } from "./bakeRun";
+import { TOPPING_IDS, type ToppingId } from "../content/topping";
+import type { BakeRun, PlacedTopping } from "./bakeRun";
 import { isToppingId } from "./catalog";
-import type { GameState } from "./gameState";
+import type { GameState, Pantry } from "./gameState";
 
 export const CAKE_CANVAS = { width: 400, height: 400 } as const;
 export const ROTATION_STEP = 15;
@@ -64,4 +64,14 @@ export function removeTopping(state: GameState, toppingId: string): GameState {
     if (!run.toppings.some((entry) => entry.id === toppingId)) return null;
     return { ...run, toppings: run.toppings.filter((entry) => entry.id !== toppingId) };
   });
+}
+
+export function placedCount(run: BakeRun, toppingId: ToppingId): number {
+  return run.toppings.filter((entry) => entry.toppingId === toppingId).length;
+}
+
+export function consumeToppings(pantry: Pantry, run: BakeRun): Pantry {
+  const toppings = { ...pantry.toppings };
+  for (const id of TOPPING_IDS) toppings[id] -= placedCount(run, id);
+  return { ...pantry, toppings };
 }

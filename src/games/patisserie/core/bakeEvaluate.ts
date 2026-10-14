@@ -20,6 +20,7 @@ import { constructionCount, isConstructionComplete } from "./construction";
 import { CRITERION_WEIGHTS, PASS_GATE, type CriterionId } from "./criterion";
 import {
   constructionFeedback,
+  minColoursFeedback,
   qualityFeedback,
   styleFeedback,
   toppingsFeedback,
@@ -78,11 +79,15 @@ function judgeColours(run: BakeRun, brief: Brief, favouredUsed: number): Judged 
   const avoided = run.design.colours
     .filter((colour) => brief.avoidColours.includes(colour))
     .map((colour) => colourById(colour).name);
+  const enough = run.design.colours.length >= brief.minColours;
   const detail =
-    avoided.length === 0
-      ? `No unwanted colours. ${favouredUsed} favourite ${favouredUsed === 1 ? "shade" : "shades"} used.`
-      : `Uses ${avoided.join(", ")}, which they hoped to avoid.`;
-  return judged("colours", "Icing colours", avoided.length === 0, detail, coloursFeedback(avoided));
+    avoided.length > 0
+      ? `Uses ${avoided.join(", ")}, which they hoped to avoid.`
+      : !enough
+        ? `Uses ${run.design.colours.length} of the ${brief.minColours} colours they hoped for.`
+        : `No unwanted colours. ${favouredUsed} favourite ${favouredUsed === 1 ? "shade" : "shades"} used.`;
+  const feedback = avoided.length > 0 ? coloursFeedback(avoided) : minColoursFeedback(brief.minColours);
+  return judged("colours", "Icing colours", avoided.length === 0 && enough, detail, feedback);
 }
 
 function judgeToppings(run: BakeRun, brief: Brief): Judged {

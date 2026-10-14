@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { ToppingId } from "../../content/topping";
+import { FAIR_TOPPING_ART } from "./FairToppingArt";
 
 export const TOPPING_EXTENT = 40;
 
@@ -158,6 +159,7 @@ const ART: Readonly<Record<ToppingId, () => ReactNode>> = {
   "wafer-butterfly": butterfly,
   "gold-star": goldStar,
   "team-ball": teamBall,
+  ...FAIR_TOPPING_ART,
 };
 
 export interface ToppingArtProps {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { SCHEMA_VERSION } from "./gameState";
 import { parseSave, serialize } from "./save";
 import { reduce } from "./reduce";
 import {
@@ -40,7 +41,7 @@ describe("saving", () => {
     });
     expect(parseSave("[]").ok).toBe(false);
     const raw = JSON.parse(serialize(newTestGame())) as Record<string, unknown>;
-    expect(parseSave(JSON.stringify({ ...raw, schemaVersion: 2 })).ok).toBe(false);
+    expect(parseSave(JSON.stringify({ ...raw, schemaVersion: SCHEMA_VERSION + 1 })).ok).toBe(false);
     expect(parseSave(JSON.stringify({ ...raw, coins: "lots" })).ok).toBe(false);
     expect(
       parseSave(JSON.stringify({ ...raw, pantry: { ...(raw.pantry as object), gels: { glitter: 2 } } })).ok,

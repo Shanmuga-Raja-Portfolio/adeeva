@@ -3,12 +3,14 @@ import type { FillingId } from "../content/filling";
 import type { IngredientId } from "../content/ingredient";
 import type { MixDef } from "../content/mix";
 import type { ToppingId } from "../content/topping";
-import type { BakeDesign, BakeRun } from "./bakeRun";
+import { isCustomBake, isIcedBake, type BakeDesign, type BakeRun } from "./bakeRun";
 import { mixById, productById } from "./catalog";
 
 export const BUTTERCREAM_BUTTER = 125;
 export const BUTTERCREAM_ICING_SUGAR = 250;
 export const FREE_ICING_COLOUR: ColourId = "ivory";
+export const PLAQUE_CHOCOLATE = 40;
+export const TRAY_ITEMS_PER_SPLIT = 6;
 
 export interface RunNeeds {
   readonly ingredients: Readonly<Partial<Record<IngredientId, number>>>;
@@ -41,6 +43,23 @@ export function icingIngredients(design: BakeDesign): Partial<Record<IngredientI
     : { butter: BUTTERCREAM_BUTTER * product.frostedUnits, "icing-sugar": icingSugar };
 }
 
+export function runIcingColours(run: BakeRun): ColourId[] {
+  if (run.purpose.kind === "tray") return [];
+  if (run.purpose.kind !== "salon-tray") return [...run.design.colours];
+  const [first, second] = run.design.colours;
+  return [
+    ...(first !== undefined && run.design.split > 0 ? [first] : []),
+    ...(second !== undefined && run.design.split < TRAY_ITEMS_PER_SPLIT ? [second] : []),
+  ];
+}
+
+export function decorationIngredients(run: BakeRun): Partial<Record<IngredientId, number>> {
+  if (!isIcedBake(run)) return {};
+  const icing = icingIngredients(run.design);
+  if (!run.flourishes.includes("plaque-lettering")) return icing;
+  return { ...icing, "choc-buttons": (icing["choc-buttons"] ?? 0) + PLAQUE_CHOCOLATE };
+}
+
 function add(
   totals: Partial<Record<IngredientId, number>>,
   ingredient: IngredientId,
@@ -50,7 +69,7 @@ function add(
 }
 
 export function runNeeds(run: BakeRun): RunNeeds {
-  const order = run.purpose.kind === "order";
+  const custom = isCustomBake(run);
   let ingredients: Partial<Record<IngredientId, number>> = {};
   run.design.mixIds.forEach((mixId, index) => {
     if (mixId === null || run.batches[index]?.committed === true) return;
@@ -58,23 +77,20 @@ export function runNeeds(run: BakeRun): RunNeeds {
     for (const amount of mix.weighed) ingredients = add(ingredients, amount.ingredient, amount.grams);
     ingredients = add(ingredients, "eggs", mix.eggs);
   });
-  if (order && !run.iced)
-    for (const [ingredient, amount] of Object.entries(icingIngredients(run.design)) as [
-      IngredientId,
-      number,
-    ][])
+  if (!run.iced)
+    for (const [ingredient, amount] of Object.entries(decorationIngredients(run)) as [IngredientId, number][])
       ingredients = add(ingredients, ingredient, amount);
   const filling = designFilling(run.design);
   const jars = run.design.productId === null ? 0 : productById(run.design.productId).fillingJars;
   const fillings: Partial<Record<FillingId, number>> =
-    order && filling !== null && !run.filled ? { [filling]: jars } : {};
+    custom && filling !== null && !run.filled ? { [filling]: jars } : {};
   const toppings: Partial<Record<ToppingId, number>> = {};
-  if (order && run.brief !== null)
+  if (custom && run.brief !== null)
     for (const requirement of run.brief.requiredToppings)
       toppings[requirement.topping] = (toppings[requirement.topping] ?? 0) + requirement.count;
   return {
     ingredients,
-    gels: order && !run.iced ? gelColours(run.design.colours) : [],
+    gels: run.iced ? [] : gelColours(runIcingColours(run)),
     fillings,
     toppings,
   };

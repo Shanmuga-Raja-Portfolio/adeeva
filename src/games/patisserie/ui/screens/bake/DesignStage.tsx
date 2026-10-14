@@ -5,6 +5,7 @@ import { FILLINGS } from "../../../content/filling";
 import { PIPE_PATTERNS, PATTERN_CHOICES } from "../../../content/pipePattern";
 import {
   batchName,
+  isCustomBake,
   maxColours,
   mixOptions,
   productById,
@@ -12,8 +13,10 @@ import {
   type BakeDesign,
 } from "../../../core";
 import { BakePreview } from "../../art/BakePreview";
-import { bakeLook } from "../../art/bakeLook";
+import { bakeLook, DEFAULT_ICING, type BakeLook } from "../../art/bakeLook";
 import { HeatDots } from "../../art/HeatDots";
+import { FlourishPicker } from "./FlourishPicker";
+import { SplitPicker } from "./SplitPicker";
 import { StageFooter } from "./StageFooter";
 import type { StageProps } from "./stageProps";
 import "./design.css";
@@ -28,7 +31,13 @@ function sampleDesign(design: BakeDesign, productId: BakeDesign["productId"]): B
     fillingId: null,
     colours: design.colours.length > 0 ? design.colours : ["ivory", "sky"],
     pattern: "a",
+    split: design.split,
   };
+}
+
+function splitLook(look: BakeLook, split: number): BakeLook {
+  const [first = DEFAULT_ICING, second = first] = look.icing;
+  return { ...look, icing: Array.from({ length: 6 }, (_, index) => (index < split ? first : second)) };
 }
 
 export function DesignStage(props: StageProps) {
@@ -40,6 +49,27 @@ export function DesignStage(props: StageProps) {
   const soon = state.profile.trait === "trendsetter" ? state.trends.next : [];
   const limit = maxColours(run);
   const look = bakeLook(design, [], true);
+  const custom = isCustomBake(run);
+  if (run.purpose.kind === "salon-tray")
+    return (
+      <div className="pa-design">
+        <div className="pa-design__builder">
+          <SplitPicker state={state} run={run} dispatch={dispatch} />
+        </div>
+        <div className="pa-design__preview">
+          <div className="pa-design__stage">
+            {look !== null ? (
+              <BakePreview
+                look={splitLook(look, design.split)}
+                title="Your salon tray"
+                className="pa-design__art"
+              />
+            ) : null}
+          </div>
+        </div>
+        <StageFooter {...props} ready="A tray for the Comet Room. Off to the pantry!" />
+      </div>
+    );
   return (
     <div className="pa-design">
       <div className="pa-design__builder">
@@ -120,7 +150,7 @@ export function DesignStage(props: StageProps) {
           </section>
         ) : null}
         {product !== null &&
-        run.purpose.kind === "order" &&
+        custom &&
         (product.filling.kind === "optional" || product.filling.kind === "required") ? (
           <section className="pa-design__section" aria-labelledby="pa-design-filling">
             <h2 id="pa-design-filling">3. Pick a filling</h2>
@@ -162,7 +192,7 @@ export function DesignStage(props: StageProps) {
         {product !== null ? (
           <section className="pa-design__section" aria-labelledby="pa-design-colours">
             <h2 id="pa-design-colours">
-              {run.purpose.kind === "order" ? "4. Icing colours" : "3. Icing colour"}{" "}
+              {custom ? "4. Icing colours" : "3. Icing colour"}{" "}
               <span className="pa-muted">
                 ({design.colours.length}/{limit})
               </span>
@@ -201,7 +231,7 @@ export function DesignStage(props: StageProps) {
             </p>
           </section>
         ) : null}
-        {product !== null && run.purpose.kind === "order" ? (
+        {product !== null && custom ? (
           <section className="pa-design__section" aria-labelledby="pa-design-pattern">
             <h2 id="pa-design-pattern">5. Piping pattern</h2>
             <div className="pa-design__patterns" role="radiogroup" aria-label="Piping pattern">
@@ -223,11 +253,14 @@ export function DesignStage(props: StageProps) {
             </div>
           </section>
         ) : null}
+        {product !== null && run.purpose.kind === "showpiece" ? (
+          <FlourishPicker run={run} dispatch={dispatch} number={6} />
+        ) : null}
       </div>
       <div className="pa-design__preview">
         <div className="pa-design__stage">
           {look !== null ? (
-            <BakePreview look={look} title="Your bake design" className="pa-design__art" />
+            <BakePreview look={look} title="Your bake design" className="pa-design__art" plaque={run.word} />
           ) : (
             <p className="pa-muted pa-design__empty">Pick a bake to see it here.</p>
           )}

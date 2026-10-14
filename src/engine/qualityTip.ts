@@ -1,6 +1,6 @@
 export type QualityTip = readonly [score: number, tip: string];
 
-function weakestTip(tips: readonly QualityTip[]): string {
+export function weakestTip(tips: readonly QualityTip[]): string {
   const weakest = tips.reduce<QualityTip | null>(
     (lowest, tip) => (lowest === null || tip[0] < lowest[0] ? tip : lowest),
     null,

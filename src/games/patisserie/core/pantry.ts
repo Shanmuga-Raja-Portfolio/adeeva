@@ -2,6 +2,7 @@ import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { colourById, isColourId, type ColourId } from "../../../engine/palette";
 import type { FillingId } from "../content/filling";
 import type { IngredientId } from "../content/ingredient";
+import type { TeaId } from "../content/tea";
 import type { ToppingId } from "../content/topping";
 import { runNeeds, type RunNeeds } from "./bakeNeeds";
 import type { BakeRun } from "./bakeRun";
@@ -10,7 +11,9 @@ import {
   ingredientById,
   isFillingId,
   isIngredientId,
+  isTeaId,
   isToppingId,
+  teaById,
   toppingById,
 } from "./catalog";
 import { hoursShortfallReason, spendHours } from "../../../engine/dayHours";
@@ -26,6 +29,7 @@ export interface PantryCart {
   readonly gels: readonly ColourId[];
   readonly fillings: Readonly<Partial<Record<FillingId, number>>>;
   readonly toppings: Readonly<Partial<Record<ToppingId, number>>>;
+  readonly teas?: Readonly<Partial<Record<TeaId, number>>>;
 }
 
 export const EMPTY_CART: PantryCart = { ingredients: {}, gels: [], fillings: {}, toppings: {} };
@@ -39,7 +43,8 @@ export function cartCost(cart: PantryCart): number {
     entries(cart.ingredients).reduce((sum, [id, packs]) => sum + ingredientById(id).price * packs, 0) +
     cart.gels.length * GEL_POT_PRICE +
     entries(cart.fillings).reduce((sum, [id, jars]) => sum + fillingById(id).price * jars, 0) +
-    entries(cart.toppings).reduce((sum, [id, count]) => sum + toppingById(id).price * count, 0)
+    entries(cart.toppings).reduce((sum, [id, count]) => sum + toppingById(id).price * count, 0) +
+    entries(cart.teas ?? {}).reduce((sum, [id, tins]) => sum + teaById(id).price * tins, 0)
   );
 }
 
@@ -53,7 +58,8 @@ function cartIsWellFormed(cart: PantryCart): boolean {
     cart.gels.every(isColourId) &&
     new Set(cart.gels).size === cart.gels.length &&
     entries(cart.fillings).every(([id, jars]) => isFillingId(id) && isCount(jars)) &&
-    entries(cart.toppings).every(([id, count]) => isToppingId(id) && isCount(count))
+    entries(cart.toppings).every(([id, count]) => isToppingId(id) && isCount(count)) &&
+    entries(cart.teas ?? {}).every(([id, tins]) => isTeaId(id) && isCount(tins))
   );
 }
 
@@ -62,7 +68,8 @@ function cartIsEmpty(cart: PantryCart): boolean {
     Object.keys(cart.ingredients).length === 0 &&
     cart.gels.length === 0 &&
     Object.keys(cart.fillings).length === 0 &&
-    Object.keys(cart.toppings).length === 0
+    Object.keys(cart.toppings).length === 0 &&
+    Object.keys(cart.teas ?? {}).length === 0
   );
 }
 
@@ -93,7 +100,9 @@ function restocked(pantry: Pantry, cart: PantryCart): Pantry {
   for (const [id, jars] of entries(cart.fillings)) fillings[id] += jars;
   const toppings = { ...pantry.toppings };
   for (const [id, count] of entries(cart.toppings)) toppings[id] += count;
-  return { ingredients, gels, fillings, toppings };
+  const teas = { ...pantry.teas };
+  for (const [id, tins] of entries(cart.teas ?? {})) teas[id] += tins * teaById(id).cupsPerTin;
+  return { ingredients, gels, fillings, toppings, teas };
 }
 
 export function buyPantry(state: GameState, cart: PantryCart): GameState {

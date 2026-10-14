@@ -2,6 +2,7 @@ import type { FollowProgress } from "../../../engine/followRecord";
 import {
   arrayOf,
   booleanParser,
+  failed,
   integerRangeParser,
   keyedRecordOf,
   nullable,
@@ -25,8 +26,11 @@ import {
 } from "../../../engine/stateParsers";
 
 export { shareParser };
-import type { ToppingRequirement } from "../content/client";
+import { FAIR_CLIENT_ID, type ToppingRequirement } from "../content/client";
 import { FILLING_IDS } from "../content/filling";
+import { FLOURISH_IDS } from "../content/flourish";
+import { PLAQUE_WORDS } from "../content/letterPath";
+import { MENU_TIER_IDS } from "../content/menuTier";
 import { MIX_IDS } from "../content/mix";
 import { PATTERN_CHOICES } from "../content/pipePattern";
 import { PRODUCT_IDS } from "../content/product";
@@ -51,6 +55,11 @@ import { CAKE_CANVAS } from "./toppingPlacement";
 
 export const nonNegativeParser = refined(numberParser, (value) => value >= 0, "zero or more");
 export const clientIdParser = knownIdParser(clientById, "client");
+export const briefClientIdParser = refined(
+  stringParser,
+  (id) => id === FAIR_CLIENT_ID || clientById(id) !== undefined,
+  "a known client id",
+);
 const mixIdParser = oneOf(MIX_IDS);
 
 const toppingRequirementParser = objectOf<ToppingRequirement>({
@@ -59,7 +68,7 @@ const toppingRequirementParser = objectOf<ToppingRequirement>({
 });
 
 export const briefParser = objectOf<Brief>({
-  clientId: clientIdParser,
+  clientId: briefClientIdParser,
   occasion: stringParser,
   products: arrayOf(oneOf(PRODUCT_IDS)),
   deadlineDay: dayParser,
@@ -71,17 +80,26 @@ export const briefParser = objectOf<Brief>({
   favouredColours: arrayOf(colourIdParser),
   avoidColours: arrayOf(colourIdParser),
   requiredToppings: arrayOf(toppingRequirementParser),
+  minColours: integerRangeParser(0, 3),
   minQuality: integerRangeParser(0, 100),
 });
 
-const purposeParser: Parser<RunPurpose> = (input, path) => {
-  const tray = objectOf<{ readonly kind: "tray" }>({ kind: oneOf(["tray"] as const) })(input, path);
-  if (tray.ok) return tray;
-  return objectOf<{ readonly kind: "order"; readonly gigId: string }>({
+const purposeParsers: readonly Parser<RunPurpose>[] = [
+  objectOf<{ readonly kind: "tray" }>({ kind: oneOf(["tray"] as const) }),
+  objectOf<{ readonly kind: "showpiece" }>({ kind: oneOf(["showpiece"] as const) }),
+  objectOf<Extract<RunPurpose, { readonly kind: "salon-tray" }>>({
+    kind: oneOf(["salon-tray"] as const),
+    tier: oneOf(MENU_TIER_IDS),
+  }),
+  objectOf<{ readonly kind: "order"; readonly gigId: string }>({
     kind: oneOf(["order"] as const),
     gigId: stringParser,
-  })(input, path);
-};
+  }),
+];
+
+const purposeParser: Parser<RunPurpose> = (input, path) =>
+  purposeParsers.map((parser) => parser(input, path)).find((result) => result.ok) ??
+  failed(path, "a known bake purpose");
 
 export const designParser = objectOf<BakeDesign>({
   productId: nullable(oneOf(PRODUCT_IDS)),
@@ -89,6 +107,7 @@ export const designParser = objectOf<BakeDesign>({
   fillingId: nullable(oneOf(FILLING_IDS)),
   colours: arrayOf(colourIdParser),
   pattern: oneOf(PATTERN_CHOICES),
+  split: integerRangeParser(0, 6),
 });
 
 const weighRecordParser = objectOf<WeighRecord>({
@@ -151,6 +170,8 @@ export const bakeRunParser = refined(
     nextToppingNumber: dayParser,
     pantryHourPaid: booleanParser,
     ingredientValue: nonNegativeParser,
+    flourishes: arrayOf(oneOf(FLOURISH_IDS)),
+    word: nullable(oneOf(PLAQUE_WORDS)),
   }),
   isRunConsistent,
   "a bake whose steps, design and work fit together",

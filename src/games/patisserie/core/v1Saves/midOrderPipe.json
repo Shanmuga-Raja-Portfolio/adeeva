@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "amber", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 1, "hoursLeft": 4 },
+  "coins": 71,
+  "reputation": 0,
+  "buzz": 0,
+  "pantry": {
+    "ingredients": {
+      "flour": 800,
+      "caster-sugar": 820,
+      "icing-sugar": 250,
+      "butter": 700,
+      "milk": 970,
+      "cocoa": 0,
+      "vanilla": 50,
+      "lemon-zest": 0,
+      "honey": 0,
+      "eggs": 9
+    },
+    "gels": { "sky": 9 },
+    "fillings": { "raspberry-jam": 0, "vanilla-cream": 0, "honey-cream": 0 },
+    "toppings": {
+      "sprinkles": 1,
+      "sugar-rose": 0,
+      "fresh-berries": 0,
+      "party-candle": 1,
+      "choc-curls": 0,
+      "sugar-pearls": 0,
+      "wafer-butterfly": 0,
+      "gold-star": 0,
+      "team-ball": 0
+    }
+  },
+  "upgrades": [],
+  "guide": false,
+  "trends": { "current": ["elegant", "playful"], "next": ["regal", "bold"] },
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "coach-dani",
+        "brief": {
+          "clientId": "coach-dani",
+          "occasion": "The team party",
+          "products": ["iced-biscuits"],
+          "deadlineDay": 4,
+          "budget": 24,
+          "fee": 42,
+          "requiredTags": ["sporty"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["navy", "ivory"],
+          "avoidColours": ["ruby"],
+          "requiredToppings": [{ "topping": "team-ball", "count": 2 }],
+          "minQuality": 64
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-2",
+        "clientId": "pip",
+        "brief": {
+          "clientId": "pip",
+          "occasion": "Pip's 7th birthday",
+          "products": ["cupcake-tray"],
+          "deadlineDay": 6,
+          "budget": 22,
+          "fee": 36,
+          "requiredTags": ["playful"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["blush", "sky"],
+          "avoidColours": ["charcoal"],
+          "requiredToppings": [
+            { "topping": "sprinkles", "count": 1 },
+            { "topping": "party-candle", "count": 1 }
+          ],
+          "minQuality": 62
+        },
+        "acceptedDay": 1
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 3
+  },
+  "story": { "seen": ["pa-intro"], "flags": [], "queue": [] },
+  "activeRun": {
+    "id": "run-1",
+    "purpose": { "kind": "order", "gigId": "gig-2" },
+    "brief": {
+      "clientId": "pip",
+      "occasion": "Pip's 7th birthday",
+      "products": ["cupcake-tray"],
+      "deadlineDay": 6,
+      "budget": 22,
+      "fee": 36,
+      "requiredTags": ["playful"],
+      "requiredMixes": [],
+      "avoidMixes": [],
+      "favouredColours": ["blush", "sky"],
+      "avoidColours": ["charcoal"],
+      "requiredToppings": [
+        { "topping": "sprinkles", "count": 1 },
+        { "topping": "party-candle", "count": 1 }
+      ],
+      "minQuality": 62
+    },
+    "stage": "pipe",
+    "reached": "pipe",
+    "startedDay": 1,
+    "design": {
+      "productId": "cupcake-tray",
+      "mixIds": ["vanilla-sponge"],
+      "fillingId": null,
+      "colours": ["sky"],
+      "pattern": "a"
+    },
+    "batches": [
+      {
+        "weighs": {
+          "flour": { "grams": 200, "actions": 1, "assisted": false, "band": 0.05 },
+          "caster-sugar": { "grams": 180, "actions": 1, "assisted": false, "band": 0.05 },
+          "butter": { "grams": 175, "actions": 7, "assisted": false, "band": 0.05 },
+          "milk": { "grams": 30, "actions": 1, "assisted": false, "band": 0.05 }
+        },
+        "eggs": 3,
+        "committed": true,
+        "stir": { "progress": 3, "ticks": 360, "insideTicks": 342, "assisted": false },
+        "bake": { "heat": 3, "turnedMinutes": 12, "takenMinutes": 24, "assisted": false, "window": 0.06 }
+      }
+    ],
+    "stack": {},
+    "filled": false,
+    "iced": true,
+    "pipes": {},
+    "toppings": [],
+    "nextToppingNumber": 1,
+    "pantryHourPaid": true,
+    "ingredientValue": 13.43
+  },
+  "counter": { "trays": [], "session": null, "closedDay": 0, "nextTrayNumber": 1, "lastSummary": null },
+  "bakeBook": [],
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 2,
+  "rng": 1703683426
+}

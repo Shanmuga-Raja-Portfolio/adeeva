@@ -20,6 +20,8 @@ test("a new baker takes Pip's order through every step by hand, then saves and c
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Dreamer" }).click();
   await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("radio", { name: "Corner Baker" })).toHaveAttribute("aria-checked", "true");
+  await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Relaxed" }).click();
   await page.getByRole("button", { name: "Open the bakery" }).click();
   await expect(page.getByRole("heading", { name: "The Keys to Crumb & Comet" })).toBeVisible();

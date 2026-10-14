@@ -1,7 +1,7 @@
 import type { ColourId } from "../../../engine/palette";
 import type { StyleTag } from "../../../engine/styleTag";
 import { isWeekEnd } from "../../../engine/week";
-import type { TrayProductId } from "../content/product";
+import type { CounterProductId } from "../content/product";
 import type { GameState } from "./gameState";
 
 export const TRAY_ITEMS = 6;
@@ -11,7 +11,7 @@ export const BASE_ORDER_CARDS = 6;
 export const DISPLAY_ORDER_CARDS = 8;
 
 export interface TrayKind {
-  readonly productId: TrayProductId;
+  readonly productId: CounterProductId;
   readonly colour: ColourId;
 }
 

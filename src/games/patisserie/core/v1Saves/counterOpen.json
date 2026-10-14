@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "amber", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 7, "hoursLeft": 10 },
+  "coins": 80,
+  "reputation": 0,
+  "buzz": 0,
+  "pantry": {
+    "ingredients": {
+      "flour": 500,
+      "caster-sugar": 720,
+      "icing-sugar": 500,
+      "butter": 625,
+      "milk": 970,
+      "cocoa": 0,
+      "vanilla": 45,
+      "lemon-zest": 0,
+      "honey": 0,
+      "eggs": 8
+    },
+    "gels": {},
+    "fillings": { "raspberry-jam": 0, "vanilla-cream": 0, "honey-cream": 0 },
+    "toppings": {
+      "sprinkles": 0,
+      "sugar-rose": 0,
+      "fresh-berries": 0,
+      "party-candle": 0,
+      "choc-curls": 0,
+      "sugar-pearls": 0,
+      "wafer-butterfly": 0,
+      "gold-star": 0,
+      "team-ball": 0
+    }
+  },
+  "upgrades": [],
+  "guide": false,
+  "trends": { "current": ["elegant", "playful"], "next": ["regal", "bold"] },
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-5",
+        "clientId": "pip",
+        "brief": {
+          "clientId": "pip",
+          "occasion": "Pip's 7th birthday",
+          "products": ["cupcake-tray"],
+          "deadlineDay": 9,
+          "budget": 30,
+          "fee": 41,
+          "requiredTags": ["playful"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["mustard", "blush"],
+          "avoidColours": ["charcoal"],
+          "requiredToppings": [
+            { "topping": "sprinkles", "count": 1 },
+            { "topping": "party-candle", "count": 1 }
+          ],
+          "minQuality": 62
+        },
+        "expiresDay": 7
+      },
+      {
+        "id": "gig-6",
+        "clientId": "grandpa-tomasz",
+        "brief": {
+          "clientId": "grandpa-tomasz",
+          "occasion": "Fifty years married",
+          "products": ["layer-cake"],
+          "deadlineDay": 10,
+          "budget": 44,
+          "fee": 58,
+          "requiredTags": ["classic", "romantic"],
+          "requiredMixes": [],
+          "avoidMixes": ["lemon-sponge"],
+          "favouredColours": ["ivory", "rose"],
+          "avoidColours": [],
+          "requiredToppings": [{ "topping": "sugar-rose", "count": 2 }],
+          "minQuality": 67
+        },
+        "expiresDay": 8
+      },
+      {
+        "id": "gig-7",
+        "clientId": "coach-dani",
+        "brief": {
+          "clientId": "coach-dani",
+          "occasion": "The team party",
+          "products": ["iced-biscuits"],
+          "deadlineDay": 12,
+          "budget": 20,
+          "fee": 36,
+          "requiredTags": ["sporty"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["navy", "emerald"],
+          "avoidColours": ["ruby"],
+          "requiredToppings": [{ "topping": "team-ball", "count": 2 }],
+          "minQuality": 64
+        },
+        "expiresDay": 9
+      }
+    ],
+    "active": [],
+    "lapsed": [],
+    "nextGigNumber": 8
+  },
+  "story": { "seen": ["pa-intro", "pa-first-counter"], "flags": [], "queue": [] },
+  "activeRun": {
+    "id": "run-2",
+    "purpose": { "kind": "tray" },
+    "brief": null,
+    "stage": "done",
+    "reached": "done",
+    "startedDay": 1,
+    "design": {
+      "productId": "iced-biscuits",
+      "mixIds": ["biscuit-dough"],
+      "fillingId": null,
+      "colours": ["mustard"],
+      "pattern": "a"
+    },
+    "batches": [
+      {
+        "weighs": {
+          "flour": { "grams": 300, "actions": 1, "assisted": false, "band": 0.05 },
+          "butter": { "grams": 200, "actions": 8, "assisted": false, "band": 0.05 },
+          "caster-sugar": { "grams": 100, "actions": 1, "assisted": false, "band": 0.05 },
+          "vanilla": { "grams": 5, "actions": 5, "assisted": false, "band": 0.05 }
+        },
+        "eggs": 1,
+        "committed": true,
+        "stir": { "progress": 2, "ticks": 240, "insideTicks": 228, "assisted": false },
+        "bake": { "heat": 2, "turnedMinutes": 6, "takenMinutes": 12, "assisted": false, "window": 0.06 }
+      }
+    ],
+    "stack": {},
+    "filled": false,
+    "iced": false,
+    "pipes": {},
+    "toppings": [],
+    "nextToppingNumber": 1,
+    "pantryHourPaid": false,
+    "ingredientValue": 7.999999999999999
+  },
+  "counter": {
+    "trays": [
+      {
+        "id": "tray-1",
+        "productId": "cupcake-tray",
+        "colour": "sky",
+        "quality": 99,
+        "tags": ["playful", "classic"],
+        "left": 6
+      },
+      {
+        "id": "tray-2",
+        "productId": "iced-biscuits",
+        "colour": "mustard",
+        "quality": 99,
+        "tags": ["playful", "casual", "classic"],
+        "left": 6
+      }
+    ],
+    "session": {
+      "cards": [
+        {
+          "items": [
+            { "productId": "iced-biscuits", "colour": "mustard" },
+            { "productId": "iced-biscuits", "colour": "mustard" },
+            { "productId": "iced-biscuits", "colour": "mustard" }
+          ]
+        },
+        {
+          "items": [
+            { "productId": "cupcake-tray", "colour": "sky" },
+            { "productId": "cupcake-tray", "colour": "sky" }
+          ]
+        },
+        {
+          "items": [
+            { "productId": "cupcake-tray", "colour": "sky" },
+            { "productId": "iced-biscuits", "colour": "mustard" }
+          ]
+        },
+        {
+          "items": [
+            { "productId": "cupcake-tray", "colour": "sky" },
+            { "productId": "iced-biscuits", "colour": "mustard" }
+          ]
+        },
+        {
+          "items": [
+            { "productId": "iced-biscuits", "colour": "mustard" },
+            { "productId": "iced-biscuits", "colour": "mustard" }
+          ]
+        },
+        {
+          "items": [
+            { "productId": "iced-biscuits", "colour": "mustard" },
+            { "productId": "iced-biscuits", "colour": "mustard" },
+            { "productId": "iced-biscuits", "colour": "mustard" }
+          ]
+        }
+      ],
+      "sold": [],
+      "coins": 0
+    },
+    "closedDay": 0,
+    "nextTrayNumber": 3,
+    "lastSummary": null
+  },
+  "bakeBook": [],
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 3,
+  "rng": 624259377
+}

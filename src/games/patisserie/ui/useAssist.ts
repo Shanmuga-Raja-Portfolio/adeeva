@@ -1,6 +1,6 @@
 import { createAssist } from "../../../ui/kit/assistChoices";
 
-export const ASSIST_STEPS = ["weigh", "stir", "oven", "pipe"] as const;
+export const ASSIST_STEPS = ["weigh", "stir", "oven", "pipe", "tea"] as const;
 
 export type AssistStep = (typeof ASSIST_STEPS)[number];
 

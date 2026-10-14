@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "amber", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 10, "hoursLeft": 6 },
+  "coins": 80,
+  "reputation": 14,
+  "buzz": 0,
+  "pantry": {
+    "ingredients": {
+      "flour": 1000,
+      "caster-sugar": 1000,
+      "icing-sugar": 500,
+      "butter": 1000,
+      "milk": 1000,
+      "cocoa": 0,
+      "vanilla": 50,
+      "lemon-zest": 0,
+      "honey": 0,
+      "eggs": 12
+    },
+    "gels": {},
+    "fillings": { "raspberry-jam": 0, "vanilla-cream": 0, "honey-cream": 0 },
+    "toppings": {
+      "sprinkles": 0,
+      "sugar-rose": 0,
+      "fresh-berries": 0,
+      "party-candle": 0,
+      "choc-curls": 0,
+      "sugar-pearls": 0,
+      "wafer-butterfly": 0,
+      "gold-star": 0,
+      "team-ball": 0
+    }
+  },
+  "upgrades": [],
+  "guide": false,
+  "trends": { "current": ["elegant", "playful"], "next": ["regal", "bold"] },
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-4",
+        "clientId": "mrs-adeyemi",
+        "brief": {
+          "clientId": "mrs-adeyemi",
+          "occasion": "The choir's last practice",
+          "products": ["fruit-tart"],
+          "deadlineDay": 16,
+          "budget": 39,
+          "fee": 66,
+          "requiredTags": ["elegant"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["ruby", "ivory"],
+          "avoidColours": ["black"],
+          "requiredToppings": [{ "topping": "fresh-berries", "count": 8 }],
+          "minQuality": 74
+        },
+        "expiresDay": 12
+      },
+      {
+        "id": "gig-5",
+        "clientId": "ms-farrow",
+        "brief": {
+          "clientId": "ms-farrow",
+          "occasion": "Poetry club on Friday",
+          "products": ["cupcake-tray"],
+          "deadlineDay": 17,
+          "budget": 43,
+          "fee": 83,
+          "requiredTags": ["dreamy"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["ivory", "sky"],
+          "avoidColours": ["mustard"],
+          "requiredToppings": [{ "topping": "wafer-butterfly", "count": 3 }],
+          "minQuality": 78
+        },
+        "expiresDay": 12
+      },
+      {
+        "id": "gig-6",
+        "clientId": "rosa-mateo",
+        "brief": {
+          "clientId": "rosa-mateo",
+          "occasion": "A double graduation",
+          "products": ["two-tier-cake"],
+          "deadlineDay": 15,
+          "budget": 89,
+          "fee": 116,
+          "requiredTags": ["elegant", "bold"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["navy", "gold"],
+          "avoidColours": ["blush"],
+          "requiredToppings": [
+            { "topping": "gold-star", "count": 3 },
+            { "topping": "sugar-pearls", "count": 1 }
+          ],
+          "minQuality": 84
+        },
+        "expiresDay": 12
+      },
+      {
+        "id": "gig-7",
+        "clientId": "mr-bramwell",
+        "brief": {
+          "clientId": "mr-bramwell",
+          "occasion": "A taste of home",
+          "products": ["layer-cake"],
+          "deadlineDay": 14,
+          "budget": 31,
+          "fee": 80,
+          "requiredTags": ["classic"],
+          "requiredMixes": ["honey-sponge"],
+          "avoidMixes": [],
+          "favouredColours": ["ivory", "sage"],
+          "avoidColours": [],
+          "requiredToppings": [],
+          "minQuality": 72
+        },
+        "expiresDay": 12
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-1",
+        "clientId": "pip",
+        "brief": {
+          "clientId": "pip",
+          "occasion": "Pip's 7th birthday",
+          "products": ["cupcake-tray"],
+          "deadlineDay": 15,
+          "budget": 22,
+          "fee": 36,
+          "requiredTags": ["playful"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["blush", "sky"],
+          "avoidColours": ["charcoal"],
+          "requiredToppings": [
+            { "topping": "sprinkles", "count": 1 },
+            { "topping": "party-candle", "count": 1 }
+          ],
+          "minQuality": 62
+        },
+        "acceptedDay": 10
+      },
+      {
+        "id": "gig-2",
+        "clientId": "coach-dani",
+        "brief": {
+          "clientId": "coach-dani",
+          "occasion": "The team party",
+          "products": ["iced-biscuits"],
+          "deadlineDay": 14,
+          "budget": 24,
+          "fee": 39,
+          "requiredTags": ["sporty"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["emerald", "ivory"],
+          "avoidColours": ["ruby"],
+          "requiredToppings": [{ "topping": "team-ball", "count": 2 }],
+          "minQuality": 64
+        },
+        "acceptedDay": 10
+      },
+      {
+        "id": "gig-3",
+        "clientId": "grandpa-tomasz",
+        "brief": {
+          "clientId": "grandpa-tomasz",
+          "occasion": "Fifty years married",
+          "products": ["layer-cake"],
+          "deadlineDay": 14,
+          "budget": 33,
+          "fee": 59,
+          "requiredTags": ["classic", "romantic"],
+          "requiredMixes": [],
+          "avoidMixes": ["lemon-sponge"],
+          "favouredColours": ["ivory", "rose"],
+          "avoidColours": [],
+          "requiredToppings": [{ "topping": "sugar-rose", "count": 2 }],
+          "minQuality": 67
+        },
+        "acceptedDay": 10
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 8
+  },
+  "story": { "seen": ["pa-intro"], "flags": [], "queue": [] },
+  "activeRun": null,
+  "counter": { "trays": [], "session": null, "closedDay": 0, "nextTrayNumber": 1, "lastSummary": null },
+  "bakeBook": [],
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 1,
+  "rng": 816082968
+}

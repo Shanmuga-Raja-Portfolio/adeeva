@@ -31,6 +31,12 @@ const CounterDay = lazy(() =>
 const BakeBook = lazy(() =>
   import("./screens/book/BakeBook").then((module) => ({ default: module.BakeBook })),
 );
+const TableService = lazy(() =>
+  import("./screens/salon/TableService").then((module) => ({ default: module.TableService })),
+);
+const FairFlow = lazy(() =>
+  import("./screens/fair/FairFlow").then((module) => ({ default: module.FairFlow })),
+);
 
 export function PatisserieGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
@@ -146,6 +152,12 @@ export function PatisserieGame({ player, lookOptions, onPlayerChange, onExit }: 
             <CounterDay state={screen.game} dispatch={dispatch} onExit={toHub} />
           ) : null}
           {screen.name === "book" ? <BakeBook state={screen.game} onExit={toHub} /> : null}
+          {screen.name === "salon" ? (
+            <TableService state={screen.game} dispatch={dispatch} onExit={toHub} />
+          ) : null}
+          {screen.name === "fair" ? (
+            <FairFlow state={screen.game} dispatch={dispatch} onExit={toHub} />
+          ) : null}
         </ViewLoadBoundary>
         <SettingsDialog
           open={settingsOpen}

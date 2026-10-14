@@ -21,11 +21,17 @@ import {
 import { FILLING_IDS } from "../content/filling";
 import { MIX_IDS } from "../content/mix";
 import { PATTERN_CHOICES } from "../content/pipePattern";
-import { PRODUCT_IDS, TRAY_PRODUCT_IDS } from "../content/product";
+import { COUNTER_PRODUCT_IDS, PRODUCT_IDS } from "../content/product";
 import type { BakeBookEntry } from "./bakeBook";
 import type { Evaluation } from "./bakeEvaluate";
 import type { QualityBreakdown } from "./bakeQuality";
-import { clientIdParser, nonNegativeParser, placedToppingParser, shareParser } from "./bakeRunParser";
+import {
+  briefClientIdParser,
+  clientIdParser,
+  nonNegativeParser,
+  placedToppingParser,
+  shareParser,
+} from "./bakeRunParser";
 import type {
   CounterSession,
   CounterState,
@@ -75,7 +81,7 @@ export const logEntryParser = objectOf<LogEntry>({
 export const bakeBookEntryParser = objectOf<BakeBookEntry>({
   runId: stringParser,
   day: dayParser,
-  clientId: clientIdParser,
+  clientId: briefClientIdParser,
   productId: oneOf(PRODUCT_IDS),
   mixIds: arrayOf(oneOf(MIX_IDS)),
   fillingId: nullable(oneOf(FILLING_IDS)),
@@ -84,13 +90,14 @@ export const bakeBookEntryParser = objectOf<BakeBookEntry>({
   toppings: arrayOf(placedToppingParser),
   stars: integerRangeParser(1, 5),
   happy: booleanParser,
+  quality: nullable(scoreParser),
 });
 
-const trayKindParser = objectOf<TrayKind>({ productId: oneOf(TRAY_PRODUCT_IDS), colour: colourIdParser });
+const trayKindParser = objectOf<TrayKind>({ productId: oneOf(COUNTER_PRODUCT_IDS), colour: colourIdParser });
 
 const counterTrayParser = objectOf<CounterTray>({
   id: stringParser,
-  productId: oneOf(TRAY_PRODUCT_IDS),
+  productId: oneOf(COUNTER_PRODUCT_IDS),
   colour: colourIdParser,
   quality: scoreParser,
   tags: arrayOf(styleTagParser),

@@ -113,3 +113,20 @@ export function leafOutline(length: number, width: number): Point[] {
     });
   return [...side(1), ...side(-1).reverse().slice(1, -1)];
 }
+
+export function bowOutline(width: number, height: number): Point[] {
+  const steps = 96;
+  return Array.from({ length: steps }, (_, index): Point => {
+    const t = (index / steps) * Math.PI * 2;
+    const x = (width / 2) * Math.sin(t);
+    const y = (height / 2) * Math.sin(t) * Math.cos(t);
+    return [Math.round((CENTRE + x) * 100) / 100, Math.round((CENTRE + y) * 100) / 100];
+  });
+}
+
+export function roundedSquare(half: number, bump: number, bumps: number): Point[] {
+  return ring((theta) => {
+    const square = half / Math.max(Math.abs(Math.cos(theta)), Math.abs(Math.sin(theta)));
+    return Math.min(square, half * 1.25) + bump * Math.abs(Math.sin(bumps * theta));
+  }, 128);
+}

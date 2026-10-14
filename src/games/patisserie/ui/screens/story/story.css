@@ -138,3 +138,10 @@
     height: 64px;
   }
 }
+
+.pa-story__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}

@@ -8,6 +8,7 @@ export interface MixingBowlProps {
   readonly spoon: number;
   readonly speed: number;
   readonly halfWidth: number;
+  readonly centre?: number | undefined;
   readonly direction: 1 | -1;
   readonly splash: number;
   readonly title: string;
@@ -38,6 +39,7 @@ export function MixingBowl({
   spoon,
   speed,
   halfWidth,
+  centre = STIR_CENTRE_SPEED,
   direction,
   splash,
   title,
@@ -47,7 +49,7 @@ export function MixingBowl({
   const swirlTurn = (spoon * 180) / Math.PI;
   const spoonX = CX + 92 * Math.cos(spoon);
   const spoonY = CY + 92 * Math.sin(spoon);
-  const inBand = Math.abs(Math.abs(speed) - STIR_CENTRE_SPEED) <= halfWidth;
+  const inBand = Math.abs(Math.abs(speed) - centre) <= halfWidth;
   return (
     <svg viewBox="0 0 400 400" className="pa-bowl" role="img" aria-label={title}>
       <defs>
@@ -121,11 +123,7 @@ export function MixingBowl({
         strokeLinecap="round"
       />
       <path
-        d={gaugeArc(
-          gaugeAngle(STIR_CENTRE_SPEED - halfWidth),
-          gaugeAngle(STIR_CENTRE_SPEED + halfWidth),
-          GAUGE_R,
-        )}
+        d={gaugeArc(gaugeAngle(centre - halfWidth), gaugeAngle(centre + halfWidth), GAUGE_R)}
         stroke={inBand ? "#5fa046" : "#9ccb83"}
         strokeWidth={14}
         fill="none"

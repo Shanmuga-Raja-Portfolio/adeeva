@@ -15,12 +15,15 @@ import {
   productById,
   upgradeById,
   type Action,
+  type BakeRun,
   type GameState,
 } from "../../../core";
 import { MAX_ACTIVE_GIGS } from "../../../../../engine/gigBoard";
 import type { PlayView } from "../../patisserieRoute";
 import { GuideBubble } from "../GuideBubble";
 import { StoryOverlay } from "../story/StoryOverlay";
+import { SeasonPanel } from "../season/SeasonPanel";
+import { CometRoomCard } from "./CometRoomCard";
 import { CounterPanel } from "./CounterPanel";
 import { daySummary, type DayEndKind } from "./daySummary";
 import { DayTransition } from "./DayTransition";
@@ -84,6 +87,9 @@ export function BakeryHub({ state, dispatch, onOpen, onOpenSettings, onExitToTit
     const action: Action = { type: kind === "shift" ? "workShift" : "endDay" };
     if (once(event, action)) setEnding({ from, kind });
   };
+  const openSalon = (event: ClickLike) => {
+    if (once(event, { type: "openSalon" })) toast("Dust sheets off, lamps on. The Comet Room is yours!");
+  };
   const setAside = () => {
     setSettingAside(false);
     if (dispatch({ type: "abandonRun" })) toast("The bake is set aside. Your bench is clear.", "info");
@@ -100,6 +106,9 @@ export function BakeryHub({ state, dispatch, onOpen, onOpenSettings, onExitToTit
             onEndDay={(event) => endDay(event, "rest")}
           />
           <GuideBubble show={coachOn(state) && onBench === null} text={guideLine(state)} />
+          {state.career === "salon" ? (
+            <SeasonPanel state={state} dispatch={dispatch} once={once} onOpen={onOpen} />
+          ) : null}
           <div className="pa-hub__grid">
             <div className="pa-hub__column">
               <section className="pa-board" aria-labelledby="pa-board-title">
@@ -132,7 +141,7 @@ export function BakeryHub({ state, dispatch, onOpen, onOpenSettings, onExitToTit
               {onBench !== null ? (
                 <Card
                   tone="gold"
-                  eyebrow="On the bench"
+                  eyebrow={benchEyebrow(onBench.purpose.kind)}
                   title={productName(onBench.design.productId)}
                   className="pa-hub-card"
                 >
@@ -170,6 +179,7 @@ export function BakeryHub({ state, dispatch, onOpen, onOpenSettings, onExitToTit
               <CounterPanel state={state} onStartTray={startTray} onOpenCounter={openCounter} />
             </div>
             <div className="pa-hub__column">
+              <CometRoomCard state={state} onOpenSalon={openSalon} />
               <TrendsBoard state={state} />
               <Card title="Bake Book" eyebrow={`${state.bakeBook.length} bakes kept`} className="pa-hub-card">
                 <Button variant="secondary" block icon="heart" onClick={() => onOpen("book")}>
@@ -199,6 +209,12 @@ export function BakeryHub({ state, dispatch, onOpen, onOpenSettings, onExitToTit
       <SetAsideDialog open={settingAside} onConfirm={setAside} onClose={() => setSettingAside(false)} />
     </div>
   );
+}
+
+function benchEyebrow(kind: BakeRun["purpose"]["kind"]): string {
+  if (kind === "showpiece") return "Fair showpiece on the bench";
+  if (kind === "salon-tray") return "Salon tray on the bench";
+  return "On the bench";
 }
 
 function productName(productId: ProductId | null): string {

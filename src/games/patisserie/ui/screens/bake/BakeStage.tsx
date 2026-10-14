@@ -1,54 +1,98 @@
 import { useState } from "react";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
-import { batchMix, batchName, productById } from "../../../core";
+import {
+  bakesTogether,
+  bakeTimeScale,
+  batchMix,
+  batchName,
+  productById,
+  TOGETHER_BATCHES,
+} from "../../../core";
 import { useAssist } from "../../useAssist";
 import { OvenBench } from "./OvenBench";
+import { OvenPair, type OvenPairTier } from "./OvenPair";
 import { StageFooter } from "./StageFooter";
 import { assistHint, SAFETY_LINE } from "./stageNames";
 import type { StageProps } from "./stageProps";
 import "./oven.css";
 
+const PAIR_TAB = -1;
+
 export function BakeStage(props: StageProps) {
   const { run, dispatch } = props;
   const [assist, setAssist] = useAssist("oven");
   const [baking, setBaking] = useState(false);
+  const together = bakesTogether(run);
   const firstOpen = run.batches.findIndex((entry) => entry.bake === null);
-  const [batch, setBatch] = useState(Math.max(0, firstOpen));
-  const mix = batchMix(run, batch);
-  const entry = run.batches[batch];
-  if (mix === null || entry === undefined || run.design.productId === null) return null;
+  const pairOpen = together && TOGETHER_BATCHES.some((batch) => run.batches[batch]?.bake === null);
+  const [picked, setPicked] = useState(pairOpen ? PAIR_TAB : Math.max(0, firstOpen));
+  const batch = together && picked !== PAIR_TAB && picked < TOGETHER_BATCHES.length ? PAIR_TAB : picked;
+  if (run.design.productId === null) return null;
   const product = productById(run.design.productId);
+  const pairTiers = TOGETHER_BATCHES.flatMap((index): OvenPairTier[] => {
+    const mix = batchMix(run, index);
+    const entry = run.batches[index];
+    return mix === null || entry === undefined
+      ? []
+      : [{ name: batchName(product, index), mix, scale: bakeTimeScale(run, index), stored: entry.bake }];
+  });
+  const [pairA, pairB] = pairTiers;
+  const tabs = together
+    ? [
+        { id: PAIR_TAB, label: "Big and middle together", done: !pairOpen },
+        ...run.batches
+          .map((entry, index) => ({ id: index, label: batchName(product, index), done: entry.bake !== null }))
+          .slice(TOGETHER_BATCHES.length),
+      ]
+    : run.batches.map((entry, index) => ({
+        id: index,
+        label: batchName(product, index),
+        done: entry.bake !== null,
+      }));
+  const mix = batch === PAIR_TAB ? null : batchMix(run, batch);
+  const entry = batch === PAIR_TAB ? undefined : run.batches[batch];
   const locked = batch > 0 && run.batches[batch - 1]?.bake === null;
   return (
     <div className="pa-bake-stage">
-      {run.batches.length > 1 ? (
+      {tabs.length > 1 ? (
         <div className="pa-weigh__tabs" role="tablist" aria-label="Bakes">
-          {run.batches.map((item, index) => (
+          {tabs.map((tab) => (
             <button
-              key={index}
+              key={tab.id}
               type="button"
               role="tab"
-              aria-selected={index === batch}
+              aria-selected={tab.id === batch}
               className="pa-weigh__tab"
-              onClick={() => setBatch(index)}
+              onClick={() => setPicked(tab.id)}
             >
-              {batchName(product, index)} {item.bake !== null ? <Icon name="check" size={14} /> : null}
+              {tab.label} {tab.done ? <Icon name="check" size={14} /> : null}
             </button>
           ))}
         </div>
       ) : null}
-      <OvenBench
-        key={`${batch}-${assist ? "a" : "m"}`}
-        batch={batch}
-        mix={mix}
-        assisted={assist}
-        stored={entry.bake}
-        locked={locked}
-        dispatch={dispatch}
-        onBakingChange={setBaking}
-      />
-      {locked ? <p className="pa-hint">Bake the big tier first, then this one.</p> : null}
+      {batch === PAIR_TAB && pairA !== undefined && pairB !== undefined ? (
+        <OvenPair
+          key={assist ? "a" : "m"}
+          tiers={[pairA, pairB]}
+          assisted={assist}
+          dispatch={dispatch}
+          onBakingChange={setBaking}
+        />
+      ) : null}
+      {mix !== null && entry !== undefined ? (
+        <OvenBench
+          key={`${batch}-${assist ? "a" : "m"}`}
+          batch={batch}
+          mix={mix}
+          assisted={assist}
+          stored={entry.bake}
+          locked={locked}
+          dispatch={dispatch}
+          onBakingChange={setBaking}
+        />
+      ) : null}
+      {locked ? <p className="pa-hint">Bake the tier before this one first.</p> : null}
       <div className="pa-bake-stage__help">
         <ToggleSwitch
           label="Oven helper"

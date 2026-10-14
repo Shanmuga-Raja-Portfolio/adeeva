@@ -6,7 +6,7 @@ import { Icon } from "../../../../../ui/kit/IconSet";
 import { Meter } from "../../../../../ui/kit/Meter";
 import { StarRating } from "../../../../../ui/kit/StarRating";
 import { useCountUp } from "../../../../../ui/kit/useCountUp";
-import { clientById, lastResult, productById } from "../../../core";
+import { clientById, fairDayOf, flourishById, isCustomBake, lastResult, productById } from "../../../core";
 import { BakePreview } from "../../art/BakePreview";
 import { bakeLook, icingHex } from "../../art/bakeLook";
 import { GiftBox } from "../../art/GiftBox";
@@ -25,10 +25,69 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
   const { reducedMotion } = useSettings();
   const entry = lastResult(state, run.id);
   const score = useCountUp(entry?.evaluation.score ?? 0, 1400, 900, reducedMotion);
-  const look = bakeLook(run.design, run.toppings, run.purpose.kind === "order");
+  const look = bakeLook(run.design, run.toppings, run.purpose.kind !== "tray");
   const productName = run.design.productId === null ? "bake" : productById(run.design.productId).name;
   if (look === null) return null;
-  if (entry === null) {
+  const fairEntry = state.fair?.entry ?? null;
+  if (entry === null && run.purpose.kind === "showpiece" && fairEntry !== null && state.fair !== null)
+    return (
+      <div className={reducedMotion ? "pa-results pa-results--still" : "pa-results"} data-testid="results">
+        <section className="pa-results__hero">
+          <GiftBox ribbon="#c9a227">
+            <BakePreview look={look} title={`Your ${productName} showpiece`} plaque={run.word} />
+          </GiftBox>
+          <div className="pa-results__verdict">
+            <span className="ad-eyebrow">{run.brief?.occasion ?? "Fair showpiece"}</span>
+            <h1>Ready for the Fair!</h1>
+            <p className="pa-results__quote">
+              A cloth goes over it until Fair Day, day {fairDayOf(state.fair)}. Quality {fairEntry.quality}
+              {fairEntry.touches.length > 0
+                ? `, with ${fairEntry.touches.map((touch) => `${flourishById(touch.flourish).name} at ${Math.round(touch.accuracy * 100)}%`).join(" and ")}`
+                : ""}
+              .
+            </p>
+            <Meter
+              label="Flair for the Bakers' Bench"
+              value={fairEntry.flair}
+              valueText={String(fairEntry.flair)}
+            />
+            <p className="pa-results__book">
+              <Icon name="heart" size={16} /> Added to your Bake Book. Its ribbon will hang here after the
+              Fair.
+            </p>
+            <Button size="lg" onClick={onExit} data-testid="results-exit">
+              Back to the bakery
+            </Button>
+          </div>
+        </section>
+      </div>
+    );
+  if (entry === null && run.purpose.kind === "salon-tray") {
+    const tray = state.salon?.shelf.find(
+      (item) => item.tier === (run.purpose.kind === "salon-tray" ? run.purpose.tier : "top"),
+    );
+    return (
+      <div className={reducedMotion ? "pa-results pa-results--still" : "pa-results"} data-testid="results">
+        <section className="pa-results__hero">
+          <GiftBox ribbon="#b9a7dc">
+            <BakePreview look={look} title={`A salon tray of ${productName}`} />
+          </GiftBox>
+          <div className="pa-results__verdict">
+            <span className="ad-eyebrow">Salon tray</span>
+            <h1>On the Salon shelf!</h1>
+            <p className="pa-results__quote">
+              Six treats wait for Salon Day: {run.design.split} and {6 - run.design.split}
+              {tray !== undefined ? `, quality ${tray.quality}` : ""}.
+            </p>
+            <Button size="lg" onClick={onExit} data-testid="results-exit">
+              Back to the bakery
+            </Button>
+          </div>
+        </section>
+      </div>
+    );
+  }
+  if (entry === null || !isCustomBake(run)) {
     const tray = state.counter.trays[state.counter.trays.length - 1];
     return (
       <div className={reducedMotion ? "pa-results pa-results--still" : "pa-results"} data-testid="results">

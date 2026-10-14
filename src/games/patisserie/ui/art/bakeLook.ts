@@ -1,5 +1,12 @@
 import { colourById } from "../../../../engine/palette";
-import { designFilling, designMixes, fillingById, type BakeDesign, type PlacedTopping } from "../../core";
+import {
+  designFilling,
+  designMixes,
+  fillingById,
+  type BakeBookEntry,
+  type BakeDesign,
+  type PlacedTopping,
+} from "../../core";
 import type { PatternChoice } from "../../content/pipePattern";
 import type { ProductId } from "../../content/product";
 
@@ -40,4 +47,19 @@ export function bakeLook(
     toppings,
     iced,
   };
+}
+
+export function bookEntryLook(entry: BakeBookEntry): BakeLook | null {
+  return bakeLook(
+    {
+      productId: entry.productId,
+      mixIds: entry.mixIds,
+      fillingId: entry.fillingId,
+      colours: entry.colours,
+      pattern: entry.pattern,
+      split: 6,
+    },
+    entry.toppings,
+    true,
+  );
 }

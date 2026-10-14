@@ -10,6 +10,15 @@ export const TOPPING_IDS = [
   "wafer-butterfly",
   "gold-star",
   "team-ball",
+  "candied-orange",
+  "sugar-shimmer",
+  "mint-leaf",
+  "sugar-daisy",
+  "wafer-fan",
+  "marzipan-bee",
+  "choc-sail",
+  "sugar-snowflake",
+  "toffee-shard",
 ] as const;
 export type ToppingId = (typeof TOPPING_IDS)[number];
 
@@ -30,4 +39,13 @@ export const TOPPINGS: readonly ToppingDef[] = [
   { id: "wafer-butterfly", name: "Wafer Butterfly", price: 3, tags: ["dreamy"] },
   { id: "gold-star", name: "Gold Sugar Star", price: 4, tags: ["regal", "bold"] },
   { id: "team-ball", name: "Sugar Team Ball", price: 3, tags: ["sporty"] },
+  { id: "candied-orange", name: "Candied Orange", price: 3, tags: ["playful", "bold"] },
+  { id: "sugar-shimmer", name: "Sugar Shimmer", price: 3, tags: ["dreamy", "regal"] },
+  { id: "mint-leaf", name: "Mint Leaf", price: 2, tags: ["casual", "elegant"] },
+  { id: "sugar-daisy", name: "Sugar Daisy", price: 3, tags: ["playful", "romantic"] },
+  { id: "wafer-fan", name: "Wafer Fan", price: 3, tags: ["elegant", "classic"] },
+  { id: "marzipan-bee", name: "Marzipan Bee", price: 4, tags: ["playful", "dreamy"] },
+  { id: "choc-sail", name: "Chocolate Sail", price: 4, tags: ["bold", "elegant"] },
+  { id: "sugar-snowflake", name: "Sugar Snowflake", price: 3, tags: ["dreamy", "elegant"] },
+  { id: "toffee-shard", name: "Toffee Shard", price: 3, tags: ["bold", "classic"] },
 ];

@@ -20,6 +20,7 @@ export interface BakeBookEntry {
   readonly toppings: readonly PlacedTopping[];
   readonly stars: number;
   readonly happy: boolean;
+  readonly quality: number | null;
 }
 
 export function bakeBookEntry(
@@ -28,6 +29,7 @@ export function bakeBookEntry(
   day: number,
   stars: number,
   happy: boolean,
+  quality: number,
 ): BakeBookEntry | null {
   const { design } = run;
   if (design.productId === null) return null;
@@ -43,6 +45,7 @@ export function bakeBookEntry(
     toppings: run.toppings,
     stars,
     happy,
+    quality,
   };
 }
 

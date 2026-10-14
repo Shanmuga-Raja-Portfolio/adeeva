@@ -6,7 +6,7 @@ import { designMixes } from "./bakeNeeds";
 import type { BakeRun } from "./bakeRun";
 import type { Brief } from "./brief";
 import { ingredientById } from "./catalog";
-import { bakeAccuracy } from "./oven";
+import { bakeAccuracy, bakeTimeScale } from "./oven";
 import { runPipePaths } from "./pipe";
 import { stirDone } from "./stir";
 import { batchMix } from "./weigh";
@@ -21,6 +21,7 @@ export const ORDER_QUALITY_WEIGHTS = {
   flavourFit: 0.05,
 } as const;
 export const TRAY_QUALITY_WEIGHTS = { weigh: 0.35, stir: 0.25, bake: 0.4 } as const;
+export const SALON_TRAY_QUALITY_WEIGHTS = { weigh: 0.3, stir: 0.2, bake: 0.3, pipe: 0.2 } as const;
 
 export interface QualityBreakdown {
   readonly weigh: number;
@@ -64,7 +65,7 @@ export function bakeScore(run: BakeRun): number {
   return average(
     batchMixes(run).map(({ mix, batch }) => {
       const bake = run.batches[batch]?.bake ?? null;
-      return bake === null ? 0 : bakeAccuracy(bake, mix, bake.window);
+      return bake === null ? 0 : bakeAccuracy(bake, mix, bake.window, bakeTimeScale(run, batch));
     }),
   );
 }
@@ -86,12 +87,17 @@ export function bakeQuality(run: BakeRun): QualityBreakdown {
   const weigh = share(weighScore(run));
   const stir = share(stirScore(run));
   const bake = share(bakeScore(run));
+  const pipe = share(pipeScore(run));
+  if (run.brief === null && run.purpose.kind === "salon-tray") {
+    const weights = SALON_TRAY_QUALITY_WEIGHTS;
+    const weighted = weights.weigh * weigh + weights.stir * stir + weights.bake * bake + weights.pipe * pipe;
+    return { weigh, stir, bake, pipe, flavourFit: 0, quality: Math.round(100 * weighted) };
+  }
   if (run.brief === null) {
     const weights = TRAY_QUALITY_WEIGHTS;
     const weighted = weights.weigh * weigh + weights.stir * stir + weights.bake * bake;
     return { weigh, stir, bake, pipe: 0, flavourFit: 0, quality: Math.round(100 * weighted) };
   }
-  const pipe = share(pipeScore(run));
   const fit = share(flavourFit(run, run.brief));
   const weights = ORDER_QUALITY_WEIGHTS;
   const weighted =

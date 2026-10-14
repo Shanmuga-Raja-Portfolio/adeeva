@@ -40,6 +40,10 @@ export function styleFeedback(missingTags: readonly string[], flavourMissed: boo
   return parts.join(" ");
 }
 
+export function minColoursFeedback(minimum: number): string {
+  return `They hoped for at least ${minimum} icing colours. A few more shades would make it sing!`;
+}
+
 export function toppingsFeedback(shortfalls: readonly ToppingShortfall[]): string {
   const list = shortfalls.map((entry) => `${entry.needed - entry.placed} more ${entry.name}`).join(", ");
   return `So close! A few more toppings were on the order: ${list}.`;

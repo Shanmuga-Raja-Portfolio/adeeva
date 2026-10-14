@@ -1,5 +1,5 @@
 import { withGuide } from "../../../engine/guide";
-import type { Action } from "./action";
+import type { Action, FairAction, SalonAction } from "./action";
 import { closeCounter, openCounter, sellBox } from "./boxItUp";
 import { endDay, workShift } from "./calendar";
 import { deliver } from "./delivery";
@@ -18,9 +18,51 @@ import { markBeatSeen } from "../../../engine/story";
 import { addTopping, moveTopping, removeTopping } from "./toppingPlacement";
 import { buyUpgrade } from "../../../engine/upgrades";
 import { knownUpgrade, storyBeatById } from "./catalog";
+import { reduceFair } from "./reduceFair";
+import { reduceSalon } from "./reduceSalon";
+import { chooseStoryOption } from "./storyChoice";
+import { upgradeAllowed } from "./upgradeShop";
 import { commitBatch, crackEgg, recordWeigh } from "./weigh";
 
+const SALON_ACTIONS: readonly SalonAction["type"][] = [
+  "openSalon",
+  "restParlour",
+  "setSalonMenu",
+  "startSalonTray",
+  "chooseSplit",
+  "openTables",
+  "closeTables",
+  "plateItem",
+  "unplateItem",
+  "pourTea",
+  "serveTable",
+];
+
+const FAIR_ACTIONS: readonly FairAction["type"][] = [
+  "chooseFairTheme",
+  "startShowpiece",
+  "toggleFlourish",
+  "chooseWord",
+  "bakeTogether",
+  "stageFair",
+  "moveUpTent",
+];
+
+function isSalonAction(action: Action): action is SalonAction {
+  return SALON_ACTIONS.some((type) => type === action.type);
+}
+
+function isFairAction(action: Action): action is FairAction {
+  return FAIR_ACTIONS.some((type) => type === action.type);
+}
+
 export function reduce(state: GameState, action: Action): GameState {
+  if (isSalonAction(action)) return reduceSalon(state, action);
+  if (isFairAction(action)) return reduceFair(state, action);
+  return reduceBakery(state, action);
+}
+
+function reduceBakery(state: GameState, action: Exclude<Action, SalonAction | FairAction>): GameState {
   switch (action.type) {
     case "newGame":
       return newGameIssues(action).length > 0 ? state : createGame(action);
@@ -103,10 +145,16 @@ export function reduce(state: GameState, action: Action): GameState {
     case "workShift":
       return workShift(state);
     case "buyUpgrade":
-      return buyUpgrade(state, knownUpgrade(action.upgradeId));
+      return upgradeAllowed(state, action.upgradeId)
+        ? buyUpgrade(state, knownUpgrade(action.upgradeId))
+        : state;
     case "setGuide":
       return withGuide(state, action.on);
     case "markBeatSeen":
-      return markBeatSeen(state, action.beatId, storyBeatById);
+      return (storyBeatById(action.beatId)?.choices.length ?? 0) > 0
+        ? state
+        : markBeatSeen(state, action.beatId, storyBeatById);
+    case "chooseStoryOption":
+      return chooseStoryOption(state, action.beatId, action.choiceId);
   }
 }

@@ -21,6 +21,7 @@ export interface WeighStationProps {
   readonly stock: number;
   readonly band: number;
   readonly assisted: boolean;
+  readonly covered: boolean;
   readonly stored: WeighRecord | undefined;
   readonly dispatch: (action: Action) => boolean;
   readonly onKept: () => void;
@@ -41,6 +42,7 @@ export function WeighStation({
   stock,
   band,
   assisted,
+  covered,
   stored,
   dispatch,
   onKept,
@@ -115,6 +117,7 @@ export function WeighStation({
           stopLine={assisted}
           pouring={pour.holding}
           unit={unit}
+          hideZone={covered && (moving || pour.actions === 0)}
         />
       </div>
       <div className="pa-weigh-station__controls">

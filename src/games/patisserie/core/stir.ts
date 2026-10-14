@@ -24,8 +24,13 @@ export function isStirring(speed: number): boolean {
   return Math.abs(speed) >= MIN_SPOON_SPEED;
 }
 
-export function isInStirBand(speed: number, halfWidth: number): boolean {
-  return Math.abs(Math.abs(speed) - STIR_CENTRE_SPEED) <= halfWidth;
+export function isInStirBand(speed: number, halfWidth: number, centre = STIR_CENTRE_SPEED): boolean {
+  return Math.abs(Math.abs(speed) - centre) <= halfWidth;
+}
+
+export function lapCentre(mix: MixDef, progress: number): number {
+  const speeds = mix.lapSpeeds ?? [];
+  return speeds[Math.floor(progress) % Math.max(1, speeds.length)] ?? STIR_CENTRE_SPEED;
 }
 
 export function lapDirection(lap: number): 1 | -1 {

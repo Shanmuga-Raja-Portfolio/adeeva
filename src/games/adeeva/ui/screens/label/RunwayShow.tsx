@@ -9,7 +9,7 @@ import {
   type RunwayResult,
 } from "../../../core";
 import { useSettings } from "../../../../../studio/SettingsContext";
-import { window01 } from "./easing";
+import { window01 } from "../../../../../ui/kit/easing";
 import { MusicChip } from "./MusicChip";
 import { showCast } from "./showCast";
 import { ShowFrame } from "./ShowFrame";
@@ -22,7 +22,7 @@ import {
   type ShowMoment,
 } from "./showTimeline";
 import { themeAccent } from "./themeAccent";
-import { useShowClock } from "./useShowClock";
+import { useShowClock } from "../../../../../ui/kit/useShowClock";
 import "./show.css";
 
 export interface RunwayShowProps {

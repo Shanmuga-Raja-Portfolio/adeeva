@@ -4,6 +4,9 @@ import type { RunwayMoodId } from "../content/runwayMood";
 import type { ShowThemeDef } from "../content/showTheme";
 import type { StyleTag } from "../../../engine/styleTag";
 import { average } from "../../../engine/average";
+import { panel, type PanelScore as EnginePanelScore, type SubScore } from "../../../engine/panelScore";
+import { closerStrength as showCloser } from "../../../engine/showOrder";
+import { WOW_POINTS_PER_TRIM, WOW_TAGS, wowScore } from "../../../engine/wowScore";
 import { trimById } from "./catalog";
 import { clamp } from "../../../engine/clamp";
 import { garmentTags } from "./dressTags";
@@ -15,8 +18,8 @@ export const PANEL_IDS = ["critics", "buyers", "audience"] as const;
 export type PanelId = (typeof PANEL_IDS)[number];
 
 export const WEARABLE_TAGS: readonly StyleTag[] = ["casual", "classic"];
-export const WOW_TAGS: readonly StyleTag[] = ["bold", "dreamy", "regal"];
-export const WOW_POINTS_PER_TRIM = 25;
+export { WOW_POINTS_PER_TRIM, WOW_TAGS };
+export type { SubScore };
 export const LATE_SHOW_PENALTY = 10;
 export const ORDER_SCORE_FLOOR = 55;
 export const ORDER_SCORE_STEP = 4;
@@ -30,20 +33,7 @@ export interface RunwayChoice {
   readonly light: RunwayLightId;
 }
 
-export interface SubScore {
-  readonly id: string;
-  readonly label: string;
-  readonly value: number;
-  readonly weight: number;
-  readonly detail: string;
-}
-
-export interface PanelScore {
-  readonly id: PanelId;
-  readonly label: string;
-  readonly score: number;
-  readonly parts: readonly SubScore[];
-}
+export type PanelScore = EnginePanelScore<PanelId>;
 
 export interface RunwayResult {
   readonly panels: readonly PanelScore[];
@@ -60,11 +50,6 @@ export interface RunwayContext {
   readonly seasonNumber: number;
   readonly late: boolean;
   readonly difficulty: DifficultyId;
-}
-
-function panel(id: PanelId, label: string, parts: SubScore[]): PanelScore {
-  const score = Math.round(parts.reduce((sum, part) => sum + part.value * part.weight, 0));
-  return { id, label, score: clamp(score, 0, 100), parts };
 }
 
 function share(looks: readonly FinishedLook[], test: (look: FinishedLook) => boolean): number {
@@ -129,14 +114,7 @@ function buyersPanel(looks: readonly FinishedLook[], theme: ShowThemeDef): Panel
 }
 
 function closerStrength(looks: readonly FinishedLook[], order: readonly number[]): number {
-  const scores = order.map((index) => looks[index]?.evaluation.score ?? 0);
-  const best = Math.max(0, ...scores);
-  const opener = scores[0] ?? 0;
-  const middle = scores[1] ?? 0;
-  const closer = scores[scores.length - 1] ?? 0;
-  const closing = best === 0 ? 100 : (100 * closer) / best;
-  const opening = opener >= middle ? 100 : 60;
-  return Math.round(0.7 * closing + 0.3 * opening);
+  return showCloser(order.map((index) => looks[index]?.evaluation.score ?? 0));
 }
 
 export function wowTrimCount(look: FinishedLook): number {
@@ -150,10 +128,7 @@ function audiencePanel(
   choice: RunwayChoice,
 ): PanelScore {
   const averageTrims = average(looks.map(wowTrimCount));
-  const wow = Math.round(
-    0.5 * clamp(averageTrims * WOW_POINTS_PER_TRIM, 0, 100) +
-      50 * share(looks, (look) => look.snapshot.tags.some((tag) => WOW_TAGS.includes(tag))),
-  );
+  const wow = wowScore(looks.map((look) => ({ wowTrims: wowTrimCount(look), tags: look.snapshot.tags })));
   const music = (choice.mood === theme.bestMood ? 70 : 20) + (choice.light === theme.bestLight ? 30 : 10);
   const closer = closerStrength(looks, choice.order);
   return panel("audience", "Audience", [

@@ -8,11 +8,25 @@ export const PRODUCT_IDS = [
   "two-tier-cake",
   "fruit-tart",
   "iced-biscuits",
+  "petit-fours",
+  "tartlet-set",
+  "spiral-roll",
+  "biscuit-wreath",
+  "three-tier-cake",
 ] as const;
 export type ProductId = (typeof PRODUCT_IDS)[number];
 
 export const TRAY_PRODUCT_IDS = ["cupcake-tray", "iced-biscuits"] as const satisfies readonly ProductId[];
 export type TrayProductId = (typeof TRAY_PRODUCT_IDS)[number];
+
+export const COUNTER_PRODUCT_IDS = [
+  "cupcake-tray",
+  "iced-biscuits",
+  "petit-fours",
+  "tartlet-set",
+  "spiral-roll",
+] as const satisfies readonly ProductId[];
+export type CounterProductId = (typeof COUNTER_PRODUCT_IDS)[number];
 
 export type FillingRule =
   | { readonly kind: "none" }
@@ -37,6 +51,7 @@ export interface ProductDef {
   readonly name: string;
   readonly mixKind: MixKind;
   readonly batches: number;
+  readonly batchNames: readonly string[];
   readonly frostedUnits: number;
   readonly icingOnly: boolean;
   readonly filling: FillingRule;
@@ -53,6 +68,7 @@ export const PRODUCTS: readonly ProductDef[] = [
     name: "Cupcake Tray",
     mixKind: "sponge",
     batches: 1,
+    batchNames: ["The mix"],
     frostedUnits: 1,
     icingOnly: false,
     filling: { kind: "optional" },
@@ -67,6 +83,7 @@ export const PRODUCTS: readonly ProductDef[] = [
     name: "Two-Layer Cake",
     mixKind: "sponge",
     batches: 1,
+    batchNames: ["The mix"],
     frostedUnits: 1,
     icingOnly: false,
     filling: { kind: "required" },
@@ -87,6 +104,7 @@ export const PRODUCTS: readonly ProductDef[] = [
     name: "Two-Tier Celebration Cake",
     mixKind: "sponge",
     batches: 2,
+    batchNames: ["Big tier", "Small tier"],
     frostedUnits: 2,
     icingOnly: false,
     filling: { kind: "required" },
@@ -107,6 +125,7 @@ export const PRODUCTS: readonly ProductDef[] = [
     name: "Glazed Fruit Tart",
     mixKind: "shortcrust",
     batches: 1,
+    batchNames: ["The mix"],
     frostedUnits: 0,
     icingOnly: false,
     filling: { kind: "fixed", filling: "vanilla-cream" },
@@ -121,6 +140,7 @@ export const PRODUCTS: readonly ProductDef[] = [
     name: "Iced Biscuit Set",
     mixKind: "biscuit",
     batches: 1,
+    batchNames: ["The mix"],
     frostedUnits: 1,
     icingOnly: true,
     filling: { kind: "none" },
@@ -129,5 +149,94 @@ export const PRODUCTS: readonly ProductDef[] = [
     stackPieces: [],
     tags: ["playful", "casual"],
     pieces: 6,
+  },
+  {
+    id: "petit-fours",
+    name: "Petits Fours",
+    mixKind: "sponge",
+    batches: 1,
+    batchNames: ["The mix"],
+    frostedUnits: 1,
+    icingOnly: true,
+    filling: { kind: "optional" },
+    fillingJars: 1,
+    stackSlots: [],
+    stackPieces: [],
+    tags: ["elegant", "dreamy"],
+    pieces: 6,
+  },
+  {
+    id: "tartlet-set",
+    name: "Tartlet Set",
+    mixKind: "shortcrust",
+    batches: 1,
+    batchNames: ["The mix"],
+    frostedUnits: 0,
+    icingOnly: false,
+    filling: { kind: "required" },
+    fillingJars: 1,
+    stackSlots: [],
+    stackPieces: [],
+    tags: ["elegant", "casual"],
+    pieces: 6,
+  },
+  {
+    id: "spiral-roll",
+    name: "Spiral Roll",
+    mixKind: "sponge",
+    batches: 1,
+    batchNames: ["The mix"],
+    frostedUnits: 1,
+    icingOnly: false,
+    filling: { kind: "required" },
+    fillingJars: 1,
+    stackSlots: [{ id: "board", name: "serving board" }],
+    stackPieces: [{ id: "rolled-sponge", name: "Rolled sponge", slot: "board", batch: 0 }],
+    tags: ["playful", "classic"],
+    pieces: 6,
+  },
+  {
+    id: "biscuit-wreath",
+    name: "Biscuit Wreath",
+    mixKind: "biscuit",
+    batches: 2,
+    batchNames: ["First six", "Second six"],
+    frostedUnits: 2,
+    icingOnly: true,
+    filling: { kind: "none" },
+    fillingJars: 0,
+    stackSlots: [
+      { id: "ring-left", name: "left of the ring" },
+      { id: "ring-right", name: "right of the ring" },
+    ],
+    stackPieces: [
+      { id: "first-six", name: "First six biscuits", slot: "ring-left", batch: 0 },
+      { id: "second-six", name: "Second six biscuits", slot: "ring-right", batch: 1 },
+    ],
+    tags: ["playful", "dreamy"],
+    pieces: 12,
+  },
+  {
+    id: "three-tier-cake",
+    name: "Three-Tier Garden Cake",
+    mixKind: "sponge",
+    batches: 3,
+    batchNames: ["Big tier", "Middle tier", "Small tier"],
+    frostedUnits: 3,
+    icingOnly: false,
+    filling: { kind: "required" },
+    fillingJars: 3,
+    stackSlots: [
+      { id: "stand", name: "cake stand" },
+      { id: "on-big", name: "top of the big tier" },
+      { id: "on-middle", name: "top of the middle tier" },
+    ],
+    stackPieces: [
+      { id: "big-tier", name: "Big tier", slot: "stand", batch: 0 },
+      { id: "middle-tier", name: "Middle tier", slot: "on-big", batch: 1 },
+      { id: "small-tier", name: "Small tier", slot: "on-middle", batch: 2 },
+    ],
+    tags: ["regal", "elegant"],
+    pieces: 1,
   },
 ];

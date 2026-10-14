@@ -1,0 +1,23 @@
+.pa-tea-tins ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pa-tea-tins li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.pa-tea-tins__tin {
+  width: 18px;
+  height: 24px;
+  border-radius: 4px 4px 6px 6px;
+  border: 2px solid rgba(59, 38, 32, 0.3);
+}

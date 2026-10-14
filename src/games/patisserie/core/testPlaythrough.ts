@@ -2,6 +2,8 @@ import type { AvatarLook } from "../../../engine/avatar";
 import type { Point } from "../../../engine/geometry/point";
 import type { ColourId } from "../../../engine/palette";
 import type { FillingId } from "../content/filling";
+import type { FlourishId } from "../content/flourish";
+import type { PlaqueWord } from "../content/letterPath";
 import type { MixId } from "../content/mix";
 import type { PipePathDef } from "../content/pipePattern";
 import type { ProductId } from "../content/product";
@@ -10,8 +12,8 @@ import { rollClientBrief } from "./brief";
 import { clientById, difficultyById, ingredientById, productById } from "./catalog";
 import type { GameState } from "./gameState";
 import { createGame, type NewGameSettings } from "./newGame";
-import { autoOutMinutes, doneTime } from "./oven";
-import { cartFor, hasShortfall, shortfall } from "./pantry";
+import { autoOutMinutes, bakesTogether, bakeTimeScale, doneTime, TOGETHER_BATCHES } from "./oven";
+import { cartFor, hasShortfall, PANTRY_VISIT_HOURS, shortfall } from "./pantry";
 import { checkpoints, MIN_SAMPLE_SPACING_CM, runPipePaths } from "./pipe";
 import { reduce } from "./reduce";
 import { canAdvance } from "./stageReadiness";
@@ -40,6 +42,9 @@ export interface BakePlan {
   readonly bakeShare: number;
   readonly pipeOffset: number;
   readonly toppings: boolean;
+  readonly split?: number;
+  readonly flourishes?: readonly FlourishId[];
+  readonly word?: PlaqueWord;
 }
 
 export const GOOD_PLAN: Omit<BakePlan, "productId" | "mixIds" | "fillingId" | "colours"> = {
@@ -137,10 +142,14 @@ function stepForward(state: GameState): GameState {
 }
 
 function designBake(state: GameState, plan: BakePlan): GameState {
+  if (state.activeRun?.purpose.kind === "salon-tray")
+    return reduce(state, { type: "chooseSplit", split: plan.split ?? 3 });
   const actions: Action[] = [{ type: "chooseProduct", productId: plan.productId }];
   plan.mixIds.forEach((mixId, batch) => actions.push({ type: "chooseMix", batch, mixId }));
   if (plan.fillingId !== null) actions.push({ type: "chooseFilling", fillingId: plan.fillingId });
   for (const colour of plan.colours) actions.push({ type: "toggleColour", colour });
+  for (const flourish of plan.flourishes ?? []) actions.push({ type: "toggleFlourish", flourish });
+  if (plan.word !== undefined) actions.push({ type: "chooseWord", word: plan.word });
   return dispatchAll(state, actions);
 }
 
@@ -149,7 +158,9 @@ function stockPantry(state: GameState): GameState {
   if (run === null) return state;
   const missing = shortfall(state, run);
   if (!hasShortfall(missing)) return state;
-  return reduce(state, { type: "buyPantry", cart: cartFor(missing) });
+  const bought = reduce(state, { type: "buyPantry", cart: cartFor(missing) });
+  if (bought !== state || state.calendar.hoursLeft >= PANTRY_VISIT_HOURS) return bought;
+  return stockPantry(settleStories(reduce(state, { type: "endDay" })));
 }
 
 function weighAll(state: GameState, plan: BakePlan): GameState {
@@ -199,18 +210,40 @@ function stirAll(state: GameState, plan: BakePlan): GameState {
   return next;
 }
 
+function takenFor(run: NonNullable<GameState["activeRun"]>, batch: number, plan: BakePlan): number {
+  const mix = batchMix(run, batch);
+  if (mix === null) return 1;
+  const scale = bakeTimeScale(run, batch);
+  const done = doneTime(mix, mix.idealHeat, scale);
+  return Math.min(autoOutMinutes(mix, mix.idealHeat, scale), Math.max(2, Math.round(done * plan.bakeShare)));
+}
+
+function bakeTogetherFirst(state: GameState, plan: BakePlan): GameState {
+  const run = state.activeRun;
+  const mix = run === null ? null : batchMix(run, 0);
+  if (run === null || mix === null || !bakesTogether(run)) return state;
+  const taken = TOGETHER_BATCHES.map((batch) => takenFor(run, batch, plan));
+  return reduce(state, {
+    type: "bakeTogether",
+    heat: mix.idealHeat,
+    turnedMinutes: Math.min(
+      ...taken.map((minutes) => minutes - 1),
+      Math.round(doneTime(mix, mix.idealHeat, 0.75) / 2),
+    ),
+    takenMinutes: taken,
+    assisted: false,
+  });
+}
+
 function bakeAll(state: GameState, plan: BakePlan): GameState {
   const run = state.activeRun;
   if (run === null) return state;
-  let next = state;
+  let next = bakeTogetherFirst(state, plan);
   run.batches.forEach((_, batch) => {
     const mix = batchMix(run, batch);
     if (mix === null) return;
     const done = doneTime(mix, mix.idealHeat);
-    const taken = Math.min(
-      autoOutMinutes(mix, mix.idealHeat),
-      Math.max(2, Math.round(done * plan.bakeShare)),
-    );
+    const taken = takenFor(run, batch, plan);
     next = reduce(next, {
       type: "bakeBatch",
       batch,

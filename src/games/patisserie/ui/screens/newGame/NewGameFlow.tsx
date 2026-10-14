@@ -7,22 +7,26 @@ import { newSeed } from "../../../../../studio/newSeed";
 import { Button } from "../../../../../ui/kit/Button";
 import type { IconName } from "../../../../../ui/kit/IconSet";
 import { AvatarStep } from "../../../../../ui/newGame/AvatarStep";
+import { CareerStep, type CareerCard } from "../../../../../ui/newGame/CareerStep";
+import {
+  CAREER_STEPS as NEW_GAME_STEPS,
+  careerDraftSettings,
+  careerPlayerDraft,
+  careerStepIssue,
+  type CareerDraft,
+} from "../../../../../ui/newGame/careerDraft";
 import { DifficultyStep } from "../../../../../ui/newGame/DifficultyStep";
 import { NewGameStepper } from "../../../../../ui/newGame/NewGameStepper";
 import { TraitStep } from "../../../../../ui/newGame/TraitStep";
+import { CAREERS, type CareerId } from "../../../content/career";
 import { DIFFICULTIES } from "../../../content/difficulty";
 import { STORY_BEATS } from "../../../content/storyBeat";
 import { TRAITS } from "../../../content/trait";
-import type { NewGameSettings } from "../../../core";
+import { newGameIssues, type NewGameSettings } from "../../../core";
+import { BakeryBackdrop } from "../../art/BakeryBackdrop";
+import { CometRoomBackdrop } from "../../art/CometRoomBackdrop";
 import type { SaveSlotId } from "../../patisserieSlots";
 import { Wordmark } from "../title/Wordmark";
-import {
-  draftSettings,
-  PROFILE_STEPS as NEW_GAME_STEPS,
-  playerDraft,
-  stepIssue,
-  type ProfileDraft as NewGameDraft,
-} from "../../../../../ui/newGame/profileDraft";
 import "./newGame.css";
 
 export interface NewGameFlowProps {
@@ -38,6 +42,10 @@ const headings: Record<(typeof NEW_GAME_STEPS)[number]["id"], { title: string; l
   trait: {
     title: "What makes your bakes yours?",
     lead: "Your trait shapes your perks, your voice and who drops by.",
+  },
+  career: {
+    title: "Where does your baking story begin?",
+    lead: "Corner Bakers can open the tea salon later. Salon Pâtissiers start with the parlour and the Fair.",
   },
   difficulty: {
     title: "How should the days feel?",
@@ -66,11 +74,32 @@ function voiceSample(trait: TraitId, name: string): string {
   );
 }
 
+type NewGameDraft = CareerDraft<CareerId>;
+
+const CAREER_CARDS: readonly CareerCard<CareerId>[] = CAREERS.map((career) => ({
+  id: career.id,
+  name: career.name,
+  pitch: career.pitch,
+  placeName: career.placeName,
+  window:
+    career.id === "bakery" ? (
+      <BakeryBackdrop className="pa-career-window" />
+    ) : (
+      <CometRoomBackdrop className="pa-career-window" />
+    ),
+  facts: [
+    { icon: "coin", text: `${career.startCoins} coins to start` },
+    { icon: "star", text: `Reputation ${career.startReputation}` },
+    { icon: "calendar", text: `Rent ${career.weeklyRent} a week` },
+    { icon: "bag", text: `Side job: ${career.shiftName}` },
+  ],
+}));
+
 export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: NewGameFlowProps) {
-  const [draft, setDraft] = useState<NewGameDraft>(() => playerDraft(player));
+  const [draft, setDraft] = useState<NewGameDraft>(() => careerPlayerDraft<CareerId>(player, "bakery"));
   const [index, setIndex] = useState(0);
   const step = NEW_GAME_STEPS[index] ?? NEW_GAME_STEPS[0];
-  const issue = stepIssue(step.id, draft);
+  const issue = careerStepIssue(step.id, draft, newGameIssues);
   const isLast = index === NEW_GAME_STEPS.length - 1;
   const update = (patch: Partial<NewGameDraft>) => setDraft((current) => ({ ...current, ...patch }));
   const heading = headings[step.id];
@@ -81,7 +110,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
       setIndex(index + 1);
       return;
     }
-    const settings = draftSettings(draft, newSeed());
+    const settings = careerDraftSettings(draft, newSeed());
     if (settings !== null) onBegin(settings);
   };
 
@@ -125,6 +154,9 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
               onChange={(trait) => update({ trait })}
             />
           ) : null}
+          {step.id === "career" ? (
+            <CareerStep cards={CAREER_CARDS} value={draft.career} onChange={(career) => update({ career })} />
+          ) : null}
           {step.id === "difficulty" ? (
             <DifficultyStep
               difficulties={DIFFICULTIES}
@@ -147,7 +179,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
           showReason
           onClick={next}
         >
-          {isLast ? "Open the bakery" : "Next"}
+          {isLast ? (draft.career === "salon" ? "Open the Comet Room" : "Open the bakery") : "Next"}
         </Button>
       </footer>
     </main>

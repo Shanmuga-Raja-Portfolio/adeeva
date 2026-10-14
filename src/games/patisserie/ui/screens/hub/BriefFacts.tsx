@@ -6,24 +6,32 @@ import { mixById, productById, toppingById, type Brief } from "../../../core";
 export interface BriefFactsProps {
   readonly brief: Brief;
   readonly hotTags: readonly string[];
+  readonly fair?: boolean | undefined;
 }
 
-export function BriefFacts({ brief, hotTags }: BriefFactsProps) {
+export function BriefFacts({ brief, hotTags, fair = false }: BriefFactsProps) {
   return (
     <div className="pa-brief-facts">
       <div className="pa-brief-facts__row">
-        <span className="pa-coin-line" title="Fee">
-          <Icon name="coin" size={16} /> {brief.fee} fee
-        </span>
+        {fair ? null : (
+          <span className="pa-coin-line" title="Fee">
+            <Icon name="coin" size={16} /> {brief.fee} fee
+          </span>
+        )}
         <span className="pa-coin-line" title="Ingredient budget">
           <Icon name="bag" size={16} /> {brief.budget} budget
         </span>
         <span className="pa-coin-line" title="Due day">
           <Icon name="calendar" size={16} /> Day {brief.deadlineDay}
         </span>
-        <span className="pa-coin-line" title="Lowest quality">
+        <span className="pa-coin-line" title={fair ? "Ready for the Fair" : "Lowest quality"}>
           <Icon name="star" size={16} /> {brief.minQuality}+
         </span>
+        {brief.minColours > 0 ? (
+          <span className="pa-coin-line" title="Icing colours">
+            <Icon name="palette" size={16} /> {brief.minColours}+ colours
+          </span>
+        ) : null}
       </div>
       <div className="pa-brief-facts__row">
         {brief.products.map((id) => (

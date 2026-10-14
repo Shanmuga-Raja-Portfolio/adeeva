@@ -4,7 +4,7 @@ import { AvatarFigure } from "../../../../../ui/art/avatar/Avatar";
 import { DOLL_VIEWBOX } from "../../../../../ui/art/avatar/Croquis";
 import { RUNWAY_VIEW, runwayDepth } from "../../art/runwayGeometry";
 import { AudienceCheer } from "./AudienceCheer";
-import { PetalFall } from "./PetalFall";
+import { PetalFall } from "../../../../../ui/art/PetalFall";
 import type { StageShot } from "./stageShot";
 import { walkerFrame } from "../../art/runwayWalker";
 

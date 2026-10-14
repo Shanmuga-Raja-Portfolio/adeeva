@@ -1,25 +1,38 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import type { BakeRun } from "./bakeRun";
-import { isCounterDay } from "./counter";
-import { designIssues } from "./design";
+import { productById } from "./catalog";
+import { batchName, designIssues } from "./design";
 import { hoursShortfallReason } from "../../../engine/dayHours";
 import type { GameState } from "./gameState";
 import { leaveHours } from "./hourCost";
 import { icingIssues } from "./icing";
 import { hasShortfall, shortfall, shortfallLines } from "./pantry";
 import { runPipePaths } from "./pipe";
-import { COUNTER_DAY_REST } from "./runLifecycle";
+import { restDayIssue } from "./seasonCalendar";
 import { stackIssues } from "./stack";
 import { stirDone } from "./stir";
 import { batchMix } from "./weigh";
 
 function batchIssues(run: BakeRun, done: (batch: number) => boolean, label: string): string[] {
+  const product = run.design.productId === null ? null : productById(run.design.productId);
   return run.batches.flatMap((_, batch) => {
     if (done(batch)) return [];
-    return [
-      run.batches.length === 1 ? `${label}.` : `${label} for the ${batch === 0 ? "big" : "small"} tier.`,
-    ];
+    if (run.batches.length === 1 || product === null) return [`${label}.`];
+    return [`${label} for the ${batchName(product, batch).toLowerCase()}.`];
   });
+}
+
+function reviewIssue(run: BakeRun): string {
+  switch (run.purpose.kind) {
+    case "order":
+      return "Deliver the bake to finish.";
+    case "showpiece":
+      return "Take the showpiece to the Fair to finish.";
+    case "salon-tray":
+      return "Put the tray on the Salon shelf.";
+    case "tray":
+      return "Put the tray on the counter.";
+  }
 }
 
 export function stageCompletionIssues(state: GameState, run: BakeRun): string[] {
@@ -58,7 +71,7 @@ export function stageCompletionIssues(state: GameState, run: BakeRun): string[] 
     case "decorate":
       return [];
     case "review":
-      return [run.purpose.kind === "order" ? "Deliver the bake to finish." : "Put the tray on the counter."];
+      return [reviewIssue(run)];
     case "done":
       return ["This bake is finished."];
   }
@@ -67,9 +80,10 @@ export function stageCompletionIssues(state: GameState, run: BakeRun): string[] 
 export function canAdvance(state: GameState): ActionCheck {
   const run = state.activeRun;
   if (run === null) return actionCheck(["No bake on the bench."]);
-  if (isCounterDay(state.calendar.day)) return actionCheck([COUNTER_DAY_REST]);
+  const rest = restDayIssue(state);
+  if (rest !== null) return actionCheck([rest]);
   const issues = stageCompletionIssues(state, run);
   if (issues.length > 0) return actionCheck(issues);
-  const hours = hoursShortfallReason(state.calendar, leaveHours(run));
+  const hours = hoursShortfallReason(state.calendar, leaveHours(run, state.upgrades));
   return actionCheck(hours === null ? [] : [hours]);
 }

@@ -160,6 +160,7 @@ export function WeighStage(props: StageProps) {
               stock={state.pantry.ingredients[amount.ingredient]}
               band={band}
               assisted={assist}
+              covered={run.flourishes.includes("blind-scale")}
               stored={entry.weighs[amount.ingredient]}
               dispatch={dispatch}
               onKept={() => setPicked(nextMissing(amount.ingredient))}

@@ -11,6 +11,8 @@ import { assistHint } from "./stageNames";
 import type { StageProps } from "./stageProps";
 import "./pipe.css";
 
+const COPY_SETS = ["cupcake-tray", "iced-biscuits", "petit-fours", "tartlet-set", "biscuit-wreath"] as const;
+
 export function PipeStage(props: StageProps) {
   const { state, run, dispatch } = props;
   const { reducedMotion } = useSettings();
@@ -68,8 +70,13 @@ export function PipeStage(props: StageProps) {
             onChange={setAssist}
           />
           <p className="pa-hint">{assistHint("Guide dots")}</p>
-          {run.design.productId === "cupcake-tray" || run.design.productId === "iced-biscuits" ? (
+          {COPY_SETS.some((id) => id === run.design.productId) ? (
             <p className="pa-muted pa-pipe__note">The rest of the set copies your best ones.</p>
+          ) : null}
+          {run.word !== null ? (
+            <p className="pa-muted pa-pipe__note">
+              Piped words: trace each letter of {run.word}, one stroke at a time.
+            </p>
           ) : null}
         </aside>
         <div className="pa-pipe__table">

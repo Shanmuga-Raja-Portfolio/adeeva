@@ -275,6 +275,7 @@ export function DecorateStage(props: StageProps) {
           title="Your bake with toppings"
           selectedToppingId={selected?.id}
           className="pa-decorate__art"
+          plaque={run.word}
         >
           <g>
             {[...toppings]

@@ -1,5 +1,5 @@
 import { StarRating } from "../../../../../ui/kit/StarRating";
-import { easeOut, window01 } from "./easing";
+import { easeOut, window01 } from "../../../../../ui/kit/easing";
 import type { ShowWalker } from "./showCast";
 import type { ShowSceneKind } from "./showTimeline";
 

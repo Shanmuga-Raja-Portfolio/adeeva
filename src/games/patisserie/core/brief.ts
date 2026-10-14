@@ -21,6 +21,7 @@ export interface Brief {
   readonly favouredColours: readonly ColourId[];
   readonly avoidColours: readonly ColourId[];
   readonly requiredToppings: readonly ToppingRequirement[];
+  readonly minColours: number;
   readonly minQuality: number;
 }
 
@@ -55,6 +56,7 @@ export function rollClientBrief(client: ClientDef, roll: BriefRoll, rng: RngStat
       favouredColours,
       avoidColours: template.avoidColours,
       requiredToppings: template.requiredToppings,
+      minColours: template.minColours,
       minQuality: template.minQuality + roll.minQualityBonus,
     },
     afterColours,

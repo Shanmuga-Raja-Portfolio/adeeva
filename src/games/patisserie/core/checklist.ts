@@ -57,6 +57,12 @@ export function checklist(state: GameState, run: BakeRun): ChecklistItem[] {
       label: `Avoid ${colourNames(brief.avoidColours)}`,
       status: decided(colours.length > 0, !colours.some((colour) => brief.avoidColours.includes(colour))),
     });
+  if (brief.minColours > 0)
+    items.push({
+      id: "min-colours",
+      label: `At least ${brief.minColours} icing colours (${colours.length})`,
+      status: decided(colours.length > 0, colours.length >= brief.minColours),
+    });
   items.push({
     id: "favoured-colours",
     label: `Bonus for ${colourNames(brief.favouredColours)}`,
@@ -83,9 +89,16 @@ export function checklist(state: GameState, run: BakeRun): ChecklistItem[] {
   });
   const complete = isConstructionComplete(constructionCount(run));
   const quality = bakeQuality(run).quality;
+  const fair = run.purpose.kind === "showpiece";
   items.push({
     id: "quality",
-    label: complete ? `Quality ${quality}/${brief.minQuality}` : `Quality at least ${brief.minQuality}`,
+    label: fair
+      ? complete
+        ? `Ready for the Fair: quality ${quality}/${brief.minQuality}`
+        : `Ready for the Fair at quality ${brief.minQuality}`
+      : complete
+        ? `Quality ${quality}/${brief.minQuality}`
+        : `Quality at least ${brief.minQuality}`,
     status: complete ? (quality >= brief.minQuality ? "met" : "unmet") : "pending",
   });
   return items;

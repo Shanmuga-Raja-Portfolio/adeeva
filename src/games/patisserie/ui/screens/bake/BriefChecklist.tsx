@@ -1,5 +1,6 @@
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Icon } from "../../../../../ui/kit/IconSet";
+import { MARIGOLD } from "../../../content/panelMember";
 import { checklist, clientById, type BakeRun, type GameState } from "../../../core";
 
 export interface BriefChecklistProps {
@@ -11,17 +12,19 @@ export function BriefChecklist({ state, run }: BriefChecklistProps) {
   const brief = run.brief;
   if (brief === null) return null;
   const items = checklist(state, run);
+  const fair = run.purpose.kind === "showpiece";
   const client = clientById(brief.clientId);
+  const look = client?.look ?? (fair ? MARIGOLD.look : undefined);
   const met = items.filter((item) => item.status === "met").length;
   return (
     <aside className="pa-checklist pa-doily" aria-label="Order checklist">
       <header className="pa-checklist__head">
-        {client !== undefined ? (
-          <Avatar look={client.look} size={44} title={client.name} frameColour="#fde6cf" />
+        {look !== undefined ? (
+          <Avatar look={look} size={44} title={client?.name ?? MARIGOLD.name} frameColour="#fde6cf" />
         ) : null}
         <div>
-          <span className="ad-eyebrow">Order card</span>
-          <strong>{client?.name ?? "A neighbour"}</strong>
+          <span className="ad-eyebrow">{fair ? "Fair card" : "Order card"}</span>
+          <strong>{client?.name ?? (fair ? "The Larkspur Fair" : "A neighbour")}</strong>
         </div>
         <span className="pa-checklist__count">
           {met}/{items.length}

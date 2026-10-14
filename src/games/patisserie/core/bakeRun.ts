@@ -2,7 +2,10 @@ import type { FollowProgress } from "../../../engine/followRecord";
 import type { ColourId } from "../../../engine/palette";
 import type { PlacedPose } from "../../../engine/placedPose";
 import type { FillingId } from "../content/filling";
+import type { FlourishId } from "../content/flourish";
 import type { IngredientId } from "../content/ingredient";
+import type { PlaqueWord } from "../content/letterPath";
+import type { MenuTierId } from "../content/menuTier";
 import type { MixId } from "../content/mix";
 import type { PatternChoice } from "../content/pipePattern";
 import type { ProductId } from "../content/product";
@@ -10,7 +13,13 @@ import type { ToppingId } from "../content/topping";
 import type { Brief } from "./brief";
 import type { RunKind, RunStage } from "./runStage";
 
-export type RunPurpose = { readonly kind: "order"; readonly gigId: string } | { readonly kind: "tray" };
+export type RunPurpose =
+  | { readonly kind: "order"; readonly gigId: string }
+  | { readonly kind: "tray" }
+  | { readonly kind: "salon-tray"; readonly tier: MenuTierId }
+  | { readonly kind: "showpiece" };
+
+export const TRAY_SPLITS = [6, 4, 3, 2, 0] as const;
 
 export interface BakeDesign {
   readonly productId: ProductId | null;
@@ -18,6 +27,7 @@ export interface BakeDesign {
   readonly fillingId: FillingId | null;
   readonly colours: readonly ColourId[];
   readonly pattern: PatternChoice;
+  readonly split: number;
 }
 
 export interface WeighAttempt {
@@ -76,6 +86,8 @@ export interface BakeRun {
   readonly nextToppingNumber: number;
   readonly pantryHourPaid: boolean;
   readonly ingredientValue: number;
+  readonly flourishes: readonly FlourishId[];
+  readonly word: PlaqueWord | null;
 }
 
 export const EMPTY_BATCH: BatchState = { weighs: {}, eggs: 0, committed: false, stir: null, bake: null };
@@ -84,8 +96,16 @@ export function runKind(run: BakeRun): RunKind {
   return run.purpose.kind;
 }
 
+export function isCustomBake(run: BakeRun): boolean {
+  return run.purpose.kind === "order" || run.purpose.kind === "showpiece";
+}
+
+export function isIcedBake(run: BakeRun): boolean {
+  return run.purpose.kind !== "tray";
+}
+
 export function createBakeRun(id: string, purpose: RunPurpose, brief: Brief | null, day: number): BakeRun {
-  const stage: RunStage = purpose.kind === "order" ? "brief" : "design";
+  const stage: RunStage = brief === null ? "design" : "brief";
   return {
     id,
     purpose,
@@ -93,7 +113,7 @@ export function createBakeRun(id: string, purpose: RunPurpose, brief: Brief | nu
     stage,
     reached: stage,
     startedDay: day,
-    design: { productId: null, mixIds: [], fillingId: null, colours: [], pattern: "a" },
+    design: { productId: null, mixIds: [], fillingId: null, colours: [], pattern: "a", split: 6 },
     batches: [],
     stack: {},
     filled: false,
@@ -103,5 +123,7 @@ export function createBakeRun(id: string, purpose: RunPurpose, brief: Brief | nu
     nextToppingNumber: 1,
     pantryHourPaid: false,
     ingredientValue: 0,
+    flourishes: [],
+    word: null,
   };
 }

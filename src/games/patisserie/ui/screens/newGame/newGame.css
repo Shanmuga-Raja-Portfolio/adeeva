@@ -84,3 +84,15 @@
     justify-self: center;
   }
 }
+
+.pa-career-window {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform 1.2s var(--ease-out);
+}
+
+.ad-career:hover .pa-career-window,
+.ad-career--selected .pa-career-window {
+  transform: scale(1.04);
+}

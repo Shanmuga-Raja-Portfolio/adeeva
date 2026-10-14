@@ -2,6 +2,10 @@ import type { FollowProgress } from "../../../../../engine/followRecord";
 import { TICK_SECONDS } from "../../../../../ui/kit/useTickLoop";
 import { isInStirBand, isStirring, lapDirection, MAX_SPOON_SPEED, STIR_CENTRE_SPEED } from "../../../core";
 
+export function keyLeadFor(centre: number): number {
+  return centre / ((1 - Math.exp(-FOLLOW_RATE * TICK_SECONDS)) / TICK_SECONDS);
+}
+
 const FOLLOW_RATE = 14;
 const SPLASH_FADE = 1.6;
 
@@ -31,7 +35,7 @@ function shortest(delta: number): number {
   return Math.atan2(Math.sin(delta), Math.cos(delta));
 }
 
-export function stirTick(sim: StirSim, laps: number, halfWidth: number): StirSim {
+export function stirTick(sim: StirSim, laps: number, halfWidth: number, centre = STIR_CENTRE_SPEED): StirSim {
   const splash = Math.max(0, sim.splash - SPLASH_FADE * TICK_SECONDS);
   if (sim.finger === null || sim.progress >= laps) return { ...sim, speed: 0, splash };
   const maxStep = MAX_SPOON_SPEED * TICK_SECONDS;
@@ -41,8 +45,8 @@ export function stirTick(sim: StirSim, laps: number, halfWidth: number): StirSim
   const spoon = sim.spoon + step;
   const rightWay = Math.sign(speed) === lapDirection(sim.progress);
   if (!isStirring(speed) || !rightWay) return { ...sim, spoon, speed, splash };
-  const inside = isInStirBand(speed, halfWidth);
-  const tooFast = Math.abs(speed) > STIR_CENTRE_SPEED + halfWidth;
+  const inside = isInStirBand(speed, halfWidth, centre);
+  const tooFast = Math.abs(speed) > centre + halfWidth;
   const lapEnd = Math.floor(sim.progress) + 1;
   const progress = Math.min(laps, Math.min(lapEnd, sim.progress + Math.abs(step) / (2 * Math.PI)));
   return {

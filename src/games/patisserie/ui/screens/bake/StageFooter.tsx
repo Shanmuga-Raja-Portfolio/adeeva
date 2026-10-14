@@ -16,7 +16,7 @@ export function StageFooter({ state, run, dispatch, onExit, ready }: StageFooter
   const next = stages[stages.indexOf(run.stage) + 1];
   if (next === undefined || next === "done") return null;
   const check = canAdvance(state);
-  const hours = leaveHours(run);
+  const hours = leaveHours(run, state.upgrades);
   const hoursReason = hoursShortfallReason(state.calendar, hours);
   const others = check.reasons.filter((reason) => reason !== hoursReason);
   return (

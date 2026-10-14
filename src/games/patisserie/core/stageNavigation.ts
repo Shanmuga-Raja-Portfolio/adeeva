@@ -44,7 +44,7 @@ export function goToStage(state: GameState, target: RunStage): GameState {
   if (run === null) return state;
   if (target === stageAfter(runKind(run), run.stage) && target !== "done") {
     if (!canAdvance(state).ok) return state;
-    const spent = spendHours(state, leaveHours(run));
+    const spent = spendHours(state, leaveHours(run, state.upgrades));
     if (spent === null) return state;
     return entered(spent, run, target) ?? state;
   }

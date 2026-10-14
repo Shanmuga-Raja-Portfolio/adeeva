@@ -1,7 +1,7 @@
 import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import type { ProductDef } from "../content/product";
 import { designFilling } from "./bakeNeeds";
-import type { BakeRun } from "./bakeRun";
+import { isCustomBake, type BakeRun } from "./bakeRun";
 import { fillingById, productById } from "./catalog";
 import type { GameState } from "./gameState";
 
@@ -43,13 +43,13 @@ export function stackComplete(run: BakeRun): boolean {
 }
 
 export function needsFilling(run: BakeRun): boolean {
-  return run.purpose.kind === "order" && designFilling(run.design) !== null;
+  return isCustomBake(run) && designFilling(run.design) !== null;
 }
 
 export function fillIssue(state: GameState, run: BakeRun): string | null {
   const filling = designFilling(run.design);
   const product = runProduct(run);
-  if (filling === null || product === null || run.purpose.kind === "tray") return "This bake has no filling.";
+  if (filling === null || product === null || !isCustomBake(run)) return "This bake has no filling.";
   if (run.filled) return "The filling is already in.";
   if (!stackComplete(run)) return "Stack the layers first.";
   if (state.pantry.fillings[filling] < product.fillingJars)

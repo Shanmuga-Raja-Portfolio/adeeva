@@ -1,10 +1,15 @@
 import type { ReactNode } from "react";
 import { icingHex, spongeHex, type BakeLook } from "./bakeLook";
 import { BiscuitSetArt } from "./BiscuitSetArt";
+import { BiscuitWreathArt } from "./BiscuitWreathArt";
 import { CakeStand } from "./CakeStand";
 import { CupcakeArt } from "./CupcakeArt";
 import { LayerCakeArt } from "./LayerCakeArt";
+import { PetitFoursArt } from "./PetitFoursArt";
+import { SpiralRollArt } from "./SpiralRollArt";
 import { TartArt } from "./TartArt";
+import { TartletSetArt } from "./TartletSetArt";
+import { ThreeTierArt } from "./ThreeTierArt";
 import { TierCakeArt } from "./TierCakeArt";
 import { ToppingLayer } from "./ToppingLayer";
 
@@ -51,6 +56,16 @@ function productArt(look: BakeLook): ReactNode {
       return <TartArt look={look} />;
     case "iced-biscuits":
       return <BiscuitSetArt look={look} />;
+    case "petit-fours":
+      return <PetitFoursArt look={look} />;
+    case "tartlet-set":
+      return <TartletSetArt look={look} />;
+    case "spiral-roll":
+      return <SpiralRollArt look={look} />;
+    case "biscuit-wreath":
+      return <BiscuitWreathArt look={look} />;
+    case "three-tier-cake":
+      return <ThreeTierArt look={look} />;
   }
 }
 
@@ -59,10 +74,41 @@ export interface BakePreviewProps {
   readonly title: string | null;
   readonly className?: string | undefined;
   readonly selectedToppingId?: string | undefined;
+  readonly plaque?: string | null | undefined;
   readonly children?: ReactNode;
 }
 
-export function BakePreview({ look, title, className, selectedToppingId, children }: BakePreviewProps) {
+function Plaque({ word }: { readonly word: string }) {
+  const width = 26 + word.length * 15;
+  return (
+    <g transform="translate(292 352) rotate(-7)" aria-hidden="true">
+      <rect x={-width / 2 - 3} y={-19} width={width + 6} height={38} rx={7} fill="#3b2018" />
+      <rect x={-width / 2} y={-16} width={width} height={32} rx={5} fill="#5a3324" />
+      <path d={`M${-width / 2 + 6} -12 H${width / 2 - 10}`} stroke="#a46f55" strokeWidth={2} opacity={0.6} />
+      <text
+        x={0}
+        y={7}
+        textAnchor="middle"
+        fontSize={19}
+        fontWeight={700}
+        fontFamily="Georgia, serif"
+        fill="#fff1cf"
+        letterSpacing={1}
+      >
+        {word}
+      </text>
+    </g>
+  );
+}
+
+export function BakePreview({
+  look,
+  title,
+  className,
+  selectedToppingId,
+  plaque,
+  children,
+}: BakePreviewProps) {
   return (
     <svg
       className={className}
@@ -73,6 +119,7 @@ export function BakePreview({ look, title, className, selectedToppingId, childre
     >
       {productArt(look)}
       <ToppingLayer toppings={look.toppings} selectedId={selectedToppingId} />
+      {plaque !== undefined && plaque !== null ? <Plaque word={plaque} /> : null}
       {children}
     </svg>
   );

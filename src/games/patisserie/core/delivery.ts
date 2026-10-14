@@ -1,7 +1,7 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { latestEntryFor } from "../../../engine/runLog";
 import { applyStanding } from "../../../engine/standing";
-import { TOPPING_IDS, type ToppingId } from "../content/topping";
+import { TOPPING_IDS } from "../content/topping";
 import { TRAY_PRODUCT_IDS } from "../content/product";
 import { addToBakeBook, bakeBookEntry } from "./bakeBook";
 import { evaluateBake } from "./bakeEvaluate";
@@ -10,19 +10,13 @@ import type { BakeRun } from "./bakeRun";
 import { bakeTags } from "./bakeTags";
 import { toppingById } from "./catalog";
 import { counterCapacity, TRAY_ITEMS, type CounterTray } from "./counter";
-import type { GameState, LogEntry, Pantry } from "./gameState";
+import type { GameState, LogEntry } from "./gameState";
 import { bakeReward } from "./rewards";
+import { queueSalonOffer } from "./openSalon";
+import { shelfIssue, stockSalonShelf } from "./salonTray";
+import { takeToFair } from "./showpiece";
 import { queueStoryTrigger } from "./storyQueue";
-
-function placedCount(run: BakeRun, toppingId: ToppingId): number {
-  return run.toppings.filter((entry) => entry.toppingId === toppingId).length;
-}
-
-function consumeToppings(pantry: Pantry, run: BakeRun): Pantry {
-  const toppings = { ...pantry.toppings };
-  for (const id of TOPPING_IDS) toppings[id] -= placedCount(run, id);
-  return { ...pantry, toppings };
-}
+import { consumeToppings, placedCount } from "./toppingPlacement";
 
 export function canDeliver(state: GameState): ActionCheck {
   const run = state.activeRun;
@@ -32,10 +26,17 @@ export function canDeliver(state: GameState): ActionCheck {
     return actionCheck(
       state.counter.trays.length >= counterCapacity(state) ? ["The counter is already full of trays."] : [],
     );
+  if (purpose.kind === "salon-tray") {
+    const issue = shelfIssue(state, run);
+    return actionCheck(issue === null ? [] : [issue]);
+  }
   const reasons = TOPPING_IDS.filter((id) => placedCount(run, id) > state.pantry.toppings[id]).map(
     (id) => `Not enough ${toppingById(id).name} in the pantry.`,
   );
-  if (!state.gigs.active.some((gig) => gig.id === purpose.gigId))
+  if (purpose.kind === "showpiece") {
+    if (state.fair === null || state.fair.entry !== null)
+      reasons.push("A showpiece is already waiting for the Fair.");
+  } else if (!state.gigs.active.some((gig) => gig.id === purpose.gigId))
     reasons.push("This order is no longer open.");
   return actionCheck(reasons);
 }
@@ -77,7 +78,14 @@ function deliverOrder(state: GameState, run: BakeRun, gigId: string): GameState 
     evaluation,
     reward,
   };
-  const page = bakeBookEntry(run, brief.clientId, state.calendar.day, evaluation.stars, happy);
+  const page = bakeBookEntry(
+    run,
+    brief.clientId,
+    state.calendar.day,
+    evaluation.stars,
+    happy,
+    evaluation.quality.quality,
+  );
   const delivered: GameState = {
     ...state,
     pantry: consumeToppings(state.pantry, run),
@@ -88,14 +96,23 @@ function deliverOrder(state: GameState, run: BakeRun, gigId: string): GameState 
     bakeBook: page === null ? state.bakeBook : addToBakeBook(state.bakeBook, page),
   };
   const rewarded = applyStanding(delivered, reward);
-  return queueStoryTrigger(rewarded, "first-delivery");
+  return queueSalonOffer(queueStoryTrigger(rewarded, "first-delivery"));
 }
 
 export function deliver(state: GameState): GameState {
   const run = state.activeRun;
   if (run === null || !canDeliver(state).ok) return state;
   const { purpose } = run;
-  return purpose.kind === "tray" ? stockTray(state, run) : deliverOrder(state, run, purpose.gigId);
+  switch (purpose.kind) {
+    case "tray":
+      return stockTray(state, run);
+    case "salon-tray":
+      return stockSalonShelf(state, run);
+    case "showpiece":
+      return takeToFair(state, run);
+    case "order":
+      return deliverOrder(state, run, purpose.gigId);
+  }
 }
 
 export function lastResult(state: GameState, runId: string): LogEntry | null {

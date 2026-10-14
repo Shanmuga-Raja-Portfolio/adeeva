@@ -1,7 +1,7 @@
 import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { cappedAccuracy } from "../../../engine/assistCap";
 import type { MixDef } from "../content/mix";
-import type { BakeAttempt, BakeRecord } from "./bakeRun";
+import type { BakeAttempt, BakeRecord, BakeRun } from "./bakeRun";
 import type { GameState } from "./gameState";
 import { skillTolerance } from "./skillTolerance";
 import { batchMix } from "./weigh";
@@ -16,16 +16,26 @@ export const TURN_WINDOW = 0.15;
 export const UNEVEN_SCORE = 0.6;
 export const AUTO_OUT_MULTIPLE = 2;
 export const REAL_SECONDS_PER_MINUTE = 0.3;
+export const TOGETHER_BATCHES = [0, 1] as const;
+export const TOGETHER_SMALL_SCALE = 0.75;
 
 export const COLOUR_STOPS = ["pale", "light", "golden", "deep", "toasty"] as const;
 export type ColourStop = (typeof COLOUR_STOPS)[number];
 
-export function doneTime(mix: MixDef, heat: number): number {
-  return mix.minutes * (1 - HEAT_SPEEDUP * (heat - mix.idealHeat));
+export function bakesTogether(run: BakeRun): boolean {
+  return run.flourishes.includes("bake-together");
 }
 
-export function bakeShare(mix: MixDef, heat: number, minutes: number): number {
-  return minutes / doneTime(mix, heat);
+export function bakeTimeScale(run: BakeRun, batch: number): number {
+  return bakesTogether(run) && batch === 1 ? TOGETHER_SMALL_SCALE : 1;
+}
+
+export function doneTime(mix: MixDef, heat: number, scale = 1): number {
+  return mix.minutes * scale * (1 - HEAT_SPEEDUP * (heat - mix.idealHeat));
+}
+
+export function bakeShare(mix: MixDef, heat: number, minutes: number, scale = 1): number {
+  return minutes / doneTime(mix, heat, scale);
 }
 
 export function colourStop(share: number): ColourStop {
@@ -36,8 +46,8 @@ export function colourStop(share: number): ColourStop {
   return "toasty";
 }
 
-export function autoOutMinutes(mix: MixDef, heat: number): number {
-  return Math.ceil(AUTO_OUT_MULTIPLE * doneTime(mix, heat));
+export function autoOutMinutes(mix: MixDef, heat: number, scale = 1): number {
+  return Math.ceil(AUTO_OUT_MULTIPLE * doneTime(mix, heat, scale));
 }
 
 export function bakeWindow(state: GameState): number {
@@ -54,24 +64,25 @@ export function timingScore(share: number, window: number): number {
   return Math.max(0, 1 - (miss - window) / TIMING_FALLOFF);
 }
 
-export function evenScore(mix: MixDef, heat: number, turnedMinutes: number | null): number {
+export function evenScore(mix: MixDef, heat: number, turnedMinutes: number | null, scale = 1): number {
   if (turnedMinutes === null) return UNEVEN_SCORE;
-  return Math.abs(turnedMinutes / doneTime(mix, heat) - TURN_MOMENT) <= TURN_WINDOW ? 1 : UNEVEN_SCORE;
+  const share = turnedMinutes / doneTime(mix, heat, scale);
+  return Math.abs(share - TURN_MOMENT) <= TURN_WINDOW ? 1 : UNEVEN_SCORE;
 }
 
-export function bakeAccuracy(record: BakeAttempt, mix: MixDef, window: number): number {
-  const share = bakeShare(mix, record.heat, record.takenMinutes);
+export function bakeAccuracy(record: BakeAttempt, mix: MixDef, window: number, scale = 1): number {
+  const share = bakeShare(mix, record.heat, record.takenMinutes, scale);
   const raw =
     0.2 * heatScore(mix, record.heat) +
     0.6 * timingScore(share, window) +
-    0.2 * evenScore(mix, record.heat, record.turnedMinutes);
+    0.2 * evenScore(mix, record.heat, record.turnedMinutes, scale);
   return cappedAccuracy(raw, record.assisted);
 }
 
-export function isBakeRecordValid(record: BakeAttempt, mix: MixDef): boolean {
+export function isBakeRecordValid(record: BakeAttempt, mix: MixDef, scale = 1): boolean {
   const { heat, turnedMinutes, takenMinutes } = record;
   if (!Number.isInteger(heat) || heat < 1 || heat > HEAT_DOTS) return false;
-  if (!Number.isInteger(takenMinutes) || takenMinutes < 1 || takenMinutes > autoOutMinutes(mix, heat))
+  if (!Number.isInteger(takenMinutes) || takenMinutes < 1 || takenMinutes > autoOutMinutes(mix, heat, scale))
     return false;
   if (
     turnedMinutes !== null &&
@@ -87,6 +98,7 @@ export function bakeBatch(state: GameState, batch: number, record: BakeAttempt):
     const entry = run.batches[batch];
     if (mix === null || entry === undefined || entry.stir === null || entry.bake !== null) return null;
     if (batch > 0 && run.batches[batch - 1]?.bake === null) return null;
+    if (bakesTogether(run) && TOGETHER_BATCHES.some((paired) => paired === batch)) return null;
     if (!isBakeRecordValid(record, mix)) return null;
     const bake: BakeRecord = {
       heat: record.heat,

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "amber", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 1, "hoursLeft": 10 },
+  "coins": 80,
+  "reputation": 0,
+  "buzz": 0,
+  "pantry": {
+    "ingredients": {
+      "flour": 1000,
+      "caster-sugar": 1000,
+      "icing-sugar": 500,
+      "butter": 1000,
+      "milk": 1000,
+      "cocoa": 0,
+      "vanilla": 50,
+      "lemon-zest": 0,
+      "honey": 0,
+      "eggs": 12
+    },
+    "gels": {},
+    "fillings": { "raspberry-jam": 0, "vanilla-cream": 0, "honey-cream": 0 },
+    "toppings": {
+      "sprinkles": 0,
+      "sugar-rose": 0,
+      "fresh-berries": 0,
+      "party-candle": 0,
+      "choc-curls": 0,
+      "sugar-pearls": 0,
+      "wafer-butterfly": 0,
+      "gold-star": 0,
+      "team-ball": 0
+    }
+  },
+  "upgrades": [],
+  "guide": false,
+  "trends": { "current": ["elegant", "playful"], "next": ["regal", "bold"] },
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "coach-dani",
+        "brief": {
+          "clientId": "coach-dani",
+          "occasion": "The team party",
+          "products": ["iced-biscuits"],
+          "deadlineDay": 4,
+          "budget": 24,
+          "fee": 42,
+          "requiredTags": ["sporty"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["navy", "ivory"],
+          "avoidColours": ["ruby"],
+          "requiredToppings": [{ "topping": "team-ball", "count": 2 }],
+          "minQuality": 64
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [],
+    "lapsed": [],
+    "nextGigNumber": 2
+  },
+  "story": { "seen": ["pa-intro"], "flags": [], "queue": [] },
+  "activeRun": null,
+  "counter": { "trays": [], "session": null, "closedDay": 0, "nextTrayNumber": 1, "lastSummary": null },
+  "bakeBook": [],
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 1,
+  "rng": 1135788953
+}

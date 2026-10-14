@@ -21,6 +21,7 @@ export interface BriefTemplate {
   readonly favouredColours: readonly ColourId[] | "any";
   readonly avoidColours: readonly ColourId[];
   readonly requiredToppings: readonly ToppingRequirement[];
+  readonly minColours: number;
   readonly budget: readonly [number, number];
   readonly fee: readonly [number, number];
   readonly deadlineDays: readonly [number, number];
@@ -37,6 +38,7 @@ export interface ClientDef {
   readonly id: string;
   readonly name: string;
   readonly relation: string;
+  readonly guestName: string;
   readonly traitGate?: TraitId;
   readonly minReputation: number;
   readonly look: AvatarLook;
@@ -44,11 +46,12 @@ export interface ClientDef {
   readonly lines: ClientLines;
 }
 
-const NONE = { requiredMixes: [], avoidMixes: [], wantsHotTag: false } as const;
+const NONE = { requiredMixes: [], avoidMixes: [], wantsHotTag: false, minColours: 0 } as const;
 
 export const CLIENTS: readonly ClientDef[] = [
   {
     id: "pip",
+    guestName: "Pip and his dad",
     name: "Pip",
     relation: "Pip's dad orders from upstairs for Pip's 7th birthday",
     minReputation: 0,
@@ -77,6 +80,7 @@ export const CLIENTS: readonly ClientDef[] = [
   },
   {
     id: "coach-dani",
+    guestName: "Coach Dani",
     name: "Coach Dani",
     relation: "Coach of the under-10s football team",
     minReputation: 0,
@@ -102,6 +106,7 @@ export const CLIENTS: readonly ClientDef[] = [
   },
   {
     id: "grandpa-tomasz",
+    guestName: "Grandpa Tomasz",
     name: "Grandpa Tomasz",
     relation: "Retired postman, two doors down",
     minReputation: 0,
@@ -128,6 +133,7 @@ export const CLIENTS: readonly ClientDef[] = [
   },
   {
     id: "mrs-adeyemi",
+    guestName: "Mrs. Adeyemi",
     name: "Mrs. Adeyemi",
     relation: "Leader of the Larkspur choir",
     minReputation: 4,
@@ -153,6 +159,7 @@ export const CLIENTS: readonly ClientDef[] = [
   },
   {
     id: "ms-farrow",
+    guestName: "Ms. Farrow",
     name: "Ms. Farrow",
     relation: "Librarian who runs the poetry club",
     minReputation: 8,
@@ -178,6 +185,7 @@ export const CLIENTS: readonly ClientDef[] = [
   },
   {
     id: "rosa-mateo",
+    guestName: "Rosa and Mateo",
     name: "Rosa & Mateo",
     relation: "Cousins graduating on the same day",
     minReputation: 12,
@@ -206,6 +214,7 @@ export const CLIENTS: readonly ClientDef[] = [
   },
   {
     id: "saffi",
+    guestName: "Saffi",
     name: "Saffi",
     relation: "Owner of the Paper Lantern Café",
     traitGate: "trendsetter",
@@ -233,6 +242,7 @@ export const CLIENTS: readonly ClientDef[] = [
   },
   {
     id: "mr-bramwell",
+    guestName: "Mr. Bramwell",
     name: "Mr. Bramwell",
     relation: "The quiet neighbour at No. 9",
     traitGate: "charmer",
@@ -258,7 +268,228 @@ export const CLIENTS: readonly ClientDef[] = [
       nearMiss: "Kind of you. Not quite hers, but kind of you.",
     },
   },
+  {
+    id: "juniper-troop",
+    guestName: "The Juniper Troop leaders",
+    name: "Juniper Troop",
+    relation: "Troop leaders planning a badge day",
+    minReputation: 10,
+    look: { skinTone: "sand", hairStyle: "ponytail", hairColour: "brown", outfit: "dungarees" },
+    brief: {
+      ...NONE,
+      occasion: "Badge day for the troop",
+      products: ["biscuit-wreath"],
+      requiredTags: ["playful", "casual"],
+      favouredColours: ["emerald", "mustard", "sky"],
+      avoidColours: ["black"],
+      requiredToppings: [{ topping: "marzipan-bee", count: 2 }],
+      budget: [35, 50],
+      fee: [70, 90],
+      deadlineDays: [3, 5],
+      minQuality: 74,
+    },
+    lines: {
+      request: "Badge day is on Saturday! A biscuit wreath with buzzy bees, please.",
+      delighted: "Everyone earned their badge and a biscuit. Best day ever!",
+      nearMiss: "The troop loved it! A couple of outlines went for a wander.",
+    },
+  },
+  {
+    id: "twins-ines-sofia",
+    guestName: "Inès, Sofia and their mum",
+    name: "Inès & Sofia",
+    relation: "Twins turning ten, with their mum",
+    minReputation: 14,
+    look: { skinTone: "honey", hairStyle: "braids", hairColour: "dark-brown", outfit: "denim-jacket" },
+    brief: {
+      ...NONE,
+      occasion: "A double tenth birthday",
+      products: ["spiral-roll", "petit-fours"],
+      requiredTags: ["playful", "dreamy"],
+      favouredColours: ["lavender", "blush", "sky"],
+      avoidColours: ["charcoal"],
+      requiredToppings: [{ topping: "sugar-daisy", count: 4 }],
+      budget: [40, 55],
+      fee: [80, 100],
+      deadlineDays: [4, 6],
+      minQuality: 76,
+    },
+    lines: {
+      request: "We're both ten on the same day! Something dreamy with daisies?",
+      delighted: "It looks like a garden in a dream. Thank you times two!",
+      nearMiss: "We love it! One line went a little wiggly, but that's fine.",
+    },
+  },
+  {
+    id: "mr-osei",
+    guestName: "Mr. Osei",
+    name: "Mr. Osei",
+    relation: "Keeper of the Larkspur allotments",
+    minReputation: 16,
+    look: { skinTone: "espresso", hairStyle: "short-bob", hairColour: "black", outfit: "cardigan" },
+    brief: {
+      ...NONE,
+      occasion: "Allotment open day",
+      products: ["tartlet-set"],
+      requiredTags: ["casual"],
+      requiredMixes: ["oat-crust"],
+      favouredColours: ["sage", "mustard", "ivory"],
+      avoidColours: [],
+      requiredToppings: [{ topping: "mint-leaf", count: 6 }],
+      budget: [35, 50],
+      fee: [75, 95],
+      deadlineDays: [4, 6],
+      minQuality: 76,
+    },
+    lines: {
+      request: "Oat-crust tartlets for the allotment open day. A mint leaf on each!",
+      delighted: "Fresh as the morning dew. The gardeners sang your praises.",
+      nearMiss: "Very tasty. The crusts could have been a touch more golden.",
+    },
+  },
+  {
+    id: "councillor-nwosu",
+    guestName: "Councillor Nwosu",
+    name: "Councillor Nwosu",
+    relation: "Planning the town's Lantern Night",
+    minReputation: 20,
+    look: { skinTone: "cocoa", hairStyle: "high-bun", hairColour: "black", outfit: "blazer" },
+    brief: {
+      ...NONE,
+      occasion: "Lantern Night in the square",
+      products: ["layer-cake", "two-tier-cake"],
+      requiredTags: ["dreamy", "regal"],
+      favouredColours: ["navy", "gold", "lavender"],
+      avoidColours: ["coral"],
+      requiredToppings: [{ topping: "sugar-snowflake", count: 4 }],
+      budget: [80, 100],
+      fee: [120, 150],
+      deadlineDays: [5, 7],
+      minQuality: 80,
+    },
+    lines: {
+      request: "Lantern Night needs a centrepiece. Dreamy, a little grand, with snowflakes.",
+      delighted: "The whole square stopped to look. It glowed like the lanterns!",
+      nearMiss: "A lovely cake. A steadier border would make it shine.",
+    },
+  },
+  {
+    id: "ms-lindqvist",
+    guestName: "Ms. Lindqvist",
+    name: "Ms. Lindqvist",
+    relation: "Music teacher with a concert coming up",
+    minReputation: 22,
+    look: { skinTone: "porcelain", hairStyle: "long-waves", hairColour: "blonde", outfit: "blazer" },
+    brief: {
+      ...NONE,
+      occasion: "The school concert",
+      products: ["petit-fours"],
+      requiredTags: ["elegant"],
+      favouredColours: ["navy", "ivory", "gold"],
+      avoidColours: ["ruby"],
+      requiredToppings: [{ topping: "sugar-pearls", count: 6 }],
+      budget: [45, 60],
+      fee: [95, 120],
+      deadlineDays: [5, 7],
+      minQuality: 80,
+    },
+    lines: {
+      request: "Petits fours for the concert interval. Elegant, with pearls like piano keys.",
+      delighted: "The orchestra played an encore just to have another one!",
+      nearMiss: "Very pretty. A few icing lines were a little out of tune.",
+    },
+  },
+  {
+    id: "aunt-maribel",
+    guestName: "Aunt Maribel and Uncle Joss",
+    name: "Aunt Maribel & Uncle Joss",
+    relation: "Celebrating twenty-five years together",
+    minReputation: 26,
+    look: { skinTone: "amber", hairStyle: "curly-puff", hairColour: "platinum", outfit: "cardigan" },
+    brief: {
+      ...NONE,
+      occasion: "A silver anniversary",
+      products: ["three-tier-cake"],
+      requiredTags: ["regal", "romantic"],
+      avoidMixes: ["cocoa-sponge"],
+      favouredColours: ["ivory", "gold", "blush"],
+      avoidColours: [],
+      requiredToppings: [
+        { topping: "sugar-rose", count: 3 },
+        { topping: "sugar-shimmer", count: 2 },
+      ],
+      budget: [110, 140],
+      fee: [170, 210],
+      deadlineDays: [6, 8],
+      minQuality: 84,
+    },
+    lines: {
+      request: "Twenty-five years! Three tiers, roses and a little shimmer. No cocoa, please.",
+      delighted: "Joss cried happy tears. It's taller than our wedding cake!",
+      nearMiss: "It's beautiful. The top border needs just a steadier hand.",
+    },
+  },
+  {
+    id: "wren",
+    guestName: "Wren",
+    name: "Wren",
+    relation: "Mural painter by the station",
+    traitGate: "dreamer",
+    minReputation: 8,
+    look: { skinTone: "peach", hairStyle: "pixie", hairColour: "ocean-teal", outfit: "dungarees" },
+    brief: {
+      ...NONE,
+      occasion: "A new mural opening",
+      products: ["cupcake-tray", "layer-cake", "iced-biscuits", "petit-fours", "spiral-roll"],
+      requiredTags: ["dreamy"],
+      minColours: 3,
+      favouredColours: "any",
+      avoidColours: [],
+      requiredToppings: [
+        { topping: "wafer-butterfly", count: 2 },
+        { topping: "sugar-shimmer", count: 1 },
+      ],
+      budget: [40, 55],
+      fee: [90, 110],
+      deadlineDays: [4, 6],
+      minQuality: 76,
+    },
+    lines: {
+      request: "Paint me a cake that feels like weather. Three colours at least!",
+      delighted: "It's a sky on a plate. I'm painting it into the mural!",
+      nearMiss: "Gorgeous colours. One or two lines drifted like clouds.",
+    },
+  },
+  {
+    id: "mr-quill",
+    guestName: "Mr. Quill",
+    name: "Mr. Quill",
+    relation: "Clockmaker on Wick Lane",
+    traitGate: "perfectionist",
+    minReputation: 10,
+    look: { skinTone: "sand", hairStyle: "short-bob", hairColour: "dark-brown", outfit: "blazer" },
+    brief: {
+      ...NONE,
+      occasion: "The shop's hundredth birthday",
+      products: ["petit-fours"],
+      requiredTags: ["classic", "elegant"],
+      favouredColours: ["ivory", "charcoal", "gold"],
+      avoidColours: [],
+      requiredToppings: [{ topping: "wafer-fan", count: 3 }],
+      budget: [40, 55],
+      fee: [110, 130],
+      deadlineDays: [5, 7],
+      minQuality: 84,
+    },
+    lines: {
+      request: "One hundred years of clocks. Petits fours, exactly so, if you please.",
+      delighted: "Precise to the second. I shall set my clocks by your baking.",
+      nearMiss: "Very fine. A line or two ran a fraction fast.",
+    },
+  },
 ];
+
+export const FAIR_CLIENT_ID = "larkspur-fair";
 
 export const FIRST_DAY_CLIENT_IDS: readonly string[] = ["pip", "coach-dani"];
 export const GUIDED_CLIENT_ID = "pip";

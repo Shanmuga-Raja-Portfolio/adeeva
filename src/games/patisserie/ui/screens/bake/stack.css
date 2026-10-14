@@ -122,3 +122,47 @@
     grid-template-columns: 1fr;
   }
 }
+
+.pa-level {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--pa-blueberry-soft);
+}
+
+.pa-level h3 {
+  margin: 0;
+  color: var(--pa-blueberry);
+}
+
+.pa-level__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-weight: 700;
+}
+
+.pa-level__row:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.pa-level__row--level {
+  background: var(--pa-pistachio-soft);
+  color: var(--pa-pistachio-deep);
+}
+
+.pa-level__right svg {
+  transform: rotate(180deg);
+}
+
+.pa-stack__level {
+  filter: drop-shadow(0 0 6px rgba(95, 160, 70, 0.9));
+  animation: ad-fade-in var(--duration-slow) var(--ease-out) both;
+}

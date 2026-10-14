@@ -5,8 +5,7 @@ import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { Meter } from "../../../../../ui/kit/Meter";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
-import { CAREER } from "../../../content/career";
-import { canWorkShift, isCounterDay, weeklyBill, type GameState } from "../../../core";
+import { careerById, canWorkShift, dayKind, rentLabel, weeklyBill, type GameState } from "../../../core";
 import { BakeryBackdrop } from "../../art/BakeryBackdrop";
 
 export interface HubHeroProps {
@@ -19,14 +18,16 @@ function rentNote(state: GameState): string {
   const rent = weeklyBill(state);
   if (rent === 0) return "No rent on Relaxed. Bake for joy!";
   const days = daysUntilWeekEnd(state.calendar.day);
-  if (days === 0) return `Bakery rent of ${rent} coins is due tonight.`;
-  return `Bakery rent of ${rent} coins is due after Counter Day, in ${days} ${days === 1 ? "day" : "days"}.`;
+  const label = rentLabel(state);
+  if (days === 0) return `${label} of ${rent} coins is due tonight.`;
+  return `${label} of ${rent} coins is due after Counter Day, in ${days} ${days === 1 ? "day" : "days"}.`;
 }
 
 export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
   const { profile, calendar } = state;
   const shift = canWorkShift(state);
-  const counterDay = isCounterDay(calendar.day);
+  const kind = dayKind(state);
+  const career = careerById(state.career);
   return (
     <section className="pa-hub-hero" aria-label="Your day">
       <BakeryBackdrop className="pa-hub-hero__backdrop" evening={calendar.hoursLeft <= 3} />
@@ -35,15 +36,26 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
       </div>
       <div className="pa-hub-hero__card pa-doily">
         <span className="ad-eyebrow">
-          Week {weekNumber(calendar.day)} · {weekdayName(calendar.day)} · {CAREER.bakeryName}
+          Week {weekNumber(calendar.day)} · {weekdayName(calendar.day)} · {career.placeName}
         </span>
         <h1 className="pa-hub-hero__title">
           {dayGreeting(calendar.hoursLeft, BASE_DAY_HOURS)}, {profile.name}
         </h1>
-        {counterDay ? (
+        {kind === "counter" ? (
           <p className="pa-hub-hero__counter">
             <Icon name="star" size={16} /> It's Counter Day! The oven rests. Open the counter and box up
             treats.
+          </p>
+        ) : null}
+        {kind === "salon" ? (
+          <p className="pa-hub-hero__counter">
+            <Icon name="heart" size={16} /> It's Salon Day! The oven rests. Open the Comet Room for your
+            guests.
+          </p>
+        ) : null}
+        {kind === "fair" ? (
+          <p className="pa-hub-hero__counter">
+            <Icon name="star" size={16} /> It's Fair Day! Head to the glasshouse with your showpiece.
           </p>
         ) : null}
         <Meter
@@ -62,9 +74,9 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
             icon="bag"
             onClick={onWorkShift}
             disabledReason={shift.ok ? undefined : shift.reasons.join(" ")}
-            aria-label={`${CAREER.shiftName} for ${CAREER.shiftPay} coins`}
+            aria-label={`${career.shiftName} for ${career.shiftPay} coins`}
           >
-            Wash trays · +{CAREER.shiftPay}
+            {state.career === "salon" ? "Set up tables" : "Wash trays"} · +{career.shiftPay}
           </Button>
           <Button size="lg" icon="calendar" onClick={onEndDay} data-testid="end-day">
             End day

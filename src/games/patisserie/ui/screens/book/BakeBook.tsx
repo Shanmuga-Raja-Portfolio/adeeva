@@ -38,14 +38,16 @@ export function BakeBook({ state, onExit }: BakeBookProps) {
                 onClick={() => setOpen(entry)}
                 aria-label={`Open the page for day ${entry.day}`}
               >
-                <BakeBookCard entry={entry} />
+                <BakeBookCard entry={entry} ribbon={state.fair?.ribbonsByRun[entry.runId]} />
               </button>
             </li>
           ))}
         </ul>
       )}
       <Dialog open={open !== null} title="A page from the Bake Book" onClose={() => setOpen(null)}>
-        {open !== null ? <BakeBookCard entry={open} large /> : null}
+        {open !== null ? (
+          <BakeBookCard entry={open} ribbon={state.fair?.ribbonsByRun[open.runId]} large />
+        ) : null}
       </Dialog>
     </main>
   );

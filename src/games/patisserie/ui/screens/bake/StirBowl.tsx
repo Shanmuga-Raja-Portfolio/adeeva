@@ -2,11 +2,9 @@ import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } fr
 import { followAccuracy, type FollowProgress } from "../../../../../engine/followRecord";
 import { useTickLoop } from "../../../../../ui/kit/useTickLoop";
 import type { MixDef } from "../../../content/mix";
-import { lapDirection, type Action } from "../../../core";
+import { lapCentre, lapDirection, type Action } from "../../../core";
 import { MixingBowl } from "../../art/MixingBowl";
-import { resumeStir, stirTick, type StirSim } from "./stirSimulation";
-
-const KEY_LEAD = 0.3;
+import { keyLeadFor, resumeStir, stirTick, type StirSim } from "./stirSimulation";
 
 export interface StirBowlProps {
   readonly batch: number;
@@ -60,8 +58,10 @@ export function StirBowl({ batch, mix, halfWidth, assisted, stored, dispatch }: 
     let next = simRef.current;
     const lap = Math.floor(next.progress);
     for (let tick = 0; tick < count; tick += 1) {
-      if (keyTurn.current !== 0) next = { ...next, finger: next.spoon + keyTurn.current * KEY_LEAD };
-      next = stirTick(next, mix.laps, halfWidth);
+      const centre = lapCentre(mix, next.progress);
+      if (keyTurn.current !== 0)
+        next = { ...next, finger: next.spoon + keyTurn.current * keyLeadFor(centre) };
+      next = stirTick(next, mix.laps, halfWidth, centre);
     }
     update(next);
     if (Math.floor(next.progress) > lap || next.progress >= mix.laps) record.current(next);
@@ -155,6 +155,7 @@ export function StirBowl({ batch, mix, halfWidth, assisted, stored, dispatch }: 
           spoon={sim.spoon}
           speed={sim.speed}
           halfWidth={halfWidth}
+          centre={lapCentre(mix, sim.progress)}
           direction={direction}
           splash={sim.splash}
           title={`Bowl of ${mix.name}, ${lapsDone} of ${mix.laps} laps stirred`}
@@ -162,7 +163,15 @@ export function StirBowl({ batch, mix, halfWidth, assisted, stored, dispatch }: 
         {!done && sim.finger === null ? (
           <div className="pa-stir__prompt" aria-hidden="true">
             <strong>{sim.progress > 0 ? "Keep stirring" : "Press and stir round"}</strong>
-            <span>{direction === 1 ? "Clockwise this lap" : "Now the other way round"}</span>
+            <span>
+              {mix.lapSpeeds === undefined
+                ? direction === 1
+                  ? "Clockwise this lap"
+                  : "Now the other way round"
+                : lapCentre(mix, sim.progress) < 3.5
+                  ? "Fold slowly this lap"
+                  : "Now whisk a little faster"}
+            </span>
           </div>
         ) : null}
         {done ? (

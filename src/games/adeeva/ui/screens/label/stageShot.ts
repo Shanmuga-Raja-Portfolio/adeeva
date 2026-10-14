@@ -1,4 +1,4 @@
-import { clampUnit, easeInOut, easeOut, window01 } from "./easing";
+import { clampUnit, easeInOut, easeOut, window01 } from "../../../../../ui/kit/easing";
 import type { ShowWalker } from "./showCast";
 import type { ShowMoment } from "./showTimeline";
 import { walkProgress } from "./walkProgress";

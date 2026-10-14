@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "amber", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 13, "hoursLeft": 1 },
+  "coins": 679,
+  "reputation": 30,
+  "buzz": 9,
+  "pantry": {
+    "ingredients": {
+      "flour": 600,
+      "caster-sugar": 640,
+      "icing-sugar": 0,
+      "butter": 400,
+      "milk": 940,
+      "cocoa": 0,
+      "vanilla": 50,
+      "lemon-zest": 0,
+      "honey": 0,
+      "eggs": 6
+    },
+    "gels": { "rose": 9, "sky": 9 },
+    "fillings": { "raspberry-jam": 0, "vanilla-cream": 0, "honey-cream": 0 },
+    "toppings": {
+      "sprinkles": 1,
+      "sugar-rose": 0,
+      "fresh-berries": 0,
+      "party-candle": 1,
+      "choc-curls": 0,
+      "sugar-pearls": 0,
+      "wafer-butterfly": 0,
+      "gold-star": 0,
+      "team-ball": 0
+    }
+  },
+  "upgrades": ["bright-scale", "oven-lamp"],
+  "guide": false,
+  "trends": { "current": ["elegant", "playful"], "next": ["regal", "bold"] },
+  "gigs": {
+    "offers": [],
+    "active": [
+      {
+        "id": "gig-41",
+        "clientId": "pip",
+        "brief": {
+          "clientId": "pip",
+          "occasion": "Pip's 7th birthday",
+          "products": ["cupcake-tray"],
+          "deadlineDay": 17,
+          "budget": 24,
+          "fee": 38,
+          "requiredTags": ["playful"],
+          "requiredMixes": [],
+          "avoidMixes": [],
+          "favouredColours": ["sky", "mustard"],
+          "avoidColours": ["charcoal"],
+          "requiredToppings": [
+            { "topping": "sprinkles", "count": 1 },
+            { "topping": "party-candle", "count": 1 }
+          ],
+          "minQuality": 62
+        },
+        "acceptedDay": 13
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 42
+  },
+  "story": { "seen": ["pa-intro", "pa-trait-dreamer", "pa-first-delivery"], "flags": [], "queue": [] },
+  "activeRun": {
+    "id": "run-2",
+    "purpose": { "kind": "order", "gigId": "gig-41" },
+    "brief": {
+      "clientId": "pip",
+      "occasion": "Pip's 7th birthday",
+      "products": ["cupcake-tray"],
+      "deadlineDay": 17,
+      "budget": 24,
+      "fee": 38,
+      "requiredTags": ["playful"],
+      "requiredMixes": [],
+      "avoidMixes": [],
+      "favouredColours": ["sky", "mustard"],
+      "avoidColours": ["charcoal"],
+      "requiredToppings": [
+        { "topping": "sprinkles", "count": 1 },
+        { "topping": "party-candle", "count": 1 }
+      ],
+      "minQuality": 62
+    },
+    "stage": "review",
+    "reached": "review",
+    "startedDay": 13,
+    "design": {
+      "productId": "cupcake-tray",
+      "mixIds": ["vanilla-sponge"],
+      "fillingId": null,
+      "colours": ["sky"],
+      "pattern": "a"
+    },
+    "batches": [
+      {
+        "weighs": {
+          "flour": { "grams": 200, "actions": 1, "assisted": false, "band": 0.06 },
+          "caster-sugar": { "grams": 180, "actions": 1, "assisted": false, "band": 0.06 },
+          "butter": { "grams": 175, "actions": 7, "assisted": false, "band": 0.06 },
+          "milk": { "grams": 30, "actions": 1, "assisted": false, "band": 0.06 }
+        },
+        "eggs": 3,
+        "committed": true,
+        "stir": { "progress": 3, "ticks": 360, "insideTicks": 342, "assisted": false },
+        "bake": { "heat": 3, "turnedMinutes": 12, "takenMinutes": 24, "assisted": false, "window": 0.072 }
+      }
+    ],
+    "stack": {},
+    "filled": false,
+    "iced": true,
+    "pipes": {
+      "swirl-1": { "accuracy": 1, "assisted": false },
+      "swirl-2": { "accuracy": 1, "assisted": false },
+      "swirl-3": { "accuracy": 1, "assisted": false }
+    },
+    "toppings": [
+      {
+        "id": "topping-1",
+        "toppingId": "sprinkles",
+        "x": 120,
+        "y": 150,
+        "rotation": 0,
+        "scale": 1,
+        "layer": 1
+      },
+      {
+        "id": "topping-2",
+        "toppingId": "party-candle",
+        "x": 150,
+        "y": 150,
+        "rotation": 0,
+        "scale": 1,
+        "layer": 2
+      }
+    ],
+    "nextToppingNumber": 3,
+    "pantryHourPaid": true,
+    "ingredientValue": 13.43
+  },
+  "counter": { "trays": [], "session": null, "closedDay": 0, "nextTrayNumber": 1, "lastSummary": null },
+  "bakeBook": [
+    {
+      "runId": "run-1",
+      "day": 13,
+      "clientId": "grandpa-tomasz",
+      "productId": "layer-cake",
+      "mixIds": ["vanilla-sponge"],
+      "fillingId": "vanilla-cream",
+      "colours": ["ivory", "rose"],
+      "pattern": "a",
+      "toppings": [
+        {
+          "id": "topping-1",
+          "toppingId": "sugar-rose",
+          "x": 120,
+          "y": 150,
+          "rotation": 0,
+          "scale": 1,
+          "layer": 1
+        },
+        {
+          "id": "topping-2",
+          "toppingId": "sugar-rose",
+          "x": 150,
+          "y": 150,
+          "rotation": 0,
+          "scale": 1,
+          "layer": 2
+        }
+      ],
+      "stars": 5,
+      "happy": true
+    }
+  ],
+  "log": [
+    {
+      "runId": "run-1",
+      "clientId": "grandpa-tomasz",
+      "day": 13,
+      "evaluation": {
+        "criteria": [
+          {
+            "id": "construction",
+            "label": "Finished bake",
+            "passed": true,
+            "detail": "1/1 baked, 2/2 icing lines piped.",
+            "weight": 3
+          },
+          {
+            "id": "quality",
+            "label": "Quality",
+            "passed": true,
+            "detail": "Quality 99 against a minimum of 67.",
+            "weight": 2
+          },
+          {
+            "id": "style",
+            "label": "Style and flavour",
+            "passed": true,
+            "detail": "Feels classic and romantic, just as asked.",
+            "weight": 2
+          },
+          {
+            "id": "colours",
+            "label": "Icing colours",
+            "passed": true,
+            "detail": "No unwanted colours. 2 favourite shades used.",
+            "weight": 1
+          },
+          { "id": "toppings", "label": "Toppings", "passed": true, "detail": "Sugar Rose 2/2", "weight": 1 },
+          {
+            "id": "budget",
+            "label": "Budget",
+            "passed": true,
+            "detail": "Used 28 of 34 coins of ingredients.",
+            "weight": 1
+          },
+          {
+            "id": "deadline",
+            "label": "On time",
+            "passed": true,
+            "detail": "Delivered on day 13, due by day 19.",
+            "weight": 1
+          }
+        ],
+        "quality": { "weigh": 1, "stir": 0.95, "bake": 1, "pipe": 1, "flavourFit": 1, "quality": 99 },
+        "favouredColoursUsed": 2,
+        "score": 100,
+        "stars": 5,
+        "passed": true,
+        "feedback": [],
+        "spend": 28
+      },
+      "reward": {
+        "outcome": "pass",
+        "coins": 68,
+        "reputation": 3,
+        "buzz": 9,
+        "lines": [
+          { "label": "Fee", "amount": 56 },
+          { "label": "Trend bonus", "amount": 5 },
+          { "label": "Dreamer flair", "amount": 7 }
+        ],
+        "trendMatches": ["elegant"]
+      }
+    }
+  ],
+  "ordersDelivered": 12,
+  "nextRunNumber": 3,
+  "rng": -2023389397
+}

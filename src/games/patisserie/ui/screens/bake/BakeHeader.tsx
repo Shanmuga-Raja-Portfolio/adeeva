@@ -35,9 +35,21 @@ export function BakeHeader({ state, run, dispatch, onExit }: StageProps) {
         <span className="ad-eyebrow">
           {client !== undefined && run.brief !== null
             ? `For ${client.name} · ${run.brief.occasion}`
-            : "A tray for Counter Day"}
+            : run.purpose.kind === "showpiece"
+              ? `Fair showpiece · ${run.brief?.occasion ?? "The Larkspur Patisserie Fair"}`
+              : run.purpose.kind === "salon-tray"
+                ? "A salon tray for the Comet Room"
+                : "A tray for Counter Day"}
         </span>
-        <h1>{STAGE_TITLES[run.stage]}</h1>
+        <h1>
+          {run.stage === "brief" && run.purpose.kind === "showpiece"
+            ? "The Fair card"
+            : run.stage === "review" && run.purpose.kind === "showpiece"
+              ? "Ready for the Fair"
+              : run.stage === "review" && run.purpose.kind === "salon-tray"
+                ? "Ready for the shelf"
+                : STAGE_TITLES[run.stage]}
+        </h1>
       </div>
       <div className="pa-bake-header__stats">
         <StatChip kind="day" value={state.calendar.day} />

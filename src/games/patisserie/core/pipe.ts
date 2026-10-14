@@ -2,6 +2,7 @@ import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { cappedAccuracy } from "../../../engine/assistCap";
 import type { Point } from "../../../engine/geometry/point";
 import { traceAccuracy } from "../../../engine/geometry/traceAccuracy";
+import { letterPaths } from "../content/letterPath";
 import { PIPE_PATTERNS, type PipePathDef } from "../content/pipePattern";
 import { PIPE_CANVAS_CM } from "../content/pipeShape";
 import type { BakeRun, PipeRecord } from "./bakeRun";
@@ -24,7 +25,11 @@ export function pipeTolerance(state: GameState): number {
 
 export function runPipePaths(run: BakeRun): readonly PipePathDef[] {
   if (run.purpose.kind === "tray" || run.design.productId === null) return [];
-  return PIPE_PATTERNS[run.design.productId][run.design.pattern].paths;
+  const pattern = PIPE_PATTERNS[run.design.productId][run.design.pattern].paths;
+  if (run.purpose.kind === "salon-tray") return pattern.slice(0, 1);
+  const lettering =
+    run.flourishes.includes("plaque-lettering") && run.word !== null ? letterPaths(run.word) : [];
+  return [...pattern, ...lettering];
 }
 
 function segmentsOf(path: PipePathDef): [Point, Point][] {

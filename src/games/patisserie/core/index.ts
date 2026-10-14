@@ -75,6 +75,7 @@ export { leaveHours } from "./hourCost";
 export {
   isInStirBand,
   isStirring,
+  lapCentre,
   lapDirection,
   MAX_SPOON_SPEED,
   STIR_CENTRE_SPEED,
@@ -83,6 +84,50 @@ export {
 } from "./stir";
 export { currentBeat } from "./storyQueue";
 export { availableToppings, CAKE_CANVAS, ROTATION_STEP } from "./toppingPlacement";
-export { upgradePurchaseIssues } from "../../../engine/upgrades";
 export { batchMix, batchReady } from "./weigh";
 export { pourCap, pourFlow, scoopBackGrams, settleGrams, weighAccuracy, weighBand } from "./weighAccuracy";
+export {
+  careerById,
+  fairMusicById,
+  fairTentByNumber,
+  fairThemeById,
+  menuTierById,
+  ribbonById,
+  seasonByNumber,
+  tableClothById,
+  teaById,
+  flourishById,
+} from "./catalog";
+export { canRestParlour, rentLabel } from "./parlour";
+export { canOpenSalon, SALON_ORDERS, SALON_REPUTATION } from "./openSalon";
+export { storyChoiceIssue } from "./storyChoice";
+export { canChooseTheme } from "./fairSeason";
+export { canSetMenu, menuEntryIssue, menuPalette, suggestedMenu } from "./salonMenu";
+export { salonTrayIssue } from "./salonTray";
+export { splitCovers, splitTally } from "./traySplit";
+export { canOpenTables, SALON_SECONDS } from "./tableSession";
+export { itemName, platingRefusal } from "./standPlating";
+export { canServeTable, tablePay, tablePayLines } from "./tablePay";
+export { MAX_POUR_ML, pourAccuracy, TEA_TARGET_ML, teaBand } from "./teaPour";
+export { showpieceIssue } from "./showpiece";
+export { flourishIssue } from "./design";
+export { canStageFair } from "./fairStage";
+export { suggestedPlan, planIssue } from "./fairPlan";
+export { bookPlate, panelVerdict } from "./fairPanels";
+export { ottisPicks, sidePlateOptions, SIDE_PLATES } from "./sidePlates";
+export {
+  currentSeason,
+  dayKind,
+  fairDayOf,
+  isSalonDay,
+  nextSeasonStart,
+  salonDayOf,
+  seasonBegun,
+  seasonThemes,
+} from "./seasonCalendar";
+export { bakesTogether, bakeTimeScale, TOGETHER_BATCHES } from "./oven";
+export { isCustomBake, TRAY_SPLITS } from "./bakeRun";
+export { upgradeIssues } from "./upgradeShop";
+export { shiftPay } from "./calendar";
+export type { FairEntry, FairPanelScore, FairPlan, FairResult, FairState } from "./fairState";
+export type { Booking, MenuEntry, SalonMenu, SalonState, TableState } from "./salonState";

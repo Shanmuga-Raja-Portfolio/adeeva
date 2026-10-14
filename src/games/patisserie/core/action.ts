@@ -3,17 +3,65 @@ import type { DifficultyId } from "../../../engine/difficulty";
 import type { Point } from "../../../engine/geometry/point";
 import type { ColourId } from "../../../engine/palette";
 import type { TraitId } from "../../../engine/trait";
+import type { CareerId } from "../content/career";
+import type { FairThemeId } from "../content/fairTheme";
 import type { FillingId } from "../content/filling";
+import type { FlourishId } from "../content/flourish";
+import type { PlaqueWord } from "../content/letterPath";
+import type { MenuTierId } from "../content/menuTier";
 import type { IngredientId } from "../content/ingredient";
 import type { MixId } from "../content/mix";
 import type { PatternChoice } from "../content/pipePattern";
 import type { ProductId, TrayProductId } from "../content/product";
 import type { ToppingId } from "../content/topping";
 import type { UpgradeId } from "../content/upgrade";
+import type { FairPlan } from "./fairState";
 import type { PantryCart } from "./pantry";
 import type { RunStage } from "./runStage";
+import type { SalonMenu } from "./salonState";
+
+export type SalonAction =
+  | { readonly type: "openSalon" }
+  | { readonly type: "restParlour" }
+  | { readonly type: "setSalonMenu"; readonly menu: SalonMenu }
+  | { readonly type: "startSalonTray"; readonly tier: MenuTierId }
+  | { readonly type: "chooseSplit"; readonly split: number }
+  | { readonly type: "openTables" }
+  | { readonly type: "closeTables" }
+  | {
+      readonly type: "plateItem";
+      readonly tableIndex: number;
+      readonly tier: MenuTierId;
+      readonly colour: ColourId;
+    }
+  | { readonly type: "unplateItem"; readonly tableIndex: number; readonly tier: MenuTierId }
+  | {
+      readonly type: "pourTea";
+      readonly tableIndex: number;
+      readonly ml: number;
+      readonly actions: number;
+      readonly assisted: boolean;
+    }
+  | { readonly type: "serveTable"; readonly tableIndex: number };
+
+export type FairAction =
+  | { readonly type: "chooseFairTheme"; readonly themeId: FairThemeId }
+  | { readonly type: "startShowpiece" }
+  | { readonly type: "toggleFlourish"; readonly flourish: FlourishId }
+  | { readonly type: "chooseWord"; readonly word: PlaqueWord }
+  | {
+      readonly type: "bakeTogether";
+      readonly heat: number;
+      readonly turnedMinutes: number | null;
+      readonly takenMinutes: readonly number[];
+      readonly assisted: boolean;
+    }
+  | { readonly type: "stageFair"; readonly plan: FairPlan }
+  | { readonly type: "moveUpTent" };
 
 export type Action =
+  | SalonAction
+  | FairAction
   | {
       readonly type: "newGame";
       readonly seed: number;
@@ -21,6 +69,7 @@ export type Action =
       readonly look: AvatarLook;
       readonly trait: TraitId;
       readonly difficulty: DifficultyId;
+      readonly career?: CareerId;
     }
   | { readonly type: "acceptOffer"; readonly offerId: string }
   | { readonly type: "declineOffer"; readonly offerId: string }
@@ -87,4 +136,5 @@ export type Action =
   | { readonly type: "workShift" }
   | { readonly type: "buyUpgrade"; readonly upgradeId: UpgradeId }
   | { readonly type: "setGuide"; readonly on: boolean }
-  | { readonly type: "markBeatSeen"; readonly beatId: string };
+  | { readonly type: "markBeatSeen"; readonly beatId: string }
+  | { readonly type: "chooseStoryOption"; readonly beatId: string; readonly choiceId: string };

@@ -1,7 +1,7 @@
-import type { GameState } from "../core";
+import { canStageFair, type GameState } from "../core";
 import type { SaveSlotId } from "./patisserieSlots";
 
-export type PlayView = "hub" | "bake" | "counter" | "book";
+export type PlayView = "hub" | "bake" | "counter" | "book" | "salon" | "fair";
 
 export type AppRoute =
   | { readonly name: "title" }
@@ -19,5 +19,9 @@ export function resolveScreen(route: AppRoute, game: GameState | null): Resolved
   if (route.view === "bake" && game.activeRun !== null) return { name: "bake", game };
   if (route.view === "counter" && game.counter.session !== null) return { name: "counter", game };
   if (route.view === "book") return { name: "book", game };
+  if (route.view === "salon" && game.salon !== null && game.salon.session !== null)
+    return { name: "salon", game };
+  if (route.view === "fair" && game.fair !== null && (game.fair.result !== null || canStageFair(game).ok))
+    return { name: "fair", game };
   return { name: "hub", game };
 }

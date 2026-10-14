@@ -66,5 +66,64 @@ export function PipeSurface({ path, coat, sponge }: PipeSurfaceProps) {
           <path d={outline(path, 1.08)} fill={sponge} />
         </g>
       );
+    case "grand":
+      return (
+        <g>
+          <circle cx={12} cy={12} r={11.6} fill={darken(coat, 0.12)} />
+          <circle cx={12} cy={12} r={11.2} fill={coat} />
+          <circle cx={12} cy={12} r={8} fill={darken(coat, 0.08)} />
+          <circle cx={12} cy={12} r={7.6} fill={lighten(coat, 0.05)} />
+          <circle cx={12} cy={12} r={4.6} fill={darken(coat, 0.06)} />
+          <circle cx={12} cy={12} r={4.2} fill={lighten(coat, 0.12)} />
+        </g>
+      );
+    case "petit":
+      return (
+        <g>
+          <rect x={5.4} y={5.4} width={13.2} height={13.2} rx={1.4} fill={darken(coat, 0.12)} />
+          <rect x={6} y={6} width={12} height={12} rx={1} fill={coat} />
+          <rect x={7} y={7} width={4} height={2} rx={1} fill="#ffffff" opacity={0.3} />
+        </g>
+      );
+    case "tartlet":
+      return (
+        <g>
+          <circle cx={12} cy={12} r={7.4} fill={sponge} stroke={darken(sponge, 0.25)} strokeWidth={0.2} />
+          <circle cx={12} cy={12} r={6.4} fill="#fbf1d6" />
+          <circle cx={10} cy={10} r={1.6} fill="#ffffff" opacity={0.4} />
+        </g>
+      );
+    case "roll":
+      return (
+        <g>
+          <rect x={2.4} y={7} width={19.2} height={10} rx={5} fill={darken(coat, 0.1)} />
+          <rect x={2.8} y={7.4} width={18.4} height={9.2} rx={4.6} fill={coat} />
+          <path d="M4 9 H20" stroke="#ffffff" strokeWidth={0.6} opacity={0.4} />
+        </g>
+      );
+    case "wreath":
+      return (
+        <g>
+          <circle cx={12} cy={12} r={11} fill="none" stroke={darken(sponge, 0.08)} strokeWidth={4} />
+          <circle
+            cx={12}
+            cy={12}
+            r={11}
+            fill="none"
+            stroke={sponge}
+            strokeWidth={3.2}
+            strokeDasharray="2.6 0.8"
+          />
+          <circle cx={12} cy={12} r={8.6} fill="#f6efe2" />
+        </g>
+      );
+    case "plaque":
+      return (
+        <g>
+          <rect x={3.4} y={4.4} width={17.2} height={15.2} rx={2.4} fill="#3b2018" />
+          <rect x={4} y={5} width={16} height={14} rx={2} fill="#5a3324" />
+          <path d="M5 6.4 H12" stroke="#a46f55" strokeWidth={0.5} opacity={0.7} />
+        </g>
+      );
   }
 }

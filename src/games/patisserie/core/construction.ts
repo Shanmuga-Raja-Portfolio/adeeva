@@ -1,4 +1,4 @@
-import type { BakeRun } from "./bakeRun";
+import { isCustomBake, type BakeRun } from "./bakeRun";
 import { runPipePaths } from "./pipe";
 import { needsFilling, stackComplete } from "./stack";
 import { stirDone } from "./stir";
@@ -23,7 +23,7 @@ export function constructionCount(run: BakeRun): ConstructionCount {
     weighed: batches.filter(({ entry }) => entry.committed).length,
     stirred: batches.filter(({ entry, mix }) => mix !== null && stirDone(entry.stir, mix)).length,
     baked: batches.filter(({ entry }) => entry.bake !== null).length,
-    stacked: run.purpose.kind === "tray" || stackComplete(run),
+    stacked: !isCustomBake(run) || stackComplete(run),
     filled: !needsFilling(run) || run.filled,
     paths: paths.length,
     piped: paths.filter((path) => Object.hasOwn(run.pipes, path.id)).length,

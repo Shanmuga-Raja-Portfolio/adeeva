@@ -8,6 +8,7 @@ export interface DialScaleProps {
   readonly stopLine: boolean;
   readonly pouring: boolean;
   readonly unit: string;
+  readonly hideZone?: boolean | undefined;
 }
 
 const CX = 150;
@@ -37,7 +38,16 @@ function arc(from: number, to: number, radius: number): string {
   return `M${x1.toFixed(1)} ${y1.toFixed(1)} A${radius} ${radius} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`;
 }
 
-export function DialScale({ grams, target, band, colour, stopLine, pouring, unit }: DialScaleProps) {
+export function DialScale({
+  grams,
+  target,
+  band,
+  colour,
+  stopLine,
+  pouring,
+  unit,
+  hideZone = false,
+}: DialScaleProps) {
   const id = useSvgId("dial");
   const max = niceMax(target);
   const low = angleFor(target * (1 - band), max);
@@ -84,13 +94,23 @@ export function DialScale({ grams, target, band, colour, stopLine, pouring, unit
       ) : null}
       <circle cx={CX} cy={CY} r={R + 8} fill="#fffaf0" stroke="#2f3a78" strokeWidth={4} />
       <circle cx={CX} cy={CY} r={R} fill={`url(#${id}-face)`} />
-      <path
-        d={arc(low, high, R - 12)}
-        stroke={inZone ? "#5fa046" : "#8fc274"}
-        strokeWidth={20}
-        fill="none"
-        className={inZone ? "pa-dial__zone pa-dial__zone--hit" : "pa-dial__zone"}
-      />
+      {hideZone ? (
+        <path
+          d={arc(-SWEEP, SWEEP, R - 12)}
+          stroke="#e3dccb"
+          strokeWidth={20}
+          fill="none"
+          strokeDasharray="4 10"
+        />
+      ) : (
+        <path
+          d={arc(low, high, R - 12)}
+          stroke={inZone ? "#5fa046" : "#8fc274"}
+          strokeWidth={20}
+          fill="none"
+          className={inZone ? "pa-dial__zone pa-dial__zone--hit" : "pa-dial__zone"}
+        />
+      )}
       {ticks.map((index) => {
         const angle = -SWEEP + (2 * SWEEP * index) / 10;
         const [x1, y1] = at(angle, R - 2);
@@ -135,7 +155,7 @@ export function DialScale({ grams, target, band, colour, stopLine, pouring, unit
         textAnchor="middle"
         fontSize={20}
         fontWeight={700}
-        fill={inZone ? "#b8f09a" : "#f5f1e6"}
+        fill={inZone && !hideZone ? "#b8f09a" : "#f5f1e6"}
         fontFamily="ui-monospace, monospace"
       >
         {Math.round(grams)} {unit}

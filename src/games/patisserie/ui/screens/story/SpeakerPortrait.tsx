@@ -1,16 +1,11 @@
 import type { AvatarLook } from "../../../../../engine/avatar";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { CLIENTS } from "../../../content/client";
-
-const OTTI_LOOK: AvatarLook = {
-  skinTone: "chestnut",
-  hairStyle: "short-bob",
-  hairColour: "platinum",
-  outfit: "studio-apron",
-};
+import { FAIR_SPEAKERS } from "../../../content/panelMember";
 
 function speakerLook(speaker: string): AvatarLook | null {
-  if (speaker === "Otti") return OTTI_LOOK;
+  const member = FAIR_SPEAKERS.find((entry) => entry.name === speaker);
+  if (member !== undefined) return member.look;
   return CLIENTS.find((client) => client.name === speaker)?.look ?? null;
 }
 
