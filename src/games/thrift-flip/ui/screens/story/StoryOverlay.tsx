@@ -4,19 +4,28 @@ import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import "../../../../adeeva/ui/screens/story/story.css";
+import { BOUTIQUE_CLIENTS } from "../../../content/boutiqueClient";
+import { LANDLADY_LOOK, LANDLADY_NAME } from "../../../content/boutiqueStoryBeat";
 import { CLIENTS } from "../../../content/client";
+import type { ShopSignId } from "../../../content/shopSign";
 import { MENTOR_LOOK, MENTOR_NAME, type StoryBeatDef } from "../../../content/storyBeat";
-import { beatLines, currentBeat, type Action, type GameState } from "../../../core";
+import { TICKET_CLIENTS } from "../../../content/ticketClient";
+import { beatLines, currentBeat, signById, type Action, type GameState } from "../../../core";
+import { BoutiqueBackdrop } from "../../art/BoutiqueBackdrop";
 import { StallBackdrop } from "../../art/StallBackdrop";
+import { SignPicker } from "../boutique/SignPicker";
 
 export interface StoryOverlayProps {
   readonly state: GameState;
   readonly dispatch: (action: Action) => boolean;
 }
 
+const PEOPLE = [...CLIENTS, ...BOUTIQUE_CLIENTS, ...TICKET_CLIENTS];
+
 function speakerLook(speaker: string): AvatarLook | null {
   if (speaker === MENTOR_NAME) return MENTOR_LOOK;
-  return CLIENTS.find((client) => client.name === speaker)?.look ?? null;
+  if (speaker === LANDLADY_NAME) return LANDLADY_LOOK;
+  return PEOPLE.find((client) => client.name === speaker)?.look ?? null;
 }
 
 function Portrait({
@@ -57,18 +66,33 @@ function StoryScene({ state, dispatch, beat }: StoryOverlayProps & { readonly be
   const { profile } = state;
   const lines = beatLines(beat, profile.trait, profile.name);
   const [shown, setShown] = useState(1);
+  const [signing, setSigning] = useState<string | null>(null);
   const finished = shown >= lines.length;
+  const boutique =
+    state.boutique !== null || beat.trigger === "boutique-offer" || beat.trigger === "intro-boutique";
+  const choose = (choiceId: string, signId: ShopSignId | null) =>
+    dispatch({ type: "chooseStoryOption", beatId: beat.id, choiceId, signId });
   const advance = () => {
     if (!finished) setShown(shown + 1);
   };
   return (
     <div className="ad-story tf-story" role="dialog" aria-modal="true" aria-labelledby="tf-story-title">
-      <StallBackdrop className="ad-story__backdrop" dusk={beat.trigger === "bankrupt"} />
+      {boutique ? (
+        <BoutiqueBackdrop
+          className="ad-story__backdrop"
+          dusk={beat.trigger === "bankrupt"}
+          signName={state.boutique === null ? "Mrs. Pell's" : signById(state.boutique.signId).name}
+        />
+      ) : (
+        <StallBackdrop className="ad-story__backdrop" dusk={beat.trigger === "bankrupt"} />
+      )}
       <div className="ad-story__veil" aria-hidden="true" />
       <div className="ad-story__tap" onPointerUp={advance} aria-hidden="true" />
       <section className="ad-story__panel">
         <header className="ad-story__header">
-          <span className="ad-eyebrow">A moment at the stall</span>
+          <span className="ad-eyebrow">
+            {state.boutique === null ? "A moment at the stall" : "A moment on Larkspur Row"}
+          </span>
           <h2 id="tf-story-title" className="ad-story__title">
             {beat.title}
           </h2>
@@ -107,7 +131,23 @@ function StoryScene({ state, dispatch, beat }: StoryOverlayProps & { readonly be
               />
             ))}
           </span>
-          {finished ? (
+          {finished && beat.choices.length > 0 ? (
+            <span className="tf-story__choices">
+              {beat.choices.map((choice, index) => (
+                <Button
+                  key={choice.id}
+                  autoFocus={index === 0}
+                  variant={index === 0 ? "primary" : "secondary"}
+                  onClick={() =>
+                    choice.effect === "open-boutique" ? setSigning(choice.id) : choose(choice.id, null)
+                  }
+                  data-testid={`story-choice-${choice.id}`}
+                >
+                  {choice.label}
+                </Button>
+              ))}
+            </span>
+          ) : finished ? (
             <Button autoFocus onClick={() => dispatch({ type: "markBeatSeen", beatId: beat.id })}>
               Continue
             </Button>
@@ -119,6 +159,14 @@ function StoryScene({ state, dispatch, beat }: StoryOverlayProps & { readonly be
           )}
         </footer>
       </section>
+      <SignPicker
+        open={signing !== null}
+        onClose={() => setSigning(null)}
+        onPick={(signId) => {
+          if (signing !== null) choose(signing, signId);
+          setSigning(null);
+        }}
+      />
     </div>
   );
 }

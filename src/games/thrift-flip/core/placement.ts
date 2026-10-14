@@ -12,7 +12,8 @@ export interface Placement {
   readonly rotation: Rotation;
 }
 
-export type PlacementIssueKind = "unplaced" | "off-fabric" | "worn-spot" | "overlap";
+export type PlacementIssueKind =
+  "unplaced" | "off-fabric" | "worn-spot" | "overlap" | "hem-edge" | "two-finds";
 
 export interface PlacementIssue {
   readonly pieceId: string;

@@ -25,10 +25,13 @@ import {
   positiveIntegerParser,
   shareParser,
 } from "./briefParser";
-import { findById, recipeById } from "./catalog";
+import { findById, recipeById, ticketById } from "./catalog";
 import type { Design } from "./design";
 import { FINISH_CANVAS } from "./finishing";
-import { flipPieces, flipSeams } from "./flipPieces";
+import { runKind } from "./runKind";
+import { runPieces, runSeams } from "./runPieces";
+import { runHasStage } from "./runStages";
+import { runLines } from "./unpick";
 import {
   lineKey,
   stainKey,
@@ -69,7 +72,7 @@ export const scrapParser = objectOf<Scrap>({
   tags: arrayOf(styleTagParser),
 });
 
-const stainParser = objectOf<Stain>({
+export const stainParser = objectOf<Stain>({
   id: stringParser,
   panel: countParser,
   cx: nonNegativeParser,
@@ -107,7 +110,7 @@ const purposeParser = taggedParser<FlipPurpose>({
   own: objectOf<FlipPurpose & { kind: "own" }>({ kind: oneOf(["own"] as const) }),
 });
 
-const unpickLineParser = refined(
+export const unpickLineParser = refined(
   objectOf<UnpickLine>({
     popped: arrayOf(countParser),
     snagsAt: arrayOf(countParser),
@@ -120,7 +123,7 @@ const unpickLineParser = refined(
   "pops and snags within the attempts",
 );
 
-const stainWorkParser = refined(
+export const stainWorkParser = refined(
   objectOf<StainWork>({ cellTicks: arrayOf(countParser), harshTicks: countParser, scrubTicks: countParser }),
   (work) => work.harshTicks <= work.scrubTicks,
   "harsh ticks within the scrub ticks",
@@ -128,7 +131,7 @@ const stainWorkParser = refined(
 
 const placementParser = objectOf<Placement>({ x: numberParser, y: numberParser, rotation: oneOf(ROTATIONS) });
 
-const seamProgressParser = refined(
+export const seamProgressParser = refined(
   objectOf<SeamProgress>({
     progress: shareParser,
     ticks: countParser,
@@ -173,7 +176,7 @@ function unpickWithinLines(run: FlipRun): boolean {
     const owned = run.finds.find((entry) => entry.id === findKey);
     if (owned === undefined) return false;
     const index = Number(line);
-    const def = findById(owned.findId).lines[index];
+    const def = runLines(run, owned).find((entry) => entry.index === index)?.def;
     if (def === undefined || key !== lineKey(owned.id, index)) return false;
     return [...record.popped, ...record.snagsAt].every((stitch) => stitch < def.stitches);
   });
@@ -188,17 +191,35 @@ function cleanOnStains(run: FlipRun): boolean {
 }
 
 function stagesConsistent(run: FlipRun): boolean {
-  const pastCut = stageIndex(run.stage) > stageIndex("cut");
+  const pastCut = runHasStage(run, "cut") && stageIndex(run.stage) > stageIndex("cut");
   return (
+    runHasStage(run, run.stage) &&
+    runHasStage(run, run.reachedStage) &&
     stageIndex(run.reachedStage) >= stageIndex(run.stage) &&
     run.cutDone === pastCut &&
     (run.stage !== "brief" || run.purpose.kind === "gig")
   );
 }
 
+function ticketShaped(run: FlipRun): boolean {
+  const ticketId = run.brief?.ticketId ?? null;
+  if (ticketId === null) return runKind(run) === "flip";
+  const ticket = ticketById(ticketId);
+  const lent = run.finds[0];
+  return (
+    run.purpose.kind === "gig" &&
+    run.design.recipeId === null &&
+    run.finds.length === 1 &&
+    lent !== undefined &&
+    lent.id === `lent-${run.purpose.gigId}` &&
+    lent.findId === ticket.findId &&
+    runKind(run) === ticket.kind
+  );
+}
+
 function runMatchesDesign(run: FlipRun): boolean {
-  const pieces = flipPieces(run.design).map((piece) => piece.id);
-  const seams = flipSeams(run.design).map((seam) => seam.id);
+  const pieces = runPieces(run).map((piece) => piece.id);
+  const seams = runSeams(run).map((seam) => seam.id);
   const findKeys = run.finds.map((owned) => owned.id);
   const ownedKeys = (record: Readonly<Record<string, unknown>>) =>
     Object.keys(record).every((key) => findKeys.includes(key.split("#")[0] ?? ""));
@@ -211,6 +232,7 @@ function runMatchesDesign(run: FlipRun): boolean {
     unpickWithinLines(run) &&
     cleanOnStains(run) &&
     stagesConsistent(run) &&
+    ticketShaped(run) &&
     keysWithin(run.seams, seams) &&
     ownedKeys(run.unpick) &&
     ownedKeys(run.clean) &&

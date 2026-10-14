@@ -1,4 +1,4 @@
-import { type CSSProperties, useEffect, useMemo } from "react";
+import { type CSSProperties, useMemo } from "react";
 import { RUNWAY_MOODS } from "../../../content/runwayMood";
 import type { ShowThemeDef } from "../../../content/showTheme";
 import {
@@ -9,20 +9,12 @@ import {
   type RunwayResult,
 } from "../../../core";
 import { useSettings } from "../../../../../studio/SettingsContext";
-import { window01 } from "../../../../../ui/kit/easing";
-import { MusicChip } from "./MusicChip";
 import { showCast } from "./showCast";
 import { ShowFrame } from "./ShowFrame";
-import {
-  momentAt,
-  sceneLabel,
-  showDuration,
-  showSegments,
-  STILL_FADE_MS,
-  type ShowMoment,
-} from "./showTimeline";
+import { ShowHud } from "./ShowHud";
+import { sceneLabel } from "./showTimeline";
 import { themeAccent } from "./themeAccent";
-import { useShowClock } from "../../../../../ui/kit/useShowClock";
+import { useShowPlayback } from "./useShowPlayback";
 import "./show.css";
 
 export interface RunwayShowProps {
@@ -37,9 +29,7 @@ export interface RunwayShowProps {
 export function RunwayShow({ state, season, theme, runway, result, onDone }: RunwayShowProps) {
   const { reducedMotion } = useSettings();
   const cast = useMemo(() => showCast(season, runway.order), [season, runway.order]);
-  const segments = useMemo(() => showSegments(cast.length, reducedMotion), [cast.length, reducedMotion]);
-  const elapsed = useShowClock(showDuration(segments), onDone);
-  const moment = momentAt(segments, elapsed);
+  const { segments, elapsed, moment, frames } = useShowPlayback(cast.length, reducedMotion, onDone);
   const audience = result.panels.find((panel) => panel.id === "audience")?.score ?? 50;
   const accent = themeAccent(theme);
   const petals = useMemo(
@@ -47,24 +37,6 @@ export function RunwayShow({ state, season, theme, runway, result, onDone }: Run
     [theme.palette],
   );
   const moodName = RUNWAY_MOODS.find((mood) => mood.id === runway.mood)?.name ?? "Music";
-
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onDone();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onDone]);
-
-  const frames: { moment: ShowMoment; opacity: number }[] = [{ moment, opacity: 1 }];
-  const following = segments[moment.index + 1];
-  if (reducedMotion && following !== undefined) {
-    const fade = window01(moment.ms, moment.segment.durationMs - STILL_FADE_MS, moment.segment.durationMs);
-    if (fade > 0)
-      frames.push({ moment: { segment: following, index: moment.index + 1, t: 0, ms: 0 }, opacity: fade });
-  }
-  const pips = segments.filter((segment) => segment.kind !== "title" && segment.kind !== "lights");
-  const activePip = pips.indexOf(moment.segment);
 
   return (
     <div
@@ -95,22 +67,15 @@ export function RunwayShow({ state, season, theme, runway, result, onDone }: Run
           />
         ))}
       </div>
-      <div className="ad-show__hud">
-        <MusicChip name={moodName} elapsed={elapsed} playing={!reducedMotion} />
-        <ol className="ad-show__pips" aria-label="Show progress">
-          {pips.map((segment, index) => (
-            <li
-              key={sceneLabel(segment)}
-              className={index === activePip ? "is-active" : index < activePip ? "is-done" : ""}
-            >
-              <span className="ad-visually-hidden">{sceneLabel(segment)}</span>
-            </li>
-          ))}
-        </ol>
-        <button type="button" className="ad-show__skip" onClick={onDone}>
-          Skip to the reviews ›
-        </button>
-      </div>
+      <ShowHud
+        segments={segments}
+        moment={moment}
+        elapsed={elapsed}
+        moodName={moodName}
+        playing={!reducedMotion}
+        skipLabel="Skip to the reviews ›"
+        onSkip={onDone}
+      />
     </div>
   );
 }

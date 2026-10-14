@@ -17,6 +17,7 @@ export const WASH_TUB_CLEAR_DIVISOR = 1.25;
 export const BASE_TICKS_TO_CLEAR = 180;
 
 export const CUTTING_MAT_MULTIPLIER = 1.15;
+export const THREAD_LIBRARY_MULTIPLIER = 1.1;
 
 const MATERIAL_SCRUB_FACTOR: Readonly<Record<MaterialId, number>> = {
   cotton: 1,
@@ -65,5 +66,6 @@ export function cutTolerance(state: ToleranceState): number {
 export function sewBand(state: ToleranceState, material: MaterialId, assisted: boolean): number {
   const fabric = 1 - SEW_DIFFICULTY_NARROWING * materialById(material).sewDifficulty;
   const assist = assisted ? ASSIST_SEW_WIDENING : 1;
-  return BASE_SEW_BAND * fabric * shared(state) * assist;
+  const library = owns(state, "thread-library") ? THREAD_LIBRARY_MULTIPLIER : 1;
+  return BASE_SEW_BAND * fabric * shared(state) * assist * library;
 }

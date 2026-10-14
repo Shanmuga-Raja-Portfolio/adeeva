@@ -15,6 +15,12 @@
   --tf-chalk: #2f3d38;
   --tf-chalk-ink: #f6f2e4;
   --tf-cream: #fff8ec;
+  --tf-larkspur: #7b7fd1;
+  --tf-larkspur-deep: #4b4f9e;
+  --tf-larkspur-soft: #e9e8fb;
+  --tf-shopfront: #2f6f6a;
+  --tf-shopfront-deep: #1d4744;
+  --tf-brass: #c9a227;
 
   --rose: var(--tf-tangerine);
   --rose-deep: var(--tf-tangerine-deep);

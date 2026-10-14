@@ -10,7 +10,7 @@ import { clientById, difficultyById, findById } from "./catalog";
 import { cellThreshold } from "./clean";
 import type { Design } from "./design";
 import type { FinishRequest } from "./finishing";
-import { flipPieces, flipSeams } from "./flipPieces";
+import { runPieces, runSeams } from "./runPieces";
 import type { FlipRun } from "./flipRun";
 import type { GameState } from "./gameState";
 import { runBoard } from "./layout";
@@ -36,6 +36,7 @@ export function newTestGame(overrides: Partial<NewGameSettings> = {}): GameState
     look: TEST_LOOK,
     trait: "dreamer",
     difficulty: "standard",
+    career: "stall",
     ...overrides,
   });
 }
@@ -170,7 +171,7 @@ export function scrubAll(state: GameState, harshShare: number): GameState {
 export function layoutActions(state: GameState): Action[] {
   const run = state.activeRun;
   if (run === null) return [];
-  const placements = autoPlacements(runBoard(run), flipPieces(run.design), {});
+  const placements = autoPlacements(runBoard(run), runPieces(run), {});
   if (placements === null) throw new Error("These finds cannot hold the pieces");
   return Object.entries(placements).map(([pieceId, placement]) => ({
     type: "placePiece",
@@ -181,7 +182,7 @@ export function layoutActions(state: GameState): Action[] {
 
 export function outlineTrace(state: GameState, pieceId: string): Point[] {
   const run = state.activeRun;
-  const piece = run === null ? undefined : flipPieces(run.design).find((entry) => entry.id === pieceId);
+  const piece = run === null ? undefined : runPieces(run).find((entry) => entry.id === pieceId);
   const placement = run?.placements[pieceId];
   if (piece === undefined || placement === undefined) return [];
   const outline = piecePolygon(piece, placement);
@@ -197,7 +198,7 @@ export function outlineTrace(state: GameState, pieceId: string): Point[] {
 
 export function traceActions(state: GameState): Action[] {
   const run = state.activeRun;
-  const pieces = run === null ? [] : flipPieces(run.design);
+  const pieces = run === null ? [] : runPieces(run);
   return pieces.map((piece) => ({
     type: "traceCut",
     pieceId: piece.id,
@@ -213,7 +214,7 @@ export function cutActions(state: GameState, mode: "trace" | "assist"): Action[]
 export function seamActions(state: GameState, accuracy: number): Action[] {
   const run = state.activeRun;
   if (run === null) return [];
-  return flipSeams(run.design).map((seam) => ({
+  return runSeams(run).map((seam) => ({
     type: "recordSeam",
     seamId: seam.id,
     progress: 1,
@@ -234,6 +235,8 @@ export function finishActions(state: GameState): Action[] {
       if (requirement.kind === "trim") {
         const saved = state.stock.savedTrims[requirement.trim] > index;
         finish = { kind: "trim", trimId: requirement.trim, source: saved ? "saved" : "new" };
+      } else if (requirement.kind !== "patch") {
+        finish = { kind: "mark", markId: "mend-darn", colour: null };
       } else {
         const scrap = state.stock.scraps[scrapIndex];
         scrapIndex += 1;

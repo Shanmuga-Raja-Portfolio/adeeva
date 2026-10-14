@@ -1,4 +1,5 @@
 import type { Design } from "../../core";
+import { boutiqueShape } from "./boutiqueShape";
 
 export type Mount = "hanger" | "clip" | "hook" | "stand" | "stool" | "peg";
 
@@ -68,6 +69,8 @@ function skirt(design: Design): ProductShape {
 }
 
 export function productShape(design: Design): ProductShape {
+  const boutique = boutiqueShape(design);
+  if (boutique !== null) return boutique;
   switch (design.recipeId) {
     case "remade-top":
       return top(design);
@@ -110,7 +113,7 @@ export function productShape(design: Design): ProductShape {
         seams: [],
         shade: [],
       };
-    case null:
+    default:
       return { mount: "hanger", bodies: [], seams: [], shade: [] };
   }
 }

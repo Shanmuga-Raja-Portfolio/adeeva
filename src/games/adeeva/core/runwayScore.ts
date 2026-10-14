@@ -4,7 +4,21 @@ import type { RunwayMoodId } from "../content/runwayMood";
 import type { ShowThemeDef } from "../content/showTheme";
 import type { StyleTag } from "../../../engine/styleTag";
 import { average } from "../../../engine/average";
-import { panel, type PanelScore as EnginePanelScore, type SubScore } from "../../../engine/panelScore";
+import {
+  overallScore,
+  panel,
+  type PanelScore as EnginePanelScore,
+  type SubScore,
+} from "../../../engine/panelScore";
+import {
+  LATE_SHOW_PENALTY,
+  lateShowPenalty,
+  showDemand,
+  showReputation,
+  stagingScore,
+  type ShowDemandTerms,
+  type ShowSetbacks,
+} from "../../../engine/showDay";
 import { closerStrength as showCloser } from "../../../engine/showOrder";
 import { WOW_POINTS_PER_TRIM, WOW_TAGS, wowScore } from "../../../engine/wowScore";
 import { trimById } from "./catalog";
@@ -20,12 +34,22 @@ export type PanelId = (typeof PANEL_IDS)[number];
 export const WEARABLE_TAGS: readonly StyleTag[] = ["casual", "classic"];
 export { WOW_POINTS_PER_TRIM, WOW_TAGS };
 export type { SubScore };
-export const LATE_SHOW_PENALTY = 10;
+export { LATE_SHOW_PENALTY };
 export const ORDER_SCORE_FLOOR = 55;
 export const ORDER_SCORE_STEP = 4;
 export const ORDER_BASE_VALUE = 40;
 export const ORDER_VALUE_PER_SEASON = 10;
 export const ORDER_VALUE_SEASON_CAP = 5;
+
+const ORDER_TERMS: ShowDemandTerms = {
+  floor: ORDER_SCORE_FLOOR,
+  step: ORDER_SCORE_STEP,
+  baseValue: ORDER_BASE_VALUE,
+  valuePerSeason: ORDER_VALUE_PER_SEASON,
+  seasonCap: ORDER_VALUE_SEASON_CAP,
+};
+
+const RUNWAY_SETBACKS: ShowSetbacks = { relaxed: 0, standard: -1, challenging: -2 };
 
 export interface RunwayChoice {
   readonly order: readonly number[];
@@ -113,7 +137,7 @@ function buyersPanel(looks: readonly FinishedLook[], theme: ShowThemeDef): Panel
   ]);
 }
 
-function closerStrength(looks: readonly FinishedLook[], order: readonly number[]): number {
+export function closerStrength(looks: readonly FinishedLook[], order: readonly number[]): number {
   return showCloser(order.map((index) => looks[index]?.evaluation.score ?? 0));
 }
 
@@ -129,7 +153,7 @@ function audiencePanel(
 ): PanelScore {
   const averageTrims = average(looks.map(wowTrimCount));
   const wow = wowScore(looks.map((look) => ({ wowTrims: wowTrimCount(look), tags: look.snapshot.tags })));
-  const music = (choice.mood === theme.bestMood ? 70 : 20) + (choice.light === theme.bestLight ? 30 : 10);
+  const music = stagingScore(choice.mood === theme.bestMood, choice.light === theme.bestLight);
   const closer = closerStrength(looks, choice.order);
   return panel("audience", "Audience", [
     {
@@ -160,12 +184,6 @@ function audiencePanel(
   ]);
 }
 
-function seasonReputation(overall: number, difficulty: DifficultyId): number {
-  if (overall >= 50) return Math.round((overall - 40) / 6);
-  if (difficulty === "relaxed") return 0;
-  return difficulty === "challenging" ? -2 : -1;
-}
-
 export function scoreRunway(
   looks: readonly FinishedLook[],
   theme: ShowThemeDef,
@@ -173,18 +191,16 @@ export function scoreRunway(
   context: RunwayContext,
 ): RunwayResult {
   const panels = [criticsPanel(looks, theme), buyersPanel(looks, theme), audiencePanel(looks, theme, choice)];
-  const latePenalty = context.late && context.difficulty !== "relaxed" ? LATE_SHOW_PENALTY : 0;
-  const overall = clamp(Math.round(average(panels.map((entry) => entry.score))) - latePenalty, 0, 100);
-  const orders = Math.max(0, Math.round((overall - ORDER_SCORE_FLOOR) / ORDER_SCORE_STEP));
-  const orderValue =
-    ORDER_BASE_VALUE + ORDER_VALUE_PER_SEASON * (Math.min(context.seasonNumber, ORDER_VALUE_SEASON_CAP) - 1);
+  const latePenalty = lateShowPenalty(context.late, context.difficulty);
+  const overall = overallScore(panels, latePenalty);
+  const demand = showDemand(overall, context.seasonNumber, ORDER_TERMS);
   return {
     panels,
     latePenalty,
     overall,
-    orders,
-    coins: orders * orderValue,
-    reputation: seasonReputation(overall, context.difficulty),
+    orders: demand.count,
+    coins: demand.coins,
+    reputation: showReputation(overall, context.difficulty, RUNWAY_SETBACKS),
     buzz: Math.round(overall / 4),
     pressQuote: pressQuote(overall, theme.name),
   };

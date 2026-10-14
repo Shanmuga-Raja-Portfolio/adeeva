@@ -1,4 +1,5 @@
 import type { Point } from "../../../engine/geometry/point";
+import { rectangle } from "../../../engine/geometry/rectangle";
 import type { PartOptionId } from "../content/partOption";
 import type { PartDef } from "../content/product";
 import { boardSizeById, productById } from "./catalog";
@@ -42,15 +43,6 @@ function arched(width: number, height: number): Point[] {
   return [...top, [width, height], [0, height]];
 }
 
-function rectangle(width: number, height: number): Point[] {
-  return [
-    [0, 0],
-    [width, 0],
-    [width, height],
-    [0, height],
-  ];
-}
-
 function tapered(width: number, height: number): Point[] {
   return [
     [0, 0],
@@ -74,7 +66,7 @@ function optionFor(design: PieceDesign, slot: "edge" | "legs" | "accent"): PartO
   return design.options[slot] ?? null;
 }
 
-function partOutline(part: PartDef, design: PieceDesign): Point[] {
+function partOutline(part: PartDef, design: PieceDesign): readonly Point[] {
   const { width, height } = part;
   if (part.role === "panel") {
     const edge = optionFor(design, "edge");

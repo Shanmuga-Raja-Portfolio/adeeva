@@ -1,0 +1,429 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "honey", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "charmer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 7, "hoursLeft": 10, "marketOpen": false },
+  "coins": 250,
+  "reputation": 0,
+  "buzz": 0,
+  "trends": { "current": ["elegant", "playful"], "next": ["bold", "romantic"] },
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-5",
+        "clientId": "nana-bea",
+        "brief": {
+          "clientId": "nana-bea",
+          "occasion": "Porch bench cushion",
+          "deadlineDay": 11,
+          "budget": 27,
+          "fee": 30,
+          "recipes": ["cushion-cover"],
+          "partIds": null,
+          "requiredTags": ["classic"],
+          "favouredColours": ["ivory", "sage"],
+          "avoidColours": ["black"],
+          "avoidMaterials": [],
+          "requiredFinishes": [{ "kind": "trim", "trim": "button", "count": 2 }],
+          "minQuality": 68,
+          "minLeaves": 0
+        },
+        "expiresDay": 7
+      },
+      {
+        "id": "gig-6",
+        "clientId": "kofi",
+        "brief": {
+          "clientId": "kofi",
+          "occasion": "Skate park hat",
+          "deadlineDay": 11,
+          "budget": 31,
+          "fee": 42,
+          "recipes": ["bucket-hat"],
+          "partIds": null,
+          "requiredTags": ["sporty"],
+          "favouredColours": ["navy", "emerald"],
+          "avoidColours": ["ivory", "sky"],
+          "avoidMaterials": [],
+          "requiredFinishes": [{ "kind": "patch", "patch": "patch-star", "count": 1 }],
+          "minQuality": 72,
+          "minLeaves": 0
+        },
+        "expiresDay": 8
+      },
+      {
+        "id": "gig-7",
+        "clientId": "lumi",
+        "brief": {
+          "clientId": "lumi",
+          "occasion": "Brush bag",
+          "deadlineDay": 13,
+          "budget": 34,
+          "fee": 41,
+          "recipes": ["tote-bag"],
+          "partIds": null,
+          "requiredTags": ["casual", "playful"],
+          "favouredColours": ["sky", "coral"],
+          "avoidColours": [],
+          "avoidMaterials": [],
+          "requiredFinishes": [{ "kind": "patch", "patch": "any", "count": 2 }],
+          "minQuality": 72,
+          "minLeaves": 40
+        },
+        "expiresDay": 9
+      }
+    ],
+    "active": [],
+    "lapsed": [],
+    "nextGigNumber": 8
+  },
+  "story": { "seen": ["tf-intro", "tf-first-stall-day"], "flags": [], "queue": [] },
+  "rail": [
+    { "id": "rail-7-1", "findId": "sailor-top", "grade": "like-new", "price": 10, "sold": false },
+    { "id": "rail-7-2", "findId": "tea-dress", "grade": "tired", "price": 9, "sold": false },
+    { "id": "rail-7-3", "findId": "linen-curtain", "grade": "tired", "price": 10, "sold": false },
+    { "id": "rail-7-4", "findId": "polka-tablecloth", "grade": "loved", "price": 9, "sold": false },
+    { "id": "rail-7-5", "findId": "faded-jeans", "grade": "loved", "price": 11, "sold": false },
+    { "id": "rail-7-6", "findId": "gingham-shirt", "grade": "loved", "price": 6, "sold": false }
+  ],
+  "stock": {
+    "finds": [],
+    "savedTrims": {
+      "button": 0,
+      "bow": 1,
+      "lace": 0,
+      "flower-applique": 0,
+      "sequin-patch": 0,
+      "ribbon-belt": 1,
+      "pearl": 0,
+      "star-applique": 0
+    },
+    "scraps": [
+      {
+        "name": "Sage Linen scrap",
+        "colour": "sage",
+        "print": "solid",
+        "material": "linen",
+        "tags": ["casual"],
+        "id": "scrap-1"
+      },
+      {
+        "name": "Emerald Velvet scrap",
+        "colour": "emerald",
+        "print": "solid",
+        "material": "velvet",
+        "tags": ["bold", "regal"],
+        "id": "scrap-2"
+      },
+      {
+        "name": "Ruby Velvet scrap",
+        "colour": "ruby",
+        "print": "solid",
+        "material": "velvet",
+        "tags": ["regal"],
+        "id": "scrap-3"
+      },
+      {
+        "name": "Sky Gingham scrap",
+        "colour": "sky",
+        "print": "check",
+        "material": "cotton",
+        "tags": ["playful", "casual"],
+        "id": "scrap-4"
+      },
+      {
+        "name": "Polka Tablecloth scrap",
+        "colour": "mustard",
+        "print": "dot",
+        "material": "cotton",
+        "tags": ["playful"],
+        "id": "scrap-5"
+      },
+      {
+        "name": "Polka Tablecloth scrap",
+        "colour": "mustard",
+        "print": "dot",
+        "material": "cotton",
+        "tags": ["playful"],
+        "id": "scrap-6"
+      },
+      {
+        "name": "Polka Tablecloth scrap",
+        "colour": "mustard",
+        "print": "dot",
+        "material": "cotton",
+        "tags": ["playful"],
+        "id": "scrap-7"
+      },
+      {
+        "name": "Linen Curtain scrap",
+        "colour": "sage",
+        "print": "solid",
+        "material": "linen",
+        "tags": ["classic", "casual"],
+        "id": "scrap-8"
+      },
+      {
+        "name": "Linen Curtain scrap",
+        "colour": "sage",
+        "print": "solid",
+        "material": "linen",
+        "tags": ["classic", "casual"],
+        "id": "scrap-9"
+      },
+      {
+        "name": "Linen Curtain scrap",
+        "colour": "sage",
+        "print": "solid",
+        "material": "linen",
+        "tags": ["classic", "casual"],
+        "id": "scrap-10"
+      },
+      {
+        "name": "Garden Tea Dress scrap",
+        "colour": "blush",
+        "print": "floral",
+        "material": "cotton",
+        "tags": ["romantic", "playful"],
+        "id": "scrap-11"
+      },
+      {
+        "name": "Garden Tea Dress scrap",
+        "colour": "blush",
+        "print": "floral",
+        "material": "cotton",
+        "tags": ["romantic", "playful"],
+        "id": "scrap-12"
+      }
+    ]
+  },
+  "upgrades": [],
+  "activeRun": {
+    "id": "run-4",
+    "purpose": { "kind": "own" },
+    "brief": null,
+    "stage": "done",
+    "reachedStage": "done",
+    "startedDay": 4,
+    "design": { "recipeId": "tote-bag", "parts": {} },
+    "finds": [
+      {
+        "id": "find-4",
+        "findId": "sailor-top",
+        "grade": "loved",
+        "price": 10,
+        "wornSpot": null,
+        "stains": [
+          { "id": "stain-1", "panel": 0, "cx": 15, "cy": 50, "radius": 9, "cells": 16 },
+          { "id": "stain-2", "panel": 0, "cx": 42, "cy": 13, "radius": 6, "cells": 12 }
+        ]
+      }
+    ],
+    "unpick": {
+      "find-4#0": { "popped": [0, 1, 2, 3, 4, 5, 6, 7], "snagsAt": [], "attempts": 8, "assisted": false },
+      "find-4#1": { "popped": [0, 1, 2, 3, 4, 5, 6, 7], "snagsAt": [], "attempts": 8, "assisted": false }
+    },
+    "clean": {
+      "find-4#stain-1": {
+        "cellTicks": [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+        "harshTicks": 19,
+        "scrubTicks": 211
+      },
+      "find-4#stain-2": {
+        "cellTicks": [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
+        "harshTicks": 18,
+        "scrubTicks": 198
+      }
+    },
+    "soaked": false,
+    "placements": {
+      "tote-body-1": { "x": 0, "y": 0, "rotation": 0 },
+      "tote-body-2": { "x": 56, "y": 0, "rotation": 0 },
+      "tote-strap-1": { "x": 36, "y": 0, "rotation": 0 },
+      "tote-strap-2": { "x": 92, "y": 0, "rotation": 0 }
+    },
+    "autoLaid": false,
+    "cutTraces": { "tote-body-1": 1, "tote-body-2": 1, "tote-strap-1": 1, "tote-strap-2": 1 },
+    "cutAccuracy": { "tote-body-1": 1, "tote-body-2": 1, "tote-strap-1": 1, "tote-strap-2": 1 },
+    "cutDone": true,
+    "seams": {
+      "sides": { "progress": 1, "ticks": 1000, "insideTicks": 850, "assisted": false },
+      "straps": { "progress": 1, "ticks": 1000, "insideTicks": 850, "assisted": false },
+      "top-hem": { "progress": 1, "ticks": 1000, "insideTicks": 850, "assisted": false }
+    },
+    "finishes": [],
+    "nextFinishNumber": 1
+  },
+  "rack": [],
+  "stall": {
+    "day": 7,
+    "sales": [
+      {
+        "pieceId": "piece-1",
+        "recipeId": "tote-bag",
+        "price": 40,
+        "value": 50,
+        "low": 45,
+        "high": 55,
+        "outcome": "sold"
+      },
+      {
+        "pieceId": "piece-2",
+        "recipeId": "tote-bag",
+        "price": 40,
+        "value": 46,
+        "low": 41,
+        "high": 51,
+        "outcome": "sold"
+      },
+      {
+        "pieceId": "piece-3",
+        "recipeId": "tote-bag",
+        "price": 40,
+        "value": 53,
+        "low": 48,
+        "high": 58,
+        "outcome": "sold"
+      },
+      {
+        "pieceId": "piece-4",
+        "recipeId": "tote-bag",
+        "price": 40,
+        "value": 49,
+        "low": 44,
+        "high": 54,
+        "outcome": "sold"
+      }
+    ],
+    "coins": 160,
+    "reputation": 0,
+    "buzz": 0
+  },
+  "log": [
+    {
+      "runId": "run-1",
+      "kind": "own",
+      "clientId": null,
+      "day": 1,
+      "evaluation": {
+        "kind": "own",
+        "criteria": [],
+        "quality": {
+          "unpick": 1,
+          "clean": 0.963,
+          "cut": 1,
+          "seams": 0.85,
+          "grain": 1,
+          "restored": 0.931,
+          "quality": 94
+        },
+        "leaves": { "reuse": 0.454, "salvage": 1, "secondhand": 1, "leaves": 75 },
+        "favouredColoursUsed": 0,
+        "score": 94,
+        "stars": 5,
+        "passed": true,
+        "feedback": [],
+        "tags": ["playful", "casual", "classic"],
+        "colours": ["mustard"],
+        "spend": 12
+      },
+      "reward": null
+    },
+    {
+      "runId": "run-2",
+      "kind": "own",
+      "clientId": null,
+      "day": 2,
+      "evaluation": {
+        "kind": "own",
+        "criteria": [],
+        "quality": {
+          "unpick": 1,
+          "clean": 0.964,
+          "cut": 1,
+          "seams": 0.85,
+          "grain": 1,
+          "restored": 0.931,
+          "quality": 94
+        },
+        "leaves": { "reuse": 0.4, "salvage": 1, "secondhand": 1, "leaves": 73 },
+        "favouredColoursUsed": 0,
+        "score": 94,
+        "stars": 5,
+        "passed": true,
+        "feedback": [],
+        "tags": ["casual", "classic"],
+        "colours": ["sage"],
+        "spend": 20
+      },
+      "reward": null
+    },
+    {
+      "runId": "run-3",
+      "kind": "own",
+      "clientId": null,
+      "day": 3,
+      "evaluation": {
+        "kind": "own",
+        "criteria": [],
+        "quality": {
+          "unpick": 1,
+          "clean": 0.964,
+          "cut": 1,
+          "seams": 0.85,
+          "grain": 1,
+          "restored": 0.931,
+          "quality": 94
+        },
+        "leaves": { "reuse": 0.914, "salvage": 1, "secondhand": 1, "leaves": 96 },
+        "favouredColoursUsed": 0,
+        "score": 94,
+        "stars": 5,
+        "passed": true,
+        "feedback": [],
+        "tags": ["playful", "romantic", "casual", "classic"],
+        "colours": ["blush"],
+        "spend": 18
+      },
+      "reward": null
+    },
+    {
+      "runId": "run-4",
+      "kind": "own",
+      "clientId": null,
+      "day": 4,
+      "evaluation": {
+        "kind": "own",
+        "criteria": [],
+        "quality": {
+          "unpick": 1,
+          "clean": 0.963,
+          "cut": 1,
+          "seams": 0.85,
+          "grain": 1,
+          "restored": 0.931,
+          "quality": 94
+        },
+        "leaves": { "reuse": 1, "salvage": 1, "secondhand": 1, "leaves": 100 },
+        "favouredColoursUsed": 0,
+        "score": 94,
+        "stars": 5,
+        "passed": true,
+        "feedback": [],
+        "tags": ["casual", "classic"],
+        "colours": ["navy"],
+        "spend": 10
+      },
+      "reward": null
+    }
+  ],
+  "flipsFinished": 4,
+  "gigsDelivered": 0,
+  "fairSales": 0,
+  "next": { "run": 5, "find": 5, "scrap": 13, "piece": 5 },
+  "rng": 2128542921
+}

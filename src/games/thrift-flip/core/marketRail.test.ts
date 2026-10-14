@@ -21,7 +21,7 @@ describe("the market rail", () => {
       const state = newTestGame({ seed });
       expect(state.rail).toHaveLength(RAIL_SIZE);
       expect(new Set(state.rail.map((slot) => slot.findId)).size).toBe(RAIL_SIZE);
-      const pool = unlockedFinds(0).map((find) => find.id);
+      const pool = unlockedFinds(state).map((find) => find.id);
       for (const slot of state.rail) {
         expect(pool).toContain(slot.findId);
         expect(Number.isInteger(slot.price)).toBe(true);
@@ -70,8 +70,10 @@ describe("the market rail", () => {
   });
 
   it("unlocks pricier finds with reputation", () => {
-    expect(unlockedFinds(0).map((find) => find.id)).not.toContain("wool-blazer");
-    expect(unlockedFinds(9).map((find) => find.id)).toContain("wool-blazer");
-    expect(unlockedFinds(18)).toHaveLength(14);
+    const stall = newTestGame();
+    expect(unlockedFinds({ ...stall, reputation: 0 }).map((find) => find.id)).not.toContain("wool-blazer");
+    expect(unlockedFinds({ ...stall, reputation: 9 }).map((find) => find.id)).toContain("wool-blazer");
+    expect(unlockedFinds({ ...stall, reputation: 18 })).toHaveLength(14);
+    expect(unlockedFinds({ ...stall, reputation: 60 })).toHaveLength(14);
   });
 });

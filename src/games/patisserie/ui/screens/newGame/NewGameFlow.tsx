@@ -8,6 +8,7 @@ import { Button } from "../../../../../ui/kit/Button";
 import type { IconName } from "../../../../../ui/kit/IconSet";
 import { AvatarStep } from "../../../../../ui/newGame/AvatarStep";
 import { CareerStep, type CareerCard } from "../../../../../ui/newGame/CareerStep";
+import { careerFacts } from "../../../../../ui/newGame/careerFacts";
 import {
   CAREER_STEPS as NEW_GAME_STEPS,
   careerDraftSettings,
@@ -87,12 +88,7 @@ const CAREER_CARDS: readonly CareerCard<CareerId>[] = CAREERS.map((career) => ({
     ) : (
       <CometRoomBackdrop className="pa-career-window" />
     ),
-  facts: [
-    { icon: "coin", text: `${career.startCoins} coins to start` },
-    { icon: "star", text: `Reputation ${career.startReputation}` },
-    { icon: "calendar", text: `Rent ${career.weeklyRent} a week` },
-    { icon: "bag", text: `Side job: ${career.shiftName}` },
-  ],
+  facts: careerFacts(career),
 }));
 
 export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: NewGameFlowProps) {

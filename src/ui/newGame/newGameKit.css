@@ -507,6 +507,14 @@
   border-bottom: 1px solid var(--line);
 }
 
+.ad-career__window > svg {
+  transition: transform 1.2s var(--ease-out);
+}
+
+.ad-career:hover .ad-career__window > svg {
+  transform: scale(1.04);
+}
+
 .ad-career__studio {
   position: absolute;
   left: var(--space-4);
@@ -539,4 +547,14 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+}
+
+.ad-career__badge {
+  align-self: flex-start;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--gold-soft);
+  color: var(--ink);
+  font-size: var(--text-xs);
+  font-weight: 700;
 }

@@ -1,8 +1,7 @@
-import { average } from "../../../engine/average";
-import { clamp } from "../../../engine/clamp";
 import type { ColourId } from "../../../engine/palette";
-import { panel, type SubScore } from "../../../engine/panelScore";
+import { panel, subScore as part, type SubScore } from "../../../engine/panelScore";
 import { weakestTip, type QualityTip } from "../../../engine/qualityTip";
+import { stagingScore } from "../../../engine/showDay";
 import { closerStrength } from "../../../engine/showOrder";
 import type { StyleTag } from "../../../engine/styleTag";
 import { hasWowTag, wowScore } from "../../../engine/wowScore";
@@ -15,10 +14,6 @@ import type { FairEntry, FairPanelScore, FairPlan } from "./fairState";
 import { entryQuality, entryTags, SIDE_PLATES } from "./sidePlates";
 
 export const SHOW_SLOTS = 3;
-export const BEST_MUSIC_POINTS = 70;
-export const OTHER_MUSIC_POINTS = 20;
-export const BEST_CLOTH_POINTS = 30;
-export const OTHER_CLOTH_POINTS = 10;
 
 export interface ShowPlate {
   readonly quality: number;
@@ -76,10 +71,6 @@ export function bookPlate(entry: BakeBookEntry): ShowPlate {
 function wowToppings(plate: ShowPlate): number {
   const kinds = new Set(plate.toppings.map((placed) => placed.toppingId));
   return [...kinds].filter((id) => hasWowTag(toppingById(id).tags)).length;
-}
-
-function part(id: string, label: string, value: number, weight: number, detail: string): SubScore {
-  return { id, label, value: clamp(Math.round(value), 0, 100), weight, detail };
 }
 
 function withNote(id: FairPanelId, label: string, parts: SubScore[]): FairPanelScore {
@@ -154,8 +145,7 @@ function visitorsPanel(plates: readonly ShowPlate[], theme: FairThemeDef, plan: 
       ? { wowTrims: 0, tags: [] }
       : { wowTrims: wowToppings(plate), tags: plate.tags };
   });
-  const music = plan.music === theme.bestMusic ? BEST_MUSIC_POINTS : OTHER_MUSIC_POINTS;
-  const cloth = plan.cloth === theme.bestCloth ? BEST_CLOTH_POINTS : OTHER_CLOTH_POINTS;
+  const setting = stagingScore(plan.music === theme.bestMusic, plan.cloth === theme.bestCloth);
   const scores = plan.order.map((index) => plates[index]?.quality ?? 0);
   const unveil = closerStrength(scores) * (plates.length / SHOW_SLOTS);
   return withNote("visitors", "Visitors' Table", [
@@ -169,7 +159,7 @@ function visitorsPanel(plates: readonly ShowPlate[], theme: FairThemeDef, plan: 
     part(
       "setting",
       "Setting",
-      music + cloth,
+      setting,
       0.3,
       plan.music === theme.bestMusic
         ? "The music suited the theme."
@@ -200,8 +190,4 @@ export function fairTip(panels: readonly FairPanelScore[]): string {
     entry.parts.map((item): QualityTip => [item.value, TIPS[item.id] ?? "a little more practice"]),
   );
   return `Next time, try ${weakestTip(tips)}.`;
-}
-
-export function overallScore(panels: readonly FairPanelScore[], latePenalty: number): number {
-  return clamp(Math.round(average(panels.map((entry) => entry.score))) - latePenalty, 0, 100);
 }

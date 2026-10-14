@@ -2,7 +2,7 @@ import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { StatChip } from "../../../../../ui/kit/StatChip";
-import { difficultyById } from "../../../core";
+import { difficultyById, signById } from "../../../core";
 import { PriceTag } from "../../art/PriceTag";
 import type { SlotRead } from "../../thriftSlots";
 import { stallDayName } from "../stallDayName";
@@ -68,8 +68,13 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
             <span className="ad-eyebrow">{label}</span>
             <h3 className="tf-slot__name">{state.profile.name}</h3>
             <span className="tf-slot__meta">
-              Day {state.calendar.day}, {stallDayName(state.calendar.day)} ·{" "}
+              Day {state.calendar.day}, {stallDayName(state.calendar.day, state.profile.career)} ·{" "}
               {difficultyById(state.profile.difficulty).name}
+            </span>
+            <span className="tf-slot__place" data-testid="slot-place">
+              {state.boutique === null
+                ? "Market stall"
+                : `Boutique · ${signById(state.boutique.signId).name}`}
             </span>
           </div>
         </div>

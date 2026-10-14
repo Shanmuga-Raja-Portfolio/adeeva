@@ -1,6 +1,13 @@
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { RECIPES } from "../../../content/recipe";
-import { partById, partChoiceIssue, recipeById, recipeChoiceIssue, type Design } from "../../../core";
+import {
+  partById,
+  partChoiceIssue,
+  recipeById,
+  recipeChoiceIssue,
+  recipeOpen,
+  type Design,
+} from "../../../core";
 import { PLAN_CLOTH } from "../../art/planCloth";
 import { ProductPreview } from "../../art/ProductPreview";
 import { StageFooter } from "./StageFooter";
@@ -18,14 +25,14 @@ function sampleDesign(recipeId: Design["recipeId"]): Design {
 }
 
 export function DesignStage(props: StageProps) {
-  const { run, dispatch } = props;
+  const { state, run, dispatch } = props;
   const recipe = run.design.recipeId === null ? null : recipeById(run.design.recipeId);
   return (
     <div className="tf-design">
       <div className="tf-design__main">
         <div className="tf-design__recipes" role="radiogroup" aria-label="What to make">
-          {RECIPES.map((entry) => {
-            const issue = recipeChoiceIssue(run, entry.id);
+          {RECIPES.filter((entry) => recipeOpen(state, entry.id)).map((entry) => {
+            const issue = recipeChoiceIssue(state, run, entry.id);
             const selected = run.design.recipeId === entry.id;
             return (
               <button

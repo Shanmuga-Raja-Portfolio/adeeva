@@ -12,13 +12,14 @@ export interface PriceTagEditorProps {
   readonly price: number;
   readonly tilt: number;
   readonly onPrice: (price: number) => void;
+  readonly bonuses?: readonly string[] | undefined;
 }
 
 export function sliderMax(band: FairBand): number {
   return Math.min(MAX_TAG_PRICE, Math.max(10, band.value * 2));
 }
 
-export function PriceTagEditor({ piece, band, price, tilt, onPrice }: PriceTagEditorProps) {
+export function PriceTagEditor({ piece, band, price, tilt, onPrice, bonuses = [] }: PriceTagEditorProps) {
   const sliderId = useId();
   const name = recipeById(piece.recipeId).name;
   const max = sliderMax(band);
@@ -38,6 +39,15 @@ export function PriceTagEditor({ piece, band, price, tilt, onPrice }: PriceTagEd
       <PriceTag tilt={tilt} tone={inBand ? "mint" : "kraft"}>
         <div className="tf-price__body">
           <strong className="tf-price__name">{name}</strong>
+          {bonuses.length > 0 ? (
+            <span className="tf-price__bonuses">
+              {bonuses.map((bonus) => (
+                <span key={bonus} className="tf-sale__bonus">
+                  ×1.1 {bonus}
+                </span>
+              ))}
+            </span>
+          ) : null}
           <span className="tf-price__meta">
             Quality {piece.quality} · <LeafMeter leaves={piece.leaves} size={14} />
           </span>

@@ -33,6 +33,11 @@ function piece(
     tags,
     finishes: [],
     madeDay: 2,
+    findIds: [],
+    seamAccuracy: quality / 100,
+    leavesParts: { reuse: leaves / 100, salvage: leaves / 100, secondhand: leaves / 100 },
+    colours: ["sage"],
+    showcaseSeason: null,
   };
 }
 
@@ -52,15 +57,15 @@ function stallDay(trait: GameState["profile"]["trait"] = "dreamer", rack: RackPi
 
 describe("Stall Day prices", () => {
   it("values a remade top as the design doc's example", () => {
-    expect(fairValue(piece("piece-1", 80, 70), [])).toBe(71);
-    expect(fairBand(piece("piece-1", 80, 70), [])).toEqual({ value: 71, low: 64, high: 78 });
-    expect(fairValue(piece("piece-1", 80, 70, ["classic", "bold"]), ["bold", "dreamy"])).toBe(
+    expect(fairValue(piece("piece-1", 80, 70), [], 1)).toBe(71);
+    expect(fairBand(piece("piece-1", 80, 70), [], 1)).toEqual({ value: 71, low: 64, high: 78 });
+    expect(fairValue(piece("piece-1", 80, 70, ["classic", "bold"]), ["bold", "dreamy"], 1)).toBe(
       Math.round(70 * 0.92 * 1.1 + 7),
     );
   });
 
   it("sells bargains and fair prices and keeps overpriced pieces", () => {
-    const band = fairBand(piece("piece-1", 80, 70), []);
+    const band = fairBand(piece("piece-1", 80, 70), [], 1);
     expect(saleOutcome(49, band)).toBe("bargain");
     expect(saleOutcome(60, band)).toBe("sold");
     expect(saleOutcome(64, band)).toBe("fair");
@@ -78,7 +83,7 @@ describe("Stall Day prices", () => {
     const state = stallDay("dreamer", rack);
     expect(state.calendar.day).toBe(7);
     const prices = { "piece-1": 78, "piece-2": 70, "piece-3": 70, "piece-4": 120 };
-    const value = fairValue(rack[0] as RackPiece, state.trends.current);
+    const value = fairValue(rack[0] as RackPiece, state.trends.current, 1);
     const held = reduce(state, { type: "holdStall", prices });
     expect(held.coins).toBe(state.coins + 78 + 70 + 70);
     expect(held.reputation).toBe(state.reputation + 2);

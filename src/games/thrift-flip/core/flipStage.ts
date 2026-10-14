@@ -33,10 +33,6 @@ export function stageIndex(stage: FlipStage): number {
   return FLIP_STAGES.indexOf(stage);
 }
 
-export function stageAfter(stage: FlipStage): FlipStage | null {
-  return FLIP_STAGES[stageIndex(stage) + 1] ?? null;
-}
-
 export function stageHours(stage: FlipStage, sewHours: number): number {
   return stage === "sew" ? sewHours : STAGE_HOURS[stage];
 }

@@ -13,6 +13,10 @@ export const PATCH_PATHS: Readonly<Record<PatchId, string>> = {
     "M0 -20 L5.9 -8.1 L19 -6.2 L9.5 3.1 L11.8 16.2 L0 10 L-11.8 16.2 L-9.5 3.1 L-19 -6.2 L-5.9 -8.1 Z",
   "patch-round": "M0 -18 A18 18 0 1 1 -0.01 -18 Z",
   "patch-square": "M-16 -16 L16 -16 L16 16 L-16 16 Z",
+  "patch-leaf": "M0 -20 C 14 -12 18 4 0 20 C -18 4 -14 -12 0 -20 Z M0 -14 L0 16",
+  "patch-flower":
+    "M0 -8 C 4 -20 16 -14 8 -4 C 20 -4 18 10 6 6 C 10 18 -4 20 -2 8 C -12 18 -20 6 -8 2 C -20 -6 -8 -16 0 -8 Z",
+  "patch-pocket": "M-17 -14 L17 -14 L17 10 Q17 18 9 18 L-9 18 Q-17 18 -17 10 Z M-17 -6 L17 -6",
 };
 
 export interface PatchArtProps {

@@ -35,6 +35,8 @@ test("home opens Thrift-Flip Studio, the avatar comes pre-filled and Back to stu
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Dreamer" }).click();
   await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("radio", { name: "Market Stall Remaker" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Standard" }).click();
   await page.getByRole("button", { name: "Open the stall" }).click();
   await finishStories(page);

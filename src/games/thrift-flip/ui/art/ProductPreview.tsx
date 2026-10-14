@@ -16,6 +16,7 @@ export interface ProductPreviewProps {
   readonly title: string;
   readonly className?: string | undefined;
   readonly svgRef?: Ref<SVGSVGElement> | undefined;
+  readonly base?: ReactNode;
   readonly children?: ReactNode;
 }
 
@@ -124,6 +125,7 @@ export function ProductPreview({
   title,
   className,
   svgRef,
+  base,
   children,
 }: ProductPreviewProps) {
   const id = useSvgId("product");
@@ -175,9 +177,11 @@ export function ProductPreview({
           <path key={path} d={path} />
         ))}
       </g>
-      {shape.mount === "hanger" || shape.mount === "clip" || shape.mount === "hook" ? (
+      {base === undefined &&
+      (shape.mount === "hanger" || shape.mount === "clip" || shape.mount === "hook") ? (
         <MountArt mount={shape.mount} />
       ) : null}
+      {base}
       <PlacedLayer
         items={finishes}
         className="tf-finish-layer"

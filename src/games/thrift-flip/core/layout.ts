@@ -3,13 +3,16 @@ import { ownEntry } from "../../../engine/ownEntry";
 import { recordWithout } from "../../../engine/recordWithout";
 import type { RecipeId } from "../content/recipe";
 import { autoPlacements } from "./autoLayout";
-import { flipPiece, flipPieces } from "./flipPieces";
 import type { FlipRun } from "./flipRun";
 import type { GameState } from "./gameState";
 import { panelBoard, type PanelBoard } from "./panelBoard";
 import { layoutIssues, type PlacementIssue } from "./placement";
 import { withPlacements } from "./runPlacements";
 import { updateRun } from "./runUpdate";
+import { hemEdgeIssues } from "./alterLayout";
+import { runKind } from "./runKind";
+import { runPiece, runPieces } from "./runPieces";
+import { throwSplitIssues } from "./throwSplit";
 
 export const AUTO_LAYOUT_RECIPES: readonly RecipeId[] = ["scrunchie-trio", "cushion-cover"];
 export const AUTO_LAYOUT_GRAIN_CAP = 0.8;
@@ -20,7 +23,10 @@ export function runBoard(run: FlipRun): PanelBoard {
 }
 
 export function runLayoutIssues(run: FlipRun): PlacementIssue[] {
-  return layoutIssues(runBoard(run), flipPieces(run.design), run.placements);
+  const board = runBoard(run);
+  const placed = layoutIssues(board, runPieces(run), run.placements);
+  if (runKind(run) === "alter") return [...placed, ...hemEdgeIssues(board, run.placements)];
+  return [...placed, ...throwSplitIssues(run, board)];
 }
 
 function onTable(run: FlipRun, x: number, y: number): boolean {
@@ -44,7 +50,7 @@ export function placePiece(
 ): GameState {
   if (!isRotation(rotation)) return state;
   return updateRun(state, "layout", (run) => {
-    if (flipPiece(run.design, pieceId) === undefined || !onTable(run, x, y)) return null;
+    if (runPiece(run, pieceId) === undefined || !onTable(run, x, y)) return null;
     const existing = ownEntry(run.placements, pieceId);
     if (existing !== undefined && existing.x === x && existing.y === y && existing.rotation === rotation)
       return null;
@@ -71,7 +77,7 @@ export function autoLayoutIssue(state: GameState): string | null {
 export function autoLayout(state: GameState): GameState {
   if (autoLayoutIssue(state) !== null) return state;
   return updateRun(state, "layout", (run) => {
-    const placements = autoPlacements(runBoard(run), flipPieces(run.design), run.placements);
+    const placements = autoPlacements(runBoard(run), runPieces(run), run.placements);
     if (placements === null) return null;
     if (run.autoLaid && JSON.stringify(placements) === JSON.stringify(run.placements)) return null;
     return { ...withPlacements(run, placements), autoLaid: true };

@@ -1,4 +1,5 @@
-import { expect, test, type Page, type TestInfo } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+import { shooter } from "../fixtures/screens";
 import { reduce, seamLineAt } from "../../src/games/workshop/core";
 import { BIRDHOUSE_PLAN } from "../../src/games/workshop/core/testPlaythrough";
 import {
@@ -20,13 +21,6 @@ const VIEWPORTS = [
   { name: "desktop", width: 1280, height: 800 },
   { name: "tablet", width: 820, height: 1180 },
 ] as const;
-
-function shooter(page: Page, testInfo: TestInfo, prefix: string) {
-  return async (name: string) => {
-    await page.waitForTimeout(400);
-    await page.screenshot({ path: testInfo.outputPath(`${prefix}-${name}.png`), animations: "disabled" });
-  };
-}
 
 async function sewAlongTheLine(page: Page) {
   const strip = page.getByTestId("cushion-seam");

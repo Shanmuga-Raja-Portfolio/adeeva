@@ -2,6 +2,7 @@ import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import type { FlipRun } from "./flipRun";
 import type { FlipStage } from "./flipStage";
 import type { GameState } from "./gameState";
+import { hallCommittedToday } from "./hallDay";
 import { isStallDay } from "./stallCalendar";
 
 export function updateRun(
@@ -9,5 +10,6 @@ export function updateRun(
   stage: FlipStage,
   update: (run: FlipRun) => FlipRun | null,
 ): GameState {
-  return isStallDay(state.calendar.day) ? state : updateActiveRun(state, stage, update);
+  if (isStallDay(state.calendar.day) || hallCommittedToday(state)) return state;
+  return updateActiveRun(state, stage, update);
 }

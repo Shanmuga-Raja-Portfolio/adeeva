@@ -11,6 +11,7 @@ import {
   FINISH_ROTATION_STEP,
   mainFind,
   markById,
+  runKind,
   patchById,
   trimById,
   type FinishItem,
@@ -18,6 +19,7 @@ import {
   type FinishRequest,
   type PlacedFinish,
 } from "../../../../core";
+import { FindArt } from "../../../art/FindArt";
 import { finishExtent } from "../../../art/FinishArt";
 import { findCloth } from "../../../art/findCloth";
 import { ProductPreview } from "../../../art/ProductPreview";
@@ -200,6 +202,13 @@ export function FinishStage(props: StageProps) {
             title="Your flip with its finishing touches"
             className="tf-finish__svg"
             svgRef={svgRef}
+            base={
+              runKind(run) !== "flip" && main !== null ? (
+                <g transform="translate(60 25)">
+                  <FindArt find={findById(main.findId)} grade="like-new" size={280} />
+                </g>
+              ) : undefined
+            }
           >
             <PlacedLayer
               items={finishes}

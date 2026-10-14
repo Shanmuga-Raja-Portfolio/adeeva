@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CAREER } from "../content/career";
+import { careerById } from "./catalog";
 import { canWorkShift } from "./calendar";
 import type { GameState } from "./gameState";
 import { reduce } from "./reduce";
@@ -49,7 +49,7 @@ describe("the market calendar", () => {
   it("pays the swap-shop shift only for an untouched working day", () => {
     const base = settleStories(newTestGame());
     const shifted = reduce(base, { type: "workShift" });
-    expect(shifted.coins).toBe(base.coins + CAREER.shiftPay);
+    expect(shifted.coins).toBe(base.coins + careerById("stall").shiftPay);
     expect(shifted.calendar.day).toBe(2);
     const gig = withActiveGig(base, "nana-bea");
     const busy = dispatchAll(gig, [

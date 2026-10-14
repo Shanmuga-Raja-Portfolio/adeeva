@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "honey", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 1, "hoursLeft": 5, "marketOpen": false },
+  "coins": 90,
+  "reputation": 0,
+  "buzz": 0,
+  "trends": { "current": ["classic", "casual"], "next": ["bold", "classic"] },
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "juniper-wren",
+        "brief": {
+          "clientId": "juniper-wren",
+          "occasion": "Matching hair ties",
+          "deadlineDay": 5,
+          "budget": 20,
+          "fee": 22,
+          "recipes": ["scrunchie-trio"],
+          "partIds": null,
+          "requiredTags": ["playful"],
+          "favouredColours": ["sky", "blush"],
+          "avoidColours": ["charcoal"],
+          "avoidMaterials": [],
+          "requiredFinishes": [{ "kind": "patch", "patch": "any", "count": 1 }],
+          "minQuality": 64,
+          "minLeaves": 0
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-2",
+        "clientId": "nana-bea",
+        "brief": {
+          "clientId": "nana-bea",
+          "occasion": "Porch bench cushion",
+          "deadlineDay": 6,
+          "budget": 31,
+          "fee": 36,
+          "recipes": ["cushion-cover"],
+          "partIds": null,
+          "requiredTags": ["classic"],
+          "favouredColours": ["mustard", "ivory"],
+          "avoidColours": ["black"],
+          "avoidMaterials": [],
+          "requiredFinishes": [{ "kind": "trim", "trim": "button", "count": 2 }],
+          "minQuality": 68,
+          "minLeaves": 0
+        },
+        "acceptedDay": 1
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 3
+  },
+  "story": { "seen": ["tf-intro"], "flags": [], "queue": [] },
+  "rail": [
+    { "id": "rail-1-1", "findId": "linen-curtain", "grade": "like-new", "price": 20, "sold": false },
+    { "id": "rail-1-2", "findId": "tea-dress", "grade": "loved", "price": 14, "sold": false },
+    { "id": "rail-1-3", "findId": "gingham-shirt", "grade": "loved", "price": 6, "sold": false },
+    { "id": "rail-1-4", "findId": "polka-tablecloth", "grade": "loved", "price": 9, "sold": false },
+    { "id": "rail-1-5", "findId": "sailor-top", "grade": "loved", "price": 8, "sold": false },
+    { "id": "rail-1-6", "findId": "faded-jeans", "grade": "like-new", "price": 14, "sold": false }
+  ],
+  "stock": {
+    "finds": [],
+    "savedTrims": {
+      "button": 0,
+      "bow": 0,
+      "lace": 0,
+      "flower-applique": 0,
+      "sequin-patch": 0,
+      "ribbon-belt": 1,
+      "pearl": 0,
+      "star-applique": 0
+    },
+    "scraps": [
+      {
+        "name": "Sage Linen scrap",
+        "colour": "sage",
+        "print": "solid",
+        "material": "linen",
+        "tags": ["casual"],
+        "id": "scrap-1"
+      },
+      {
+        "name": "Emerald Velvet scrap",
+        "colour": "emerald",
+        "print": "solid",
+        "material": "velvet",
+        "tags": ["bold", "regal"],
+        "id": "scrap-2"
+      },
+      {
+        "name": "Ruby Velvet scrap",
+        "colour": "ruby",
+        "print": "solid",
+        "material": "velvet",
+        "tags": ["regal"],
+        "id": "scrap-3"
+      },
+      {
+        "name": "Sky Gingham scrap",
+        "colour": "sky",
+        "print": "check",
+        "material": "cotton",
+        "tags": ["playful", "casual"],
+        "id": "scrap-4"
+      },
+      {
+        "name": "Linen Curtain scrap",
+        "colour": "sage",
+        "print": "solid",
+        "material": "linen",
+        "tags": ["classic", "casual"],
+        "id": "scrap-5"
+      },
+      {
+        "name": "Linen Curtain scrap",
+        "colour": "sage",
+        "print": "solid",
+        "material": "linen",
+        "tags": ["classic", "casual"],
+        "id": "scrap-6"
+      },
+      {
+        "name": "Linen Curtain scrap",
+        "colour": "sage",
+        "print": "solid",
+        "material": "linen",
+        "tags": ["classic", "casual"],
+        "id": "scrap-7"
+      }
+    ]
+  },
+  "upgrades": [],
+  "activeRun": {
+    "id": "run-1",
+    "purpose": { "kind": "gig", "gigId": "gig-2" },
+    "brief": {
+      "clientId": "nana-bea",
+      "occasion": "Porch bench cushion",
+      "deadlineDay": 6,
+      "budget": 31,
+      "fee": 36,
+      "recipes": ["cushion-cover"],
+      "partIds": null,
+      "requiredTags": ["classic"],
+      "favouredColours": ["mustard", "ivory"],
+      "avoidColours": ["black"],
+      "avoidMaterials": [],
+      "requiredFinishes": [{ "kind": "trim", "trim": "button", "count": 2 }],
+      "minQuality": 68,
+      "minLeaves": 0
+    },
+    "stage": "sew",
+    "reachedStage": "sew",
+    "startedDay": 1,
+    "design": { "recipeId": "cushion-cover", "parts": {} },
+    "finds": [
+      {
+        "id": "find-1",
+        "findId": "linen-curtain",
+        "grade": "like-new",
+        "price": 20,
+        "wornSpot": null,
+        "stains": [{ "id": "stain-1", "panel": 0, "cx": 73, "cy": 43, "radius": 7, "cells": 9 }]
+      }
+    ],
+    "unpick": {
+      "find-1#0": {
+        "popped": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        "snagsAt": [],
+        "attempts": 12,
+        "assisted": false
+      },
+      "find-1#1": {
+        "popped": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        "snagsAt": [],
+        "attempts": 12,
+        "assisted": false
+      }
+    },
+    "clean": {
+      "find-1#stain-1": {
+        "cellTicks": [20, 20, 20, 20, 20, 20, 20, 20, 20],
+        "harshTicks": 18,
+        "scrubTicks": 198
+      }
+    },
+    "soaked": false,
+    "placements": {
+      "cushion-front": { "x": 0, "y": 0, "rotation": 0 },
+      "cushion-back-1": { "x": 45, "y": 0, "rotation": 0 },
+      "cushion-back-2": { "x": 45, "y": 30, "rotation": 0 }
+    },
+    "autoLaid": false,
+    "cutTraces": { "cushion-front": 1, "cushion-back-1": 1, "cushion-back-2": 1 },
+    "cutAccuracy": { "cushion-front": 1, "cushion-back-1": 1, "cushion-back-2": 1 },
+    "cutDone": true,
+    "seams": {},
+    "finishes": [],
+    "nextFinishNumber": 1
+  },
+  "rack": [],
+  "stall": null,
+  "log": [],
+  "flipsFinished": 0,
+  "gigsDelivered": 0,
+  "fairSales": 0,
+  "next": { "run": 2, "find": 2, "scrap": 8, "piece": 1 },
+  "rng": -1519436117
+}

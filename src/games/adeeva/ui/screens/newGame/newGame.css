@@ -74,15 +74,6 @@
   align-items: flex-end;
 }
 
-.ad-career__window .ad-studio-backdrop {
-  transition: transform 1.2s var(--ease-out);
-}
-
-.ad-career:hover .ad-career__window .ad-studio-backdrop,
-.ad-career--selected .ad-career__window .ad-studio-backdrop {
-  transform: scale(1.04);
-}
-
 @media (max-width: 760px) {
   .ad-new-game__header {
     grid-template-columns: 1fr auto;

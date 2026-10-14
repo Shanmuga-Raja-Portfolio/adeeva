@@ -17,6 +17,7 @@ import {
 import { COLOURS } from "./palette";
 import type { ProfileBase } from "./profile";
 import type { RewardLine, RewardOutcome } from "./reward";
+import type { SubScore } from "./panelScore";
 import type { Criterion } from "./score";
 import type { StoryState } from "./story";
 import { STYLE_TAGS } from "./styleTag";
@@ -30,6 +31,13 @@ export const nonNegativeParser = rangeParser(0, Number.MAX_SAFE_INTEGER);
 export const shareParser = rangeParser(0, 1);
 export const styleTagParser = oneOf(STYLE_TAGS);
 export const colourIdParser = oneOf(COLOURS.map((colour) => colour.id));
+export const subScoreParser = objectOf<SubScore>({
+  id: stringParser,
+  label: stringParser,
+  value: rangeParser(0, 100),
+  weight: shareParser,
+  detail: stringParser,
+});
 
 export function knownIdParser(lookup: (id: string) => unknown, kind: string): Parser<string> {
   return refined(stringParser, (id) => lookup(id) !== undefined, `a known ${kind} id`);

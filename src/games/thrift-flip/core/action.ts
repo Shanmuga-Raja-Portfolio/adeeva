@@ -1,7 +1,12 @@
 import type { Point } from "../../../engine/geometry/point";
 import type { Rotation } from "../../../engine/geometry/rotation";
 import type { RecipeId } from "../content/recipe";
+import type { RunwayLightId } from "../../adeeva/content/runwayLight";
+import type { RunwayMoodId } from "../../adeeva/content/runwayMood";
+import type { ShopSignId } from "../content/shopSign";
 import type { UpgradeId } from "../content/upgrade";
+import type { WindowPropId } from "../content/windowProp";
+import type { WindowPiece, WindowProp } from "./boutique";
 import type { FinishRequest } from "./finishing";
 import type { FinishPose } from "./flipRun";
 import type { FlipStage } from "./flipStage";
@@ -64,4 +69,52 @@ export type Action =
   | { readonly type: "endDay" }
   | { readonly type: "workShift" }
   | { readonly type: "buyUpgrade"; readonly upgradeId: UpgradeId }
-  | { readonly type: "markBeatSeen"; readonly beatId: string };
+  | { readonly type: "markBeatSeen"; readonly beatId: string }
+  | {
+      readonly type: "chooseStoryOption";
+      readonly beatId: string;
+      readonly choiceId: string;
+      readonly signId: ShopSignId | null;
+    }
+  | { readonly type: "openBoutique"; readonly signId: ShopSignId }
+  | { readonly type: "shelvePiece"; readonly pieceId: string }
+  | { readonly type: "unshelvePiece"; readonly pieceId: string }
+  | { readonly type: "fillShelf" }
+  | {
+      readonly type: "dressWindow";
+      readonly pieces: readonly WindowPiece[];
+      readonly props: readonly WindowProp[];
+    }
+  | { readonly type: "buyProp"; readonly propId: WindowPropId }
+  | {
+      readonly type: "stageShowcase";
+      readonly order: readonly string[];
+      readonly mood: RunwayMoodId;
+      readonly light: RunwayLightId;
+      readonly cards: Readonly<Record<string, string>>;
+    }
+  | {
+      readonly type: "tablePull";
+      readonly tableId: string;
+      readonly stitch: number;
+      readonly distanceCm: number;
+      readonly assisted: boolean;
+    }
+  | {
+      readonly type: "tableScrub";
+      readonly tableId: string;
+      readonly cellTicks: readonly number[];
+      readonly harshTicks: number;
+      readonly scrubTicks: number;
+    }
+  | { readonly type: "tableSoak"; readonly tableId: string }
+  | {
+      readonly type: "tableSew";
+      readonly tableId: string;
+      readonly progress: number;
+      readonly ticks: number;
+      readonly insideTicks: number;
+      readonly assisted: boolean;
+    }
+  | { readonly type: "resetTableSeam"; readonly tableId: string }
+  | { readonly type: "swapFind"; readonly slotId: string; readonly findKey: string };

@@ -25,6 +25,11 @@ function piece(id: string, recipeId: RackPiece["recipeId"], quality: number): Ra
     tags: ["casual", "playful"],
     finishes: [],
     madeDay: 3,
+    findIds: ["tea-dress"],
+    seamAccuracy: quality / 100,
+    leavesParts: { reuse: 0.72, salvage: 0.72, secondhand: 0.72 },
+    colours: ["teal"],
+    showcaseSeason: null,
   };
 }
 

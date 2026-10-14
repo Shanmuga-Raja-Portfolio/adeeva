@@ -2,8 +2,9 @@ import type { Point } from "../../../engine/geometry/point";
 import type { ColourId, MaterialId, PrintId } from "../../../engine/palette";
 import type { StyleTag } from "../../../engine/styleTag";
 import type { TrimId } from "../../adeeva/content/trim";
+import { BOUTIQUE_FIND_IDS, BOUTIQUE_FINDS } from "./boutiqueFind";
 
-export const FIND_IDS = [
+const STALL_FIND_IDS = [
   "faded-jeans",
   "gingham-shirt",
   "linen-curtain",
@@ -19,6 +20,7 @@ export const FIND_IDS = [
   "sparkle-cardigan",
   "check-coat",
 ] as const;
+export const FIND_IDS = [...STALL_FIND_IDS, ...BOUTIQUE_FIND_IDS] as const;
 export type FindId = (typeof FIND_IDS)[number];
 
 export type FindShape = "jeans" | "shirt" | "dress" | "cloth" | "coat" | "skirt";
@@ -81,7 +83,7 @@ const JEANS_SPOTS: readonly [WornSpotDef, WornSpotDef] = [
   { panel: 1, x: 4, y: 79 },
 ];
 
-export const FINDS: readonly FindDef[] = [
+const STALL_FINDS: readonly FindDef[] = [
   {
     id: "faded-jeans",
     name: "Faded Jeans",
@@ -445,3 +447,5 @@ export const FINDS: readonly FindDef[] = [
     backstory: "Walked a big dog through ten winters",
   },
 ];
+
+export const FINDS: readonly FindDef[] = [...STALL_FINDS, ...BOUTIQUE_FINDS];

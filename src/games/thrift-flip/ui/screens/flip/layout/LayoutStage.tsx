@@ -15,9 +15,11 @@ import { HINTS } from "../../../../content/hint";
 import type { RecipePiece } from "../../../../content/recipe";
 import {
   autoLayoutIssue,
+  hemSpot,
+  runKind,
   autoSpot,
   findById,
-  flipPieces,
+  runPieces,
   grainScore,
   panelUnder,
   piecePolygon,
@@ -64,7 +66,8 @@ export function LayoutStage(props: StageProps) {
     setDragState(next);
   };
   const board = runBoard(run);
-  const pieces = flipPieces(run.design);
+  const kind = runKind(run);
+  const pieces = runPieces(run);
   const placements: Record<string, Placement> = { ...run.placements };
   if (drag !== null && drag.placement !== null) placements[drag.pieceId] = drag.placement;
   const issues = runLayoutIssues({ ...run, placements });
@@ -88,7 +91,7 @@ export function LayoutStage(props: StageProps) {
   const layDown = (pieceId: string) => {
     setSelectedId(pieceId);
     if (run.placements[pieceId] !== undefined) return;
-    const spot = autoSpot(board, pieces, run.placements, pieceId);
+    const spot = kind === "alter" ? hemSpot(board) : autoSpot(board, pieces, run.placements, pieceId);
     if (spot !== null) place(pieceId, spot);
   };
 
@@ -267,7 +270,7 @@ export function LayoutStage(props: StageProps) {
       <div className="tf-layout__board" ref={boardRef} data-testid="layout-board">
         <p className="tf-hint">
           <Icon name="scissors" size={18} />
-          {HINTS.layout}
+          {kind === "alter" ? HINTS.hem : run.design.recipeId === "patch-throw" ? HINTS.throw : HINTS.layout}
         </p>
         <svg
           ref={svgRef}

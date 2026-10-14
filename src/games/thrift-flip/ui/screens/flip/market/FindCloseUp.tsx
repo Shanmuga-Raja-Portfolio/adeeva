@@ -11,10 +11,11 @@ export interface FindCloseUpProps {
   readonly findId: FindId | null;
   readonly grade: ConditionGrade;
   readonly fits: boolean;
+  readonly twoFinds: boolean;
   readonly onClose: () => void;
 }
 
-export function FindCloseUp({ findId, grade, fits, onClose }: FindCloseUpProps) {
+export function FindCloseUp({ findId, grade, fits, twoFinds, onClose }: FindCloseUpProps) {
   const find = findId === null ? null : findById(findId);
   const notions = find?.lines.flatMap((line) => line.notions) ?? [];
   return (
@@ -45,7 +46,7 @@ export function FindCloseUp({ findId, grade, fits, onClose }: FindCloseUpProps) 
                 <TagPill key={tag}>{tag}</TagPill>
               ))}
             </div>
-            <FitsBadge fits={fits} />
+            <FitsBadge fits={fits} twoFinds={twoFinds} />
           </div>
         </div>
       ) : null}

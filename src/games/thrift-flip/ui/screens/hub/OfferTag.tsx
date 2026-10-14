@@ -3,7 +3,7 @@ import { Button } from "../../../../../ui/kit/Button";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
 import { offerAcceptIssue, type GameState, type OfferView } from "../../../core";
 import { PriceTag } from "../../art/PriceTag";
-import { BriefFacts, finishList, recipeList } from "./briefFacts";
+import { BriefFacts, finishList, recipeList, requestLine, ticketBadge } from "./briefFacts";
 
 export interface OfferTagProps {
   readonly state: GameState;
@@ -16,9 +16,16 @@ export interface OfferTagProps {
 export function OfferTag({ state, view, tilt, onAccept, onDecline }: OfferTagProps) {
   const { offer, client } = view;
   const issue = offerAcceptIssue(state, offer.id);
+  const badge = ticketBadge(offer.brief);
   return (
-    <article className="tf-offer" data-testid="offer-tag" data-client={client.id}>
+    <article
+      className={badge === null ? "tf-offer" : "tf-offer tf-offer--ticket"}
+      data-testid="offer-tag"
+      data-client={client.id}
+      data-kind={offer.brief.kind}
+    >
       <PriceTag tilt={tilt} tone={client.traitGate === undefined ? "kraft" : "mint"}>
+        {badge === null ? null : <span className="tf-offer__badge">{badge} · no coins needed</span>}
         <header className="tf-offer__head">
           <Avatar look={client.look} size={52} frameColour="#e2f4ea" title={client.name} />
           <div>
@@ -26,7 +33,7 @@ export function OfferTag({ state, view, tilt, onAccept, onDecline }: OfferTagPro
             <span className="tf-offer__relation">{client.relation}</span>
           </div>
         </header>
-        <p className="tf-offer__request">“{client.lines.request}”</p>
+        <p className="tf-offer__request">“{requestLine(offer.brief, client)}”</p>
         <p className="tf-offer__make">
           <strong>{recipeList(offer.brief)}</strong> · {finishList(offer.brief)}
         </p>

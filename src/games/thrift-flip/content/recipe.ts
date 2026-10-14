@@ -1,10 +1,12 @@
 import type { Point } from "../../../engine/geometry/point";
+import { rectangle } from "../../../engine/geometry/rectangle";
 import type { MaterialId } from "../../../engine/palette";
 import { SEAM_PROFILES, type PatternPieceDef } from "../../adeeva/content/garmentPart";
 import type { GarmentSlot } from "../../adeeva/content/garmentSlot";
 import type { StyleTag } from "../../../engine/styleTag";
+import { BOUTIQUE_RECIPE_IDS, BOUTIQUE_RECIPES } from "./boutiqueRecipe";
 
-export const RECIPE_IDS = [
+export const STALL_RECIPE_IDS = [
   "scrunchie-trio",
   "cushion-cover",
   "tote-bag",
@@ -12,6 +14,7 @@ export const RECIPE_IDS = [
   "remade-skirt",
   "remade-top",
 ] as const;
+export const RECIPE_IDS = [...STALL_RECIPE_IDS, ...BOUTIQUE_RECIPE_IDS] as const;
 export type RecipeId = (typeof RECIPE_IDS)[number];
 
 export interface RecipePiece {
@@ -47,15 +50,6 @@ export interface RecipeDef {
   readonly partGroups: readonly PartGroup[];
 }
 
-function rectangle(width: number, height: number): readonly Point[] {
-  return [
-    [0, 0],
-    [width, 0],
-    [width, height],
-    [0, height],
-  ];
-}
-
 const CROWN: readonly Point[] = [
   [5.27, 0],
   [12.73, 0],
@@ -88,7 +82,7 @@ const BRIM: readonly Point[] = [
   [0, 12],
 ];
 
-export const RECIPES: readonly RecipeDef[] = [
+const STALL_RECIPES: readonly RecipeDef[] = [
   {
     id: "scrunchie-trio",
     name: "Scrunchie Trio",
@@ -200,3 +194,5 @@ export const RECIPES: readonly RecipeDef[] = [
     ],
   },
 ];
+
+export const RECIPES: readonly RecipeDef[] = [...STALL_RECIPES, ...BOUTIQUE_RECIPES];

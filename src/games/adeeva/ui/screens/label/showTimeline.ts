@@ -1,3 +1,5 @@
+import { window01 } from "../../../../../ui/kit/easing";
+
 export type ShowSceneKind = "title" | "lights" | "walk" | "finale" | "bow";
 
 export interface ShowSegment {
@@ -70,4 +72,27 @@ export function momentAt(segments: readonly ShowSegment[], elapsed: number): Sho
 export function sceneLabel(segment: ShowSegment): string {
   if (segment.kind === "walk") return `walk-${segment.walk + 1}`;
   return segment.kind;
+}
+
+export interface ShowFrameSlot {
+  readonly moment: ShowMoment;
+  readonly opacity: number;
+}
+
+export function crossfadeFrames(
+  segments: readonly ShowSegment[],
+  moment: ShowMoment,
+  still: boolean,
+): ShowFrameSlot[] {
+  const frames: ShowFrameSlot[] = [{ moment, opacity: 1 }];
+  const following = segments[moment.index + 1];
+  if (!still || following === undefined) return frames;
+  const fade = window01(moment.ms, moment.segment.durationMs - STILL_FADE_MS, moment.segment.durationMs);
+  if (fade > 0)
+    frames.push({ moment: { segment: following, index: moment.index + 1, t: 0, ms: 0 }, opacity: fade });
+  return frames;
+}
+
+export function progressPips(segments: readonly ShowSegment[]): ShowSegment[] {
+  return segments.filter((segment) => segment.kind !== "title" && segment.kind !== "lights");
 }

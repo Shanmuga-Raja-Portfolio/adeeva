@@ -1,6 +1,7 @@
 import { weekdayName } from "../../../../engine/weekday";
-import { isStallDay } from "../../core";
+import type { CareerId } from "../../content/career";
+import { careerById, isStallDay } from "../../core";
 
-export function stallDayName(day: number): string {
-  return isStallDay(day) ? "Stall Day" : weekdayName(day);
+export function stallDayName(day: number, career: CareerId): string {
+  return isStallDay(day) ? careerById(career).sellDayName : weekdayName(day);
 }

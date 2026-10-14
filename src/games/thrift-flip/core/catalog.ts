@@ -6,7 +6,14 @@ import { MATERIALS, type MaterialDef } from "../../adeeva/content/material";
 import type { MaterialId } from "../../../engine/palette";
 import { TRIM_IDS, TRIMS, type TrimDef, type TrimId } from "../../adeeva/content/trim";
 import { FABRICS, type FabricDef } from "../../adeeva/content/fabric";
-import { CLIENTS, type ClientDef } from "../content/client";
+import { BOUTIQUE_CLIENTS } from "../content/boutiqueClient";
+import { CAREERS, type CareerDef, type CareerId } from "../content/career";
+import { CLIENTS, type ClientDef, type ClientPerson } from "../content/client";
+import { SEASONS, type SeasonDef, type SeasonId } from "../content/season";
+import { SHOP_SIGNS, type ShopSignDef, type ShopSignId } from "../content/shopSign";
+import { TICKETS, type TicketDef, type TicketId } from "../content/ticket";
+import { TICKET_CLIENTS } from "../content/ticketClient";
+import { WINDOW_PROPS, type WindowPropDef, type WindowPropId } from "../content/windowProp";
 import { CONDITIONS, type ConditionDef, type ConditionGrade } from "../content/condition";
 import { DIFFICULTIES } from "../content/difficulty";
 import { FINDS, type FindDef, type FindId } from "../content/find";
@@ -39,8 +46,35 @@ export function conditionById(id: ConditionGrade): ConditionDef {
   return requireById(CONDITIONS, id, "condition");
 }
 
+export const COMMISSION_CLIENTS: readonly ClientDef[] = [...CLIENTS, ...BOUTIQUE_CLIENTS];
+const PEOPLE: readonly ClientPerson[] = [...COMMISSION_CLIENTS, ...TICKET_CLIENTS];
+
 export function clientById(id: string): ClientDef | undefined {
-  return CLIENTS.find((client) => client.id === id);
+  return COMMISSION_CLIENTS.find((client) => client.id === id);
+}
+
+export function personById(id: string): ClientPerson | undefined {
+  return PEOPLE.find((person) => person.id === id);
+}
+
+export function careerById(id: CareerId): CareerDef {
+  return requireById(CAREERS, id, "career");
+}
+
+export function ticketById(id: TicketId): TicketDef {
+  return requireById(TICKETS, id, "ticket");
+}
+
+export function seasonById(id: SeasonId): SeasonDef {
+  return requireById(SEASONS, id, "season");
+}
+
+export function signById(id: ShopSignId): ShopSignDef {
+  return requireById(SHOP_SIGNS, id, "shop sign");
+}
+
+export function propById(id: WindowPropId): WindowPropDef {
+  return requireById(WINDOW_PROPS, id, "window prop");
 }
 
 export function partById(id: string): GarmentPartDef | undefined {

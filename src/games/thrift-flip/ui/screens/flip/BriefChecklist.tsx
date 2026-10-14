@@ -2,7 +2,7 @@ import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import {
   checklist,
-  clientById,
+  personById,
   flipQuality,
   leavesOf,
   type ChecklistStatus,
@@ -46,7 +46,7 @@ export function BriefChecklist({ state, run }: BriefChecklistProps) {
     );
   }
   const items = checklist(state);
-  const client = clientById(run.brief.clientId);
+  const client = personById(run.brief.clientId);
   const met = items.filter((item) => item.status === "met").length;
   return (
     <aside className="tf-checklist" aria-label="Order checklist">

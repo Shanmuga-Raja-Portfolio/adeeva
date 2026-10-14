@@ -1,7 +1,7 @@
 import type { Point } from "../../../engine/geometry/point";
 import { traceAccuracy } from "../../../engine/geometry/traceAccuracy";
 import { isTraceComplete } from "../../../engine/geometry/traceCoverage";
-import { flipPiece } from "./flipPieces";
+import { runPiece } from "./runPieces";
 import type { GameState } from "./gameState";
 import { piecePolygon } from "./placement";
 import { updateRun } from "./runUpdate";
@@ -20,7 +20,7 @@ export function traceCut(state: GameState, pieceId: string, samples: readonly Po
   if (!wellFormed(samples)) return state;
   const tolerance = cutTolerance(state);
   return updateRun(state, "cut", (run) => {
-    const piece = flipPiece(run.design, pieceId);
+    const piece = runPiece(run, pieceId);
     const placement = piece === undefined ? undefined : run.placements[pieceId];
     if (run.cutDone || piece === undefined || placement === undefined) return null;
     const outline = piecePolygon(piece, placement);

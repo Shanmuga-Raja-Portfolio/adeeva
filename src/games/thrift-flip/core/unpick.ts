@@ -3,7 +3,7 @@ import type { Point } from "../../../engine/geometry/point";
 import { ownEntry } from "../../../engine/ownEntry";
 import type { TrimId } from "../../adeeva/content/trim";
 import type { NotionDef, StitchLineDef } from "../content/find";
-import { findById } from "./catalog";
+import { findById, ticketById } from "./catalog";
 import { lineKey, type FlipRun, type UnpickLine } from "./flipRun";
 import type { GameState } from "./gameState";
 import type { OwnedFind } from "./ownedFind";
@@ -54,13 +54,22 @@ export function notionSaved(record: UnpickLine, notion: NotionDef, sharpRipper: 
   return record.popped.includes(notion.stitch) && snags < (sharpRipper ? 2 : 1);
 }
 
-export function findLines(owned: OwnedFind): readonly StitchLineDef[] {
-  return findById(owned.findId).lines;
+export interface RunLine {
+  readonly index: number;
+  readonly def: StitchLineDef;
+}
+
+export function runLines(run: Pick<FlipRun, "brief">, owned: OwnedFind): RunLine[] {
+  const lines = findById(owned.findId).lines.map((def, index) => ({ index, def }));
+  const ticketId = run.brief?.ticketId ?? null;
+  if (ticketId === null) return lines;
+  const only = ticketById(ticketId).line;
+  return lines.filter((line) => line.index === only);
 }
 
 export function findSnags(run: FlipRun, owned: OwnedFind): number {
-  return findLines(owned).reduce(
-    (sum, def, index) => sum + lineSnags(def, lineRecord(run, owned.id, index)),
+  return runLines(run, owned).reduce(
+    (sum, line) => sum + lineSnags(line.def, lineRecord(run, owned.id, line.index)),
     0,
   );
 }
@@ -72,29 +81,29 @@ export function snagLoss(run: FlipRun, owned: OwnedFind): number {
 export function unpickAccuracy(run: FlipRun): number {
   return average(
     run.finds.flatMap((owned) =>
-      findLines(owned).map((def, index) => lineAccuracy(def, lineRecord(run, owned.id, index))),
+      runLines(run, owned).map((line) => lineAccuracy(line.def, lineRecord(run, owned.id, line.index))),
     ),
   );
 }
 
 export function isUnpickComplete(run: FlipRun): boolean {
   return run.finds.every((owned) =>
-    findLines(owned).every((def, index) => isLineDone(def, lineRecord(run, owned.id, index))),
+    runLines(run, owned).every((line) => isLineDone(line.def, lineRecord(run, owned.id, line.index))),
   );
 }
 
 export function notionsOnFinds(run: FlipRun): number {
   return run.finds.reduce(
-    (sum, owned) => sum + findLines(owned).reduce((count, def) => count + def.notions.length, 0),
+    (sum, owned) => sum + runLines(run, owned).reduce((count, line) => count + line.def.notions.length, 0),
     0,
   );
 }
 
 export function savedNotions(run: FlipRun, sharpRipper: boolean): TrimId[] {
   return run.finds.flatMap((owned) =>
-    findLines(owned).flatMap((def, index) => {
-      const record = lineRecord(run, owned.id, index);
-      return def.notions
+    runLines(run, owned).flatMap((line) => {
+      const record = lineRecord(run, owned.id, line.index);
+      return line.def.notions
         .filter((notion) => notionSaved(record, notion, sharpRipper))
         .map((notion) => notion.notion);
     }),
@@ -114,7 +123,8 @@ export function pullStitch(state: GameState, pull: StitchPull): GameState {
   if (!pull.assisted && pull.distanceCm < MIN_PULL_CM) return state;
   return updateRun(state, "unpick", (run) => {
     const owned = run.finds.find((entry) => entry.id === pull.findKey);
-    const def = owned === undefined ? undefined : findLines(owned)[pull.line];
+    const def =
+      owned === undefined ? undefined : runLines(run, owned).find((line) => line.index === pull.line)?.def;
     if (owned === undefined || def === undefined) return null;
     if (!Number.isInteger(pull.stitch) || pull.stitch < 0 || pull.stitch >= def.stitches) return null;
     const record = lineRecord(run, owned.id, pull.line);

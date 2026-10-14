@@ -1,6 +1,15 @@
-import { arrayOf, nullable, objectOf, oneOf, rangeParser, stringParser } from "../../../engine/parse";
+import {
+  arrayOf,
+  nullable,
+  objectOf,
+  oneOf,
+  rangeParser,
+  refined,
+  stringParser,
+} from "../../../engine/parse";
 import type { FinishRequirement } from "../content/client";
 import { PATCH_IDS } from "../content/finish";
+import { TICKET_IDS, TICKET_KINDS } from "../content/ticket";
 import type { Brief } from "./brief";
 import {
   clientIdParser,
@@ -32,9 +41,19 @@ export const finishRequirementParser = taggedParser<FinishRequirement>({
     patch: oneOf(["any", ...PATCH_IDS] as const),
     count: positiveIntegerParser,
   }),
+  mend: objectOf<FinishRequirement & { kind: "mend" }>({
+    kind: oneOf(["mend"] as const),
+    count: positiveIntegerParser,
+  }),
+  "mend-or-patch": objectOf<FinishRequirement & { kind: "mend-or-patch" }>({
+    kind: oneOf(["mend-or-patch"] as const),
+    count: positiveIntegerParser,
+  }),
 });
 
-export const briefParser = objectOf<Brief>({
+const briefShapeParser = objectOf<Brief>({
+  kind: oneOf(["flip", ...TICKET_KINDS] as const),
+  ticketId: nullable(oneOf(TICKET_IDS)),
   clientId: clientIdParser,
   occasion: stringParser,
   deadlineDay: positiveIntegerParser,
@@ -50,3 +69,9 @@ export const briefParser = objectOf<Brief>({
   minQuality: rangeParser(0, 100),
   minLeaves: rangeParser(0, 100),
 });
+
+export const briefParser = refined(
+  briefShapeParser,
+  (brief) => (brief.kind === "flip") === (brief.ticketId === null),
+  "a ticket number on every mend and hem ticket",
+);

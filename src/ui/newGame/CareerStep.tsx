@@ -13,6 +13,7 @@ export interface CareerCard<C extends string> {
   readonly name: string;
   readonly pitch: string;
   readonly placeName: string;
+  readonly badge?: string | undefined;
   readonly window: ReactNode;
   readonly facts: readonly CareerFact[];
 }
@@ -40,6 +41,7 @@ export function CareerStep<C extends string>({ cards, value, onChange }: CareerS
           </span>
           <span className="ad-career__body">
             <span className="ad-choice__title">{card.name}</span>
+            {card.badge === undefined ? null : <span className="ad-career__badge">{card.badge}</span>}
             <span className="ad-choice__text">{card.pitch}</span>
             <span className="ad-career__facts">
               {card.facts.map((fact) => (

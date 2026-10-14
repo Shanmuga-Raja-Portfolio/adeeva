@@ -2,16 +2,16 @@ import { useState } from "react";
 import { useToast } from "../../../../../studio/ToastContext";
 import { Button } from "../../../../../ui/kit/Button";
 import { StatChip } from "../../../../../ui/kit/StatChip";
-import { clientById, recipeById } from "../../../core";
+import { personById, recipeById } from "../../../core";
 import { SetAsideDialog } from "./SetAsideDialog";
-import { STAGE_TITLES } from "./stageNames";
+import { stageTitle } from "./stageNames";
 import type { StageProps } from "./stageProps";
 
 function owner(props: StageProps): string {
   const { run } = props;
   const recipe = run.design.recipeId === null ? null : recipeById(run.design.recipeId).name;
   if (run.brief === null) return recipe === null ? "Your own piece" : `Your own ${recipe.toLowerCase()}`;
-  const client = clientById(run.brief.clientId);
+  const client = personById(run.brief.clientId);
   return `For ${client?.name ?? "a regular"} · ${run.brief.occasion}`;
 }
 
@@ -32,7 +32,7 @@ export function FlipHeader(props: StageProps) {
       </Button>
       <div className="tf-flip-header__title">
         <span className="ad-eyebrow">{owner(props)}</span>
-        <h1>{STAGE_TITLES[run.stage]}</h1>
+        <h1>{stageTitle(run)}</h1>
       </div>
       <div className="tf-flip-header__stats">
         <StatChip kind="day" value={state.calendar.day} />

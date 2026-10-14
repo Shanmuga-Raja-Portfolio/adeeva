@@ -4,7 +4,8 @@ import { ownEntry } from "../../../engine/ownEntry";
 import { TRIM_IDS, type TrimId } from "../../adeeva/content/trim";
 import { MAX_SCRAPS_PER_FIND, SCRAP_AREA_CM2 } from "../content/finish";
 import { findById } from "./catalog";
-import { flipPieces } from "./flipPieces";
+import { runKind } from "./runKind";
+import { runPieces } from "./runPieces";
 import type { FlipRun } from "./flipRun";
 import type { GameState, Stock } from "./gameState";
 import { runBoard, runLayoutIssues } from "./layout";
@@ -28,7 +29,7 @@ export function canCommitCut(state: GameState): ActionCheck {
 export function placedAreaByFind(run: FlipRun): Readonly<Record<string, number>> {
   const board = runBoard(run);
   const totals: Record<string, number> = {};
-  for (const piece of flipPieces(run.design)) {
+  for (const piece of runPieces(run)) {
     const placement = run.placements[piece.id];
     if (placement === undefined) continue;
     const polygon = piecePolygon(piece, placement);
@@ -69,11 +70,13 @@ export function commitCut(state: GameState, assisted: boolean): GameState {
   const run = state.activeRun;
   if (run === null || !canCommitCut(state).ok) return state;
   const accuracy: Record<string, number> = {};
-  for (const piece of flipPieces(run.design)) {
+  for (const piece of runPieces(run)) {
     const kept = ownEntry(run.cutTraces, piece.id);
     if (kept === undefined && !assisted) return state;
     accuracy[piece.id] = kept ?? ASSIST_CUT_ACCURACY;
   }
+  if (runKind(run) !== "flip")
+    return { ...state, activeRun: { ...run, cutAccuracy: accuracy, cutDone: true } };
   const used = new Set(run.finds.map((owned) => owned.id));
   const scraps = addScraps(state.stock.scraps, leftoverScraps(run), state.next.scrap);
   return {

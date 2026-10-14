@@ -12,19 +12,24 @@ import { playerVoiceSample } from "../../../../../engine/storyVoice";
 import type { TraitId } from "../../../../../engine/trait";
 import type { IconName } from "../../../../../ui/kit/IconSet";
 import { STORY_BEATS } from "../../../content/storyBeat";
+import { CAREERS, type CareerId } from "../../../content/career";
 import { DIFFICULTIES } from "../../../content/difficulty";
 import { TRAITS } from "../../../content/trait";
-import type { NewGameSettings } from "../../../core";
+import { newGameIssues, type NewGameSettings } from "../../../core";
 import { Awning } from "../../art/Awning";
+import { BoutiqueBackdrop } from "../../art/BoutiqueBackdrop";
+import { StallBackdrop } from "../../art/StallBackdrop";
 import { Wordmark } from "../../art/Wordmark";
 import type { SaveSlotId } from "../../thriftSlots";
+import { CareerStep, type CareerCard } from "../../../../../ui/newGame/CareerStep";
+import { careerFacts } from "../../../../../ui/newGame/careerFacts";
 import {
-  draftSettings,
-  PROFILE_STEPS as NEW_GAME_STEPS,
-  playerDraft,
-  stepIssue,
-  type ProfileDraft as NewGameDraft,
-} from "../../../../../ui/newGame/profileDraft";
+  CAREER_STEPS as NEW_GAME_STEPS,
+  careerDraftSettings,
+  careerPlayerDraft,
+  careerStepIssue,
+  type CareerDraft,
+} from "../../../../../ui/newGame/careerDraft";
 import "./newGame.css";
 
 export interface NewGameFlowProps {
@@ -43,6 +48,10 @@ const HEADINGS: Readonly<Record<(typeof NEW_GAME_STEPS)[number]["id"], { title: 
   trait: {
     title: "What's your flipping style?",
     lead: "Your trait shapes your perks, your voice and who stops by.",
+  },
+  career: {
+    title: "Where does your story start?",
+    lead: "Start at the market stall, or jump into your own boutique on Larkspur Row.",
   },
   difficulty: {
     title: "How busy should the market be?",
@@ -71,11 +80,23 @@ function voiceSample(trait: TraitId, name: string): string {
   );
 }
 
+type NewGameDraft = CareerDraft<CareerId>;
+
+const CAREER_CARDS: readonly CareerCard<CareerId>[] = CAREERS.map((career) => ({
+  id: career.id,
+  name: career.name,
+  pitch: career.pitch,
+  placeName: career.placeName,
+  badge: career.badge,
+  window: career.id === "stall" ? <StallBackdrop /> : <BoutiqueBackdrop signName="Larkspur Row" />,
+  facts: careerFacts(career),
+}));
+
 export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: NewGameFlowProps) {
-  const [draft, setDraft] = useState<NewGameDraft>(() => playerDraft(player));
+  const [draft, setDraft] = useState<NewGameDraft>(() => careerPlayerDraft<CareerId>(player, null));
   const [index, setIndex] = useState(0);
   const step = NEW_GAME_STEPS[index] ?? NEW_GAME_STEPS[0];
-  const issue = stepIssue(step.id, draft);
+  const issue = careerStepIssue(step.id, draft, newGameIssues);
   const isLast = index === NEW_GAME_STEPS.length - 1;
   const update = (patch: Partial<NewGameDraft>) => setDraft((current) => ({ ...current, ...patch }));
   const heading = HEADINGS[step.id];
@@ -86,7 +107,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
       setIndex(index + 1);
       return;
     }
-    const settings = draftSettings(draft, newSeed());
+    const settings = careerDraftSettings(draft, newSeed());
     if (settings !== null) onBegin(settings);
   };
 
@@ -131,6 +152,9 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
               onChange={(trait) => update({ trait })}
             />
           ) : null}
+          {step.id === "career" ? (
+            <CareerStep cards={CAREER_CARDS} value={draft.career} onChange={(career) => update({ career })} />
+          ) : null}
           {step.id === "difficulty" ? (
             <DifficultyStep
               value={draft.difficulty}
@@ -153,7 +177,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
           showReason
           onClick={next}
         >
-          {isLast ? "Open the stall" : "Next"}
+          {isLast ? (draft.career === "boutique" ? "Open the shop" : "Open the stall") : "Next"}
         </Button>
       </footer>
     </main>

@@ -14,7 +14,7 @@ import {
   canCommitCut,
   cutTolerance,
   findById,
-  flipPieces,
+  runPieces,
   panelUnder,
   piecePolygon,
   runBoard,
@@ -30,7 +30,7 @@ export function CutStage(props: StageProps) {
   const once = useDispatchOnce(state, dispatch);
   const traced = run.cutTraces;
   const [chosen, setChosen] = useState<string | null>(null);
-  const pieces = flipPieces(run.design);
+  const pieces = runPieces(run);
   const board = runBoard(run);
   const clothFor = (pieceId: string): Cloth | undefined => {
     const piece = pieces.find((entry) => entry.id === pieceId);

@@ -15,9 +15,9 @@ import {
   colourIdParser,
   countParser,
   dayParser,
-  nonNegativeParser,
   shareParser,
   styleTagParser,
+  subScoreParser,
 } from "../../../engine/stateParsers";
 import { FAIR_MUSIC_IDS } from "../content/fairMusic";
 import { FAIR_TENT_NUMBERS } from "../content/fairTent";
@@ -30,7 +30,6 @@ import { TABLE_CLOTH_IDS } from "../content/tableCloth";
 import { clientIdParser, designParser, placedToppingParser } from "./bakeRunParser";
 import { isFairThemeId } from "./catalog";
 import type { FairEntry, FairPanelScore, FairPlan, FairResult, FairState, TouchScore } from "./fairState";
-import type { SubScore } from "../../../engine/panelScore";
 import { DAYS_PER_WEEK } from "../../../engine/week";
 
 const scoreParser = integerRangeParser(0, 100);
@@ -56,19 +55,11 @@ const planParser = objectOf<FairPlan>({
   music: oneOf(FAIR_MUSIC_IDS),
 });
 
-const partParser = objectOf<SubScore>({
-  id: stringParser,
-  label: stringParser,
-  value: scoreParser,
-  weight: nonNegativeParser,
-  detail: stringParser,
-});
-
 const panelParser = objectOf<FairPanelScore>({
   id: oneOf(FAIR_PANEL_IDS),
   label: stringParser,
   score: scoreParser,
-  parts: arrayOf(partParser),
+  parts: arrayOf(subScoreParser),
   note: stringParser,
 });
 

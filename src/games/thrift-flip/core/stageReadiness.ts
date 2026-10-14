@@ -1,15 +1,17 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
+import { hoursShortfallReason } from "../../../engine/dayHours";
+import type { UpgradeId } from "../content/upgrade";
 import { designBriefIssue } from "./brief";
-import { recipeById } from "./catalog";
 import { isCleanComplete } from "./clean";
 import { designIssues } from "./design";
 import { findBlockIssue } from "./findChoice";
-import { flipSeams } from "./flipPieces";
 import type { FlipRun } from "./flipRun";
-import { stageHours, stageIndex } from "./flipStage";
+import { stageIndex } from "./flipStage";
 import type { GameState } from "./gameState";
-import { hoursShortfallReason } from "../../../engine/dayHours";
+import { hallClosedIssue } from "./hallDay";
 import { runLayoutIssues } from "./layout";
+import { runSeams } from "./runPieces";
+import { plannedStageHours } from "./runStages";
 import { isSeamSewn } from "./seamSewn";
 import { stallDayIssue } from "./stallCalendar";
 import { isUnpickComplete } from "./unpick";
@@ -23,12 +25,12 @@ function marketIssues(run: FlipRun): string[] {
 }
 
 function sewIssues(run: FlipRun): string[] {
-  return flipSeams(run.design)
+  return runSeams(run)
     .filter((seam) => !isSeamSewn(run, seam.id))
     .map((seam) => `Sew the ${seam.name.toLowerCase()}.`);
 }
 
-export function stageIssues(state: GameState, run: FlipRun): string[] {
+export function stageIssues(state: Pick<GameState, "profile" | "upgrades">, run: FlipRun): string[] {
   switch (run.stage) {
     case "brief":
     case "finish":
@@ -56,10 +58,9 @@ export function stageIssues(state: GameState, run: FlipRun): string[] {
   }
 }
 
-export function runStageHours(run: FlipRun): number {
+export function runStageHours(run: FlipRun, upgrades: readonly UpgradeId[]): number {
   if (stageIndex(run.stage) < stageIndex(run.reachedStage)) return 0;
-  const sewHours = run.design.recipeId === null ? 0 : recipeById(run.design.recipeId).sewHours;
-  return stageHours(run.stage, sewHours);
+  return plannedStageHours(run, upgrades);
 }
 
 export function canAdvance(state: GameState): ActionCheck {
@@ -67,8 +68,8 @@ export function canAdvance(state: GameState): ActionCheck {
   if (run === null) return actionCheck(["No flip on the bench."]);
   const issues = stageIssues(state, run);
   if (issues.length > 0) return actionCheck(issues);
-  const stall = stallDayIssue(state.calendar.day);
-  if (stall !== null) return actionCheck([stall]);
-  const hours = hoursShortfallReason(state.calendar, runStageHours(run));
+  const closed = stallDayIssue(state.calendar.day) ?? hallClosedIssue(state);
+  if (closed !== null) return actionCheck([closed]);
+  const hours = hoursShortfallReason(state.calendar, runStageHours(run, state.upgrades));
   return actionCheck(hours === null ? [] : [hours]);
 }

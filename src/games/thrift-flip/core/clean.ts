@@ -80,7 +80,11 @@ export interface ScrubSample {
   readonly scrubTicks: number;
 }
 
-function growsFrom(before: StainWork, sample: ScrubSample, cells: number): boolean {
+export function scrubGrows(
+  before: StainWork,
+  sample: Pick<ScrubSample, "cellTicks" | "harshTicks" | "scrubTicks">,
+  cells: number,
+): boolean {
   if (sample.cellTicks.length !== cells || !sample.cellTicks.every(isCount)) return false;
   if (!isCount(sample.harshTicks) || !isCount(sample.scrubTicks)) return false;
   const moving = sample.cellTicks.reduce((sum, ticks) => sum + ticks, 0);
@@ -103,7 +107,7 @@ export function scrubStain(state: GameState, sample: ScrubSample): GameState {
     const stain = owned?.stains.find((entry) => entry.id === sample.stainId);
     if (owned === undefined || stain === undefined) return null;
     const before = stainWork(run, owned.id, stain);
-    if (!growsFrom(before, sample, stain.cells)) return null;
+    if (!scrubGrows(before, sample, stain.cells)) return null;
     const work: StainWork = {
       cellTicks: [...sample.cellTicks],
       harshTicks: sample.harshTicks,

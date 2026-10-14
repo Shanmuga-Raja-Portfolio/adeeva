@@ -38,6 +38,7 @@ export function MarketStage(props: StageProps) {
   const [closeUp, setCloseUp] = useState<CloseUp | null>(null);
   const key = fitKey(run.design);
   const fits = (findId: FindId) => key !== null && findFitsKey(findId, key);
+  const twoFinds = run.design.recipeId === "patch-throw";
   const open = state.calendar.marketOpen;
   const visitIssue = marketVisitIssue(state);
   const livePicked = picked.filter((id) => state.rail.some((slot) => slot.id === id && !slot.sold));
@@ -98,6 +99,7 @@ export function MarketStage(props: StageProps) {
                 slot={slot}
                 index={index}
                 fits={fits(slot.findId)}
+                twoFinds={twoFinds}
                 hot={hotMarker(state, slot.findId)}
                 picked={livePicked.includes(slot.id)}
                 open={open}
@@ -150,7 +152,7 @@ export function MarketStage(props: StageProps) {
                   <span className="tf-owned__body">
                     <strong>{find.name}</strong>
                     <small>{conditionById(owned.grade).name}</small>
-                    <FitsBadge fits={fits(owned.findId)} />
+                    <FitsBadge fits={fits(owned.findId)} twoFinds={twoFinds} />
                   </span>
                   <Button
                     size="sm"
@@ -171,6 +173,7 @@ export function MarketStage(props: StageProps) {
         findId={closeUp?.findId ?? null}
         grade={closeUp?.grade ?? "loved"}
         fits={closeUp !== null && fits(closeUp.findId)}
+        twoFinds={twoFinds}
         onClose={() => setCloseUp(null)}
       />
       <StageFooter {...props} hint="Great finds! Off to the workbench to take them apart." />

@@ -3,10 +3,12 @@ import { useToast } from "../../../../../studio/ToastContext";
 import { Card } from "../../../../../ui/kit/Card";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { useDispatchOnce, type ClickLike } from "../../../../../ui/kit/useDispatchOnce";
+import type { ShopSignId } from "../../../content/shopSign";
 import type { UpgradeId } from "../../../content/upgrade";
 import {
-  clientById,
+  personById,
   currentBeat,
+  signById,
   MAX_ACTIVE_GIGS,
   offersFor,
   upgradeById,
@@ -27,13 +29,21 @@ import { RackPanel } from "./RackPanel";
 import { ResultsLog } from "./ResultsLog";
 import { StockPanel } from "./StockPanel";
 import { UpgradesPanel } from "./UpgradesPanel";
+import { KeepsakePanel } from "../boutique/KeepsakePanel";
+import { LarkspurCard } from "../boutique/LarkspurCard";
+import { SeasonPanel } from "../boutique/SeasonPanel";
+import { WindowCard } from "../boutique/WindowCard";
 import "./hub.css";
+import "../boutique/boutique.css";
 
 export interface StallHubProps {
   readonly state: GameState;
   readonly dispatch: (action: Action) => boolean;
   readonly onOpenFlip: () => void;
   readonly onOpenStall: () => void;
+  readonly onOpenWindow: () => void;
+  readonly onOpenHall: () => void;
+  readonly onOpenShowcase: () => void;
   readonly onOpenSettings: () => void;
   readonly onExitToTitle: () => void;
 }
@@ -50,6 +60,9 @@ export function StallHub({
   dispatch,
   onOpenFlip,
   onOpenStall,
+  onOpenWindow,
+  onOpenHall,
+  onOpenShowcase,
   onOpenSettings,
   onExitToTitle,
 }: StallHubProps) {
@@ -64,7 +77,7 @@ export function StallHub({
 
   const clientName = (offerId: string) => {
     const offer = state.gigs.offers.find((entry) => entry.id === offerId);
-    return offer === undefined ? "Your regular" : (clientById(offer.clientId)?.name ?? "Your regular");
+    return offer === undefined ? "Your regular" : (personById(offer.clientId)?.name ?? "Your regular");
   };
 
   const accept = (event: ClickLike, offerId: string) => {
@@ -95,22 +108,43 @@ export function StallHub({
     if (once(event, kind === "shift" ? { type: "workShift" } : { type: "endDay" })) setEnding({ from, kind });
   };
 
+  const shelf = (event: ClickLike, action: Action) => {
+    if (once(event, action))
+      toast(
+        action.type === "unshelvePiece" ? "Back on the seasonal rack." : "On the show shelf!",
+        action.type === "unshelvePiece" ? "info" : "success",
+      );
+  };
+
+  const openBoutique = (signId: ShopSignId) => {
+    if (dispatch({ type: "openBoutique", signId }))
+      toast(`${signById(signId).name} is open on Larkspur Row!`);
+  };
+
   const setAside = () => {
     setSettingAside(false);
     if (dispatch({ type: "abandonFlip" })) toast("The flip is set aside. Your bench is clear.", "info");
   };
 
   return (
-    <div className="tf-hub ad-screen" data-testid="stall-hub">
+    <div
+      className={state.boutique === null ? "tf-hub ad-screen" : "tf-hub tf-hub--boutique ad-screen"}
+      data-testid="stall-hub"
+      data-career={state.profile.career}
+    >
       <div className="tf-hub__content" inert={overlayOpen}>
         <HubTopBar state={state} onOpenSettings={onOpenSettings} onExit={onExitToTitle} />
         <main className="tf-hub__main">
-          <h1 className="ad-visually-hidden">Your stall at the market</h1>
+          <h1 className="ad-visually-hidden">
+            {state.boutique === null ? "Your stall at the market" : "Your boutique on Larkspur Row"}
+          </h1>
           <HubHero
             state={state}
             onWorkShift={(event) => endDay(event, "shift")}
             onEndDay={(event) => endDay(event, "rest")}
             onOpenStall={onOpenStall}
+            onOpenHall={onOpenHall}
+            onOpenShowcase={onOpenShowcase}
           />
           <div className="tf-hub__grid">
             <section className="tf-board" aria-labelledby="tf-board-title">
@@ -169,10 +203,14 @@ export function StallHub({
                   </div>
                 )}
               </Card>
-              <RackPanel state={state} onStartOwn={startOwn} onContinue={onOpenFlip} />
+              <RackPanel state={state} onStartOwn={startOwn} onContinue={onOpenFlip} onShelf={shelf} />
+              <WindowCard state={state} onOpen={onOpenWindow} />
               <ResultsLog state={state} />
             </div>
             <div className="tf-hub__column">
+              <LarkspurCard state={state} onOpen={openBoutique} />
+              <SeasonPanel state={state} onOpenShowcase={onOpenShowcase} />
+              <KeepsakePanel state={state} />
               <CrowdPanel state={state} />
               <StockPanel state={state} />
               <UpgradesPanel state={state} onBuy={buy} />
@@ -181,7 +219,12 @@ export function StallHub({
         </main>
       </div>
       {ending !== null ? (
-        <DayTransition summary={daySummary(ending.from, state, ending.kind)} onDone={() => setEnding(null)} />
+        <DayTransition
+          summary={daySummary(ending.from, state, ending.kind)}
+          career={state.profile.career}
+          signName={state.boutique === null ? null : signById(state.boutique.signId).name}
+          onDone={() => setEnding(null)}
+        />
       ) : null}
       {beat !== null ? <StoryOverlay state={state} dispatch={dispatch} /> : null}
       <SetAsideDialog

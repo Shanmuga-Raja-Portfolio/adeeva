@@ -136,6 +136,12 @@ describe("lapsing overdue gigs on the state", () => {
     expect(lapseOverdueState(lapsing, runGigId, drop).dropped).toBe(1);
   });
 
+  it("lapses a forgiven gig with no reputation cost", () => {
+    const lapsed = lapseOverdueState(lapsing, runGigId, undefined, () => true);
+    expect(lapsed.gigs.lapsed).toEqual([{ gigId: "gig-1", clientId: "ana", day: 9, reputation: 0 }]);
+    expect(lapsed.reputation).toBe(10);
+  });
+
   it("returns the same state when nothing is overdue or the difficulty is relaxed", () => {
     const early: LapseGame = { ...lapsing, calendar: { day: 1 } };
     expect(lapseOverdueState(early, runGigId)).toBe(early);

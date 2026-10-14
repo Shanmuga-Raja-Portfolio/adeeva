@@ -4,7 +4,7 @@ import type { FlipRun } from "./flipRun";
 import { runBoard } from "./layout";
 import { panelArea } from "./panelBoard";
 import { savedNotions, notionsOnFinds } from "./unpick";
-import { flipPieces } from "./flipPieces";
+import { runPieces } from "./runPieces";
 import { panelUnder, piecePolygon } from "./placement";
 
 export const LEAF_WEIGHTS = { reuse: 0.45, salvage: 0.25, secondhand: 0.3 } as const;
@@ -21,7 +21,7 @@ export interface LeavesBreakdown {
 function usedPanelArea(run: FlipRun): number {
   const board = runBoard(run);
   const used = new Set(
-    flipPieces(run.design).flatMap((piece) => {
+    runPieces(run).flatMap((piece) => {
       const placement = run.placements[piece.id];
       const panel = placement === undefined ? null : panelUnder(board, piecePolygon(piece, placement));
       return panel === null ? [] : [`${panel.findKey}#${panel.panel}`];

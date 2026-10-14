@@ -99,6 +99,7 @@ export { runSpend } from "./runSpend";
 export { RUN_STAGES, type RunStage } from "./runStage";
 export { canChooseRunway, canStageRunway, isWalkOrder } from "./runway";
 export {
+  PANEL_IDS,
   scoreRunway,
   type PanelId,
   type PanelScore,

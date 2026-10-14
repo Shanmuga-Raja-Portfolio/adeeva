@@ -22,15 +22,18 @@ export interface RewardContext {
   readonly hotTags: readonly StyleTag[];
 }
 
+export function deliveredLate(evaluation: FlipEvaluation): boolean {
+  return evaluation.criteria.some((criterion) => criterion.id === "deadline" && !criterion.passed);
+}
+
 export function flipRewards(evaluation: FlipEvaluation, brief: Brief, context: RewardContext): Reward {
   const leafPick = evaluation.leaves.leaves >= LEAF_PICK_THRESHOLD;
-  const late = evaluation.criteria.some((criterion) => criterion.id === "deadline" && !criterion.passed);
   const reward = settleTrendReward({
     passed: evaluation.passed,
     score: evaluation.score,
     stars: evaluation.stars,
     fee: brief.fee,
-    late,
+    late: deliveredLate(evaluation),
     difficulty: context.difficulty,
     trait: context.trait,
     hotTags: context.hotTags,

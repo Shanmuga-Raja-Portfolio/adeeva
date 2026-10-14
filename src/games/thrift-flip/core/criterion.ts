@@ -9,6 +9,7 @@ export const CRITERION_IDS = [
   "budget",
   "deadline",
   "sustainability",
+  "kept",
 ] as const;
 export type CriterionId = (typeof CRITERION_IDS)[number];
 
@@ -21,6 +22,7 @@ export const CRITERION_WEIGHTS: Readonly<Record<CriterionId, number>> = {
   budget: 1,
   deadline: 1,
   sustainability: 1,
+  kept: 1,
 };
 
 export const PASS_GATE: readonly CriterionId[] = ["construction", "style", "finishes", "quality"];

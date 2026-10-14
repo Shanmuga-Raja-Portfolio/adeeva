@@ -17,18 +17,13 @@ import type { LogEntry } from "./gameState";
 import { LOOKS_PER_SEASON, type LabelSeason } from "./labelSeason";
 import type { Reward } from "./rewards";
 import { isWalkOrder } from "./runway";
-import {
-  PANEL_IDS,
-  type PanelScore,
-  type RunwayChoice,
-  type RunwayResult,
-  type SubScore,
-} from "./runwayScore";
+import { PANEL_IDS, type PanelScore, type RunwayChoice, type RunwayResult } from "./runwayScore";
 import {
   criterionParserOf,
   dayParser,
   rewardLineParser,
   trendRewardShape,
+  subScoreParser,
 } from "../../../engine/stateParsers";
 import {
   arrayOf,
@@ -112,14 +107,6 @@ const runwayChoiceParser = objectOf<RunwayChoice>({
   order: refined(arrayOf(integerParser), isWalkOrder, "a walk order using each look once"),
   mood: oneOf(RUNWAY_MOODS.map((mood) => mood.id)),
   light: oneOf(RUNWAY_LIGHTS.map((light) => light.id)),
-});
-
-const subScoreParser = objectOf<SubScore>({
-  id: stringParser,
-  label: stringParser,
-  value: scoreParser,
-  weight: shareParser,
-  detail: stringParser,
 });
 
 const panelParser = objectOf<PanelScore>({

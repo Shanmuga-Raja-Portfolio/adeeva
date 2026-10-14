@@ -38,7 +38,7 @@ describe("pieces for the stall rack", () => {
 
   it("refuses a new rack piece when every hook is used", () => {
     let state = settleStories(newTestGame());
-    for (let piece = 0; piece < rackSize(state.upgrades); piece += 1)
+    for (let piece = 0; piece < rackSize(state.upgrades, state.profile.career); piece += 1)
       state = { ...racked(state), calendar: { ...state.calendar, hoursLeft: 10 } };
     expect(state.rack).toHaveLength(4);
     expect(reduce(state, { type: "startOwnFlip" })).toBe(state);

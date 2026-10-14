@@ -4,12 +4,17 @@ import { drawDistinct, drawInt } from "../../../engine/rngDraw";
 import type { StyleTag } from "../../../engine/styleTag";
 import type { ClientDef, FinishRequirement } from "../content/client";
 import type { RecipeId } from "../content/recipe";
+import type { TicketId, TicketKind } from "../content/ticket";
 import { recipeById } from "./catalog";
 import { recipeFitKeys, type Design } from "./design";
 
 export const FAVOURED_COLOURS_PER_BRIEF = 2;
 
+export type BriefKind = "flip" | TicketKind;
+
 export interface Brief {
+  readonly kind: BriefKind;
+  readonly ticketId: TicketId | null;
   readonly clientId: string;
   readonly occasion: string;
   readonly deadlineDay: number;
@@ -43,6 +48,8 @@ export function rollClientBrief(
   );
   return [
     {
+      kind: "flip",
+      ticketId: null,
       clientId: client.id,
       occasion: template.occasion,
       deadlineDay: day + deadlineDays,

@@ -8,7 +8,9 @@ import type { RecipeId } from "./recipe";
 
 export type FinishRequirement =
   | { readonly kind: "trim"; readonly trim: TrimId; readonly count: number }
-  | { readonly kind: "patch"; readonly patch: PatchId | "any"; readonly count: number };
+  | { readonly kind: "patch"; readonly patch: PatchId | "any"; readonly count: number }
+  | { readonly kind: "mend"; readonly count: number }
+  | { readonly kind: "mend-or-patch"; readonly count: number };
 
 export interface BriefTemplate {
   readonly occasion: string;
@@ -32,18 +34,22 @@ export interface ClientLines {
   readonly nearMiss: string;
 }
 
-export interface ClientDef {
+export interface ClientPerson {
   readonly id: string;
   readonly name: string;
   readonly relation: string;
   readonly traitGate?: TraitId;
   readonly minReputation: number;
   readonly look: AvatarLook;
-  readonly brief: BriefTemplate;
   readonly lines: ClientLines;
 }
 
+export interface ClientDef extends ClientPerson {
+  readonly brief: BriefTemplate;
+}
+
 export const STARTER_CLIENT_IDS: readonly string[] = ["nana-bea", "juniper-wren"];
+export const TICKET_REGULAR_IDS: readonly string[] = ["nana-bea", "juniper-wren", "lumi", "kofi"];
 
 export const CLIENTS: readonly ClientDef[] = [
   {

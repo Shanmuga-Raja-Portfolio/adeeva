@@ -1,4 +1,4 @@
-import type { RecipeId } from "../content/recipe";
+import { STALL_RECIPE_IDS, type RecipeId } from "../content/recipe";
 import { designBriefIssue } from "./brief";
 import { isRecipeId, recipeById } from "./catalog";
 import type { Design } from "./design";
@@ -13,14 +13,22 @@ function withDesign(run: FlipRun, design: Design): FlipRun {
   return { ...withPlacements(run, {}), design, finds, autoLaid: false };
 }
 
-export function recipeChoiceIssue(run: FlipRun, recipeId: RecipeId): string | null {
-  if (!isRecipeId(recipeId)) return "That is not something we can make yet.";
+export function recipeOpen(state: Pick<GameState, "profile">, recipeId: RecipeId): boolean {
+  return state.profile.career === "boutique" || STALL_RECIPE_IDS.some((id) => id === recipeId);
+}
+
+export function recipeChoiceIssue(
+  state: Pick<GameState, "profile">,
+  run: FlipRun,
+  recipeId: RecipeId,
+): string | null {
+  if (!isRecipeId(recipeId) || !recipeOpen(state, recipeId)) return "That is not something we can make yet.";
   return designBriefIssue(run.brief, { recipeId, parts: {} });
 }
 
 export function chooseRecipe(state: GameState, recipeId: RecipeId): GameState {
   return updateRun(state, "design", (run) => {
-    if (recipeChoiceIssue(run, recipeId) !== null || run.design.recipeId === recipeId) return null;
+    if (recipeChoiceIssue(state, run, recipeId) !== null || run.design.recipeId === recipeId) return null;
     return withDesign(run, { recipeId, parts: {} });
   });
 }

@@ -1,6 +1,6 @@
 import { Card } from "../../../../../ui/kit/Card";
 import { StarRating } from "../../../../../ui/kit/StarRating";
-import { clientById, type GameState } from "../../../core";
+import { personById, type GameState } from "../../../core";
 
 export interface ResultsLogProps {
   readonly state: GameState;
@@ -11,7 +11,7 @@ export function ResultsLog({ state }: ResultsLogProps) {
   if (recent.length === 0) return null;
   return (
     <Card
-      title="Recent flips"
+      title={state.profile.career === "boutique" ? "Recent work" : "Recent flips"}
       eyebrow={`${state.flipsFinished} rescued so far`}
       className="tf-hub-card tf-log"
     >
@@ -20,7 +20,8 @@ export function ResultsLog({ state }: ResultsLogProps) {
           <li key={entry.runId}>
             <span>
               <strong>
-                {entry.clientId === null ? "For the rack" : (clientById(entry.clientId)?.name ?? "A regular")}
+                {entry.clientId === null ? "For the rack" : (personById(entry.clientId)?.name ?? "A regular")}
+                {entry.kind === "ticket" ? " · mended" : ""}
               </strong>
               <small>Day {entry.day}</small>
             </span>

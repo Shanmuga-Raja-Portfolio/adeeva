@@ -9,4 +9,12 @@ export const HINTS = {
   assist: "Stuck? Tap Assist for help. You can switch back anytime.",
   safety: "Real washing, irons and sharp tools: ask an adult first.",
   tools: "Real rippers and scissors are sharp. Ask an adult.",
+  hem: "Lay the hem band along the bottom edge.",
+  window: "Mix the season's colours. Fill left, middle and right.",
+  tables: "Pick a table. Each one is a quick fix.",
+  swap: "Swap one thing for one thing. No coins today.",
+  shelf: "Pick pieces from this season that belong together.",
+  walk: "Choose who walks first. Save your favourite for last.",
+  mend: "Snip the split, lift the stain, then sew it closed.",
+  throw: "Use squares from both finds.",
 } as const;

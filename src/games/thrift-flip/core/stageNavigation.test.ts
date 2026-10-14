@@ -41,7 +41,7 @@ describe("moving between flip steps", () => {
       { type: "goToStage", stage: "market" },
       { type: "goToStage", stage: "unpick" },
     ]);
-    expect(runStageHours(runOf(atUnpick))).toBe(0);
+    expect(runStageHours(runOf(atUnpick), atUnpick.upgrades)).toBe(0);
   });
 
   it("charges the workbench hours again when a new find joins the flip", () => {
@@ -52,7 +52,7 @@ describe("moving between flip steps", () => {
     const swapped = reduce(stocked, { type: "chooseFinds", findIds: [first, extra] });
     expect(runOf(swapped).reachedStage).toBe("market");
     const unpicking = reduce(swapped, { type: "goToStage", stage: "unpick" });
-    expect(runStageHours(runOf(unpicking))).toBe(1);
+    expect(runStageHours(runOf(unpicking), unpicking.upgrades)).toBe(1);
   });
 
   it("closes the rail when going back to the plan, so nothing is bought there", () => {

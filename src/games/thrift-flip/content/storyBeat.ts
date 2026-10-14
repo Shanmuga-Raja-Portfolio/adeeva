@@ -2,6 +2,7 @@ import type { AvatarLook } from "../../../engine/avatar";
 import { requireById } from "../../../engine/catalog";
 import type { StoryBeat } from "../../../engine/story";
 import { STORY_BEATS as SHARED_BEATS } from "../../adeeva/content/storyBeat";
+import { BOUTIQUE_STORY_BEATS } from "./boutiqueStoryBeat";
 
 export const STORY_TRIGGERS = [
   "intro",
@@ -14,10 +15,27 @@ export const STORY_TRIGGERS = [
   "trait-charmer",
   "ten-flips",
   "bankrupt",
+  "boutique-offer",
+  "boutique-opened",
+  "intro-boutique",
+  "first-mend",
+  "first-window",
+  "first-till-day",
+  "swap-day",
+  "season-start",
+  "showcase-done",
+  "season-turn",
+  "kept-50",
+  "kept-100",
+  "boutique-trendsetter",
+  "boutique-charmer",
 ] as const;
 export type StoryTrigger = (typeof STORY_TRIGGERS)[number];
 
-export type StoryBeatDef = StoryBeat<StoryTrigger, never>;
+export const STORY_EFFECTS = ["open-boutique"] as const;
+export type StoryEffect = (typeof STORY_EFFECTS)[number];
+
+export type StoryBeatDef = StoryBeat<StoryTrigger, StoryEffect>;
 
 export const MENTOR_NAME = "Femi";
 
@@ -30,7 +48,7 @@ export const MENTOR_LOOK: AvatarLook = {
 
 const tightWeek = requireById(SHARED_BEATS, "tight-week", "story beat");
 
-export const STORY_BEATS: readonly StoryBeatDef[] = [
+const STALL_STORY_BEATS: readonly StoryBeatDef[] = [
   {
     id: "tf-intro",
     trigger: "intro",
@@ -217,3 +235,5 @@ export const STORY_BEATS: readonly StoryBeatDef[] = [
   },
   { ...tightWeek, trigger: "bankrupt", choices: [] },
 ];
+
+export const STORY_BEATS: readonly StoryBeatDef[] = [...STALL_STORY_BEATS, ...BOUTIQUE_STORY_BEATS];

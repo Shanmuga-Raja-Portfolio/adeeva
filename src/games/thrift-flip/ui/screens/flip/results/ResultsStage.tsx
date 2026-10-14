@@ -5,7 +5,7 @@ import { Icon } from "../../../../../../ui/kit/IconSet";
 import { StarRating } from "../../../../../../ui/kit/StarRating";
 import { TagPill } from "../../../../../../ui/kit/TagPill";
 import { useCountUp } from "../../../../../../ui/kit/useCountUp";
-import { clientById, lastResult, mainFind, recipeById } from "../../../../core";
+import { lastResult, mainFind, personById, recipeById, ticketLine, type FlipRun } from "../../../../core";
 import { LeafMeter } from "../../../art/LeafMeter";
 import { Awning } from "../../../art/Awning";
 import { QUALITY_LABELS, QUALITY_ORDER } from "../qualityTerms";
@@ -13,28 +13,43 @@ import type { StageProps } from "../stageProps";
 import { BeforeAfter } from "./BeforeAfter";
 import "./results.css";
 
+function runName(run: FlipRun): string {
+  if (run.brief !== null && run.brief.kind !== "flip") return run.brief.occasion;
+  return run.design.recipeId === null ? "Your flip" : recipeById(run.design.recipeId).name;
+}
+
+function headline(run: FlipRun, name: string, happy: boolean): string {
+  if (run.brief === null) return `${name} is on the rack!`;
+  if (run.brief.kind !== "flip") return happy ? "Back in use for years more!" : "Handed back with care";
+  return happy ? "Brought back to life!" : "Handed over with care";
+}
+
 export function ResultsStage({ state, run, onExit }: StageProps) {
   const { reducedMotion } = useSettings();
   const entry = lastResult(state);
   const evaluation = entry?.runId === run.id ? entry.evaluation : null;
   const reward = entry?.runId === run.id ? entry.reward : null;
   const score = useCountUp(evaluation?.score ?? 0, 900, 300, reducedMotion);
-  const name = run.design.recipeId === null ? "Your flip" : recipeById(run.design.recipeId).name;
-  const client = run.brief === null ? undefined : clientById(run.brief.clientId);
+  const name = runName(run);
+  const client = run.brief === null ? undefined : personById(run.brief.clientId);
+  const ticket = run.brief !== null && run.brief.kind !== "flip";
+  const boutique = state.profile.career === "boutique";
   if (evaluation === null) return null;
   const happy = reward === null || reward.outcome === "pass";
   return (
     <div className="tf-results" data-testid="results">
       <Awning className="tf-results__awning" />
       <header className="tf-results__head">
-        <span className="ad-eyebrow">{run.brief === null ? "Ready for Stall Day" : "Order delivered"}</span>
-        <h1>
+        <span className="ad-eyebrow">
           {run.brief === null
-            ? `${name} is on the rack!`
-            : happy
-              ? "Brought back to life!"
-              : "Handed over with care"}
-        </h1>
+            ? boutique
+              ? "Ready for Till Day"
+              : "Ready for Stall Day"
+            : ticket
+              ? "Ticket done"
+              : "Order delivered"}
+        </span>
+        <h1>{headline(run, name, happy)}</h1>
       </header>
       <BeforeAfter run={run} main={mainFind(run)} name={name} />
       <div className="tf-results__grid">
@@ -43,7 +58,13 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
             {score}
           </span>
           <StarRating stars={evaluation.stars} size={22} />
-          <LeafMeter leaves={evaluation.leaves.leaves} />
+          {ticket ? (
+            <TagPill tone="sage">
+              <Icon name="heart" size={12} /> Things saved +1
+            </TagPill>
+          ) : (
+            <LeafMeter leaves={evaluation.leaves.leaves} />
+          )}
           {reward?.leafPick === true ? (
             <TagPill tone="sage">
               <Icon name="heart" size={12} /> Leaf Pick
@@ -58,10 +79,19 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
                 frameColour="#e2f4ea"
                 title={client.name}
               />
-              <blockquote>“{happy ? client.lines.delighted : client.lines.nearMiss}”</blockquote>
+              <blockquote>
+                “
+                {run.brief === null
+                  ? ""
+                  : (ticketLine(run.brief, happy ? "delighted" : "nearMiss") ??
+                    (happy ? client.lines.delighted : client.lines.nearMiss))}
+                ”
+              </blockquote>
             </figure>
           ) : (
-            <p className="ad-muted">Price it fairly on Stall Day. Fair prices bring regulars back.</p>
+            <p className="ad-muted">
+              Price it fairly on {boutique ? "Till Day" : "Stall Day"}. Fair prices bring regulars back.
+            </p>
           )}
         </section>
         <section className="tf-results__details" aria-label="How it went">
@@ -139,7 +169,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
       </div>
       <footer className="tf-results__foot">
         <Button size="lg" icon="home" onClick={onExit} data-testid="results-exit">
-          Back to the stall
+          {boutique ? "Back to the shop" : "Back to the stall"}
         </Button>
       </footer>
     </div>

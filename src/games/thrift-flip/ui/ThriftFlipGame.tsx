@@ -22,6 +22,15 @@ const FlipFlow = lazy(() =>
 const StallDayScreen = lazy(() =>
   import("./screens/stall/StallDayScreen").then((module) => ({ default: module.StallDayScreen })),
 );
+const WindowScreen = lazy(() =>
+  import("./screens/window/WindowScreen").then((module) => ({ default: module.WindowScreen })),
+);
+const HallScreen = lazy(() =>
+  import("./screens/hall/HallScreen").then((module) => ({ default: module.HallScreen })),
+);
+const ShowcaseScreen = lazy(() =>
+  import("./screens/showcase/ShowcaseScreen").then((module) => ({ default: module.ShowcaseScreen })),
+);
 
 export function ThriftFlipGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
@@ -63,6 +72,18 @@ export function ThriftFlipGame({ player, lookOptions, onPlayerChange, onExit }: 
   const toStall = useCallback(() => {
     flush();
     setRoute({ name: "play", view: "stall" });
+  }, [flush]);
+  const toWindow = useCallback(() => {
+    flush();
+    setRoute({ name: "play", view: "window" });
+  }, [flush]);
+  const toHall = useCallback(() => {
+    flush();
+    setRoute({ name: "play", view: "hall" });
+  }, [flush]);
+  const toShowcase = useCallback(() => {
+    flush();
+    setRoute({ name: "play", view: "showcase" });
   }, [flush]);
   const leave = useCallback(() => {
     setLeaveBlocked(false);
@@ -124,6 +145,9 @@ export function ThriftFlipGame({ player, lookOptions, onPlayerChange, onExit }: 
           dispatch={dispatch}
           onOpenFlip={toFlip}
           onOpenStall={toStall}
+          onOpenWindow={toWindow}
+          onOpenHall={toHall}
+          onOpenShowcase={toShowcase}
           onOpenSettings={openSettings}
           onExitToTitle={saveAndExit}
         />
@@ -132,6 +156,15 @@ export function ThriftFlipGame({ player, lookOptions, onPlayerChange, onExit }: 
         {screen.name === "flip" ? <FlipFlow state={screen.game} dispatch={dispatch} onExit={toHub} /> : null}
         {screen.name === "stall" ? (
           <StallDayScreen state={screen.game} dispatch={dispatch} onExit={toHub} />
+        ) : null}
+        {screen.name === "window" ? (
+          <WindowScreen state={screen.game} dispatch={dispatch} onExit={toHub} />
+        ) : null}
+        {screen.name === "hall" ? (
+          <HallScreen state={screen.game} dispatch={dispatch} onExit={toHub} />
+        ) : null}
+        {screen.name === "showcase" ? (
+          <ShowcaseScreen state={screen.game} dispatch={dispatch} onExit={toHub} />
         ) : null}
       </ViewLoadBoundary>
       <SettingsDialog

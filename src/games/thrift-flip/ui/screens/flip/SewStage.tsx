@@ -8,7 +8,7 @@ import { HINTS } from "../../../content/hint";
 import {
   ASSIST_SEW_ACCURACY_CAP,
   findById,
-  flipSeams,
+  runSeams,
   isSeamSewn,
   mainFind,
   materialById,
@@ -23,7 +23,7 @@ import "./cut/cut.css";
 export function SewStage(props: StageProps) {
   const { state, run, dispatch } = props;
   const { settings, updateSettings } = useSettings();
-  const seams = flipSeams(run.design);
+  const seams = runSeams(run);
   const firstOpen = seams.find((seam) => !isSeamSewn(run, seam.id));
   const [picked, setPicked] = useState<string | null>(() => firstOpen?.id ?? seams[0]?.id ?? null);
   const active = seams.find((seam) => seam.id === picked) ?? seams[0];

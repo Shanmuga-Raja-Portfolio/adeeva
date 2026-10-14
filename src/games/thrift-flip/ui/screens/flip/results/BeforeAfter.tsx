@@ -12,6 +12,7 @@ export interface BeforeAfterProps {
 
 export function BeforeAfter({ run, main, name }: BeforeAfterProps) {
   const find = main === null ? null : findById(main.findId);
+  const ticket = run.brief !== null && run.brief.kind !== "flip";
   return (
     <div className="tf-split" data-testid="before-after">
       <figure className="tf-split__before">
@@ -30,13 +31,17 @@ export function BeforeAfter({ run, main, name }: BeforeAfterProps) {
       </span>
       <figure className="tf-split__after">
         <span className="tf-split__label">After</span>
-        <ProductPreview
-          design={run.design}
-          cloth={find === null ? null : findCloth(find)}
-          finishes={run.finishes}
-          title={name}
-          className="tf-split__art"
-        />
+        {ticket && find !== null ? (
+          <FindArt find={find} grade="like-new" size={150} mended title={`${find.name}, mended`} />
+        ) : (
+          <ProductPreview
+            design={run.design}
+            cloth={find === null ? null : findCloth(find)}
+            finishes={run.finishes}
+            title={name}
+            className="tf-split__art"
+          />
+        )}
         <figcaption>{name}</figcaption>
       </figure>
     </div>

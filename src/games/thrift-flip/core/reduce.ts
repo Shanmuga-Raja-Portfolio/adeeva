@@ -16,6 +16,13 @@ import { recordSeam, resetSeam } from "./sewing";
 import { goToStage } from "./stageNavigation";
 import { holdStall } from "./stallDay";
 import { markBeatSeen } from "../../../engine/story";
+import { openBoutique } from "./boutiqueUnlock";
+import { fillShelf, shelvePiece, unshelvePiece } from "./capsuleShelf";
+import { stageShowcase } from "./showcase";
+import { chooseStoryOption } from "./storyChoice";
+import { pullTableStitch, resetTableSeam, scrubTable, sewTable, soakTable, swapFind } from "./swapDay";
+import { upgradeOpen } from "./upgradeShop";
+import { buyProp, dressWindow } from "./windowDisplay";
 import { pullStitch } from "./unpick";
 import { buyUpgrade } from "../../../engine/upgrades";
 import { knownUpgrade, storyBeatById } from "./catalog";
@@ -92,8 +99,53 @@ export function reduce(state: GameState, action: Action): GameState {
     case "workShift":
       return workShift(state);
     case "buyUpgrade":
-      return buyUpgrade(state, knownUpgrade(action.upgradeId));
+      return upgradeOpen(state, action.upgradeId) ? buyUpgrade(state, knownUpgrade(action.upgradeId)) : state;
     case "markBeatSeen":
-      return markBeatSeen(state, action.beatId, storyBeatById);
+      return markBeatSeen(state, action.beatId, (beatId) => {
+        const beat = storyBeatById(beatId);
+        return beat === undefined || beat.choices.length > 0 ? undefined : beat;
+      });
+    case "chooseStoryOption":
+      return chooseStoryOption(state, action.beatId, action.choiceId, action.signId);
+    case "openBoutique":
+      return openBoutique(state, action.signId);
+    case "shelvePiece":
+      return shelvePiece(state, action.pieceId);
+    case "unshelvePiece":
+      return unshelvePiece(state, action.pieceId);
+    case "fillShelf":
+      return fillShelf(state);
+    case "dressWindow":
+      return dressWindow(state, { pieces: action.pieces, props: action.props });
+    case "buyProp":
+      return buyProp(state, action.propId);
+    case "stageShowcase":
+      return stageShowcase(state, {
+        order: action.order,
+        mood: action.mood,
+        light: action.light,
+        cards: action.cards,
+      });
+    case "tablePull":
+      return pullTableStitch(state, action);
+    case "tableScrub":
+      return scrubTable(state, action.tableId, {
+        cellTicks: action.cellTicks,
+        harshTicks: action.harshTicks,
+        scrubTicks: action.scrubTicks,
+      });
+    case "tableSoak":
+      return soakTable(state, action.tableId);
+    case "tableSew":
+      return sewTable(state, action.tableId, {
+        progress: action.progress,
+        ticks: action.ticks,
+        insideTicks: action.insideTicks,
+        assisted: action.assisted,
+      });
+    case "resetTableSeam":
+      return resetTableSeam(state, action.tableId);
+    case "swapFind":
+      return swapFind(state, action.slotId, action.findKey);
   }
 }

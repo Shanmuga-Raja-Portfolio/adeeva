@@ -14,8 +14,7 @@ import type { FinishRequirement } from "../content/client";
 import type { Brief } from "./brief";
 import { findById, patchById, trimById } from "./catalog";
 import { CRITERION_WEIGHTS, PASS_GATE, type CriterionId } from "./criterion";
-import { finishSpend } from "./finishing";
-import { flipPieces, flipSeams } from "./flipPieces";
+import { finishSpend, isMendMark } from "./finishing";
 import { flipQuality, type QualityBreakdown } from "./flipQuality";
 import type { FlipRun } from "./flipRun";
 import { flipColours, flipTags, mainFind } from "./flipTags";
@@ -31,7 +30,9 @@ import {
 } from "./kindFeedback";
 import { isSeamSewn } from "./seamSewn";
 import { leavesOf, type LeavesBreakdown } from "./sustainability";
-import { findLines, isLineDone, lineRecord } from "./unpick";
+import { runKind } from "./runKind";
+import { runPieces, runSeams } from "./runPieces";
+import { isLineDone, lineRecord, runLines } from "./unpick";
 
 export const FAVOURED_COLOUR_BONUS = 2;
 export const MAX_FAVOURED_COLOUR_BONUS = 4;
@@ -42,8 +43,12 @@ const SCORE_RULE: ScoreRule = {
   maxColourBonus: MAX_FAVOURED_COLOUR_BONUS,
 };
 
+export type EvaluationKind = "gig" | "own" | "ticket";
+
+export const KEPT_DETAIL = "Things saved +1. Back in use for years more.";
+
 export interface FlipEvaluation extends JudgedEvaluation<CriterionId, QualityBreakdown> {
-  readonly kind: "gig" | "own";
+  readonly kind: EvaluationKind;
   readonly leaves: LeavesBreakdown;
   readonly tags: readonly StyleTag[];
   readonly colours: readonly ColourId[];
@@ -62,23 +67,34 @@ export function constructionGap(run: FlipRun): ConstructionGap {
   const stitchLines = run.finds.reduce(
     (sum, owned) =>
       sum +
-      findLines(owned).filter((def, index) => !isLineDone(def, lineRecord(run, owned.id, index))).length,
+      runLines(run, owned).filter((line) => !isLineDone(line.def, lineRecord(run, owned.id, line.index)))
+        .length,
     0,
   );
-  const pieces = run.cutDone ? 0 : flipPieces(run.design).length;
-  const seams = flipSeams(run.design).filter((seam) => !isSeamSewn(run, seam.id)).length;
+  const pieces = run.cutDone ? 0 : runPieces(run).length;
+  const seams = runSeams(run).filter((seam) => !isSeamSewn(run, seam.id)).length;
   return { stitchLines, pieces, seams };
 }
 
-function requirementName(requirement: FinishRequirement): string {
+export function requirementName(requirement: FinishRequirement): string {
   if (requirement.kind === "trim") return trimById(requirement.trim).name;
+  if (requirement.kind === "mend") return "Any mend stitch";
+  if (requirement.kind === "mend-or-patch") return "A mend stitch or patch";
   return requirement.patch === "any" ? "Any patch" : patchById(requirement.patch).name;
+}
+
+export function requirementKey(requirement: FinishRequirement): string {
+  if (requirement.kind === "trim") return requirement.trim;
+  if (requirement.kind === "patch") return requirement.patch;
+  return requirement.kind;
 }
 
 export function placedForRequirement(run: FlipRun, requirement: FinishRequirement): number {
   return run.finishes.filter((finish) => {
     const { item } = finish;
     if (requirement.kind === "trim") return item.kind === "trim" && item.trimId === requirement.trim;
+    if (requirement.kind === "mend") return isMendMark(item);
+    if (requirement.kind === "mend-or-patch") return isMendMark(item) || item.kind === "patch";
     return item.kind === "patch" && (requirement.patch === "any" || item.patchId === requirement.patch);
   }).length;
 }
@@ -109,7 +125,9 @@ function judgeStyle(run: FlipRun, brief: Brief, tags: readonly StyleTag[]): Judg
       ? `Still missing: ${missing.join(", ")}.`
       : avoided
         ? `Made mostly from ${material}, which the client hoped to avoid.`
-        : `Feels ${brief.requiredTags.join(" and ")}, just as asked.`;
+        : brief.requiredTags.length === 0
+          ? "Any feel is welcome here."
+          : `Feels ${brief.requiredTags.join(" and ")}, just as asked.`;
   const feedback = missing.length > 0 ? styleFeedback(missing) : avoidedMaterialFeedback(material ?? "");
   return judged("style", "Style", missing.length === 0 && !avoided, detail, feedback);
 }
@@ -173,19 +191,21 @@ export function evaluateFlip(state: GameState, run: FlipRun, deliveredDay: numbe
       budgetFeedback(spend, brief.budget),
     ),
     judgeDeadline(judged, "Deadline", deliveredDay, brief.deadlineDay),
-    judged(
-      "sustainability",
-      "Leaves",
-      leaves.leaves >= brief.minLeaves,
-      brief.minLeaves === 0
-        ? `${leaves.leaves} leaves. No leaves goal this time.`
-        : `${leaves.leaves} leaves against a minimum of ${brief.minLeaves}.`,
-      SUSTAINABILITY_FEEDBACK,
-    ),
+    runKind(run) === "flip"
+      ? judged(
+          "sustainability",
+          "Leaves",
+          leaves.leaves >= brief.minLeaves,
+          brief.minLeaves === 0
+            ? `${leaves.leaves} leaves. No leaves goal this time.`
+            : `${leaves.leaves} leaves against a minimum of ${brief.minLeaves}.`,
+          SUSTAINABILITY_FEEDBACK,
+        )
+      : judged("kept", "Things saved", true, KEPT_DETAIL, KEPT_DETAIL),
   ];
   return {
     ...judgedEvaluation(results, quality, favoured, SCORE_RULE, PASS_GATE),
-    kind: "gig",
+    kind: runKind(run) === "flip" ? "gig" : "ticket",
     leaves,
     tags,
     colours,

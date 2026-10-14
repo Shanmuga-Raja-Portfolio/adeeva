@@ -7,6 +7,7 @@ import { FitsBadge } from "./FitsBadge";
 export interface RailFindProps {
   readonly slot: RailSlot;
   readonly fits: boolean;
+  readonly twoFinds: boolean;
   readonly hot: boolean;
   readonly picked: boolean;
   readonly open: boolean;
@@ -15,7 +16,17 @@ export interface RailFindProps {
   readonly onCloseUp: () => void;
 }
 
-export function RailFind({ slot, fits, hot, picked, open, index, onToggle, onCloseUp }: RailFindProps) {
+export function RailFind({
+  slot,
+  fits,
+  twoFinds,
+  hot,
+  picked,
+  open,
+  index,
+  onToggle,
+  onCloseUp,
+}: RailFindProps) {
   const find = findById(slot.findId);
   const condition = conditionById(slot.grade);
   return (
@@ -48,7 +59,7 @@ export function RailFind({ slot, fits, hot, picked, open, index, onToggle, onClo
           <span className="tf-rail-find__price">
             <Icon name="coin" size={14} /> {slot.price}
           </span>
-          <FitsBadge fits={fits} />
+          <FitsBadge fits={fits} twoFinds={twoFinds} />
         </span>
         {slot.sold ? (
           <span className="tf-rail-find__sold">Taken home</span>

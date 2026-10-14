@@ -5,9 +5,11 @@ import type { RngState } from "../../../engine/rng";
 import type { StoryState } from "../../../engine/story";
 import type { TrendState } from "../../../engine/trendMarket";
 import type { TrimId } from "../../adeeva/content/trim";
+import type { CareerId } from "../content/career";
 import type { ConditionGrade } from "../content/condition";
 import type { FindId } from "../content/find";
 import type { UpgradeId } from "../content/upgrade";
+import type { Boutique } from "./boutique";
 import type { Brief } from "./brief";
 import type { FlipEvaluation } from "./flipEvaluate";
 import type { FlipRun } from "./flipRun";
@@ -17,9 +19,11 @@ import type { Reward } from "./rewards";
 import type { Scrap } from "./scrap";
 import type { StallResult } from "./stallDay";
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
-export type Profile = ProfileBase;
+export interface Profile extends ProfileBase {
+  readonly career: CareerId;
+}
 
 export interface CalendarState extends DayClock {
   readonly marketOpen: boolean;
@@ -43,9 +47,11 @@ export type Offer = BoardOffer<Brief>;
 export type Gig = BoardGig<Brief>;
 export type GigBoard = Board<Brief>;
 
+export type LogKind = "gig" | "own" | "ticket";
+
 export interface LogEntry {
   readonly runId: string;
-  readonly kind: "gig" | "own";
+  readonly kind: LogKind;
   readonly clientId: string | null;
   readonly day: number;
   readonly evaluation: FlipEvaluation;
@@ -79,6 +85,8 @@ export interface GameState {
   readonly flipsFinished: number;
   readonly gigsDelivered: number;
   readonly fairSales: number;
+  readonly keptInUse: number;
+  readonly boutique: Boutique | null;
   readonly next: Counters;
   readonly rng: RngState;
 }

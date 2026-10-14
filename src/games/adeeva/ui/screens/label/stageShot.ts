@@ -3,9 +3,9 @@ import type { ShowWalker } from "./showCast";
 import type { ShowMoment } from "./showTimeline";
 import { walkProgress } from "./walkProgress";
 
-export interface StageFigure {
+export interface StageFigure<W = ShowWalker> {
   readonly key: string;
-  readonly walker: ShowWalker | null;
+  readonly walker: W | null;
   readonly progress: number;
   readonly lateral: number;
   readonly opacity: number;
@@ -14,8 +14,8 @@ export interface StageFigure {
   readonly stride: boolean;
 }
 
-export interface StageShot {
-  readonly figures: readonly StageFigure[];
+export interface StageShot<W = ShowWalker> {
+  readonly figures: readonly StageFigure<W>[];
   readonly focus: number;
   readonly flashes: boolean;
   readonly burst: number;
@@ -41,14 +41,14 @@ function pulses(t: number, at: readonly number[], spanMs: number): number {
   }, 0);
 }
 
-function figure(
+function figure<W>(
   key: string,
-  walker: ShowWalker | null,
+  walker: W | null,
   progress: number,
   lateral: number,
   opacity = 1,
-  extra: Partial<Pick<StageFigure, "spin" | "dip" | "stride">> = {},
-): StageFigure {
+  extra: Partial<Pick<StageFigure<W>, "spin" | "dip" | "stride">> = {},
+): StageFigure<W> {
   return {
     key,
     walker,
@@ -76,17 +76,18 @@ function lineupDepth(position: number, count: number): number {
   return position === count - 1 ? 0.5 : 0.41;
 }
 
-function walkShot(
+function walkShot<W>(
   moment: ShowMoment,
-  cast: readonly ShowWalker[],
+  cast: readonly W[],
   audience: number,
   reduced: boolean,
-): StageShot {
+  scoreOf: (walker: W) => number,
+): StageShot<W> {
   const walker = cast[moment.segment.walk] ?? null;
   const t = reduced ? WALK_STILL_T : moment.t;
   const progress = walkProgress(t);
   const opacity = reduced ? 1 : clampUnit(Math.min(t / 0.05, (1 - t) / 0.07));
-  const lookScore = walker?.look.evaluation.score ?? 50;
+  const lookScore = walker === null ? 50 : scoreOf(walker);
   const span = moment.segment.durationMs;
   return {
     figures: [
@@ -104,12 +105,12 @@ function walkShot(
   };
 }
 
-function finaleShot(
+function finaleShot<W>(
   moment: ShowMoment,
-  cast: readonly ShowWalker[],
+  cast: readonly W[],
   audience: number,
   reduced: boolean,
-): StageShot {
+): StageShot<W> {
   const t = reduced ? FINALE_STILL_T : moment.t;
   const count = cast.length;
   const figures = cast.map((walker, position) => {
@@ -134,12 +135,12 @@ function finaleShot(
   };
 }
 
-function bowShot(
+function bowShot<W>(
   moment: ShowMoment,
-  cast: readonly ShowWalker[],
+  cast: readonly W[],
   audience: number,
   reduced: boolean,
-): StageShot {
+): StageShot<W> {
   const t = reduced ? BOW_STILL_T : moment.t;
   const count = cast.length;
   const step = easeInOut(window01(t, 0, 0.32));
@@ -159,7 +160,7 @@ function bowShot(
   });
   const walk = easeOut(window01(t, 0.04, 0.46));
   const dip = Math.sin(Math.PI * window01(t, 0.5, 0.72));
-  const designer = figure("designer", null, 0.5 * walk, -PARTNER, clampUnit(walk / 0.12), {
+  const designer = figure<W>("designer", null, 0.5 * walk, -PARTNER, clampUnit(walk / 0.12), {
     dip,
     stride: walk < 1,
   });
@@ -175,14 +176,15 @@ function bowShot(
   };
 }
 
-export function stageShot(
+export function stageShot<W>(
   moment: ShowMoment,
-  cast: readonly ShowWalker[],
+  cast: readonly W[],
   audience: number,
   reduced: boolean,
-): StageShot {
+  scoreOf: (walker: W) => number,
+): StageShot<W> {
   const kind = moment.segment.kind;
-  if (kind === "walk") return walkShot(moment, cast, audience, reduced);
+  if (kind === "walk") return walkShot(moment, cast, audience, reduced, scoreOf);
   if (kind === "finale") return finaleShot(moment, cast, audience, reduced);
   if (kind === "bow") return bowShot(moment, cast, audience, reduced);
   const lights = kind === "lights" ? moment.t : 0;

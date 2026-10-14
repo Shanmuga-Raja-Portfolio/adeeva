@@ -1,7 +1,7 @@
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
-import { clientById, runStartIssue, stallDayIssue, type GameState, type Gig } from "../../../core";
+import { personById, runStartIssue, stallDayIssue, type GameState, type Gig } from "../../../core";
 import { recipeList } from "./briefFacts";
 
 export interface GigCardProps {
@@ -13,7 +13,7 @@ export interface GigCardProps {
 }
 
 export function GigCard({ state, gig, onStart, onContinue, onSetAside }: GigCardProps) {
-  const client = clientById(gig.clientId);
+  const client = personById(gig.clientId);
   const run = state.activeRun;
   const onBench =
     run !== null && run.stage !== "done" && run.purpose.kind === "gig" && run.purpose.gigId === gig.id;
@@ -52,7 +52,11 @@ export function GigCard({ state, gig, onStart, onContinue, onSetAside }: GigCard
           </>
         ) : (
           <Button size="sm" onClick={onStart} disabledReason={issue ?? undefined}>
-            Start flip
+            {gig.brief.kind === "mend"
+              ? "Start mend"
+              : gig.brief.kind === "alter"
+                ? "Start hem"
+                : "Start flip"}
           </Button>
         )}
       </div>

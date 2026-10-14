@@ -8,6 +8,7 @@ import {
   rollOffers,
   type DatedBrief,
   type GatedClient,
+  type Gig,
   type GigBoard,
   type Offer,
   type OfferRoll,
@@ -40,8 +41,15 @@ export function lapseOverdueState<B extends DatedBrief, S extends LapsingState<B
   state: S,
   runGigId: (run: NonNullable<S["activeRun"]>) => string | null,
   drop: (state: S) => S = clearRun,
+  forgiven: (gig: Gig<B>) => boolean = () => false,
 ): S {
-  const lapse = lapseOverdue(state.gigs, state.calendar.day, state.profile.difficulty, state.profile.trait);
+  const lapse = lapseOverdue(
+    state.gigs,
+    state.calendar.day,
+    state.profile.difficulty,
+    state.profile.trait,
+    forgiven,
+  );
   if (lapse === null) return state;
   const run = state.activeRun;
   const gigId = run === null ? null : runGigId(run);

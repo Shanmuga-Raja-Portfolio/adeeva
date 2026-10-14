@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { dressGarment } from "../../art/avatarDress";
 import type { AvatarLook } from "../../../../../engine/avatar";
 import { AvatarFigure } from "../../../../../ui/art/avatar/Avatar";
@@ -5,27 +6,79 @@ import { DOLL_VIEWBOX } from "../../../../../ui/art/avatar/Croquis";
 import { RUNWAY_VIEW, runwayDepth } from "../../art/runwayGeometry";
 import { AudienceCheer } from "./AudienceCheer";
 import { PetalFall } from "../../../../../ui/art/PetalFall";
-import type { StageShot } from "./stageShot";
+import type { ShowWalker } from "./showCast";
+import type { StageFigure, StageShot } from "./stageShot";
 import { walkerFrame } from "../../art/runwayWalker";
 
-export interface StageFiguresProps {
-  shot: StageShot;
-  sceneT: number;
-  designer: AvatarLook;
-  hearts: string;
-  petalColours: readonly string[];
+export interface CarriedWalker {
+  readonly look: AvatarLook;
+  readonly art: ReactNode;
 }
 
-export function StageFigures({ shot, sceneT, designer, hearts, petalColours }: StageFiguresProps) {
-  const ordered = [...shot.figures].sort((a, b) => runwayDepth(a.progress) - runwayDepth(b.progress));
+interface FiguresBase {
+  readonly sceneT: number;
+  readonly designer: AvatarLook;
+  readonly hearts: string;
+  readonly petalColours: readonly string[];
+  readonly className?: string | undefined;
+}
+
+export type StageFiguresProps<W> = FiguresBase &
+  (
+    | { readonly shot: StageShot; readonly carry?: undefined }
+    | { readonly shot: StageShot<W>; readonly carry: (walker: W) => CarriedWalker }
+  );
+
+interface PlacedPerson {
+  readonly figure: StageFigure<unknown>;
+  readonly body: ReactNode;
+  readonly carried: ReactNode;
+}
+
+function dressedPeople(shot: StageShot, designer: AvatarLook): PlacedPerson[] {
+  return shot.figures.map((entry: StageFigure<ShowWalker>) => ({
+    figure: entry,
+    body:
+      entry.walker === null ? (
+        <AvatarFigure look={designer} mood="delighted" />
+      ) : (
+        <AvatarFigure look={entry.walker.model} garment={dressGarment(entry.walker.dress)} mood="neutral" />
+      ),
+    carried: null,
+  }));
+}
+
+function carryingPeople<W>(
+  shot: StageShot<W>,
+  designer: AvatarLook,
+  carry: (walker: W) => CarriedWalker,
+): PlacedPerson[] {
+  return shot.figures.map((entry) => {
+    const carried = entry.walker === null ? null : carry(entry.walker);
+    return {
+      figure: entry,
+      body: <AvatarFigure look={carried?.look ?? designer} mood={carried === null ? "delighted" : "happy"} />,
+      carried: carried?.art ?? null,
+    };
+  });
+}
+
+export function StageFigures<W>(props: StageFiguresProps<W>) {
+  const { sceneT, designer, hearts, petalColours, className } = props;
+  const people =
+    props.carry === undefined
+      ? dressedPeople(props.shot, designer)
+      : carryingPeople(props.shot, designer, props.carry);
+  const ordered = [...people].sort((a, b) => runwayDepth(a.figure.progress) - runwayDepth(b.figure.progress));
+  const { shot } = props;
   return (
     <svg
-      className="ad-show__figures"
+      className={className ?? "ad-show__figures"}
       viewBox={`0 0 ${RUNWAY_VIEW.width} ${RUNWAY_VIEW.height}`}
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
     >
-      {ordered.map((entry) => {
+      {ordered.map(({ figure: entry, body, carried }) => {
         if (entry.opacity <= 0) return null;
         const frame = walkerFrame(entry.progress, entry.lateral, entry.stride);
         const spin = Math.abs(entry.spin) < 0.16 ? 0.16 * Math.sign(entry.spin || 1) : entry.spin;
@@ -50,15 +103,8 @@ export function StageFigures({ shot, sceneT, designer, hearts, petalColours }: S
               overflow="visible"
             >
               <g transform={transform}>
-                {entry.walker !== null ? (
-                  <AvatarFigure
-                    look={entry.walker.model}
-                    garment={dressGarment(entry.walker.dress)}
-                    mood="neutral"
-                  />
-                ) : (
-                  <AvatarFigure look={designer} mood="delighted" />
-                )}
+                {body}
+                {carried}
               </g>
             </svg>
           </g>

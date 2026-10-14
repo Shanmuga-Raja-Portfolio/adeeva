@@ -162,17 +162,18 @@ export function lapseOverdue<B extends DatedBrief>(
   day: number,
   difficulty: DifficultyId,
   trait: TraitId,
+  forgiven: (gig: Gig<B>) => boolean = () => false,
 ): Lapse<B> | null {
   if (difficulty === "relaxed") return null;
   const overdue = board.active.filter((gig) => day >= gigLapseDay(gig));
   if (overdue.length === 0) return null;
-  const reputation = lapseReputation(difficulty, trait);
+  const penalty = lapseReputation(difficulty, trait);
   const lapsedIds = new Set(overdue.map((gig) => gig.id));
   const lapsed: LapsedGig[] = overdue.map((gig) => ({
     gigId: gig.id,
     clientId: gig.clientId,
     day,
-    reputation,
+    reputation: forgiven(gig) ? 0 : penalty,
   }));
   return {
     board: {
@@ -181,6 +182,6 @@ export function lapseOverdue<B extends DatedBrief>(
       lapsed: [...board.lapsed, ...lapsed],
     },
     lapsedIds,
-    reputation: reputation * overdue.length,
+    reputation: lapsed.reduce((sum, entry) => sum + entry.reputation, 0),
   };
 }

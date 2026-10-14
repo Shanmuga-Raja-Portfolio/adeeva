@@ -16,7 +16,7 @@ import {
 } from "../../../engine/parse";
 import {
   gigBoardParser,
-  profileParser,
+  profileShape,
   rngParser,
   storyStateParser,
   trendStateParser,
@@ -24,23 +24,40 @@ import {
 import { hasUniqueIds } from "../../../engine/uniqueIds";
 import { TRIM_IDS } from "../../adeeva/content/trim";
 import { MAX_SCRAPS } from "../content/finish";
+import { SEASON_LENGTH_DAYS } from "../content/season";
 import { UPGRADE_IDS } from "../content/upgrade";
 import { briefParser, countParser, positiveIntegerParser } from "./briefParser";
 import { flipRunParser, ownedFindParser, scrapParser } from "./flipRunParser";
+import { boutiqueParser } from "./boutiqueParser";
+import { SHELF_SIZE } from "./capsuleShelf";
+import { seasonDayOf } from "./seasonCalendar";
+import { swapLimit } from "./swapRoll";
+import { windowLimits } from "./windowDisplay";
 import {
   SCHEMA_VERSION,
   type CalendarState,
   type Counters,
   type GameState,
   type GigBoard,
+  type Profile,
   type RailSlot,
   type Stock,
 } from "./gameState";
-import { clientIdParser, conditionParser, findIdParser, storyBeatIdParser } from "./idParsers";
-import { stageIndex, type FlipStage } from "./flipStage";
+import {
+  careerIdParser,
+  clientIdParser,
+  conditionParser,
+  findIdParser,
+  storyBeatIdParser,
+} from "./idParsers";
+import type { FlipStage } from "./flipStage";
 import { slotPrice } from "./marketRail";
 import { rackPieceParser, stallResultParser, logEntryParser } from "./resultParsers";
+import { runKind } from "./runKind";
+import { runStagesBefore } from "./runStages";
 import { stageIssues } from "./stageReadiness";
+
+const profileParser = objectOf<Profile>({ ...profileShape, career: careerIdParser });
 
 const calendarParser = objectOf<CalendarState>({
   day: positiveIntegerParser,
@@ -95,6 +112,8 @@ const shapeParser = objectOf<GameState>({
   flipsFinished: countParser,
   gigsDelivered: countParser,
   fairSales: countParser,
+  keptInUse: countParser,
+  boutique: nullable(boutiqueParser),
   next: countersParser,
   rng: rngParser,
 });
@@ -134,11 +153,35 @@ function runProgressHolds(state: GameState): boolean {
   const run = state.activeRun;
   if (run === null) return true;
   const stocked = new Set(state.stock.finds.map((owned) => owned.id));
-  const findsPlaced = run.finds.every((owned) => stocked.has(owned.id) !== run.cutDone);
-  const earlierDone = PROGRESS_STAGES.filter((stage) => stageIndex(stage) < stageIndex(run.stage)).every(
-    (stage) => stageIssues(state, { ...run, stage }).length === 0,
-  );
+  const lent = runKind(run) !== "flip";
+  const findsPlaced = run.finds.every((owned) => stocked.has(owned.id) === (!lent && !run.cutDone));
+  const earlierDone = runStagesBefore(run, run.stage)
+    .filter((stage) => PROGRESS_STAGES.includes(stage))
+    .every((stage) => stageIssues(state, { ...run, stage }).length === 0);
   return findsPlaced && earlierDone;
+}
+
+function boutiqueConsistent(state: GameState): boolean {
+  const boutique = state.boutique;
+  if ((state.profile.career === "boutique") !== (boutique !== null)) return false;
+  if (boutique === null) return true;
+  const rackIds = new Set(state.rack.map((piece) => piece.id));
+  const season = boutique.season;
+  const limits = windowLimits(state);
+  return (
+    season.capsule.every((id) => rackIds.has(id)) &&
+    boutique.window.pieces.every(
+      (entry) => rackIds.has(entry.pieceId) && !season.capsule.includes(entry.pieceId),
+    ) &&
+    boutique.window.props.every((entry) => boutique.props.includes(entry.propId)) &&
+    season.startDay <= state.calendar.day &&
+    seasonDayOf(season, state.calendar.day) <= SEASON_LENGTH_DAYS &&
+    boutique.openedDay <= season.startDay &&
+    season.capsule.length <= SHELF_SIZE &&
+    boutique.window.pieces.length <= limits.pieces &&
+    boutique.window.props.length <= limits.props &&
+    (season.swapDay === null || season.swapDay.swaps <= swapLimit(state))
+  );
 }
 
 function worldConsistent(state: GameState): boolean {
@@ -146,6 +189,7 @@ function worldConsistent(state: GameState): boolean {
     countersAhead(state) &&
     idsUnique(state) &&
     runProgressHolds(state) &&
+    boutiqueConsistent(state) &&
     (state.stall === null || state.stall.day <= state.calendar.day) &&
     state.rail.every((slot) => slot.price === slotPrice(slot.findId, slot.grade))
   );

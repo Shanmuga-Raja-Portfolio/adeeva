@@ -8,6 +8,7 @@ import { garmentTags } from "./dressTags";
 import type { FinishedLook } from "./finishedLook";
 import { reduce } from "./reduce";
 import {
+  closerStrength,
   ORDER_BASE_VALUE,
   ORDER_VALUE_PER_SEASON,
   scoreRunway,
@@ -109,5 +110,28 @@ describe("runway orders", () => {
     expect(valueAt(2)).toBe(ORDER_BASE_VALUE + 10);
     expect(valueAt(5)).toBe(ORDER_BASE_VALUE + 40);
     expect(valueAt(9)).toBe(ORDER_BASE_VALUE + 40);
+  });
+});
+
+describe("show flow parity", () => {
+  it("keeps the closer and opener maths now shared with the engine", () => {
+    const look = deliveredLook();
+    const scored = (score: number): FinishedLook => ({ ...look, evaluation: { ...look.evaluation, score } });
+    const looks = [scored(70), scored(90), scored(80)];
+    const original = (order: readonly number[]): number => {
+      const scores = order.map((index) => looks[index]?.evaluation.score ?? 0);
+      const best = Math.max(0, ...scores);
+      const closer = scores[scores.length - 1] ?? 0;
+      const closing = best === 0 ? 100 : (100 * closer) / best;
+      const opening = (scores[0] ?? 0) >= (scores[1] ?? 0) ? 100 : 60;
+      return Math.round(0.7 * closing + 0.3 * opening);
+    };
+    for (const order of [
+      [0, 1, 2],
+      [2, 0, 1],
+      [1, 2, 0],
+      [0, 2, 1],
+    ])
+      expect(closerStrength(looks, order)).toBe(original(order));
   });
 });

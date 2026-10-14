@@ -1,10 +1,20 @@
 import type { ColourId } from "../../../engine/palette";
 import { isOnCanvas, isValidPose, samePose, topLayer } from "../../../engine/placedPose";
 import type { TrimId } from "../../adeeva/content/trim";
-import { MARK_IDS, PAINT_COLOURS, PATCH_IDS, type MarkId, type PatchId } from "../content/finish";
+import {
+  BOUTIQUE_FINISH_IDS,
+  COLOURED_MARK_IDS,
+  MARK_IDS,
+  MEND_MARK_IDS,
+  PAINT_COLOURS,
+  PATCH_IDS,
+  type MarkId,
+  type PatchId,
+} from "../content/finish";
 import { isTrimId, markById, trimById } from "./catalog";
 import type { FinishItem, FinishPose, FlipRun, TrimSource } from "./flipRun";
 import type { GameState } from "./gameState";
+import { runKind } from "./runKind";
 import { updateRun } from "./runUpdate";
 
 export const FINISH_CANVAS = 400;
@@ -20,14 +30,23 @@ export type FinishRequest =
   | { readonly kind: "patch"; readonly patchId: PatchId; readonly scrapId: string }
   | { readonly kind: "mark"; readonly markId: MarkId; readonly colour: ColourId | null };
 
-export function finishPrice(item: FinishItem): number {
+export function isMendMark(item: FinishItem): boolean {
+  return item.kind === "mark" && MEND_MARK_IDS.includes(item.markId);
+}
+
+export function finishPrice(item: FinishItem, run: Pick<FlipRun, "brief">): number {
   if (item.kind === "trim") return item.source === "new" ? trimById(item.trimId).price : 0;
-  if (item.kind === "mark") return markById(item.markId).price;
+  if (item.kind === "mark")
+    return runKind(run) !== "flip" && isMendMark(item) ? 0 : markById(item.markId).price;
   return 0;
 }
 
 export function finishSpend(run: FlipRun): number {
-  return run.finishes.reduce((sum, finish) => sum + finishPrice(finish.item), 0);
+  return run.finishes.reduce((sum, finish) => sum + finishPrice(finish.item, run), 0);
+}
+
+export function finishOpen(state: Pick<GameState, "profile">, id: PatchId | MarkId): boolean {
+  return state.profile.career === "boutique" || !BOUTIQUE_FINISH_IDS.includes(id);
 }
 
 export function savedTrimsPlaced(run: FlipRun, trimId: TrimId): number {
@@ -66,12 +85,12 @@ function resolve(state: GameState, request: FinishRequest): FinishItem | null {
   }
   if (request.kind === "patch") {
     const scrap = state.stock.scraps.find((entry) => entry.id === request.scrapId);
-    if (!PATCH_IDS.includes(request.patchId)) return null;
+    if (!PATCH_IDS.includes(request.patchId) || !finishOpen(state, request.patchId)) return null;
     if (scrap === undefined || scrapInUse(state.activeRun, scrap.id)) return null;
     return { kind: "patch", patchId: request.patchId, scrap };
   }
-  if (!MARK_IDS.includes(request.markId)) return null;
-  const needsColour = request.markId === "paint-dots";
+  if (!MARK_IDS.includes(request.markId) || !finishOpen(state, request.markId)) return null;
+  const needsColour = COLOURED_MARK_IDS.includes(request.markId);
   if (needsColour !== (request.colour !== null)) return null;
   if (request.colour !== null && !PAINT_COLOURS.includes(request.colour)) return null;
   return { kind: "mark", markId: request.markId, colour: request.colour };
@@ -80,8 +99,8 @@ function resolve(state: GameState, request: FinishRequest): FinishItem | null {
 export function addFinish(state: GameState, request: FinishRequest, x: number, y: number): GameState {
   if (!isOnCanvas(CANVAS, x, y)) return state;
   const item = resolve(state, request);
-  if (item === null) return state;
-  const price = finishPrice(item);
+  if (item === null || state.activeRun === null) return state;
+  const price = finishPrice(item, state.activeRun);
   if (price > state.coins) return state;
   const added = updateRun(state, "finish", (run) => ({
     ...run,
@@ -133,5 +152,7 @@ export function removeFinish(state: GameState, finishId: string): GameState {
     ...current,
     finishes: current.finishes.filter((entry) => entry.id !== finishId),
   }));
-  return removed === state ? state : { ...removed, coins: removed.coins + finishPrice(finish.item) };
+  return removed === state || run === null
+    ? state
+    : { ...removed, coins: removed.coins + finishPrice(finish.item, run) };
 }

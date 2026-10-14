@@ -80,7 +80,7 @@ export function TitleScreen({
                   <span>Continue</span>
                   <span className="tf-title__continue-meta">
                     {resume.state.profile.name} · Day {resume.state.calendar.day},{" "}
-                    {stallDayName(resume.state.calendar.day)}
+                    {stallDayName(resume.state.calendar.day, resume.state.profile.career)}
                   </span>
                 </Button>
               ) : null}

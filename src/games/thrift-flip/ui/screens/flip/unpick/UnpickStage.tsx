@@ -6,11 +6,11 @@ import { HINTS } from "../../../../content/hint";
 import {
   ASSIST_UNPICK_CAP,
   findById,
-  findLines,
   isLineDone,
   lineRecord,
   maxPull,
   MIN_PULL_CM,
+  runLines,
   trimById,
 } from "../../../../core";
 import { StageFooter } from "../StageFooter";
@@ -39,15 +39,15 @@ export function UnpickStage(props: StageProps) {
   const owned = run.finds[findIndex] ?? run.finds[0];
   if (owned === undefined) return null;
   const find = findById(owned.findId);
-  const lines = findLines(owned);
-  const firstOpen = lines.findIndex((def, index) => !isLineDone(def, lineRecord(run, owned.id, index)));
-  const lineIndex = chosenLine ?? (firstOpen === -1 ? 0 : firstOpen);
-  const line = lines[lineIndex];
+  const lines = runLines(run, owned);
+  const firstOpen = lines.find((entry) => !isLineDone(entry.def, lineRecord(run, owned.id, entry.index)));
+  const lineIndex = chosenLine ?? firstOpen?.index ?? lines[0]?.index ?? 0;
+  const line = lines.find((entry) => entry.index === lineIndex)?.def;
   const record = lineRecord(run, owned.id, lineIndex);
   const limit = maxPull(state, find.material);
   const sharpRipper = state.upgrades.includes("sharp-ripper");
   const allLines = run.finds.flatMap((entry) =>
-    findLines(entry).map((def, index) => ({ entry, def, index })),
+    runLines(run, entry).map(({ def, index }) => ({ entry, def, index })),
   );
   const stitchesOut = allLines.reduce(
     (sum, { entry, index }) => sum + lineRecord(run, entry.id, index).popped.length,
@@ -111,7 +111,7 @@ export function UnpickStage(props: StageProps) {
         </p>
       </div>
       <div className="tf-workbench__lines" role="tablist" aria-label="Stitch lines">
-        {lines.map((def, index) => {
+        {lines.map(({ def, index }, position) => {
           const lineState = lineRecord(run, owned.id, index);
           const done = isLineDone(def, lineState);
           return (
@@ -125,7 +125,8 @@ export function UnpickStage(props: StageProps) {
               data-line={index}
             >
               {done ? <Icon name="check" size={14} /> : null}
-              Line {index + 1} · {lineState.popped.length}/{def.stitches}
+              {lines.length === 1 ? "The split" : `Line ${position + 1}`} · {lineState.popped.length}/
+              {def.stitches}
             </button>
           );
         })}

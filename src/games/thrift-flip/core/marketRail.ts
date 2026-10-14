@@ -1,5 +1,6 @@
 import type { RngState } from "../../../engine/rng";
 import { drawDistinct, drawInt } from "../../../engine/rngDraw";
+import { BOUTIQUE_FIND_IDS } from "../content/boutiqueFind";
 import { CONDITIONS, type ConditionGrade } from "../content/condition";
 import { FINDS, type FindDef, type FindId } from "../content/find";
 import { FIND_FIT } from "../content/findFit";
@@ -10,8 +11,12 @@ import type { GameState, RailSlot } from "./gameState";
 
 export const RAIL_SIZE = 6;
 
-export function unlockedFinds(reputation: number): FindDef[] {
-  return FINDS.filter((find) => reputation >= find.minReputation);
+export function unlockedFinds(state: Pick<GameState, "reputation" | "profile">): FindDef[] {
+  return FINDS.filter(
+    (find) =>
+      state.reputation >= find.minReputation &&
+      (state.profile.career === "boutique" || !BOUTIQUE_FIND_IDS.some((id) => id === find.id)),
+  );
 }
 
 export function findFitsKey(findId: FindId, key: string): boolean {
@@ -32,7 +37,7 @@ export function slotPrice(findId: FindId, grade: ConditionGrade): number {
   return Math.max(1, Math.round(findById(findId).price * conditionById(grade).priceMultiplier));
 }
 
-function rollGrade(rng: RngState): [ConditionGrade, RngState] {
+export function rollGrade(rng: RngState): [ConditionGrade, RngState] {
   const total = CONDITIONS.reduce((sum, condition) => sum + condition.weight, 0);
   const [roll, next] = drawInt(rng, 1, total);
   let running = 0;
@@ -78,7 +83,7 @@ function guaranteeFits(
 }
 
 export function rollRail(state: GameState): GameState {
-  const pool = unlockedFinds(state.reputation);
+  const pool = unlockedFinds(state);
   const [picked, afterPick] = drawDistinct(state.rng, pool, Math.min(RAIL_SIZE, pool.length));
   const [finds, afterGuarantee] = guaranteeFits(picked, pool, openBriefs(state), afterPick);
   let rng = afterGuarantee;

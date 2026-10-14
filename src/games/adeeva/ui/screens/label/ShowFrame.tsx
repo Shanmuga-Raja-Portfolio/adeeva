@@ -40,7 +40,7 @@ export function ShowFrame({
   opacity,
 }: ShowFrameProps) {
   const kind = moment.segment.kind;
-  const shot = stageShot(moment, cast, audience, still);
+  const shot = stageShot(moment, cast, audience, still, (walker) => walker.look.evaluation.score);
   const walker = kind === "walk" ? (cast[moment.segment.walk] ?? null) : null;
   const sceneT = still ? 0.62 : moment.t;
   return (

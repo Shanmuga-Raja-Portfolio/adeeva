@@ -8,4 +8,10 @@ export const PLAN_CLOTH: Readonly<Record<RecipeId, Cloth>> = {
   "bucket-hat": { id: "plan-hat", colour: "sky", material: "cotton", print: "check" },
   "remade-skirt": { id: "plan-skirt", colour: "navy", material: "cotton", print: "floral" },
   "remade-top": { id: "plan-top", colour: "coral", material: "cotton", print: "solid" },
+  "hair-bow-set": { id: "plan-bows", colour: "lavender", material: "satin", print: "solid" },
+  "book-sleeve": { id: "plan-sleeve", colour: "teal", material: "cotton", print: "check" },
+  "bunting-string": { id: "plan-bunting", colour: "coral", material: "cotton", print: "dot" },
+  "garden-apron": { id: "plan-apron", colour: "mustard", material: "linen", print: "stripe" },
+  "patch-throw": { id: "plan-throw", colour: "emerald", material: "wool", print: "check" },
+  "remade-pinafore": { id: "plan-pinafore", colour: "plum", material: "cotton", print: "floral" },
 };

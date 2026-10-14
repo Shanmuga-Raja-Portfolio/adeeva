@@ -1,6 +1,7 @@
 import {
   arrayOf,
   booleanParser,
+  distinctListOf,
   integerRangeParser,
   nullable,
   objectOf,
@@ -18,12 +19,14 @@ import type { LogEntry } from "./gameState";
 import {
   clientIdParser,
   colourIdParser,
+  findIdParser,
   materialIdParser,
   printIdParser,
   recipeIdParser,
   styleTagParser,
 } from "./idParsers";
-import type { PieceCloth, RackPiece } from "./rackPiece";
+import type { LeavesParts, PieceCloth, RackPiece } from "./rackPiece";
+import { TILL_BONUS_IDS } from "./tillDay";
 import type { Reward } from "./rewards";
 import type { StallResult, StallSale } from "./stallDay";
 import type { LeavesBreakdown } from "./sustainability";
@@ -50,7 +53,7 @@ const leavesParser = objectOf<LeavesBreakdown>({
 });
 
 const evaluationParser = objectOf<FlipEvaluation>({
-  kind: oneOf(["gig", "own"] as const),
+  kind: oneOf(["gig", "own", "ticket"] as const),
   criteria: arrayOf(criterionParser),
   quality: qualityParser,
   leaves: leavesParser,
@@ -71,7 +74,7 @@ const rewardParser = objectOf<Reward>({
 
 export const logEntryParser = objectOf<LogEntry>({
   runId: stringParser,
-  kind: oneOf(["gig", "own"] as const),
+  kind: oneOf(["gig", "own", "ticket"] as const),
   clientId: nullable(clientIdParser),
   day: positiveIntegerParser,
   evaluation: evaluationParser,
@@ -82,6 +85,12 @@ const clothParser = objectOf<PieceCloth>({
   colour: colourIdParser,
   print: printIdParser,
   material: materialIdParser,
+});
+
+const leavesPartsParser = objectOf<LeavesParts>({
+  reuse: shareParser,
+  salvage: shareParser,
+  secondhand: shareParser,
 });
 
 export const rackPieceParser = objectOf<RackPiece>({
@@ -95,6 +104,11 @@ export const rackPieceParser = objectOf<RackPiece>({
   tags: arrayOf(styleTagParser),
   finishes: arrayOf(placedFinishParser),
   madeDay: positiveIntegerParser,
+  findIds: arrayOf(findIdParser),
+  seamAccuracy: shareParser,
+  leavesParts: leavesPartsParser,
+  colours: arrayOf(colourIdParser),
+  showcaseSeason: nullable(positiveIntegerParser),
 });
 
 const saleParser = objectOf<StallSale>({
@@ -105,6 +119,7 @@ const saleParser = objectOf<StallSale>({
   low: countParser,
   high: countParser,
   outcome: oneOf(["bargain", "sold", "fair", "stayed"] as const),
+  bonuses: distinctListOf(TILL_BONUS_IDS, "till bonus"),
 });
 
 export const stallResultParser = objectOf<StallResult>({

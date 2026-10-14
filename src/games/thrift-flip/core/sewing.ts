@@ -5,7 +5,7 @@ import type { SeamProgress } from "../../adeeva/core/dressRun";
 import { SEAM_BOUNDS } from "../../adeeva/core/sewing";
 import { recordFollow } from "../../../engine/followRecord";
 import { findById } from "./catalog";
-import { flipSeams } from "./flipPieces";
+import { runSeams } from "./runPieces";
 import type { FlipRun } from "./flipRun";
 import { mainFind } from "./flipTags";
 import { isSeamSewn } from "./seamSewn";
@@ -18,7 +18,7 @@ export function sewMaterial(run: FlipRun): MaterialId | null {
 }
 
 function hasSeam(run: FlipRun, seamId: string): boolean {
-  return flipSeams(run.design).some((seam) => seam.id === seamId);
+  return runSeams(run).some((seam) => seam.id === seamId);
 }
 
 export function recordSeam(state: GameState, seamId: string, sample: SeamProgress): GameState {
@@ -37,5 +37,5 @@ export function resetSeam(state: GameState, seamId: string): GameState {
 }
 
 export function isSewingComplete(run: FlipRun): boolean {
-  return flipSeams(run.design).every((seam) => isSeamSewn(run, seam.id));
+  return runSeams(run).every((seam) => isSeamSewn(run, seam.id));
 }

@@ -1,4 +1,5 @@
-import { expect, test, type Page, type TestInfo } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+import { shooter } from "../fixtures/screens";
 import {
   advance,
   centreOf,
@@ -15,13 +16,6 @@ const VIEWPORTS = [
   { name: "desktop", width: 1280, height: 800 },
   { name: "tablet", width: 820, height: 1180 },
 ] as const;
-
-function shooter(page: Page, testInfo: TestInfo, prefix: string) {
-  return async (name: string) => {
-    await page.waitForTimeout(400);
-    await page.screenshot({ path: testInfo.outputPath(`${prefix}-${name}.png`), animations: "disabled" });
-  };
-}
 
 function densify(points: readonly ScreenPoint[], spacing: number): ScreenPoint[] {
   return points.flatMap((point, index) => {

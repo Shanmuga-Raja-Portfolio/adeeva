@@ -1,0 +1,247 @@
+.tf-hall-screen {
+  position: relative;
+  min-height: 100dvh;
+  width: min(1320px, 100%);
+  margin: 0 auto;
+  padding: 0 var(--space-5) var(--space-7);
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.tf-hall-screen__scene {
+  margin: 0 calc(-1 * var(--space-5));
+  height: 230px;
+  overflow: hidden;
+  border-radius: 0 0 28px 28px;
+  box-shadow: var(--shadow-md);
+}
+
+.tf-hall-screen__scene .tf-hall {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tf-hall-screen__head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: -64px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 20px;
+  background: rgba(255, 250, 240, 0.96);
+  box-shadow: var(--shadow-md);
+}
+
+.tf-hall-screen__head h1 {
+  margin: 0;
+  color: var(--tf-larkspur-deep);
+}
+
+.tf-hall-screen__stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tf-hall-screen__saved,
+.tf-hall-screen__tally {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--tf-mint-soft);
+  color: var(--tf-mint-deep);
+  font-weight: 700;
+}
+
+.tf-hall-screen__urn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 18px;
+  background: var(--card);
+  border: 2px dashed rgba(63, 143, 110, 0.4);
+}
+
+.tf-hall-screen__urn p {
+  flex: 1;
+  margin: 0;
+}
+
+.tf-hall-section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.tf-hall-section h2 {
+  margin: 0;
+}
+
+.tf-hall-tables {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
+}
+
+.tf-hall-table {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-3);
+  border-radius: 18px 18px 8px 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 40%),
+    repeating-linear-gradient(90deg, #f6efe0 0 18px, #efe4cf 18px 36px);
+  border-bottom: 10px solid #c99f72;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  animation: ad-rise var(--duration-slow) var(--ease-out) both;
+}
+
+.tf-hall-table--done {
+  background: linear-gradient(180deg, var(--tf-mint-soft), #fffaf0);
+}
+
+.tf-hall-table__who {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tf-hall-table__request {
+  margin: 0;
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.tf-hall-table__kind {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--tf-larkspur-deep);
+}
+
+.tf-hall-table__badge {
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--paper-deep);
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.tf-hall-table__badge--well {
+  background: var(--tf-mint);
+  color: #fff;
+}
+
+.tf-hall-give {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tf-hall-give__find {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 56px;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: var(--card);
+  cursor: pointer;
+}
+
+.tf-hall-give__find.is-chosen {
+  border-color: var(--tf-larkspur);
+  background: var(--tf-larkspur-soft);
+}
+
+.tf-hall-rail {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: var(--space-3);
+  border-top: 8px solid #8a6a4a;
+  border-radius: 6px;
+}
+
+.tf-hall-rail__slot {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: var(--space-3);
+  border-radius: 14px;
+  background: var(--card);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.tf-hall-rail__slot small {
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+}
+
+.tf-hall-rail__slot.is-taken {
+  opacity: 0.7;
+}
+
+.tf-table-work {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: 22px;
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+}
+
+.tf-table-work__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.tf-table-work__head h2 {
+  margin: 0;
+}
+
+.tf-table-work__done {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: 18px;
+  background: var(--tf-mint-soft);
+  color: var(--tf-mint-deep);
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .tf-hall-screen {
+    padding: 0 var(--space-4) var(--space-6);
+  }
+
+  .tf-hall-screen__scene {
+    margin: 0 calc(-1 * var(--space-4));
+    height: 170px;
+  }
+
+  .tf-hall-screen__head {
+    grid-template-columns: 1fr;
+    margin-top: -40px;
+  }
+}

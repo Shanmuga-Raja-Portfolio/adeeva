@@ -4,9 +4,11 @@ import { FabricSwatch } from "../../../../../adeeva/ui/art/FabricSwatch";
 import { TrimBadge } from "../../../../../adeeva/ui/art/TrimArt";
 import { TRIM_IDS } from "../../../../../adeeva/content/trim";
 import { Icon } from "../../../../../../ui/kit/IconSet";
-import { MARKS, PAINT_COLOURS, PATCHES } from "../../../../content/finish";
+import { COLOURED_MARK_IDS, MARKS, PAINT_COLOURS, PATCHES } from "../../../../content/finish";
 import {
   availableSavedTrims,
+  finishOpen,
+  finishPrice,
   scrapInUse,
   trimById,
   type FinishRequest,
@@ -57,6 +59,9 @@ export function FinishDrawer({
     },
   });
   const saved = TRIM_IDS.filter((id) => availableSavedTrims(state, id) > 0);
+  const patches = PATCHES.filter((patch) => finishOpen(state, patch.id));
+  const marks = MARKS.filter((mark) => finishOpen(state, mark.id));
+  const run = state.activeRun;
   return (
     <div className="tf-drawer">
       <div className="tf-tabs" role="tablist" aria-label="Finishing drawer">
@@ -99,7 +104,7 @@ export function FinishDrawer({
               </div>
               <span className="ad-eyebrow">Drag a patch onto your piece</span>
               <div className="tf-drawer__items">
-                {PATCHES.map((patch) => (
+                {patches.map((patch) => (
                   <button
                     key={patch.id}
                     type="button"
@@ -187,19 +192,20 @@ export function FinishDrawer({
             ))}
           </div>
           <div className="tf-drawer__items">
-            {MARKS.map((mark) => {
-              const request: FinishRequest =
-                mark.id === "paint-dots"
-                  ? { kind: "mark", markId: mark.id, colour: paint }
-                  : { kind: "mark", markId: mark.id, colour: null };
+            {marks.map((mark) => {
+              const request: FinishRequest = COLOURED_MARK_IDS.includes(mark.id)
+                ? { kind: "mark", markId: mark.id, colour: paint }
+                : { kind: "mark", markId: mark.id, colour: null };
+              const price =
+                run === null ? mark.price : finishPrice({ kind: "mark", markId: mark.id, colour: null }, run);
               return (
                 <button
                   key={mark.id}
                   type="button"
                   className="tf-chip"
                   data-finish={mark.id}
-                  aria-label={`${mark.name}, ${mark.price} ${mark.price === 1 ? "coin" : "coins"}`}
-                  disabled={mark.price > state.coins}
+                  aria-label={`${mark.name}, ${price === 0 ? "free" : `${price} ${price === 1 ? "coin" : "coins"}`}`}
+                  disabled={price > state.coins}
                   {...chipProps(request)}
                 >
                   <svg viewBox="-24 -24 48 48" width={48} height={48} aria-hidden="true">
@@ -207,7 +213,15 @@ export function FinishDrawer({
                   </svg>
                   <span>{mark.name}</span>
                   <small>
-                    <Icon name="coin" size={12} /> {mark.price}
+                    {price === 0 ? (
+                      <>
+                        <Icon name="heart" size={12} /> free on tickets
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="coin" size={12} /> {price}
+                      </>
+                    )}
                   </small>
                 </button>
               );

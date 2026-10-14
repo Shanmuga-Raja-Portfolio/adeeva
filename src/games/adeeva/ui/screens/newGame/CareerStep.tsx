@@ -1,6 +1,7 @@
 import { CAREERS, type CareerId } from "../../../content/career";
 import { StudioBackdrop } from "../../art/StudioBackdrop";
 import { CareerStep as SharedCareerStep, type CareerCard } from "../../../../../ui/newGame/CareerStep";
+import { careerFacts } from "../../../../../ui/newGame/careerFacts";
 
 export interface CareerStepProps {
   value: CareerId | null;
@@ -13,12 +14,7 @@ const CARDS: readonly CareerCard<CareerId>[] = CAREERS.map((career) => ({
   pitch: career.pitch,
   placeName: career.studioName,
   window: <StudioBackdrop kind={career.id === "student" ? "bedroom" : "atelier"} wash={0.05} />,
-  facts: [
-    { icon: "coin", text: `${career.startCoins} coins to start` },
-    { icon: "star", text: `Reputation ${career.startReputation}` },
-    { icon: "calendar", text: `Rent ${career.weeklyRent} a week` },
-    { icon: "bag", text: `Side job: ${career.shiftName}` },
-  ],
+  facts: careerFacts(career),
 }));
 
 export function CareerStep({ value, onChange }: CareerStepProps) {

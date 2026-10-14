@@ -39,7 +39,7 @@ export {
 export { canCommitCut } from "./cutCommit";
 export { canDeliver, lastResult } from "./delivery";
 export { fitKey, type Design } from "./design";
-export { partChoiceIssue, recipeChoiceIssue } from "./designChoice";
+export { partChoiceIssue, recipeChoiceIssue, recipeOpen } from "./designChoice";
 export { findBlockIssue, MAX_FINDS_PER_FLIP } from "./findChoice";
 export {
   availableSavedTrims,
@@ -92,5 +92,84 @@ export { leavesOf } from "./sustainability";
 export { cutTolerance, gentleLimit, maxPull, MIN_PULL_CM, MIN_SCRUB_SPEED, sewBand } from "./tolerance";
 export { hotMarker } from "./trendPreview";
 export { visibleNextTrends } from "../../../engine/trendMarket";
-export { ASSIST_UNPICK_CAP, findLines, isLineDone, lineRecord, stitchPoints } from "./unpick";
+export { ASSIST_UNPICK_CAP, isLineDone, lineRecord, runLines, stitchPoints, type RunLine } from "./unpick";
 export { upgradePurchaseIssues } from "../../../engine/upgrades";
+export { runKind } from "./runKind";
+export { runPiece, runPieces, runSeams, HEM_PIECE } from "./runPieces";
+export { hemSpot } from "./alterLayout";
+export { runHasStage, runStageAfter, runStages } from "./runStages";
+export { qualityWeights } from "./flipQuality";
+export { requirementName, type EvaluationKind } from "./flipEvaluate";
+export { personById, careerById, seasonById, signById, propById, ticketById } from "./catalog";
+export { careerOf } from "./calendar";
+export {
+  boutiqueRulePasses,
+  boutiqueRuleReasons,
+  canOpenBoutique,
+  isWeekStart,
+  UNLOCK_FAIR_SALES,
+  UNLOCK_GIGS_DELIVERED,
+  UNLOCK_REPUTATION,
+} from "./boutiqueUnlock";
+export type {
+  Boutique,
+  BoutiqueSeason,
+  RosetteEntry,
+  Showcase,
+  ShowcasePlan,
+  SwapDay,
+  SwapSlot,
+  SwapTable,
+  WindowDisplay,
+  WindowPiece,
+  WindowProp,
+} from "./boutique";
+export {
+  inWelcomeWeek,
+  isLateShowcaseDay,
+  isShowcaseDay,
+  isSwapDay,
+  seasonDay,
+  seasonTheme,
+} from "./seasonCalendar";
+export { madeThisSeason, SHELF_SIZE, shelfIssue, suggestedShelf, unshelveIssue } from "./capsuleShelf";
+export { hangingPieces, rackHooks, rackIsFull, shelfPieces } from "./rackRoom";
+export {
+  propIssue,
+  WINDOW_HEIGHT,
+  WINDOW_HOURS,
+  WINDOW_WIDTH,
+  windowIssues,
+  windowLimits,
+} from "./windowDisplay";
+export { scoreWindow, windowPieces, type WindowScore } from "./windowScore";
+export { isSeasonPick, TILL_BONUS_NAMES, tillBonuses, type TillBonusId } from "./tillDay";
+export { pieceFairBand } from "./stallDay";
+export {
+  autoPlan,
+  FRESH_START_CARD,
+  hallTip,
+  showcaseIssues,
+  showcaseResultFor,
+  storyCardsFor,
+  type StoryCard,
+} from "./showcase";
+export type { ShowcaseResult, ShowPanelScore } from "./showcaseScore";
+export {
+  hallIssue,
+  isWellMended,
+  swapIssue,
+  TABLE_HOURS,
+  tableAccuracy,
+  tableDone,
+  tableIssue,
+  tableOwned,
+  todaysSwapDay,
+  wellMendedCount,
+} from "./swapDay";
+export { swapLimit } from "./swapRoll";
+export { ticketLine, ticketOccasion } from "./ticketBrief";
+export { upgradeIssues, upgradeOpen } from "./upgradeShop";
+export { finishOpen, finishPrice } from "./finishing";
+export { hallCommittedToday } from "./hallDay";
+export type { LogKind, Profile } from "./gameState";

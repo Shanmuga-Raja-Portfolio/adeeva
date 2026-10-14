@@ -12,6 +12,7 @@ export interface FindArtProps {
   readonly size?: number | undefined;
   readonly className?: string | undefined;
   readonly title?: string | undefined;
+  readonly mended?: boolean | undefined;
 }
 
 const OUTLINES: Readonly<Record<FindShape, string>> = {
@@ -90,7 +91,14 @@ function details(shape: FindShape, stitch: string, deep: string) {
   }
 }
 
-export function FindArt({ find, grade = "like-new", size = 120, className, title }: FindArtProps) {
+export function FindArt({
+  find,
+  grade = "like-new",
+  size = 120,
+  className,
+  title,
+  mended = false,
+}: FindArtProps) {
   const id = useSvgId("find");
   const cloth = findCloth(find);
   const look = fabricLook(cloth);
@@ -163,6 +171,29 @@ export function FindArt({ find, grade = "like-new", size = 120, className, title
       </g>
       <path d="M20 30 L60 17 L100 30" fill="none" stroke="#a07a52" strokeWidth={4} strokeLinecap="round" />
       <path d="M20 30 L60 17 L100 30" fill="none" stroke="#c99f72" strokeWidth={1.4} strokeLinecap="round" />
+      {mended ? (
+        <g className="tf-find-mend">
+          <path
+            d="M44 84 l6 -6 l6 6 l6 -6 l6 6 l6 -6 l6 6"
+            fill="none"
+            stroke="#f08a3c"
+            strokeWidth={2.2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M44 92 l6 -6 l6 6 l6 -6 l6 6 l6 -6 l6 6"
+            fill="none"
+            stroke="#fff4e2"
+            strokeWidth={1.1}
+            strokeDasharray="2 2"
+          />
+          <path
+            d="M78 106 c-3 -5 -10 -2 -8 3 c1 3 8 7 8 7 c0 0 7 -4 8 -7 c2 -5 -5 -8 -8 -3 Z"
+            fill="#e57a8f"
+          />
+        </g>
+      ) : null}
       {grade === "like-new" ? (
         <g fill="#fff8d6" className="tf-find-glint">
           <path d="M98 50 l1.6 4 l4 1.6 l-4 1.6 l-1.6 4 l-1.6 -4 l-4 -1.6 l4 -1.6 Z" />

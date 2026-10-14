@@ -1,10 +1,17 @@
 import { colourById, type ColourId } from "../../../engine/palette";
-import { findById, patchById, trimById } from "./catalog";
-import { constructionGap, flipSpend, placedForRequirement } from "./flipEvaluate";
+import { findById } from "./catalog";
+import {
+  constructionGap,
+  flipSpend,
+  placedForRequirement,
+  requirementKey,
+  requirementName,
+} from "./flipEvaluate";
 import { flipQuality } from "./flipQuality";
 import { flipColours, flipTags, mainFind } from "./flipTags";
 import { stageIndex } from "./flipStage";
 import type { GameState } from "./gameState";
+import { runHasStage } from "./runStages";
 import { leavesOf } from "./sustainability";
 
 export type ChecklistStatus = "met" | "unmet" | "pending";
@@ -57,15 +64,9 @@ export function checklist(state: GameState): ChecklistItem[] {
     });
   for (const requirement of brief.requiredFinishes) {
     const placed = placedForRequirement(run, requirement);
-    const name =
-      requirement.kind === "trim"
-        ? trimById(requirement.trim).name
-        : requirement.patch === "any"
-          ? "Any patch"
-          : patchById(requirement.patch).name;
     items.push({
-      id: `finish-${requirement.kind === "trim" ? requirement.trim : requirement.patch}`,
-      label: `${name} ${Math.min(placed, requirement.count)}/${requirement.count}`,
+      id: `finish-${requirementKey(requirement)}`,
+      label: `${requirementName(requirement)} ${Math.min(placed, requirement.count)}/${requirement.count}`,
       status: placed >= requirement.count ? "met" : finishing ? "unmet" : "pending",
     });
   }
@@ -81,7 +82,8 @@ export function checklist(state: GameState): ChecklistItem[] {
     status: state.calendar.day <= brief.deadlineDay ? "met" : "unmet",
   });
   const gap = constructionGap(run);
-  const built = gap.stitchLines === 0 && gap.pieces === 0 && gap.seams === 0 && run.cutDone;
+  const built =
+    gap.stitchLines === 0 && gap.pieces === 0 && gap.seams === 0 && (run.cutDone || !runHasStage(run, "cut"));
   const quality = flipQuality(state, run).quality;
   items.push({
     id: "quality",
