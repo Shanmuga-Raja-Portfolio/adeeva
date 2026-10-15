@@ -20,14 +20,15 @@ Research done (reference only): `work/0013-research/references.md` and `work/001
 
 ## Task queue (in order; two lines at a time)
 
-1. 🔄 **Thrift-Flip depth**, integration onto `main`. Patisserie depth already moved the same ADEEVA career and runway pieces into shared code; this merges each into one shared version.
-2. 🔄 **Browser-test stability:** run the browser tests against a production build so they stay stable under parallel load, and prove it.
-3. ⬜ **Interior depth:** show-home development.
-4. ⬜ **Workshop depth:** furniture showroom and fair.
+1. ✅ **Thrift-Flip depth**, merged into `main`. The career and runway pieces are shared with ADEEVA and Patisserie.
+2. ✅ **Browser-test stability**, merged into `main`. Browser tests run against a production build, wait on real state instead of fixed sleeps, and use 127.0.0.1. The flaky unit test (a Patisserie economy simulation) is fixed by making the shared geometry code about 4× faster.
+3. 🔄 **Interior depth:** show-home development.
+4. 🔄 **Workshop depth:** furniture showroom and fair.
 5. ⬜ **Jewellery depth:** collection launch.
 6. ⬜ **Kit dialog focus:** shared dialogs don't move keyboard focus into themselves when they open (seen in Thrift-Flip's leave-draft dialog and ADEEVA's set-aside dialog). Fix it once in `ui/kit`, with a test.
-7. ⬜ **Phase C quality loop** for all seven games (below).
-8. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, and a closing report.
+7. ⬜ **Unnamed browser-test failure:** 1 failure in 8 full runs on `main` (99dc333) under parallel load. It wasn't captured, and it hasn't come back in the 7 runs since. Checks now keep failure output, so if it recurs it gets named and fixed.
+8. ⬜ **Phase C quality loop** for all seven games (below).
+9. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, and a closing report.
 
 ## Waiting for Shan (do together, one by one)
 
