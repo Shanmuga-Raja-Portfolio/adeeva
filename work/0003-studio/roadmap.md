@@ -22,8 +22,8 @@ Research done (reference only): `work/0013-research/references.md` and `work/001
 
 1. ✅ **Thrift-Flip depth**, merged into `main`. The career and runway pieces are shared with ADEEVA and Patisserie.
 2. ✅ **Browser-test stability**, merged into `main`. Browser tests run against a production build, wait on real state instead of fixed sleeps, and use 127.0.0.1. The flaky unit test (a Patisserie economy simulation) is fixed by making the shared geometry code about 4× faster.
-3. 🔄 **Interior depth:** show-home development.
-4. 🔄 **Workshop depth:** furniture showroom and fair.
+3. ⏸️ **Interior depth** (paused in its fix step): worktree `Y:\ADEEVA-wt\interior-depth`, branch `task/0018-interior-depth`. Design, build and both reviews are done; the half-done fixes are uncommitted in the worktree. Resume the depth workflow with run id `wf_2f76d1b1-da7`.
+4. ⏸️ **Workshop depth** (paused in its fix step): worktree `Y:\ADEEVA-wt\workshop-depth`, branch `task/0019-workshop-depth`. Design, build and both reviews are done; the half-done fixes are uncommitted. Resume with run id `wf_c4e97608-934`.
 5. ⬜ **Jewellery depth:** collection launch.
 6. ⬜ **Kit dialog focus:** shared dialogs don't move keyboard focus into themselves when they open (seen in Thrift-Flip's leave-draft dialog and ADEEVA's set-aside dialog). Fix it once in `ui/kit`, with a test.
 7. ⬜ **Unnamed browser-test failure:** 1 failure in 8 full runs on `main` (99dc333) under parallel load. It wasn't captured, and it hasn't come back in the 7 runs since. Checks now keep failure output, so if it recurs it gets named and fixed.
