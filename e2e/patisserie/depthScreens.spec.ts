@@ -1,6 +1,10 @@
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { serialize, type GameState } from "../../src/games/patisserie/core";
+import { showcaseSteps } from "../../src/games/patisserie/ui/screens/fair/showcaseSteps";
 import { dragBetween, finishBakeryStories, PATISSERIE_URL } from "../fixtures/patisseriePage";
+import { recordScenes } from "../fixtures/sceneLog";
+import { settledForShot } from "../fixtures/settle";
+import { widestSidewaysScroll } from "../fixtures/sidewaysScroll";
 
 import {
   fairDay,
@@ -22,13 +26,9 @@ const VIEWPORTS = [
   { width: 820, height: 1180 },
 ] as const;
 
-async function sidewaysScroll(page: Page): Promise<number> {
-  return page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-}
-
 async function shot(page: Page, info: TestInfo, name: string): Promise<void> {
-  await page.waitForTimeout(700);
-  expect(await sidewaysScroll(page), `${name} scrolls sideways`).toBe(0);
+  expect(await widestSidewaysScroll(page), `${name} scrolls sideways`).toBe(0);
+  await settledForShot(page);
   const size = page.viewportSize();
   await page.screenshot({ path: info.outputPath(`${name}-${size?.width ?? 0}x${size?.height ?? 0}.png`) });
 }
@@ -148,24 +148,33 @@ for (const viewport of VIEWPORTS) {
       await page.getByTestId("fair-board-next").click();
       await expect(page.getByTestId("fair-planner")).toBeVisible();
       await shot(page, info, "fair-planner");
+      const scenes = await recordScenes(page, "fair-showcase");
+      const latest = async () => {
+        const seen = await scenes();
+        return seen[seen.length - 1];
+      };
       await page.getByTestId("start-showcase").click();
-      const showcase = page.getByTestId("fair-showcase");
-      await expect(showcase).toHaveAttribute("data-scene", "title");
-      await page.waitForTimeout(1200);
+      await expect.poll(latest).toBe("title");
       await shot(page, info, "showcase-title");
       await expect(page.getByTestId("lift-cloche")).toBeVisible({ timeout: 10_000 });
       await shot(page, info, "showcase-cloche");
       await page.getByTestId("lift-cloche").click();
-      await page.waitForTimeout(900);
+      await expect.poll(latest).toBe("reveal-1");
       await shot(page, info, "showcase-reveal");
-      await expect(showcase).toHaveAttribute("data-scene", "finale", { timeout: 30_000 });
-      await page.waitForTimeout(1500);
+      await expect.poll(latest, { timeout: 30_000 }).toBe("finale");
       await shot(page, info, "showcase-finale");
-      await expect(showcase).toHaveAttribute("data-scene", "panels", { timeout: 10_000 });
-      await page.waitForTimeout(2500);
+      await expect.poll(latest, { timeout: 10_000 }).toBe("panels");
       await shot(page, info, "showcase-panels");
+      const shown = await scenes();
+      const seen = shown.slice(0, shown.indexOf("panels") + 1);
+      const plates = seen.filter((scene) => scene.startsWith("reveal-")).length;
+      expect(plates).toBeGreaterThan(0);
+      expect(seen).toEqual(
+        showcaseSteps(plates, false).map(
+          (step) => `${step.kind}${step.plate >= 0 ? `-${step.plate + 1}` : ""}`,
+        ),
+      );
       await expect(page.getByTestId("fair-results")).toBeVisible({ timeout: 10_000 });
-      await page.waitForTimeout(1600);
       await shot(page, info, "fair-results");
       await page.getByTestId("fair-done").click();
       await finishBakeryStories(page);
@@ -244,7 +253,7 @@ test.describe("depth screens in reduced motion", () => {
   test("the showcase plays as stills", async ({ page }, info) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await openPreparedBakery(page, seasonReady());
-    expect(await sidewaysScroll(page)).toBe(0);
+    expect(await widestSidewaysScroll(page)).toBe(0);
     await openPreparedBakery(page, fairDay());
     await page.getByTestId("go-to-fair").click();
     await page.getByTestId("fair-board-next").click();

@@ -16,9 +16,17 @@ function roundCoordinate(value: number): number {
 
 export function polygonBounds(points: readonly Point[]): Bounds {
   if (points.length === 0) return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
-  const xs = points.map(([x]) => x);
-  const ys = points.map(([, y]) => y);
-  return { minX: Math.min(...xs), minY: Math.min(...ys), maxX: Math.max(...xs), maxY: Math.max(...ys) };
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const [x, y] of points) {
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x);
+    maxY = Math.max(maxY, y);
+  }
+  return { minX, minY, maxX, maxY };
 }
 
 export function rotatedShape(shape: readonly Point[], rotation: Rotation): Point[] {

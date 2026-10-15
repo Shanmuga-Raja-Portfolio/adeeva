@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { BIRDHOUSE_PLAN } from "../../src/games/workshop/core/testPlaythrough";
+import { tapMalletOnce } from "../fixtures/mallet";
 import { commissionAt, openPreparedBench } from "../fixtures/preparedWorkshop";
 import { svgToScreen, type ScreenPoint } from "../fixtures/workshopPage";
 
@@ -29,10 +30,9 @@ test.describe("workshop controls", () => {
     await deliver.scrollIntoViewIfNeeded();
     await deliver.dblclick();
     await expect(page.getByTestId("results")).toBeVisible();
-    await page.waitForTimeout(900);
+    await expect(page.getByTestId("results-exit")).toBeEnabled();
     await expect(page.getByTestId("results")).toBeVisible();
     await expect(page.getByTestId("workshop-hub")).toHaveCount(0);
-    await expect(page.getByTestId("results-exit")).toBeEnabled();
   });
 
   test("a very long sanding rub keeps every stroke, and a held arrow key rubs once", async ({ page }) => {
@@ -46,16 +46,23 @@ test.describe("workshop controls", () => {
       [310, 20],
     ]);
     if (left === undefined || right === undefined) throw new Error("No surface");
-    await page.mouse.move(left[0], left[1]);
-    await page.mouse.down();
-    let moves = 0;
-    for (let lap = 0; moves < 4200; lap += 1) {
+    const rub: ScreenPoint[] = [];
+    for (let lap = 0; rub.length < 4200; lap += 1)
       for (let step = 1; step <= 50; step += 1) {
         const share = lap % 2 === 0 ? step / 50 : 1 - step / 50;
-        await page.mouse.move(left[0] + (right[0] - left[0]) * share, left[1] + (lap % 8) * 12);
-        moves += 1;
+        rub.push([left[0] + (right[0] - left[0]) * share, left[1] + (lap % 8) * 12]);
       }
-    }
+    await page.mouse.move(left[0], left[1]);
+    await page.mouse.down();
+    const cdp = await page.context().newCDPSession(page);
+    await Promise.all(
+      rub.map(([x, y]) =>
+        cdp.send("Input.dispatchMouseEvent", { type: "mouseMoved", x, y, button: "left", buttons: 1 }),
+      ),
+    );
+    await cdp.detach();
+    const last = rub[rub.length - 1] ?? left;
+    await page.mouse.move(last[0], last[1]);
     await expect.poll(async () => Number(await sand.getAttribute("data-strokes"))).toBeGreaterThan(40);
     await page.mouse.up();
     const afterRub = Number(await sand.getAttribute("data-strokes"));
@@ -130,10 +137,8 @@ test.describe("workshop controls", () => {
     const done = page.locator(".ww-join__chip--done");
     await expect(done).toHaveCount(0);
     await page.getByTestId("mallet").focus();
-    for (let tap = 0; tap < 8 && (await done.count()) === 0; tap += 1) {
-      await page.keyboard.press("Enter");
-      await page.waitForTimeout(150);
-    }
+    for (let tap = 0; tap < 8 && (await done.count()) === 0; tap += 1)
+      await tapMalletOnce(page, () => page.keyboard.press("Enter"));
     await expect(done).toHaveCount(1);
     await expect.poll(() => focusedTestId(page)).toBe("joint-part");
   });

@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { isOutsideRequest } from "./outsideRequest";
 
 export const CHEF_URL = "/#/chef";
 
@@ -7,9 +8,7 @@ type Pair = readonly [number, number];
 export function watchOutside(page: Page): string[] {
   const outside: string[] = [];
   page.on("request", (request) => {
-    const url = new URL(request.url());
-    if (url.hostname !== "localhost" && url.protocol !== "data:" && url.protocol !== "blob:")
-      outside.push(request.url());
+    if (isOutsideRequest(request.url())) outside.push(request.url());
   });
   return outside;
 }
@@ -151,33 +150,50 @@ export async function simmerByHand(page: Page): Promise<void> {
   await page.getByTestId("off-the-heat").click();
 }
 
+interface ReadyPiece {
+  readonly id: string;
+  readonly side: number;
+}
+
+async function nextReadyPiece(page: Page, flipped: readonly string[]): Promise<ReadyPiece | null> {
+  const handle = await page.waitForFunction(
+    (skip) => {
+      const pieces = Array.from(document.querySelectorAll("[data-testid^='piece-']"));
+      if (pieces.length === 0) return { id: "", side: -1 };
+      for (const piece of pieces) {
+        const id = piece.getAttribute("data-testid") ?? "";
+        const side = Number(piece.getAttribute("data-side"));
+        const waitingToTurn = side === 0 && skip.includes(id);
+        if (Number(piece.getAttribute("data-cook")) >= 0.97 && !waitingToTurn) return { id, side };
+      }
+      return false;
+    },
+    flipped,
+    { polling: "raf" },
+  );
+  const ready = (await handle.jsonValue()) as ReadyPiece;
+  return ready.id === "" ? null : ready;
+}
+
 export async function sizzleByHand(page: Page): Promise<void> {
   await page.getByTestId("pan-start").click();
   const pan = page.getByTestId("sizzle-pan");
   await pan.scrollIntoViewIfNeeded();
   const flipped = new Set<string>();
-  const pieces = page.locator("[data-testid^='piece-']");
-  for (let guard = 0; guard < 800 && (await pieces.count()) > 0; guard += 1) {
-    const count = await pieces.count();
-    for (let index = 0; index < count; index += 1) {
-      const piece = pieces.nth(index);
-      const cook = Number(await piece.getAttribute("data-cook"));
-      const side = Number(await piece.getAttribute("data-side"));
-      const id = (await piece.getAttribute("data-testid")) ?? "";
-      if (cook < 0.97) continue;
-      const [x, y] = await middle(piece.locator("circle").first());
-      if (side === 0 && !flipped.has(id)) {
-        await page.mouse.click(x, y);
-        flipped.add(id);
-      } else if (side >= 1) {
-        const [tray] = await svgToScreen(pan, [[490, 200]]);
-        if (tray === undefined) throw new Error("No tray");
-        await page.mouse.move(x, y);
-        await page.mouse.down();
-        await page.mouse.move(tray[0], tray[1], { steps: 8 });
-        await page.mouse.up();
-      }
-      break;
+  for (let guard = 0; guard < 800; guard += 1) {
+    const ready = await nextReadyPiece(page, [...flipped]);
+    if (ready === null) return;
+    const [x, y] = await middle(page.getByTestId(ready.id).locator("circle").first());
+    if (ready.side === 0) {
+      await page.mouse.click(x, y);
+      flipped.add(ready.id);
+    } else {
+      const [tray] = await svgToScreen(pan, [[490, 200]]);
+      if (tray === undefined) throw new Error("No tray");
+      await page.mouse.move(x, y);
+      await page.mouse.down();
+      await page.mouse.move(tray[0], tray[1], { steps: 8 });
+      await page.mouse.up();
     }
   }
 }

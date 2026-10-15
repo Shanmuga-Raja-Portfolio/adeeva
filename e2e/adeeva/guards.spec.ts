@@ -21,6 +21,8 @@ import {
 import { openPreparedGame, savedState, settleStories } from "../fixtures/preparedGame";
 import { finishStories } from "../fixtures/story";
 
+const CRAFT_FLOW_CHUNK = "**/assets/CraftFlow-*.js";
+
 function settledStudent(name = "Ada"): GameState {
   return settleStories(newTestGame({ seed: 7, name }));
 }
@@ -268,7 +270,7 @@ test("Continue picks the slot that was played last", async ({ page }) => {
 
 test("a studio view that fails to load offers a reload and keeps the save", async ({ page }) => {
   await openPreparedGame(page, withActiveGig(settledStudent(), "mom"));
-  await page.route("**/src/games/adeeva/ui/screens/craft/CraftFlow.tsx*", (route) => route.abort());
+  await page.route(CRAFT_FLOW_CHUNK, (route) => route.abort());
   const savedOnClick = await page
     .getByTestId("gig-card")
     .getByRole("button", { name: "Start sewing" })
@@ -281,7 +283,7 @@ test("a studio view that fails to load offers a reload and keeps the save", asyn
   await expect(failed).toBeVisible();
   await expect(failed).toContainText("This part of the studio didn't load. Reload to continue");
   expect(await savedState(page, (state) => state.activeRun?.stage)).toBe("brief");
-  await page.unroute("**/src/games/adeeva/ui/screens/craft/CraftFlow.tsx*");
+  await page.unroute(CRAFT_FLOW_CHUNK);
   await failed.getByRole("button", { name: "Reload" }).click();
   await page.getByRole("button", { name: /^Continue/ }).click();
   await finishStories(page);

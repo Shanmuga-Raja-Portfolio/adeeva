@@ -1,7 +1,17 @@
 import { expect, test } from "@playwright/test";
 import { pourWithHelper } from "../fixtures/bakeBench";
 import { pipOrderAt } from "../fixtures/benchStates";
-import { openPreparedBench, savedBakery } from "../fixtures/preparedBakery";
+import type { GameState } from "../../src/games/patisserie/core";
+import { openPreparedBench, overwriteSavedBakery, savedBakery } from "../fixtures/preparedBakery";
+
+function withoutFlourHelp(state: GameState): GameState {
+  const run = state.activeRun;
+  const batch = run?.batches[0];
+  const flour = batch?.weighs.flour;
+  if (run === null || batch === undefined || flour === undefined) throw new Error("No kept flour");
+  const weighs = { ...batch.weighs, flour: { ...flour, assisted: false } };
+  return { ...state, activeRun: { ...run, batches: [{ ...batch, weighs }, ...run.batches.slice(1)] } };
+}
 
 test("a helped weigh stays helped when the scale helper is switched off", async ({ page }) => {
   await openPreparedBench(page, pipOrderAt("weigh"));
@@ -22,10 +32,12 @@ test("a helped weigh stays helped when the scale helper is switched off", async 
 
   await page.locator(".pa-weigh__item").first().click();
   await expect(page.getByTestId("weigh-station")).toHaveAttribute("data-ingredient", "flour");
+  await overwriteSavedBakery(page, await savedBakery(page, withoutFlourHelp));
   await page.getByTestId("keep-weigh").click();
   await expect(page.locator(".pa-weigh__item").first()).toContainText("80%");
-  await page.waitForTimeout(600);
-  expect(await savedBakery(page, (state) => state.activeRun?.batches[0]?.weighs.flour?.assisted)).toBe(true);
+  await expect
+    .poll(() => savedBakery(page, (state) => state.activeRun?.batches[0]?.weighs.flour?.assisted))
+    .toBe(true);
 });
 
 test("stirring with the arrow keys counts as a steady-spoon stir", async ({ page }) => {

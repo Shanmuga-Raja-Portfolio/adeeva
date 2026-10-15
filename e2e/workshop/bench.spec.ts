@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { afterNextFrame } from "../fixtures/frames";
 import { shooter } from "../fixtures/screens";
 import { reduce, seamLineAt } from "../../src/games/workshop/core";
 import { BIRDHOUSE_PLAN } from "../../src/games/workshop/core/testPlaythrough";
@@ -36,7 +37,7 @@ async function sewAlongTheLine(page: Page) {
     if (progress >= 1) break;
     const [point] = await svgToScreen(strip, [[120, yFor(seamLineAt(Math.min(1, progress + 0.012)))]]);
     if (point !== undefined) await page.mouse.move(point[0], point[1], { steps: 2 });
-    await page.waitForTimeout(25);
+    await afterNextFrame(page);
   }
   await page.mouse.up();
   await expect(page.getByText("The cushion seam is sewn. So cosy!")).toBeVisible();
@@ -65,7 +66,6 @@ for (const viewport of VIEWPORTS) {
       await expect(page.getByTestId("bench-hours")).toContainText("8 h");
       await page.getByTestId("deliver").click();
       await expect(page.getByTestId("results")).toBeVisible();
-      await page.waitForTimeout(2600);
       await shot("22-results-cafe");
       await page.getByTestId("results-exit").click();
       await finishWorkshopStories(page);

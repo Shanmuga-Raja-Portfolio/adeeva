@@ -2,18 +2,18 @@ import { expect, type Page } from "@playwright/test";
 import { centreOf } from "./patisseriePage";
 import { traceLegs, type TracePoint } from "./traceLegs";
 
-async function scaleGrams(page: Page): Promise<number> {
-  const label = (await page.locator(".pa-dial").getAttribute("aria-label")) ?? "";
-  const match = /shows (\d+)/.exec(label);
-  return match?.[1] === undefined ? 0 : Number(match[1]);
-}
-
 export async function pourByHand(page: Page, stopAt: number): Promise<void> {
   const pad = await centreOf(page.getByTestId("pour-pad"));
   await page.mouse.move(pad.x, pad.y);
   await page.mouse.down();
-  for (let guard = 0; guard < 200 && (await scaleGrams(page)) < stopAt; guard += 1)
-    await page.waitForTimeout(25);
+  await page.waitForFunction(
+    (grams) => {
+      const label = document.querySelector(".pa-dial")?.getAttribute("aria-label") ?? "";
+      return Number(/shows (\d+)/.exec(label)?.[1] ?? "0") >= grams;
+    },
+    stopAt,
+    { polling: "raf", timeout: 15_000 },
+  );
   await page.mouse.up();
   await expect(page.getByTestId("keep-weigh")).toBeEnabled();
 }

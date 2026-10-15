@@ -57,7 +57,7 @@ const GAME_INTERNALS_SOURCE = "^([.]{1,2}/)*[.][.]/(.*/)?games/[^/]+/(?!module$)
 const GAME_INTERNALS_MESSAGE = "The studio reaches a game only through its module.";
 
 export default tseslint.config(
-  { ignores: ["dist", "node_modules", "test-results*", "playwright-report"] },
+  { ignores: ["dist", "dist-e2e", "node_modules", "test-results*", "playwright-report"] },
   js.configs.recommended,
   ...tseslint.configs.strict,
   {

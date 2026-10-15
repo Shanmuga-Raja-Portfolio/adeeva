@@ -1,4 +1,5 @@
 import { expect, type Page } from "@playwright/test";
+import { afterNextFrame } from "./frames";
 import { centreOf, drag } from "./thriftPage";
 
 export async function scrollIntoView(page: Page, selector: string) {
@@ -59,7 +60,7 @@ export async function scrubOneStain(page: Page) {
   for (let turn = 0; turn < 40; turn += 1) {
     const angle = (turn / 8) * Math.PI * 2;
     await page.mouse.move(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius, { steps: 4 });
-    await page.waitForTimeout(16);
+    await afterNextFrame(page);
   }
   await page.mouse.up();
   await expect.poll(async () => Number(await scrubber.getAttribute("data-scrub-ticks"))).toBeGreaterThan(0);

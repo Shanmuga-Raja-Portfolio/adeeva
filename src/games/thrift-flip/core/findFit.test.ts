@@ -13,8 +13,8 @@ describe("the Fits table", () => {
     for (const keys of Object.values(FIND_FIT)) for (const key of keys) expect(ALL_FIT_KEYS).toContain(key);
   });
 
-  it("holds every ticked recipe on a single find, with either worn spot", () => {
-    for (const find of FINDS) {
+  for (const find of FINDS)
+    it(`holds every ticked recipe on one ${find.id} find, with either worn spot`, () => {
       for (const key of FIND_FIT[find.id]) {
         const design = designFor(key);
         if (design.recipeId === null) throw new Error(`Bad key ${key}`);
@@ -29,8 +29,7 @@ describe("the Fits table", () => {
           expect(layoutIssues(board, pieces, placements ?? {})).toEqual([]);
         }
       }
-    }
-  }, 60_000);
+    }, 60_000);
 
   it("marks the design doc's examples as not fitting", () => {
     expect(FIND_FIT["gingham-shirt"]).not.toContain("cushion-cover");

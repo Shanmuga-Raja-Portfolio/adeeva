@@ -120,7 +120,7 @@ test("Table Service plates by drag and keyboard, pours tea by hand and serves", 
   const pad = page.getByTestId("tea-pad");
   await pad.focus();
   await page.keyboard.down("Space");
-  await page.waitForTimeout(1600);
+  await expect(page.getByTestId("keep-tea")).toHaveText(/^Keep [1-9]\d* ml$/);
   await page.keyboard.up("Space");
   await expect(page.getByTestId("keep-tea")).toBeEnabled({ timeout: 10_000 });
   await page.getByTestId("keep-tea").click();

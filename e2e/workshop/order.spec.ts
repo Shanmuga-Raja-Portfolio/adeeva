@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { shooter } from "../fixtures/screens";
+import { tapMalletOnce } from "../fixtures/mallet";
 import {
   advance,
   centreOf,
@@ -11,6 +12,7 @@ import {
   tracePath,
   type ScreenPoint,
 } from "../fixtures/workshopPage";
+import { isOutsideRequest } from "../fixtures/outsideRequest";
 
 const VIEWPORTS = [
   { name: "desktop", width: 1280, height: 800 },
@@ -64,10 +66,7 @@ async function sawRestOnRail(page: Page) {
 }
 
 async function tapMallet(page: Page, taps: number) {
-  for (let tap = 0; tap < taps; tap += 1) {
-    await page.getByTestId("mallet").click();
-    await page.waitForTimeout(260);
-  }
+  for (let tap = 0; tap < taps; tap += 1) await tapMalletOnce(page, () => page.getByTestId("mallet").click());
 }
 
 async function joinFirstByHand(page: Page) {
@@ -126,9 +125,7 @@ for (const viewport of VIEWPORTS) {
         if (message.type() === "error") problems.push(message.text());
       });
       page.on("request", (request) => {
-        const url = new URL(request.url());
-        if (url.hostname !== "localhost" && url.protocol !== "data:" && url.protocol !== "blob:")
-          outside.push(request.url());
+        if (isOutsideRequest(request.url())) outside.push(request.url());
       });
       await page.goto("/");
       await page.evaluate(() => window.localStorage.clear());
@@ -223,7 +220,6 @@ for (const viewport of VIEWPORTS) {
       await expect(page.getByTestId("results")).toBeVisible();
       await expect(page.getByRole("heading", { name: "Grandpa Teodor loves it!" })).toBeVisible();
       await expect(page.getByTestId("reward-totals")).toContainText("rep");
-      await page.waitForTimeout(2600);
       await shot("16-results");
       await page.getByTestId("results-exit").click();
       await finishWorkshopStories(page);

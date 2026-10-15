@@ -143,16 +143,17 @@ function salonSeason(state: GameState, seed: number): GameState {
   return endDays(next, start + 14);
 }
 
+const BUSY_SEEDS = [11, 23, 37, 41, 59] as const;
+
 describe("depth economy (seeded simulation)", () => {
-  it("brings a busy decent Corner Baker to the parlour key in weeks 2 to 4, passing most orders", () => {
-    const runs = [11, 23, 37, 41, 59].map((seed) => bakeryWeeks(5, seed));
-    for (const run of runs) {
+  for (const seed of BUSY_SEEDS)
+    it(`brings a busy decent Corner Baker to the parlour key in weeks 2 to 4, passing most orders (seed ${seed})`, () => {
+      const run = bakeryWeeks(5, seed);
       expect(run.offerDay).not.toBeNull();
       expect(run.offerDay ?? 0).toBeGreaterThan(10);
       expect(run.offerDay ?? 99).toBeLessThanOrEqual(28);
       expect(run.passes / Math.max(1, run.orders)).toBeGreaterThanOrEqual(0.7);
-    }
-  });
+    });
 
   it("gives a decent salon season a fair share of a Corner Baker's two weeks", () => {
     const bakery = bakeryWeeks(5, 11).state;

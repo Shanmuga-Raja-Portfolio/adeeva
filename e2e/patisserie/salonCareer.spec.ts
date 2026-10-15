@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 import { bakeByHand, pourByHand, pourWithHelper, stirByHand, traceByHand } from "../fixtures/bakeBench";
 import { coins, dragBetween, finishBakeryStories, PATISSERIE_URL } from "../fixtures/patisseriePage";
+import { recordScenes } from "../fixtures/sceneLog";
+import { isOutsideRequest } from "../fixtures/outsideRequest";
 
 const THRESHOLD_V1 = readFileSync(
   new URL("../../src/games/patisserie/core/v1Saves/threshold.json", import.meta.url),
@@ -33,9 +35,7 @@ test("a Corner Baker at the threshold opens the Comet Room and takes a showpiece
   test.setTimeout(420_000);
   const outside: string[] = [];
   page.on("request", (request) => {
-    const url = new URL(request.url());
-    if (url.hostname !== "localhost" && url.protocol !== "data:" && url.protocol !== "blob:")
-      outside.push(request.url());
+    if (isOutsideRequest(request.url())) outside.push(request.url());
   });
   await page.goto("/");
   await page.evaluate((json) => {
@@ -156,8 +156,10 @@ test("a Corner Baker at the threshold opens the Comet Room and takes a showpiece
   const ribbon = await page.getByTestId("fair-ribbon").innerText();
   expect(ribbon).toMatch(/Ribbon|Rosette/);
   await expect(page.locator("main h1")).toBeFocused();
+  const replayed = await recordScenes(page, "fair-showcase");
   await page.getByTestId("replay-showcase").click();
-  await expect(showcase).toHaveAttribute("data-scene", "title");
+  await expect(showcase).toBeVisible();
+  await expect.poll(async () => (await replayed())[0]).toBe("title");
   await expect(page.getByTestId("skip-showcase")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByTestId("fair-results")).toBeVisible();

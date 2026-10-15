@@ -3,6 +3,7 @@ import { shooter } from "../fixtures/screens";
 import { finishStories } from "../fixtures/story";
 import { advance, centreOf, coinsIn, drag, svgToScreen } from "../fixtures/thriftPage";
 import { scrollIntoView, scrubOneStain, sewSeams, snipStitches } from "../fixtures/thriftBench";
+import { isOutsideRequest } from "../fixtures/outsideRequest";
 
 const VIEWPORTS = [
   { name: "desktop", width: 1280, height: 800 },
@@ -25,9 +26,7 @@ for (const viewport of VIEWPORTS) {
         if (message.type() === "error" || message.type() === "warning") problems.push(message.text());
       });
       page.on("request", (request) => {
-        const url = new URL(request.url());
-        if (url.hostname !== "localhost" && url.protocol !== "data:" && url.protocol !== "blob:")
-          outside.push(request.url());
+        if (isOutsideRequest(request.url())) outside.push(request.url());
       });
       await page.goto("/");
       await page.evaluate(() => window.localStorage.clear());
@@ -198,7 +197,6 @@ for (const viewport of VIEWPORTS) {
       await expect(results).toBeVisible();
       await expect(results.locator(".tf-criterion")).toHaveCount(8);
       await expect(page.getByTestId("before-after")).toBeVisible();
-      await page.waitForTimeout(1200);
       await shot("22-results");
       await shot("23-results-full", true);
       await page.getByTestId("results-exit").click();

@@ -6,7 +6,7 @@ import {
   playTray,
   settleStories,
 } from "../../src/games/patisserie/core/testPlaythrough";
-import { openPreparedBakery } from "../fixtures/preparedBakery";
+import { openPreparedBakery, savedBakery } from "../fixtures/preparedBakery";
 
 function counterDayWithTray(): GameState {
   const stocked = playTray(settleStories(newTestGame()), {
@@ -23,7 +23,7 @@ test("a baker who leaves Counter Day early can walk back to the counter", async 
   await openPreparedBakery(page, counterDayWithTray());
   await page.getByRole("button", { name: "Open the counter" }).click();
   await expect(page.getByTestId("counter-day")).toBeVisible();
-  await page.waitForTimeout(600);
+  await expect.poll(() => savedBakery(page, (state) => state.counter.session !== null)).toBe(true);
   await page.reload();
   await page.getByRole("button", { name: /^Continue/ }).click();
   await expect(page.getByTestId("bakery-hub")).toBeVisible();

@@ -1,13 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
 import { ADEEVA_URL } from "./fixtures/adeevaPage";
 import { finishStories } from "./fixtures/story";
+import { isOutsideRequest } from "./fixtures/outsideRequest";
 
 function watchOutsideRequests(page: Page): string[] {
   const outside: string[] = [];
   page.on("request", (request) => {
-    const url = new URL(request.url());
-    const local = url.hostname === "localhost" || url.hostname === "127.0.0.1";
-    if (!local && url.protocol !== "data:" && url.protocol !== "blob:") outside.push(request.url());
+    if (isOutsideRequest(request.url())) outside.push(request.url());
   });
   return outside;
 }
@@ -91,13 +90,14 @@ test("the avatar made in ADEEVA appears on the home screen and comes back pre-fi
 
 test("the parent page shows the promise, playtime and how to clear saves", async ({ page }) => {
   const outside = watchOutsideRequests(page);
+  await page.clock.install();
   await freshStudio(page);
   await page.getByRole("link", { name: "Parent page" }).click();
   await expect(page.getByTestId("playtime-adeeva")).toContainText("Not played yet");
 
   await page.goto(ADEEVA_URL);
   await makeDesigner(page, "Ada");
-  await page.waitForTimeout(1500);
+  await page.clock.fastForward(1500);
   await page.getByRole("button", { name: "Save & exit" }).click();
   await page.getByRole("button", { name: "Back to studio" }).click();
   await page.getByRole("link", { name: "Parent page" }).click();

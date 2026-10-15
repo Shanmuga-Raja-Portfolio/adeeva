@@ -4,19 +4,27 @@ import { polygonBounds } from "./polygonPlacement";
 import { triangulate, type Triangle } from "./triangulate";
 
 function edgeNormals(polygon: readonly Point[]): Point[] {
-  return polygon.flatMap((start, index): Point[] => {
+  const normals: Point[] = [];
+  polygon.forEach((start, index) => {
     const end = polygon[(index + 1) % polygon.length];
-    if (end === undefined) return [];
+    if (end === undefined) return;
     const dx = end[0] - start[0];
     const dy = end[1] - start[1];
     const length = Math.hypot(dx, dy);
-    return length === 0 ? [] : [[-dy / length, dx / length]];
+    if (length !== 0) normals.push([-dy / length, dx / length]);
   });
+  return normals;
 }
 
 function projection(polygon: readonly Point[], axis: Point): [number, number] {
-  const values = polygon.map(([x, y]) => x * axis[0] + y * axis[1]);
-  return [Math.min(...values), Math.max(...values)];
+  let min = Infinity;
+  let max = -Infinity;
+  for (const [x, y] of polygon) {
+    const value = x * axis[0] + y * axis[1];
+    min = Math.min(min, value);
+    max = Math.max(max, value);
+  }
+  return [min, max];
 }
 
 function boundsOverlap(a: readonly Point[], b: readonly Point[]): boolean {
@@ -31,11 +39,12 @@ function boundsOverlap(a: readonly Point[], b: readonly Point[]): boolean {
 }
 
 export function convexPolygonsOverlap(a: readonly Point[], b: readonly Point[]): boolean {
-  return [...edgeNormals(a), ...edgeNormals(b)].every((axis) => {
+  const separates = (axis: Point) => {
     const [minA, maxA] = projection(a, axis);
     const [minB, maxB] = projection(b, axis);
-    return maxA - minB > OVERLAP_EPSILON && maxB - minA > OVERLAP_EPSILON;
-  });
+    return !(maxA - minB > OVERLAP_EPSILON && maxB - minA > OVERLAP_EPSILON);
+  };
+  return !edgeNormals(a).some(separates) && !edgeNormals(b).some(separates);
 }
 
 export function polygonsOverlap(a: readonly Point[], b: readonly Point[]): boolean {

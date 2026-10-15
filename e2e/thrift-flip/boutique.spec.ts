@@ -10,6 +10,7 @@ import { shooter } from "../fixtures/screens";
 import { finishStories } from "../fixtures/story";
 import { scrollIntoView, scrubOneStain, sewSeams, snipStitches } from "../fixtures/thriftBench";
 import { advance, centreOf, coinsIn, drag, svgToScreen } from "../fixtures/thriftPage";
+import { isOutsideRequest } from "../fixtures/outsideRequest";
 
 const VIEWPORTS = [
   { name: "desktop", width: 1280, height: 800 },
@@ -20,9 +21,7 @@ function watchPage(page: Page): { readonly outside: string[]; readonly problems:
   const outside: string[] = [];
   const problems: string[] = [];
   page.on("request", (request) => {
-    const url = new URL(request.url());
-    if (url.hostname !== "localhost" && url.protocol !== "data:" && url.protocol !== "blob:")
-      outside.push(request.url());
+    if (isOutsideRequest(request.url())) outside.push(request.url());
   });
   page.on("pageerror", (error) => problems.push(String(error)));
   page.on("console", (message) => {
@@ -73,7 +72,6 @@ for (const viewport of VIEWPORTS) {
       await shot("b03-sign-picker");
       await page.getByTestId("confirm-sign").click();
       await expect(page.locator(".ad-story__title")).toHaveText("The New Sign");
-      await page.waitForTimeout(400);
       await shot("b04-new-sign-beat");
       await finishStories(page);
       await expect(hub).toHaveAttribute("data-career", "boutique");
@@ -123,7 +121,6 @@ for (const viewport of VIEWPORTS) {
       await page.getByTestId("deliver").click();
       await expect(page.getByTestId("results")).toBeVisible();
       await expect(page.getByTestId("results").locator(".tf-criterion")).toHaveCount(8);
-      await page.waitForTimeout(1200);
       await shot("b12-ticket-results");
       await page.getByTestId("results-exit").click();
       await finishStories(page);
@@ -210,7 +207,6 @@ for (const viewport of VIEWPORTS) {
       await expect(results).toBeVisible();
       await expect(page.getByTestId("rosette-name")).toBeFocused();
       await expect(results.locator(".ad-jury")).toHaveCount(3);
-      await page.waitForTimeout(2200);
       await shot("b18-showcase-results");
       await shot("b19-showcase-results-full", true);
       await page.getByTestId("showcase-done").click();
@@ -305,7 +301,6 @@ for (const viewport of VIEWPORTS) {
       }
       await page.getByTestId("hold-stall").click();
       await expect(page.getByTestId("stall-result").locator(".tf-sale--fair")).toHaveCount(3);
-      await page.waitForTimeout(900);
       await shot("b25-till-result", true);
       await page.getByTestId("stall-done").click();
       expect(watch.outside).toEqual([]);

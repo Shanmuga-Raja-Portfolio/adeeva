@@ -11,6 +11,7 @@ import {
   setStoneByHand,
   warmByHand,
 } from "../fixtures/jewelleryBench";
+import { isOutsideRequest } from "../fixtures/outsideRequest";
 
 test("a new jeweller makes Gran Mina's pendant by hand, delivers it, then saves and continues", async ({
   page,
@@ -18,9 +19,7 @@ test("a new jeweller makes Gran Mina's pendant by hand, delivers it, then saves 
   test.setTimeout(300_000);
   const outside: string[] = [];
   page.on("request", (request) => {
-    const url = new URL(request.url());
-    if (url.hostname !== "localhost" && url.protocol !== "data:" && url.protocol !== "blob:")
-      outside.push(request.url());
+    if (isOutsideRequest(request.url())) outside.push(request.url());
   });
   await freshJewellery(page);
 

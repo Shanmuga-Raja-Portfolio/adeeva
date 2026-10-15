@@ -26,3 +26,7 @@ export async function savedBakery<T>(page: Page, pick: (state: GameState) => T):
   if (raw === null) throw new Error("Slot 1 is empty");
   return pick(JSON.parse(raw) as GameState);
 }
+
+export async function overwriteSavedBakery(page: Page, state: GameState): Promise<void> {
+  await page.evaluate((json) => window.localStorage.setItem("patisserie.save.1", json), serialize(state));
+}

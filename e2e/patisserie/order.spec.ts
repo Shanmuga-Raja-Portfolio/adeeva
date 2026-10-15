@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { bakeByHand, pourByHand, pourWithHelper, stirByHand, traceByHand } from "../fixtures/bakeBench";
 import { coins, dragBetween, finishBakeryStories, freshPatisserie } from "../fixtures/patisseriePage";
+import { isOutsideRequest } from "../fixtures/outsideRequest";
 
 test("a new baker takes Pip's order through every step by hand, then saves and continues", async ({
   page,
@@ -8,9 +9,7 @@ test("a new baker takes Pip's order through every step by hand, then saves and c
   test.setTimeout(240_000);
   const outside: string[] = [];
   page.on("request", (request) => {
-    const url = new URL(request.url());
-    if (url.hostname !== "localhost" && url.protocol !== "data:" && url.protocol !== "blob:")
-      outside.push(request.url());
+    if (isOutsideRequest(request.url())) outside.push(request.url());
   });
   await freshPatisserie(page);
 

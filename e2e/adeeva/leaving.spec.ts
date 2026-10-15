@@ -58,6 +58,8 @@ test("leaving while the browser refuses to save says so on the way out", async (
   });
   await acceptFirstOffer(page);
   await leaveByHash(page);
-  await expect(page.locator(".ad-toast--warning")).toContainText("We couldn't save your last few moments");
+  await expect(
+    page.locator(".ad-toast--warning").filter({ hasText: "We couldn't save your last few moments" }),
+  ).toBeVisible();
   expect(await savedState(page, (state) => state.gigs.active.length)).toBe(0);
 });

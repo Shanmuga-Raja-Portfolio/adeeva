@@ -1,4 +1,6 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { settle } from "./settle";
+import { isOutsideRequest } from "./outsideRequest";
 
 export const INTERIOR_URL = "/#/interior";
 
@@ -7,9 +9,7 @@ type Pair = readonly [number, number];
 export function watchOutsideRequests(page: Page): string[] {
   const outside: string[] = [];
   page.on("request", (request) => {
-    const url = new URL(request.url());
-    const local = url.hostname === "localhost" || url.hostname === "127.0.0.1";
-    if (!local && url.protocol !== "data:" && url.protocol !== "blob:") outside.push(request.url());
+    if (isOutsideRequest(request.url())) outside.push(request.url());
   });
   return outside;
 }
@@ -64,17 +64,6 @@ export async function toScreen(svg: Locator, points: readonly Pair[]): Promise<P
       return [point.x, point.y] as [number, number];
     });
   }, points);
-}
-
-export async function settle(page: Page): Promise<void> {
-  await page.evaluate(() =>
-    Promise.all(
-      document
-        .getAnimations()
-        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
-        .map((animation) => animation.finished.catch(() => undefined)),
-    ),
-  );
 }
 
 export async function dragPath(page: Page, route: readonly Pair[], pause = 0): Promise<void> {
