@@ -7,6 +7,7 @@ import {
   designActions,
   lastGigId,
   newTestGame,
+  productShape,
   runOf,
   settleStories,
   withActiveGig,
@@ -34,9 +35,9 @@ describe("the timber yard", () => {
   });
 
   it("knows the typical boards for every plan", () => {
-    expect(planBoards("birdhouse")).toEqual({ short: 0, long: 1, panel: 0 });
-    expect(planBoards("toy-chest")).toEqual({ short: 0, long: 0, panel: 3 });
-    expect(planBoards("window-bench")).toEqual({ short: 0, long: 3, panel: 1 });
+    expect(planBoards(productShape("birdhouse"))).toEqual({ short: 0, long: 1, panel: 0 });
+    expect(planBoards(productShape("toy-chest"))).toEqual({ short: 0, long: 0, panel: 3 });
+    expect(planBoards(productShape("window-bench"))).toEqual({ short: 0, long: 3, panel: 1 });
   });
 
   it("charges one hour per trip, however many boards you buy", () => {

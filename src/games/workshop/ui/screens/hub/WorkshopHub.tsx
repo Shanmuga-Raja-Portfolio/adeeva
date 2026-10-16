@@ -6,22 +6,30 @@ import { Card } from "../../../../../ui/kit/Card";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { useDispatchOnce, type ClickLike } from "../../../../../ui/kit/useDispatchOnce";
 import type { DecorId } from "../../../content/decor";
+import type { FairThemeId } from "../../../content/fairTheme";
+import type { SetTemplateId } from "../../../content/setTemplate";
 import { SAFETY_LINE } from "../../../content/hint";
 import type { UpgradeId } from "../../../content/upgrade";
 import {
   clientById,
+  coachOn,
   currentBeat,
   decorById,
+  fairThemeById,
   MAX_ACTIVE_GIGS,
   offersFor,
   productById,
+  setAsideIssue,
+  setTemplateById,
   upgradeById,
   type Action,
+  type CommissionRun,
   type GameState,
 } from "../../../core";
 import { CoachBubble } from "../CoachBubble";
 import { SetAsideDialog } from "../SetAsideDialog";
 import { StoryOverlay } from "../story/StoryOverlay";
+import { BenchTourCard } from "./BenchTourCard";
 import { BoardRack } from "./BoardRack";
 import { daySummary, type DayEndKind } from "./daySummary";
 import { DayTransition } from "./DayTransition";
@@ -30,19 +38,33 @@ import { HubHero } from "./HubHero";
 import { HubTopBar } from "./HubTopBar";
 import { JobCard } from "./JobCard";
 import { OfferNote } from "./OfferNote";
+import { RenCard } from "./RenCard";
+import { RosetteRailCard } from "./RosetteRailCard";
+import { SeasonCard } from "./SeasonCard";
+import { SetTemplatesCard } from "./SetTemplatesCard";
+import { ShowroomFloorCard } from "./ShowroomFloorCard";
+import { ShowroomOfferCard } from "./ShowroomOfferCard";
 import { TrendsBoard } from "./TrendsBoard";
 import { UpgradesPanel } from "./UpgradesPanel";
 import "./hub.css";
+import "./showroom.css";
 
 interface WorkshopHubProps {
   readonly state: GameState;
   readonly dispatch: (action: Action) => boolean;
   readonly onOpenBuild: () => void;
+  readonly onOpenFair: () => void;
+  readonly onOpenFloor: () => void;
   readonly onOpenSettings: () => void;
   readonly onExitToTitle: () => void;
 }
 
 const TILTS = [-2.4, 1.8, -1.2, 2.6];
+
+function benchTitle(run: CommissionRun): string {
+  if (run.purpose.kind === "set") return setTemplateById(run.purpose.templateId).name;
+  return run.design.productId === null ? "A piece in progress" : productById(run.design.productId).name;
+}
 
 function coachLine(state: GameState): string {
   if (state.gigs.active.length === 0) return "A note is pinned to the door! Tap Accept.";
@@ -53,6 +75,8 @@ export function WorkshopHub({
   state,
   dispatch,
   onOpenBuild,
+  onOpenFair,
+  onOpenFloor,
   onOpenSettings,
   onExitToTitle,
 }: WorkshopHubProps) {
@@ -88,6 +112,20 @@ export function WorkshopHub({
     const action: Action = { type: kind === "shift" ? "workShift" : "endDay" };
     if (once(event, action)) setEnding({ from, kind });
   };
+  const startSet = (event: ClickLike, templateId: SetTemplateId) => {
+    if (once(event, { type: "startSet", templateId })) onOpenBuild();
+  };
+  const chooseTheme = (event: ClickLike, themeId: FairThemeId) => {
+    if (once(event, { type: "chooseFairTheme", themeId }))
+      toast(`${fairThemeById(themeId).name} it is! The Fair Board is ready.`);
+  };
+  const rest = (event: ClickLike) => {
+    if (once(event, { type: "restShowroom" }))
+      toast("The shop rests this season. Rent is just the garage.", "info");
+  };
+  const openShowroom = (event: ClickLike) => {
+    once(event, { type: "openShowroom" });
+  };
   const setAside = () => {
     setSettingAside(false);
     if (dispatch({ type: "setAside" })) toast("The piece is set aside. Your workbench is clear.", "info");
@@ -103,7 +141,12 @@ export function WorkshopHub({
             onWorkShift={(event) => endDay(event, "shift")}
             onEndDay={(event) => endDay(event, "rest")}
           />
-          <CoachBubble show={state.delivered === 0 && onBench === null} text={coachLine(state)} />
+          <CoachBubble show={coachOn(state) && onBench === null} text={coachLine(state)} />
+          <BenchTourCard state={state} dispatch={dispatch} />
+          <ShowroomOfferCard state={state} onOpen={openShowroom} />
+          {state.career === "showroom" ? (
+            <ShowroomFloorCard state={state} dispatch={dispatch} onArrange={onOpenFloor} />
+          ) : null}
           <div className="ww-hub__grid">
             <section className="ww-door" aria-labelledby="ww-door-title">
               <header className="ww-door__header">
@@ -134,18 +177,19 @@ export function WorkshopHub({
                 <Card
                   tone="gold"
                   eyebrow="On the workbench"
-                  title={
-                    onBench.design.productId === null
-                      ? "A piece in progress"
-                      : productById(onBench.design.productId).name
-                  }
+                  title={benchTitle(onBench)}
                   className="ww-hub-card"
                 >
                   <div className="ww-hub__bench">
                     <Button onClick={onOpenBuild} icon="sparkle">
                       Back to the workbench
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => setSettingAside(true)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSettingAside(true)}
+                      disabledReason={setAsideIssue(state) ?? undefined}
+                    >
                       Set aside
                     </Button>
                   </div>
@@ -172,9 +216,13 @@ export function WorkshopHub({
                   </div>
                 )}
               </Card>
+              <SetTemplatesCard state={state} onStart={startSet} />
               <BoardRack state={state} />
             </div>
             <div className="ww-hub__column">
+              <SeasonCard state={state} onTheme={chooseTheme} onRest={rest} onFair={onOpenFair} />
+              <RenCard state={state} dispatch={dispatch} />
+              <RosetteRailCard state={state} />
               <TrendsBoard state={state} />
               <UpgradesPanel state={state} onBuy={buyUpgrade} />
               <DecorPanel state={state} onBuy={buyDecor} />
@@ -186,7 +234,11 @@ export function WorkshopHub({
         </main>
       </div>
       {ending !== null ? (
-        <DayTransition summary={daySummary(ending.from, state, ending.kind)} onDone={() => setEnding(null)} />
+        <DayTransition
+          summary={daySummary(ending.from, state, ending.kind)}
+          opener={state.career === "showroom" ? "Open the shop" : "Open the garage"}
+          onDone={() => setEnding(null)}
+        />
       ) : null}
       {beat !== null ? <StoryOverlay state={state} dispatch={dispatch} /> : null}
       <SetAsideDialog open={settingAside} onConfirm={setAside} onClose={() => setSettingAside(false)} />

@@ -1,6 +1,6 @@
 import { Button } from "../../../../../ui/kit/Button";
 import { COACH_HINTS } from "../../../content/hint";
-import type { Action, CommissionRun, GameState } from "../../../core";
+import { coachOn, type Action, type CommissionRun, type GameState } from "../../../core";
 import { CoachBubble } from "../CoachBubble";
 import { BriefChecklist } from "./BriefChecklist";
 import { BriefStage } from "./BriefStage";
@@ -13,9 +13,12 @@ import { ResultsStage } from "./results/ResultsStage";
 import { ReviewStage } from "./review/ReviewStage";
 import { SandStage } from "./sand/SandStage";
 import { SawStage } from "./saw/SawStage";
+import { SetResults } from "./set/SetResults";
+import { SetReview } from "./set/SetReview";
 import { StageRail } from "./StageRail";
 import { TimberStage } from "./timber/TimberStage";
 import "./build.css";
+import "./set/set.css";
 
 interface BuildFlowProps {
   readonly state: GameState;
@@ -42,9 +45,9 @@ function StageView(props: BuildFlowProps & { readonly run: CommissionRun }) {
     case "finish":
       return <FinishStage {...props} />;
     case "review":
-      return <ReviewStage {...props} />;
+      return props.run.purpose.kind === "set" ? <SetReview {...props} /> : <ReviewStage {...props} />;
     case "done":
-      return <ResultsStage {...props} />;
+      return props.run.purpose.kind === "set" ? <SetResults {...props} /> : <ResultsStage {...props} />;
   }
 }
 
@@ -71,7 +74,7 @@ export function BuildFlow({ state, dispatch, onExit }: BuildFlowProps) {
     <main className="ww-build ad-screen" data-stage={run.stage}>
       <BuildHeader state={state} run={run} dispatch={dispatch} onExit={onExit} />
       <StageRail state={state} run={run} dispatch={dispatch} />
-      {hint !== undefined ? <CoachBubble show={state.delivered === 0} text={hint} /> : null}
+      {hint !== undefined ? <CoachBubble show={coachOn(state)} text={hint} /> : null}
       <div className="ww-build__body">
         <section className="ww-build__stage" key={run.stage} aria-label={`${run.stage} step`}>
           <StageView state={state} run={run} dispatch={dispatch} onExit={onExit} />

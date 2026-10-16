@@ -7,6 +7,7 @@ export function decorIssues(state: GameState, decorId: string, paint: ColourId |
   if (!isDecorId(decorId)) return ["That decoration does not exist."];
   const decor = decorById(decorId);
   const issues: string[] = [];
+  if (decor.showroomOnly && state.career !== "showroom") issues.push(`${decor.name} is for the showroom.`);
   if (state.decor.some((owned) => owned.id === decorId)) issues.push(`${decor.name} is already up.`);
   if (decor.takesPaint !== (paint !== null))
     issues.push(decor.takesPaint ? "Pick a paint colour." : "No paint needed.");

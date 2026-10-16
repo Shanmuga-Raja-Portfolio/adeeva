@@ -1,16 +1,21 @@
 import type { AvatarLook } from "../../../../../engine/avatar";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
+import { REN } from "../../../content/apprentice";
 import { CLIENTS } from "../../../content/client";
+import { BRAM_LOOK, FAIR_PANELS } from "../../../content/panelMember";
 
-const BRAM_LOOK: AvatarLook = {
-  skinTone: "chestnut",
-  hairStyle: "short-bob",
-  hairColour: "platinum",
-  outfit: "denim-jacket",
+const EXTRA_SPEAKERS: Readonly<Record<string, AvatarLook>> = {
+  "Uncle Bram": BRAM_LOOK,
+  Ren: REN.look,
+  Kit: { skinTone: "honey", hairStyle: "pixie", hairColour: "ocean-teal", outfit: "denim-jacket" },
+  Zara: { skinTone: "cocoa", hairStyle: "curly-puff", hairColour: "pastel-pink", outfit: "dungarees" },
 };
 
 function speakerLook(speaker: string): AvatarLook | null {
-  if (speaker === "Uncle Bram") return BRAM_LOOK;
+  const known = Object.hasOwn(EXTRA_SPEAKERS, speaker) ? EXTRA_SPEAKERS[speaker] : undefined;
+  if (known !== undefined) return known;
+  const member = FAIR_PANELS.flatMap((panel) => panel.members).find((entry) => entry.name === speaker);
+  if (member !== undefined) return member.look;
   return CLIENTS.find((client) => client.name === speaker)?.look ?? null;
 }
 

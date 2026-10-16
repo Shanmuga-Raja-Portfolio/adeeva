@@ -10,5 +10,7 @@ function boardSpend(state: GameState, run: CommissionRun): number {
 }
 
 export function runSpend(state: GameState, run: CommissionRun): number {
-  return boardSpend(state, run) + finishPrice(run.finish) + extrasPrice(run) + cushionPrice(run.cushion);
+  return (
+    boardSpend(state, run) + finishPrice(run, run.finish) + extrasPrice(run) + cushionPrice(run, run.cushion)
+  );
 }

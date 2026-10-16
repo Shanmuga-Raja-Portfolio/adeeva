@@ -145,6 +145,12 @@ for (const viewport of VIEWPORTS) {
       await page.getByRole("radio", { name: "Perfectionist" }).click();
       await shot("03-new-game-trait");
       await page.getByRole("button", { name: "Next" }).click();
+      await expect(page.getByRole("radio", { name: /Garage Workshop/ })).toHaveAttribute(
+        "aria-checked",
+        "true",
+      );
+      await shot("03b-new-game-career");
+      await page.getByRole("button", { name: "Next" }).click();
       await page.getByRole("radio", { name: "Relaxed" }).click();
       await shot("04-new-game-difficulty");
       await page.getByRole("button", { name: "Open the garage" }).click();

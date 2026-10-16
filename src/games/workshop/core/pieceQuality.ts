@@ -1,11 +1,19 @@
 import { average } from "../../../engine/average";
 import { NEUTRAL_TAG } from "../content/woodTag";
-import { woodById } from "./catalog";
+import { productById, woodById } from "./catalog";
 import type { CommissionRun } from "./commissionRun";
 import { cushionSeamAccuracy } from "./cushion";
 import type { GameState } from "./gameState";
 import { runJointAccuracy, seatedJointCount } from "./joint";
-import { designJoints, designParts, designSurfaces } from "./pieceParts";
+import {
+  designJoints,
+  designParts,
+  designSurfaces,
+  partsOfPiece,
+  runPieces,
+  type RunJoint,
+  type RunPart,
+} from "./pieceParts";
 import { sandedSurfaceCount, surfaceScores } from "./sanding";
 import { runSawAccuracy, sawnPartCount } from "./sawRecord";
 import { runGrain } from "./woodGrain";
@@ -37,17 +45,49 @@ function woodFits(run: CommissionRun): boolean {
   return tags.includes(NEUTRAL_TAG) || run.brief.requiredTags.some((tag) => tags.includes(tag));
 }
 
-function runSandAccuracy(run: CommissionRun): number {
-  const seam = cushionSeamAccuracy(run.cushion);
-  const scores = [...surfaceScores(run), ...(seam === null ? [] : [seam])];
+interface RunScope {
+  readonly parts: readonly RunPart[];
+  readonly joints: readonly RunJoint[];
+  readonly surfaces: readonly RunPart[];
+  readonly seat: boolean;
+}
+
+function runScope(run: CommissionRun, piece: number | null): RunScope {
+  const parts = designParts(run);
+  const joints = designJoints(run);
+  const surfaces = designSurfaces(run);
+  if (piece === null)
+    return {
+      parts,
+      joints,
+      surfaces,
+      seat: runPieces(run).some((entry) => productById(entry.productId).seat),
+    };
+  const product = runPieces(run).find((entry) => entry.index === piece)?.productId;
+  return {
+    parts: partsOfPiece(parts, piece),
+    joints: partsOfPiece(joints, piece),
+    surfaces: partsOfPiece(surfaces, piece),
+    seat: product !== undefined && productById(product).seat,
+  };
+}
+
+function runSandAccuracy(run: CommissionRun, scope: RunScope): number {
+  const seam = scope.seat ? cushionSeamAccuracy(run.cushion) : null;
+  const scores = [...surfaceScores(run, scope.surfaces), ...(seam === null ? [] : [seam])];
   return scores.length === 0 ? 0 : average(scores);
 }
 
-export function pieceQuality(state: GameState, run: CommissionRun): QualityBreakdown {
-  const saw = runSawAccuracy(state, run);
-  const join = runJointAccuracy(run);
-  const sand = runSandAccuracy(run);
-  const grain = runGrain(run);
+export function pieceQuality(
+  state: GameState,
+  run: CommissionRun,
+  piece: number | null = null,
+): QualityBreakdown {
+  const scope = runScope(run, piece);
+  const saw = runSawAccuracy(state, run, scope.parts);
+  const join = runJointAccuracy(run, scope.joints);
+  const sand = runSandAccuracy(run, scope);
+  const grain = runGrain(run, scope.parts);
   const woodFit = woodFits(run) ? 1 : 0;
   const weights = QUALITY_WEIGHTS;
   const raw =
@@ -60,13 +100,14 @@ export function pieceQuality(state: GameState, run: CommissionRun): QualityBreak
 }
 
 export function constructionCount(state: GameState, run: CommissionRun): ConstructionCount {
+  const scope = runScope(run, null);
   return {
-    parts: designParts(run.design).length,
-    sawn: sawnPartCount(state, run),
-    joints: designJoints(run.design).length,
-    seated: seatedJointCount(run),
-    surfaces: designSurfaces(run.design).length,
-    sanded: sandedSurfaceCount(run),
+    parts: scope.parts.length,
+    sawn: sawnPartCount(state, run, scope.parts),
+    joints: scope.joints.length,
+    seated: seatedJointCount(run, scope.joints),
+    surfaces: scope.surfaces.length,
+    sanded: sandedSurfaceCount(run, scope.surfaces),
   };
 }
 

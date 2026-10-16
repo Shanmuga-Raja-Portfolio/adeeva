@@ -3,7 +3,7 @@ import type { Point } from "../../../engine/geometry/point";
 import { recordWithout } from "../../../engine/recordWithout";
 import type { CommissionRun, SandRecord } from "./commissionRun";
 import type { GameState } from "./gameState";
-import { designSurfaces } from "./pieceParts";
+import { designSurfaces, type RunPart } from "./pieceParts";
 import { sandAngleLimit } from "./tolerance";
 
 export const SAND_CANVAS = { width: 320, height: 160 } as const;
@@ -24,6 +24,7 @@ export const EMPTY_SAND: SandRecord = {
   strokes: 0,
   across: 0,
   assisted: false,
+  renAccuracy: null,
 };
 
 interface SandStroke {
@@ -158,6 +159,7 @@ export function applyStrokes(
     strokes: record.strokes + strokes.length,
     across: record.across + strokes.filter((stroke) => !stroke.along).length,
     assisted: record.assisted || assisted,
+    renAccuracy: record.renAccuracy,
   };
 }
 
@@ -172,6 +174,7 @@ export function crossShare(record: SandRecord): number {
 }
 
 export function surfaceScore(record: SandRecord): number {
+  if (record.renAccuracy !== null) return record.renAccuracy;
   const score = surfaceSmooth(record) * (1 - 0.5 * crossShare(record));
   return record.assisted ? Math.min(ASSIST_SAND_CAP, score) : score;
 }
@@ -181,6 +184,7 @@ export function isSurfaceWornOut(record: SandRecord): boolean {
 }
 
 export function isSurfaceDone(record: SandRecord): boolean {
+  if (record.renAccuracy !== null) return true;
   return record.passes.every((passes) => passes >= 1) && surfaceSmooth(record) >= SAND_DONE_SMOOTH;
 }
 
@@ -213,8 +217,9 @@ export function sandDrag(
   if (!wellFormed(points)) return state;
   const limit = sandAngleLimit(state);
   return updateActiveRun(state, "sand", (run) => {
-    if (!designSurfaces(run.design).some((part) => part.id === surfaceId)) return null;
+    if (!designSurfaces(run).some((part) => part.id === surfaceId)) return null;
     const before = sandRecordOf(run, surfaceId);
+    if (before.renAccuracy !== null) return null;
     if (isSurfaceDone(before) && before.passes.every((passes) => passes >= MAX_PASSES)) return null;
     const strokes = sandStrokes(points, limit, assisted).slice(0, Math.max(0, MAX_STROKES - before.strokes));
     if (strokes.length === 0) return null;
@@ -223,15 +228,23 @@ export function sandDrag(
 }
 
 export function resetSurface(state: GameState, surfaceId: string): GameState {
-  return updateActiveRun(state, "sand", (run) =>
-    Object.hasOwn(run.sanding, surfaceId) ? { ...run, sanding: recordWithout(run.sanding, surfaceId) } : null,
-  );
+  return updateActiveRun(state, "sand", (run) => {
+    const record = Object.hasOwn(run.sanding, surfaceId) ? run.sanding[surfaceId] : undefined;
+    if (record === undefined || record.renAccuracy !== null) return null;
+    return { ...run, sanding: recordWithout(run.sanding, surfaceId) };
+  });
 }
 
-export function surfaceScores(run: CommissionRun): number[] {
-  return designSurfaces(run.design).map((part) => surfaceScore(sandRecordOf(run, part.id)));
+export function surfaceScores(
+  run: CommissionRun,
+  surfaces: readonly RunPart[] = designSurfaces(run),
+): number[] {
+  return surfaces.map((part) => surfaceScore(sandRecordOf(run, part.id)));
 }
 
-export function sandedSurfaceCount(run: CommissionRun): number {
-  return designSurfaces(run.design).filter((part) => isSurfaceDone(sandRecordOf(run, part.id))).length;
+export function sandedSurfaceCount(
+  run: CommissionRun,
+  surfaces: readonly RunPart[] = designSurfaces(run),
+): number {
+  return surfaces.filter((part) => isSurfaceDone(sandRecordOf(run, part.id))).length;
 }

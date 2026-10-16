@@ -14,6 +14,12 @@ export const PART_OPTION_IDS = [
   "star-cutout",
   "leaf-cutout",
   "slats",
+  "clipped-corners",
+  "scallop-edge",
+  "block-legs",
+  "sled-legs",
+  "heart-cutout",
+  "moon-cutout",
 ] as const;
 export type PartOptionId = (typeof PART_OPTION_IDS)[number];
 
@@ -66,6 +72,48 @@ export const PART_OPTIONS: readonly PartOptionDef[] = [
   { id: "star-cutout", slot: "accent", name: "Star cut-out", tags: ["playful"], sawNote: "A pointy star" },
   { id: "leaf-cutout", slot: "accent", name: "Leaf cut-out", tags: ["natural"], sawNote: "A curvy leaf" },
   { id: "slats", slot: "accent", name: "Slatted panel", tags: ["modern"], sawNote: "Three extra lines" },
+  {
+    id: "clipped-corners",
+    slot: "edge",
+    name: "Clipped corners",
+    tags: ["modern", "classic"],
+    sawNote: "Four short corner cuts",
+  },
+  {
+    id: "scallop-edge",
+    slot: "edge",
+    name: "Scalloped edge",
+    tags: ["playful", "cosy"],
+    sawNote: "Five little bumps on top",
+  },
+  {
+    id: "block-legs",
+    slot: "legs",
+    name: "Block legs",
+    tags: ["sturdy", "modern"],
+    sawNote: "A square notch at each foot",
+  },
+  {
+    id: "sled-legs",
+    slot: "legs",
+    name: "Sled legs",
+    tags: ["rustic", "modern"],
+    sawNote: "A curved runner on each foot",
+  },
+  {
+    id: "heart-cutout",
+    slot: "accent",
+    name: "Heart cut-out",
+    tags: ["cosy", "playful"],
+    sawNote: "A round little heart",
+  },
+  {
+    id: "moon-cutout",
+    slot: "accent",
+    name: "Moon cut-out",
+    tags: ["elegant", "playful"],
+    sawNote: "A crescent moon",
+  },
 ];
 
 export const SLOT_NAMES: Readonly<Record<PartSlot, string>> = {

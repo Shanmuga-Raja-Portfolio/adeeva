@@ -11,15 +11,16 @@ import type { RunStage } from "../content/runStage";
 import type { WoodId } from "../content/wood";
 import type { Action } from "./action";
 import { rollClientBrief } from "./brief";
-import { clientById, difficultyById, productById } from "./catalog";
+import { clientById, difficultyById } from "./catalog";
 import type { CommissionRun } from "./commissionRun";
 import { CUSHION_SEAM_BOUNDS } from "./cushion";
 import type { GameState } from "./gameState";
 import { leaveHours } from "./hourCost";
 import { jointTargetAngle, jointTaps } from "./joint";
 import { createGame, type NewGameSettings } from "./newGame";
-import { designJoints, designParts, designSurfaces } from "./pieceParts";
+import { designJoints, designParts, designSurfaces, runCanonical, type RunShape } from "./pieceParts";
 import { reduce } from "./reduce";
+import { COMMISSION_PURPOSE } from "./runPurpose";
 import { SAND_CANVAS, SAND_ROWS } from "./sanding";
 import { partCuts } from "./sawRecord";
 import type { SawCut } from "./sawPath";
@@ -41,6 +42,7 @@ export function newTestGame(overrides: Partial<NewGameSettings> = {}): GameState
     look: TEST_LOOK,
     trait: "dreamer",
     difficulty: "standard",
+    career: "garage",
     ...overrides,
   });
 }
@@ -57,6 +59,10 @@ export function settleStories(state: GameState): GameState {
     next = reduce(next, { type: "markBeatSeen", beatId: beat.id });
   }
   return next;
+}
+
+export function productShape(productId: ProductId): RunShape {
+  return { design: { productId, options: {}, woodId: null }, purpose: COMMISSION_PURPOSE };
 }
 
 export function runOf(state: GameState): CommissionRun {
@@ -129,11 +135,11 @@ export function designActions(plan: PiecePlan): Action[] {
 
 export function canonicalActions(state: GameState): Action[] {
   const run = runOf(state);
-  const { productId, woodId } = run.design;
-  if (productId === null || woodId === null) return [];
+  const woodId = run.design.woodId;
+  if (woodId === null) return [];
   const boards = state.boards.filter((board) => board.woodId === woodId);
   const seen = { short: 0, long: 0, panel: 0 };
-  return productById(productId).canonical.flatMap((canonical) => {
+  return runCanonical(run).flatMap((canonical) => {
     const board = boards.filter((entry) => entry.size === canonical.size)[seen[canonical.size]];
     seen[canonical.size] += 1;
     if (board === undefined) return [];
@@ -162,7 +168,7 @@ export function tracePoints(cut: SawCut): Point[] {
 
 export function sawActions(state: GameState, mode: "trace" | "assist"): Action[] {
   const run = runOf(state);
-  return designParts(run.design).flatMap((part): Action[] =>
+  return designParts(run).flatMap((part): Action[] =>
     mode === "assist"
       ? [{ type: "sawAssist", partId: part.id }]
       : partCuts(state, run, part).map((cut, index) => ({
@@ -180,7 +186,7 @@ export function joinActions(
   toleranceMm: (kind: string) => number,
 ): Action[] {
   const run = runOf(state);
-  return designJoints(run.design).map((joint) => ({
+  return designJoints(run).map((joint) => ({
     type: "seatJoint",
     jointId: joint.id,
     pose: { x: toleranceMm(joint.kind) * offsetShare, y: 0, angle: jointTargetAngle(run.design, joint) },
@@ -209,7 +215,7 @@ export function sandPath(direction: "along" | "across"): Point[] {
 
 export function sandActions(state: GameState, mode: "along" | "across" | "assist"): Action[] {
   const run = runOf(state);
-  return designSurfaces(run.design).flatMap((part): Action[] =>
+  return designSurfaces(run).flatMap((part): Action[] =>
     [0, 1].map(() => ({
       type: "sandDrag",
       surfaceId: part.id,
@@ -240,14 +246,15 @@ export function finishActions(plan: PiecePlan): Action[] {
       extraId,
       x: 120 + index * 30,
       y: 120,
+      piece: 0,
     })),
     ...seam,
   ];
 }
 
-const PLAY_STEPS: readonly RunStage[] = ["layout", "saw", "join", "sand", "finish", "review"];
+export const PLAY_STEPS: readonly RunStage[] = ["layout", "saw", "join", "sand", "finish", "review"];
 
-function stepWork(
+export function stepWork(
   state: GameState,
   stage: RunStage,
   plan: PiecePlan,
@@ -257,7 +264,7 @@ function stepWork(
     case "layout":
       return plan.layout === "canonical"
         ? canonicalActions(state)
-        : designParts(runOf(state).design).map((): Action => ({ type: "showMe", partId: null }));
+        : designParts(runOf(state)).map((): Action => ({ type: "showMe", partId: null }));
     case "saw":
       return sawActions(state, plan.saw);
     case "join":
@@ -271,10 +278,26 @@ function stepWork(
   }
 }
 
-function moveOn(state: GameState, stage: RunStage): GameState {
+export function moveOn(state: GameState, stage: RunStage): GameState {
   const moved = reduce(state, { type: "goToStage", stage });
   if (moved !== state || hasHours(state.calendar, leaveHours(runOf(state)))) return moved;
   return reduce(reduce(state, { type: "endDay" }), { type: "goToStage", stage });
+}
+
+export function playSteps(
+  state: GameState,
+  plan: PiecePlan,
+  stop: RunStage,
+  toleranceMm: (kind: string) => number = () => 1,
+): GameState {
+  let current = state;
+  for (const [index, stage] of PLAY_STEPS.entries()) {
+    if (stage === stop) return current;
+    const next = PLAY_STEPS[index + 1];
+    const worked = dispatchAll(current, stepWork(current, stage, plan, toleranceMm));
+    current = next === undefined ? worked : moveOn(worked, next);
+  }
+  return current;
 }
 
 export function playUntil(
@@ -284,7 +307,7 @@ export function playUntil(
   stop: RunStage,
   toleranceMm: (kind: string) => number = () => 1,
 ): GameState {
-  let current = dispatchAll(state, [
+  const laidOut = dispatchAll(state, [
     { type: "startCommission", gigId },
     { type: "goToStage", stage: "design" },
     ...designActions(plan),
@@ -292,13 +315,7 @@ export function playUntil(
     { type: "buyPlan" },
     { type: "goToStage", stage: "layout" },
   ]);
-  for (const [index, stage] of PLAY_STEPS.entries()) {
-    if (stage === stop) return current;
-    const next = PLAY_STEPS[index + 1];
-    const worked = dispatchAll(current, stepWork(current, stage, plan, toleranceMm));
-    current = next === undefined ? worked : moveOn(worked, next);
-  }
-  return current;
+  return playSteps(laidOut, plan, stop, toleranceMm);
 }
 
 export function playToReview(

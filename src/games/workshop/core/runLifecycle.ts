@@ -1,6 +1,8 @@
 import { createRun } from "./commissionRun";
 import type { GameState } from "./gameState";
 
+export const SET_LOCKED = "Finish the set first.";
+
 export function runStartIssue(state: GameState): string | null {
   const run = state.activeRun;
   if (run !== null && run.stage !== "done") return "Finish or set aside the piece on the workbench first.";
@@ -14,8 +16,13 @@ export function startCommission(state: GameState, gigId: string): GameState {
   return { ...state, activeRun: run, nextRunNumber: state.nextRunNumber + 1 };
 }
 
-export function setAside(state: GameState): GameState {
+export function setAsideIssue(state: GameState): string | null {
   const run = state.activeRun;
-  if (run === null || run.stage === "done") return state;
-  return { ...state, activeRun: null };
+  if (run === null || run.stage === "done") return "Nothing on the workbench.";
+  if (run.purpose.kind === "set" && Object.keys(run.cuts).length > 0) return SET_LOCKED;
+  return null;
+}
+
+export function setAside(state: GameState): GameState {
+  return setAsideIssue(state) === null ? { ...state, activeRun: null } : state;
 }

@@ -1,23 +1,19 @@
 import { Icon } from "../../../../../../ui/kit/IconSet";
-import { TagPill } from "../../../../../../ui/kit/TagPill";
-import { HINTS } from "../../../../content/hint";
-import { PART_OPTIONS, SLOT_NAMES } from "../../../../content/partOption";
-import { hammersFor, WOODS } from "../../../../content/wood";
-import { boardPrice, productById, shadeById, woodById, woodLockReason } from "../../../../core";
-import { HammerIcons } from "../../../art/HammerIcons";
+import { productById, shadeById, woodById } from "../../../../core";
 import { PiecePreview } from "../../../art/PiecePreview";
 import { pieceLook } from "../../../art/pieceLook";
-import { woodLook } from "../../../art/woodLook";
+import { SetDesign } from "../set/SetDesign";
 import { StageFooter } from "../StageFooter";
 import type { StageProps } from "../stageProps";
+import { SlotChoices, WoodChoices } from "./DesignChoices";
 import "./design.css";
 
 export function DesignStage(props: StageProps) {
   const { state, run, dispatch } = props;
-  const { productId, options, woodId } = run.design;
+  if (run.purpose.kind === "set") return <SetDesign {...props} />;
+  const { productId, woodId } = run.design;
   const product = productId === null ? null : productById(productId);
   const look = pieceLook(run);
-  const avoided = woodId !== null && run.brief.avoidWoods.includes(woodId);
   return (
     <div className="ww-design">
       <div className="ww-design__grid">
@@ -45,85 +41,8 @@ export function DesignStage(props: StageProps) {
               })}
             </div>
           </section>
-          {product?.slots.map((slot) => (
-            <section key={slot} aria-labelledby={`ww-design-${slot}`}>
-              <h2 id={`ww-design-${slot}`} className="ww-design__heading">
-                {SLOT_NAMES[slot]}
-              </h2>
-              <div className="ww-design__chips" role="radiogroup" aria-label={SLOT_NAMES[slot]}>
-                {PART_OPTIONS.filter((option) => option.slot === slot).map((option) => (
-                  <button
-                    key={option.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={options[slot] === option.id}
-                    className="ww-design__chip"
-                    onClick={() => dispatch({ type: "chooseOption", slot, optionId: option.id })}
-                  >
-                    <strong>{option.name}</strong>
-                    <span className="ww-design__chip-note">{option.sawNote}</span>
-                    <span className="ww-design__tags">
-                      {option.tags.map((tag) => (
-                        <TagPill key={tag} tone={run.brief.requiredTags.includes(tag) ? "sage" : "plain"}>
-                          {tag}
-                        </TagPill>
-                      ))}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </section>
-          ))}
-          {product !== null ? (
-            <section aria-labelledby="ww-design-wood">
-              <h2 id="ww-design-wood" className="ww-design__heading">
-                Wood
-              </h2>
-              <div className="ww-design__woods" role="radiogroup" aria-label="Wood">
-                {WOODS.map((wood) => {
-                  const lock = woodLockReason(state, wood.id);
-                  const colours = woodLook(wood.id);
-                  return (
-                    <button
-                      key={wood.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={woodId === wood.id}
-                      aria-label={`${wood.name}${lock === null ? "" : `, locked. ${lock}`}`}
-                      className="ww-design__wood"
-                      disabled={lock !== null}
-                      title={lock ?? undefined}
-                      onClick={() => dispatch({ type: "chooseWood", woodId: wood.id })}
-                      data-testid={`wood-${wood.id}`}
-                    >
-                      <span
-                        className="ww-design__wood-swatch"
-                        style={{
-                          background: `repeating-linear-gradient(176deg, ${colours.base} 0 7px, ${colours.line} 7px 8px, ${colours.base} 8px 13px, ${colours.light} 13px 15px)`,
-                        }}
-                        aria-hidden="true"
-                      >
-                        {lock !== null ? <Icon name="lock" size={18} /> : null}
-                      </span>
-                      <strong>{wood.name}</strong>
-                      <span className="ww-design__wood-meta">
-                        <span className="ww-coin-line">
-                          <Icon name="coin" size={14} /> {boardPrice(state, wood.id, "long")}
-                        </span>
-                        <HammerIcons count={hammersFor(wood)} />
-                      </span>
-                      <span className="ww-design__wood-tags">{wood.tags.join(" · ")}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              {avoided ? (
-                <p className="ww-design__warn" role="status">
-                  <Icon name="lock" size={16} /> {HINTS.avoidedWood}
-                </p>
-              ) : null}
-            </section>
-          ) : null}
+          {product !== null ? <SlotChoices run={run} slots={product.slots} dispatch={dispatch} /> : null}
+          {product !== null ? <WoodChoices state={state} run={run} dispatch={dispatch} /> : null}
         </div>
         <aside className="ww-design__preview ww-paper">
           <span className="ad-eyebrow">Front view</span>

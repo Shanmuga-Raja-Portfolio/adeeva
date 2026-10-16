@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Robin",
+    "look": {
+      "skinTone": "amber",
+      "hairStyle": "ponytail",
+      "hairColour": "auburn",
+      "outfit": "studio-apron"
+    },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 1, "hoursLeft": 10 },
+  "coins": 100,
+  "reputation": 0,
+  "buzz": 0,
+  "trends": { "current": ["classic", "rustic"], "next": ["natural", "elegant"] },
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "grandpa-teodor",
+        "brief": {
+          "clientId": "grandpa-teodor",
+          "occasion": "A home for the robins",
+          "products": ["birdhouse"],
+          "deadlineDay": 4,
+          "budget": 24,
+          "fee": 40,
+          "requiredTags": ["natural"],
+          "favouredColours": ["sage", "sky"],
+          "avoidColours": ["navy"],
+          "avoidWoods": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [],
+    "lapsed": [],
+    "nextGigNumber": 2
+  },
+  "story": { "seen": [], "flags": [], "queue": ["ww-key"] },
+  "boards": [],
+  "upgrades": [],
+  "decor": [],
+  "activeRun": null,
+  "log": [],
+  "delivered": 0,
+  "nextRunNumber": 1,
+  "nextBoardNumber": 1,
+  "rng": 1135788953
+}

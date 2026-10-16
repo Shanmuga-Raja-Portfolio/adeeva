@@ -2,9 +2,10 @@ import type { Point } from "../../../engine/geometry/point";
 import { rectangle } from "../../../engine/geometry/rectangle";
 import type { PartOptionId } from "../content/partOption";
 import type { PartDef } from "../content/product";
-import { boardSizeById, productById } from "./catalog";
+import { boardSizeById } from "./catalog";
 import type { PartPlacement, PieceDesign, QuarterTurn } from "./commissionRun";
 import type { OwnedBoard } from "./ownedBoard";
+import type { RunPart } from "./pieceParts";
 
 export interface SawCut {
   readonly points: readonly Point[];
@@ -12,6 +13,9 @@ export interface SawCut {
 }
 
 const CORNER_RADIUS_CM = 4;
+const CLIP_CM = 3;
+const SCALLOPS = 5;
+const SCALLOP_STEPS = 8;
 const ARC_STEPS = 6;
 const ARCH_STEPS = 16;
 const EDGE_EPSILON = 1e-6;
@@ -62,6 +66,49 @@ function splayed(width: number, height: number): Point[] {
   ];
 }
 
+function clipped(width: number, height: number): Point[] {
+  const c = Math.min(CLIP_CM, width / 4, height / 4);
+  return [
+    [c, 0],
+    [width - c, 0],
+    [width, c],
+    [width, height - c],
+    [width - c, height],
+    [c, height],
+    [0, height - c],
+    [0, c],
+  ];
+}
+
+function scalloped(width: number, height: number): Point[] {
+  const rise = Math.min(3, height * 0.2);
+  const steps = SCALLOPS * SCALLOP_STEPS;
+  const top = Array.from({ length: steps + 1 }, (_, index): Point => {
+    const t = index / steps;
+    const local = (t * SCALLOPS) % 1;
+    const bump = index === steps ? 0 : Math.sin(Math.PI * local);
+    return [width * t, rise * (1 - bump)];
+  });
+  return [...top, [width, height], [0, height]];
+}
+
+function blockFoot(width: number, height: number): Point[] {
+  const notch = Math.min(height * 0.4, 3);
+  return [
+    [0, 0],
+    [width, 0],
+    [width, height - notch],
+    [width - notch, height - notch],
+    [width - notch, height],
+    [0, height],
+  ];
+}
+
+function sledFoot(width: number, height: number): Point[] {
+  const r = height / 2;
+  return [[0, 0], ...arc(width - r, r, r, -Math.PI / 2, Math.PI / 2, ARC_STEPS * 2), [0, height]];
+}
+
 function optionFor(design: PieceDesign, slot: "edge" | "legs" | "accent"): PartOptionId | null {
   return design.options[slot] ?? null;
 }
@@ -72,11 +119,15 @@ function partOutline(part: PartDef, design: PieceDesign): readonly Point[] {
     const edge = optionFor(design, "edge");
     if (edge === "rounded-edge") return rounded(width, height);
     if (edge === "arched-edge") return arched(width, height);
+    if (edge === "clipped-corners") return clipped(width, height);
+    if (edge === "scallop-edge") return scalloped(width, height);
   }
   if (part.role === "leg") {
     const legs = optionFor(design, "legs");
     if (legs === "tapered-legs") return tapered(width, height);
     if (legs === "splayed-legs") return splayed(width, height);
+    if (legs === "block-legs") return blockFoot(width, height);
+    if (legs === "sled-legs") return sledFoot(width, height);
   }
   return rectangle(width, height);
 }
@@ -102,8 +153,34 @@ function leaf(cx: number, cy: number, size: number): Point[] {
   return [...upper, ...lower];
 }
 
-function accentCuts(part: PartDef, design: PieceDesign): SawCut[] {
-  if (design.productId === null || productById(design.productId).accentPart !== part.id) return [];
+function heart(cx: number, cy: number, size: number): Point[] {
+  const steps = 24;
+  return Array.from({ length: steps }, (_, index): Point => {
+    const t = (index / steps) * Math.PI * 2;
+    const x = 16 * Math.sin(t) ** 3;
+    const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+    return [cx + (x / 16) * size, cy + (y / 16) * size];
+  });
+}
+
+const MOON_OUTER_FROM = Math.atan2(0.79, 0.61);
+const MOON_INNER_FROM = Math.atan2(0.79, 0.11);
+
+function moon(cx: number, cy: number, size: number): Point[] {
+  const outer = arc(cx, cy, size, MOON_OUTER_FROM, Math.PI * 2 - MOON_OUTER_FROM, 16);
+  const inner = arc(
+    cx + size * 0.5,
+    cy,
+    size * 0.8,
+    Math.PI * 2 - MOON_INNER_FROM,
+    MOON_INNER_FROM,
+    12,
+  ).slice(1, -1);
+  return [...outer, ...inner];
+}
+
+function accentCuts(part: RunPart, design: PieceDesign): SawCut[] {
+  if (!part.accent) return [];
   const accent = optionFor(design, "accent");
   const { width, height } = part;
   const cx = width / 2;
@@ -111,6 +188,8 @@ function accentCuts(part: PartDef, design: PieceDesign): SawCut[] {
   const size = Math.min(width, height) * 0.3;
   if (accent === "star-cutout") return [{ points: star(cx, cy, size), closed: true }];
   if (accent === "leaf-cutout") return [{ points: leaf(cx, cy, size * 1.2), closed: true }];
+  if (accent === "heart-cutout") return [{ points: heart(cx, cy, size), closed: true }];
+  if (accent === "moon-cutout") return [{ points: moon(cx, cy, size), closed: true }];
   if (accent === "slats")
     return [0.3, 0.5, 0.7].map((share) => ({
       points: [
@@ -122,7 +201,11 @@ function accentCuts(part: PartDef, design: PieceDesign): SawCut[] {
   return [];
 }
 
-function toBoard(point: Point, part: PartDef, placement: Pick<PartPlacement, "x" | "y" | "rotation">): Point {
+export function toBoard(
+  point: Point,
+  part: PartDef,
+  placement: Pick<PartPlacement, "x" | "y" | "rotation">,
+): Point {
   const [x, y] = point;
   const turn: QuarterTurn = placement.rotation;
   const turned: Point =
@@ -134,6 +217,20 @@ function toBoard(point: Point, part: PartDef, placement: Pick<PartPlacement, "x"
           ? [part.width - x, part.height - y]
           : [y, part.width - x];
   return [turned[0] + placement.x, turned[1] + placement.y];
+}
+
+export function fromBoard(
+  point: Point,
+  part: PartDef,
+  placement: Pick<PartPlacement, "x" | "y" | "rotation">,
+): Point {
+  const x = point[0] - placement.x;
+  const y = point[1] - placement.y;
+  const turn: QuarterTurn = placement.rotation;
+  if (turn === 0) return [x, y];
+  if (turn === 90) return [y, part.height - x];
+  if (turn === 180) return [part.width - x, part.height - y];
+  return [part.width - y, x];
 }
 
 function onSameBoardEdge(a: Point, b: Point, width: number, height: number): boolean {
@@ -173,7 +270,7 @@ function openOutline(points: readonly Point[], board: OwnedBoard): SawCut {
 }
 
 export function sawCuts(
-  part: PartDef,
+  part: RunPart,
   design: PieceDesign,
   placement: Pick<PartPlacement, "x" | "y" | "rotation">,
   board: OwnedBoard,

@@ -1,7 +1,7 @@
 import { average } from "../../../engine/average";
 import type { PartDef } from "../content/product";
 import type { CommissionRun, PartPlacement, QuarterTurn } from "./commissionRun";
-import { designParts } from "./pieceParts";
+import { designParts, type RunPart } from "./pieceParts";
 
 const ALONG_SCORE = 1;
 const STUBBY_ACROSS_SCORE = 0.85;
@@ -30,8 +30,7 @@ export function placementGrain(part: PartDef, placement: PartPlacement): number 
   return placement.assisted ? Math.min(SHOW_ME_GRAIN_CAP, score) : score;
 }
 
-export function runGrain(run: CommissionRun): number {
-  const parts = designParts(run.design);
+export function runGrain(run: CommissionRun, parts: readonly RunPart[] = designParts(run)): number {
   if (parts.length === 0) return 0;
   return average(
     parts.map((part) => {

@@ -6,9 +6,10 @@ import {
   type FollowProgress,
 } from "../../../engine/followRecord";
 import { CUSHION_FABRIC_IDS, type CushionFabricId } from "../content/cushionFabric";
-import { cushionFabricById, productById } from "./catalog";
-import type { CommissionRun, CushionWork } from "./commissionRun";
+import { cushionFabricById } from "./catalog";
+import type { CushionWork } from "./commissionRun";
 import type { GameState } from "./gameState";
+import { seatPieces, type RunShape } from "./pieceParts";
 
 const MIN_SEAM_TICKS = 60;
 const MAX_SEAM_TICKS = 1200;
@@ -36,12 +37,14 @@ export function isNeedleOnSeam(progress: number, offset: number, band: number): 
   return Math.abs(seamLineAt(progress) - offset) <= band;
 }
 
-export function canSewCushion(run: CommissionRun): boolean {
-  return run.design.productId !== null && productById(run.design.productId).seat;
+export function canSewCushion(run: RunShape): boolean {
+  return seatPieces(run).length > 0;
 }
 
-export function cushionPrice(cushion: CushionWork | null): number {
-  return cushion === null ? 0 : cushionFabricById(cushion.fabricId).price;
+export function cushionPrice(run: RunShape, cushion: CushionWork | null): number {
+  return cushion === null
+    ? 0
+    : cushionFabricById(cushion.fabricId).price * Math.max(1, seatPieces(run).length);
 }
 
 export function isCushionSewn(cushion: CushionWork | null): boolean {
@@ -59,7 +62,7 @@ export function chooseCushion(state: GameState, fabricId: CushionFabricId | null
   if (run === null || run.stage !== "finish" || !canSewCushion(run)) return state;
   if ((run.cushion?.fabricId ?? null) === fabricId) return state;
   const next: CushionWork | null = fabricId === null ? null : { fabricId, seam: null };
-  const change = cushionPrice(next) - cushionPrice(run.cushion);
+  const change = cushionPrice(run, next) - cushionPrice(run, run.cushion);
   if (change > state.coins) return state;
   return { ...state, coins: state.coins - change, activeRun: { ...run, cushion: next } };
 }

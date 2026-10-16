@@ -19,6 +19,7 @@ import {
 import { BoardSurface } from "../../../art/BoardArt";
 import { BoardThumb } from "../../../art/BoardThumb";
 import { HammerIcons } from "../../../art/HammerIcons";
+import { RenHandOff } from "../set/RenHandOff";
 import { StageFooter } from "../StageFooter";
 import type { StageProps } from "../stageProps";
 import "./timber.css";
@@ -30,10 +31,10 @@ export function TimberStage(props: StageProps) {
   const toast = useToast();
   const once = useDispatchOnce(state, dispatch);
   const [cart, setCart] = useState<BoardCounts>(EMPTY_CART);
-  const { productId, woodId } = run.design;
-  if (productId === null || woodId === null) return <StageFooter {...props} />;
+  const { woodId } = run.design;
+  if (woodId === null) return <StageFooter {...props} />;
   const wood = woodById(woodId);
-  const plan = planBoards(productId);
+  const plan = planBoards(run);
   const missing = missingPlanBoards(state, run);
   const owned = ownedBoardsOf(state, woodId);
   const sizes = countList(cart);
@@ -157,6 +158,7 @@ export function TimberStage(props: StageProps) {
           </Button>
         </div>
       </div>
+      <RenHandOff {...props} job="fetch" />
       <section className="ww-timber__owned" aria-labelledby="ww-owned-title">
         <h2 id="ww-owned-title" className="ww-timber__owned-title">
           On your rack: {owned.length} {owned.length === 1 ? "board" : "boards"} of {wood.name}

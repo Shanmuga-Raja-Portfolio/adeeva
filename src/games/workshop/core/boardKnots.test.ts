@@ -5,12 +5,13 @@ import { PRODUCT_IDS } from "../content/product";
 import { WOOD_IDS } from "../content/wood";
 import { boardKnots, canonicalRects, knotPolygon, MAX_KNOT_RADIUS, MIN_KNOT_RADIUS } from "./boardKnots";
 import { boardSizeById, woodById } from "./catalog";
+import { productShape } from "./testPlaythrough";
 
 describe("board knots", () => {
   it("never block a product's typical layout, on any wood, size or board", () => {
     for (const productId of PRODUCT_IDS)
       for (const size of BOARD_SIZE_IDS) {
-        const rects = canonicalRects(productId, size);
+        const rects = canonicalRects(productShape(productId), size);
         for (const woodId of WOOD_IDS)
           for (let number = 1; number <= 60; number += 1)
             for (const knot of boardKnots(number, woodId, size, rects))

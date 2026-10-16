@@ -33,17 +33,27 @@ describe("workshop content", () => {
       for (const line of Object.values(client.lines)) expect(sentences(line), line).toBeLessThanOrEqual(2);
   });
 
-  it("has 8 clients, two of them for one trait each", () => {
-    expect(CLIENTS).toHaveLength(8);
+  it("has 16 clients, four of them for one trait each", () => {
+    expect(CLIENTS).toHaveLength(16);
     expect(
       CLIENTS.filter((client) => client.traitGate !== undefined).map((client) => client.traitGate),
-    ).toEqual(["dreamer", "perfectionist"]);
+    ).toEqual(["dreamer", "perfectionist", "charmer", "trendsetter"]);
   });
 
   it("gives every wood the right number of hammers", () => {
-    expect(WOODS).toHaveLength(12);
+    expect(WOODS).toHaveLength(20);
     const hammers = Object.fromEntries(WOODS.map((wood) => [wood.id, hammersFor(wood)]));
     expect(hammers).toMatchObject({ pine: 1, larch: 2, birch: 2, beech: 2, maple: 3, oak: 3, walnut: 3 });
+    expect(hammers).toMatchObject({
+      alder: 1,
+      linden: 1,
+      sycamore: 2,
+      elm: 2,
+      chestnut: 2,
+      apple: 3,
+      pear: 3,
+      hickory: 3,
+    });
   });
 
   it("fits every product's typical layout inside its boards", () => {

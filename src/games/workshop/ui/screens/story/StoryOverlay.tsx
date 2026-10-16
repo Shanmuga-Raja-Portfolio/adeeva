@@ -3,8 +3,9 @@ import { beatLines } from "../../../../../engine/storyVoice";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import type { StoryBeatDef } from "../../../content/storyBeat";
-import { currentBeat, type Action, type GameState } from "../../../core";
+import { currentBeat, storyChoiceIssue, type Action, type GameState } from "../../../core";
 import { GarageBackdrop } from "../../art/GarageBackdrop";
+import { ShowroomBackdrop } from "../../art/ShowroomBackdrop";
 import { SpeakerPortrait } from "./SpeakerPortrait";
 import "./story.css";
 
@@ -18,18 +19,25 @@ function StoryScene({ state, dispatch, beat }: StoryOverlayProps & { readonly be
   const lines = beatLines(beat, profile.trait, profile.name);
   const [shown, setShown] = useState(1);
   const finished = shown >= lines.length;
+  const firstOpenChoice = beat.choices.find((choice) => storyChoiceIssue(state, choice) === null)?.id;
+  const evening =
+    beat.trigger === "first-week" || beat.trigger === "bankrupt" || beat.trigger === "trait-dreamer";
   const advance = () => {
     if (!finished) setShown(shown + 1);
   };
   return (
     <div className="ww-story" role="dialog" aria-modal="true" aria-labelledby="ww-story-title">
-      <GarageBackdrop
-        className="ww-story__backdrop"
-        decor={state.decor}
-        evening={
-          beat.trigger === "first-week" || beat.trigger === "bankrupt" || beat.trigger === "trait-dreamer"
-        }
-      />
+      {state.career === "showroom" || beat.trigger === "showroom-offer" ? (
+        <ShowroomBackdrop
+          className="ww-story__backdrop"
+          decor={state.decor}
+          floor={state.showroom?.floor ?? []}
+          rail={state.fair?.rosetteRail ?? {}}
+          evening={evening}
+        />
+      ) : (
+        <GarageBackdrop className="ww-story__backdrop" decor={state.decor} evening={evening} />
+      )}
       <div className="ww-story__veil" aria-hidden="true" />
       <div className="ww-story__tap" onPointerUp={advance} aria-hidden="true" />
       <section className="ww-story__panel ww-paper ww-tape">
@@ -73,7 +81,27 @@ function StoryScene({ state, dispatch, beat }: StoryOverlayProps & { readonly be
               />
             ))}
           </span>
-          {finished ? (
+          {finished && beat.choices.length > 0 ? (
+            <span className="ww-story__choices">
+              {beat.choices.map((choice, index) => (
+                <Button
+                  key={choice.id}
+                  autoFocus={choice.id === firstOpenChoice}
+                  variant={index === 0 ? "primary" : "secondary"}
+                  icon={index === 0 ? "home" : undefined}
+                  disabledReason={storyChoiceIssue(state, choice) ?? undefined}
+                  showReason
+                  onClick={(event) => {
+                    if (event.detail <= 1)
+                      dispatch({ type: "chooseStoryOption", beatId: beat.id, choiceId: choice.id });
+                  }}
+                  data-testid={`story-choice-${choice.id}`}
+                >
+                  {choice.label}
+                </Button>
+              ))}
+            </span>
+          ) : finished ? (
             <Button
               autoFocus
               onClick={(event) => {

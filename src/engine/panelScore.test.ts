@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { panel } from "./panelScore";
+import { bestSubScore, panel, panelVerdict, subScore } from "./panelScore";
 import { closerStrength } from "./showOrder";
 import { wowScore } from "./wowScore";
 
@@ -31,5 +31,23 @@ describe("show panels", () => {
         { wowTrims: 0, tags: ["dreamy"] },
       ]),
     ).toBe(31);
+  });
+
+  it("picks the part that adds the most and names a warm verdict", () => {
+    const parts = [
+      subScore("a", "A", 90, 0.2, ""),
+      subScore("b", "B", 60, 0.5, ""),
+      subScore("c", "C", 100, 0.35, ""),
+    ];
+    expect(bestSubScore(parts)?.id).toBe("c");
+    expect(bestSubScore([])).toBeNull();
+    expect([85, 84, 70, 69, 55, 54].map(panelVerdict)).toEqual([
+      "Delighted",
+      "Loved it",
+      "Loved it",
+      "Enjoyed it",
+      "Enjoyed it",
+      "Warmly cheered",
+    ]);
   });
 });

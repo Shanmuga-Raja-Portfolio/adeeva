@@ -31,6 +31,7 @@ interface SawBenchProps {
   readonly tolerance: number;
   readonly rail: boolean;
   readonly riding: boolean;
+  readonly ghost: readonly Point[] | null;
   readonly onRideDone: () => void;
   readonly onComplete: (samples: readonly Point[]) => void;
   readonly onPaused: (coverage: number) => void;
@@ -68,6 +69,7 @@ export function SawBench({
   tolerance,
   rail,
   riding,
+  ghost,
   onRideDone,
   onComplete,
   onPaused,
@@ -261,6 +263,9 @@ export function SawBench({
             }
           />
         ))}
+        {ghost !== null && ghost.length > 1 ? (
+          <path d={pathData(ghost, false)} className="ww-saw-bench__ghost" data-testid="twin-ghost" />
+        ) : null}
         <path d={pathData(samples, false)} className="ww-saw-bench__trail" />
         {start !== undefined && samples.length === 0 && !rail ? (
           <g className="ww-saw-bench__start" transform={`translate(${start[0]} ${start[1]})`}>

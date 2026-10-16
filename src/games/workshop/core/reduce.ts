@@ -12,13 +12,36 @@ import { acceptOffer, declineOffer } from "./offers";
 import { setAside, startCommission } from "./runLifecycle";
 import { resetSurface, sandDrag } from "./sanding";
 import { sawAssist, sawCut } from "./sawRecord";
+import { reduceFair } from "./reduceFair";
+import { reduceShowroom } from "./reduceShowroom";
 import { goToStage } from "./stageNavigation";
 import { seeBeat } from "./storyQueue";
 import { buyBoards, buyPlan } from "./timberYard";
-import { buyGarageUpgrade } from "./upgradeShop";
+import { buyWorkshopUpgrade } from "./upgradeShop";
 
 export function reduce(state: GameState, action: Action): GameState {
   switch (action.type) {
+    case "chooseStoryOption":
+    case "setBenchTour":
+    case "openShowroom":
+    case "startSet":
+    case "chooseSetJoint":
+    case "planTheRest":
+    case "sawLikeFirst":
+    case "finishSet":
+    case "markFloorSet":
+    case "pickOpenHouse":
+    case "arrangeFloorPiece":
+    case "takeRenOn":
+    case "giveRenWeekOff":
+    case "handToRen":
+      return reduceShowroom(state, action);
+    case "chooseFairTheme":
+    case "restShowroom":
+    case "pickFairSet":
+    case "stageFair":
+    case "moveUpBooth":
+      return reduceFair(state, action);
     case "acceptOffer":
       return acceptOffer(state, action.offerId);
     case "declineOffer":
@@ -60,7 +83,7 @@ export function reduce(state: GameState, action: Action): GameState {
     case "chooseFinish":
       return chooseFinish(state, action.finishId, action.paint);
     case "addExtra":
-      return addExtra(state, action.extraId, action.x, action.y);
+      return addExtra(state, action.extraId, action.x, action.y, action.piece);
     case "moveExtra":
       return moveExtra(state, action.placedId, {
         x: action.x,
@@ -89,7 +112,7 @@ export function reduce(state: GameState, action: Action): GameState {
     case "workShift":
       return workShift(state);
     case "buyUpgrade":
-      return buyGarageUpgrade(state, action.upgradeId);
+      return buyWorkshopUpgrade(state, action.upgradeId);
     case "buyDecor":
       return buyDecor(state, action.decorId, action.paint);
     case "markBeatSeen":

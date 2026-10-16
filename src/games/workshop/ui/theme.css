@@ -261,3 +261,15 @@
     opacity: 0;
   }
 }
+
+.ww-set-preview {
+  display: grid;
+  align-items: end;
+  gap: 0;
+  width: 100%;
+}
+
+.ww-set-preview svg {
+  width: 100%;
+  height: auto;
+}

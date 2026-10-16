@@ -19,6 +19,12 @@ import "./theme.css";
 const BuildFlow = lazy(() =>
   import("./screens/build/BuildFlow").then((module) => ({ default: module.BuildFlow })),
 );
+const FairFlow = lazy(() =>
+  import("./screens/fair/FairFlow").then((module) => ({ default: module.FairFlow })),
+);
+const FloorArrange = lazy(() =>
+  import("./screens/floor/FloorArrange").then((module) => ({ default: module.FloorArrange })),
+);
 
 export function WorkshopGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
@@ -26,8 +32,8 @@ export function WorkshopGame({ player, lookOptions, onPlayerChange, onExit }: Ga
     (moment: SaveMoment) =>
       toast(
         moment === "leaving"
-          ? "We couldn't save your last few moments in the garage. This browser didn't let us store them."
-          : "We couldn't save just now. Your garage is safe on screen and we'll keep trying.",
+          ? "We couldn't save your last few moments in the workshop. This browser didn't let us store them."
+          : "We couldn't save just now. Your workshop is safe on screen and we'll keep trying.",
         "warning",
       ),
     [toast],
@@ -122,6 +128,8 @@ export function WorkshopGame({ player, lookOptions, onPlayerChange, onExit }: Ga
             state={screen.game}
             dispatch={dispatch}
             onOpenBuild={() => open("build")}
+            onOpenFair={() => open("fair")}
+            onOpenFloor={() => open("floor")}
             onOpenSettings={openSettings}
             onExitToTitle={saveAndExit}
           />
@@ -129,6 +137,12 @@ export function WorkshopGame({ player, lookOptions, onPlayerChange, onExit }: Ga
         <ViewLoadBoundary>
           {screen.name === "build" ? (
             <BuildFlow state={screen.game} dispatch={dispatch} onExit={toHub} />
+          ) : null}
+          {screen.name === "fair" ? (
+            <FairFlow state={screen.game} dispatch={dispatch} onExit={toHub} />
+          ) : null}
+          {screen.name === "floor" ? (
+            <FloorArrange state={screen.game} dispatch={dispatch} onExit={toHub} />
           ) : null}
         </ViewLoadBoundary>
         <SettingsDialog

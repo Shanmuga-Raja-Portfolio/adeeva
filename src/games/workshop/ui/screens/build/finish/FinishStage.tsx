@@ -8,11 +8,20 @@ import { ToggleSwitch } from "../../../../../../ui/kit/ToggleSwitch";
 import { CUSHION_FABRICS } from "../../../../content/cushionFabric";
 import { FINISHES, PAINT_COLOURS } from "../../../../content/finish";
 import { HINTS } from "../../../../content/hint";
-import { canSewCushion, cushionFabricById, extraTallies, isCushionSewn, seamBand } from "../../../../core";
+import {
+  canSewCushion,
+  cushionFabricById,
+  extraTallies,
+  isCushionSewn,
+  runPieces,
+  seamBand,
+  seatPieces,
+} from "../../../../core";
 import { pieceLook } from "../../../art/pieceLook";
 import { useAssist } from "../../../useAssist";
 import { StageFooter } from "../StageFooter";
 import type { StageProps } from "../stageProps";
+import { PieceSwitcher } from "../set/PieceSwitcher";
 import { CushionSeam } from "./CushionSeam";
 import { ExtrasBoard } from "./ExtrasBoard";
 import "./finish.css";
@@ -23,7 +32,10 @@ export function FinishStage(props: StageProps) {
   const [hint, setHint] = useState<string | null>(null);
   const [paint, setPaint] = useState(run.finish.paint ?? "sky");
   const [seamTries, setSeamTries] = useState(0);
-  const look = pieceLook(run);
+  const [piece, setPiece] = useState(0);
+  const pieces = runPieces(run);
+  const seats = seatPieces(run).length;
+  const look = pieceLook(run, piece);
   const woodId = run.design.woodId;
   const short = extraTallies(run).filter((tally) => tally.placed < tally.needed);
   const cushion = run.cushion;
@@ -43,10 +55,13 @@ export function FinishStage(props: StageProps) {
 
   return (
     <div className="ww-finish">
+      <PieceSwitcher pieces={pieces} value={piece} label="Piece to decorate" onChange={setPiece} />
       <ExtrasBoard
+        key={piece}
         run={run}
         woodId={woodId}
         look={look}
+        piece={piece}
         coins={state.coins}
         dispatch={dispatch}
         onHint={setHint}
@@ -60,6 +75,9 @@ export function FinishStage(props: StageProps) {
       <section className="ww-finish__panel ww-paper" aria-labelledby="ww-finish-title">
         <h2 id="ww-finish-title" className="ww-finish__title">
           Finish
+          {pieces.length > 1 ? (
+            <span className="ww-muted"> · one finish for all {pieces.length} pieces</span>
+          ) : null}
         </h2>
         <div className="ww-finish__options" role="radiogroup" aria-label="Finish">
           {FINISHES.map((finish) => (
@@ -77,7 +95,7 @@ export function FinishStage(props: StageProps) {
               <span className="ww-muted">{finish.blurb}</span>
               <span className="ww-finish__meta">
                 <span className="ww-coin-line">
-                  <Icon name="coin" size={14} /> {finish.price}
+                  <Icon name="coin" size={14} /> {finish.price * Math.max(1, pieces.length)}
                 </span>
                 {finish.tags.map((tag) => (
                   <TagPill key={tag} tone={run.brief.requiredTags.includes(tag) ? "sage" : "plain"}>
@@ -108,7 +126,10 @@ export function FinishStage(props: StageProps) {
       {canSewCushion(run) ? (
         <section className="ww-finish__panel ww-paper ww-cushion" aria-labelledby="ww-cushion-title">
           <h2 id="ww-cushion-title" className="ww-finish__title">
-            Cushion corner <span className="ww-muted">· optional, 1 hour</span>
+            Cushion corner{" "}
+            <span className="ww-muted">
+              · optional, 1 hour{seats > 1 ? `, one fabric for all ${seats} seats` : ""}
+            </span>
           </h2>
           <div className="ww-cushion__fabrics" role="radiogroup" aria-label="Cushion fabric">
             {CUSHION_FABRICS.map((fabric) => (
@@ -128,7 +149,7 @@ export function FinishStage(props: StageProps) {
                 </svg>
                 <span>{fabric.name}</span>
                 <span className="ww-coin-line">
-                  <Icon name="coin" size={12} /> {fabric.price}
+                  <Icon name="coin" size={12} /> {fabric.price * Math.max(1, seats)}
                 </span>
               </button>
             ))}

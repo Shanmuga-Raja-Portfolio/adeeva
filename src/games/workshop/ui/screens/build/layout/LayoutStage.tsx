@@ -8,7 +8,7 @@ import {
 import { Button } from "../../../../../../ui/kit/Button";
 import { clientToSvg } from "../../../../../../ui/kit/clientToSvg";
 import { useFocusAfterRender } from "../../../../../../ui/kit/useFocusAfterRender";
-import { HINTS } from "../../../../content/hint";
+import { HINTS, SET_HINTS } from "../../../../content/hint";
 import type { PartDef } from "../../../../content/product";
 import {
   boardNumber,
@@ -16,7 +16,10 @@ import {
   isAlongGrain,
   layoutBoards,
   layoutIssues,
+  matchedPairs,
   placementIssue,
+  runPieces,
+  setTemplateById,
   showMeSpot,
   type PartPlacement,
   type QuarterTurn,
@@ -24,7 +27,16 @@ import {
 import { BoardSurface } from "../../../art/BoardArt";
 import { StageFooter } from "../StageFooter";
 import type { StageProps } from "../stageProps";
-import { boardSlots, canvasHeight, footprint, nextTurn, slotAt, type BoardSlot } from "./layoutGeometry";
+import {
+  benchColumns,
+  boardSlots,
+  canvasHeight,
+  canvasWidth,
+  footprint,
+  nextTurn,
+  slotAt,
+  type BoardSlot,
+} from "./layoutGeometry";
 import { PartTray } from "./PartTray";
 import { PlacedPart } from "./PlacedPart";
 import "./layout.css";
@@ -49,7 +61,6 @@ interface Drop {
   readonly rotation: QuarterTurn;
 }
 
-const CANVAS_WIDTH = 126;
 const CLICK_SLOP_CM = 1;
 
 function dropFor(slots: readonly BoardSlot[], part: PartDef, drag: Drag): Drop | null {
@@ -76,8 +87,10 @@ export function LayoutStage(props: StageProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const focusAfter = useFocusAfterRender();
-  const parts = designParts(run.design);
-  const slots = boardSlots(layoutBoards(state, run));
+  const parts = designParts(run);
+  const benchBoards = layoutBoards(state, run);
+  const columns = benchColumns(benchBoards);
+  const slots = boardSlots(benchBoards, columns);
   const height = canvasHeight(slots);
   const issues = layoutIssues(state, run);
   const placedParts = parts.filter((part) => Object.hasOwn(run.placements, part.id));
@@ -88,6 +101,9 @@ export function LayoutStage(props: StageProps) {
   const dropOk =
     drop !== null && dragPart !== undefined && placementIssue(state, run, dragPart, drop) === null;
   const showMeReady = showMeSpot(state, run, null) !== null;
+  const purpose = run.purpose;
+  const matchable = purpose.kind === "set" ? setTemplateById(purpose.templateId).matchablePairs : 0;
+  const pairs = purpose.kind === "set" ? matchedPairs(run) : 0;
 
   const place = (part: PartDef, target: Drop): boolean => {
     const issue = placementIssue(state, run, part, target);
@@ -295,12 +311,34 @@ export function LayoutStage(props: StageProps) {
             >
               ↻ Turn
             </Button>
+            {purpose.kind === "set" ? (
+              <Button
+                variant="secondary"
+                className="ww-big-button"
+                onClick={() => {
+                  if (dispatch({ type: "planTheRest" }))
+                    setMessage("Every part has a spot. Plan the rest scores up to 90%.");
+                }}
+                disabledReason={trayParts.length === 0 ? "Every part has a spot." : undefined}
+                data-testid="plan-the-rest"
+              >
+                Plan the rest
+              </Button>
+            ) : null}
           </div>
         </div>
+        {purpose.kind === "set" ? (
+          <p className="ww-layout__faces" data-testid="matched-faces">
+            <strong>
+              Matched faces: {Math.min(pairs, matchable)} of {matchable}
+            </strong>{" "}
+            {matchable === 0 ? "These pieces are too big to share a board." : SET_HINTS.matchFaces}
+          </p>
+        ) : null}
         <svg
           ref={svgRef}
           className="ww-layout__canvas"
-          viewBox={`0 0 ${CANVAS_WIDTH} ${height}`}
+          viewBox={`0 0 ${canvasWidth(columns)} ${height}`}
           data-testid="layout-canvas"
           role="group"
           aria-label="Your boards"
@@ -367,6 +405,7 @@ export function LayoutStage(props: StageProps) {
       </div>
       <PartTray
         parts={trayParts}
+        pieces={runPieces(run)}
         turns={trayTurns}
         draggingId={drag !== null && !drag.fromBoard ? drag.partId : null}
         onTurn={(partId, turn) => setTrayTurns((current) => ({ ...current, [partId]: turn }))}

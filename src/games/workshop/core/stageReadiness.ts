@@ -53,7 +53,9 @@ export function stageCompletionIssues(state: GameState, run: CommissionRun): str
       return issues;
     }
     case "review":
-      return ["Deliver the piece to finish."];
+      return [
+        run.purpose.kind === "set" ? "Put the set on the floor to finish." : "Deliver the piece to finish.",
+      ];
     case "done":
       return ["This piece is finished."];
   }

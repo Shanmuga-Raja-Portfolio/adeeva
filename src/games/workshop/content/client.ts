@@ -5,6 +5,7 @@ import type { ProductId } from "./product";
 import type { ShadeId } from "./shade";
 import type { WoodId } from "./wood";
 import type { WoodTag } from "./woodTag";
+import { VILLAGE_CLIENTS } from "./villageClient";
 
 export const DELIVERY_SCENES = ["garden", "bedroom", "cafe", "library"] as const;
 export type DeliveryScene = (typeof DELIVERY_SCENES)[number];
@@ -44,7 +45,9 @@ export interface ClientDef {
 
 export const FIRST_CLIENT_ID = "grandpa-teodor";
 
-export const CLIENTS: readonly ClientDef[] = [
+export const FAIR_CLIENT_ID = "larkspur-fair";
+
+const GARAGE_CLIENTS: readonly ClientDef[] = [
   {
     id: "grandpa-teodor",
     name: "Grandpa Teodor",
@@ -267,3 +270,5 @@ export const CLIENTS: readonly ClientDef[] = [
     },
   },
 ];
+
+export const CLIENTS: readonly ClientDef[] = [...GARAGE_CLIENTS, ...VILLAGE_CLIENTS];

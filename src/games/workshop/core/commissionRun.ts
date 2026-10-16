@@ -1,6 +1,7 @@
 import type { FollowProgress } from "../../../engine/followRecord";
 import type { ColourId } from "../../../engine/palette";
 import type { PlacedPose } from "../../../engine/placedPose";
+import type { ApprenticeJobId } from "../content/apprentice";
 import type { CushionFabricId } from "../content/cushionFabric";
 import type { ExtraId } from "../content/extra";
 import type { FinishId } from "../content/finish";
@@ -10,6 +11,7 @@ import type { RunStage } from "../content/runStage";
 import type { WoodId } from "../content/wood";
 import type { Brief } from "./brief";
 import type { OwnedBoard } from "./ownedBoard";
+import { COMMISSION_PURPOSE, type RunPurpose } from "./runPurpose";
 
 export const QUARTER_TURNS = [0, 90, 180, 270] as const;
 export type QuarterTurn = (typeof QUARTER_TURNS)[number];
@@ -39,6 +41,7 @@ export interface JointRecord {
   readonly goodTaps: number;
   readonly assisted: boolean;
   readonly accuracy: number;
+  readonly byApprentice: boolean;
 }
 
 export interface SandRecord {
@@ -46,6 +49,7 @@ export interface SandRecord {
   readonly strokes: number;
   readonly across: number;
   readonly assisted: boolean;
+  readonly renAccuracy: number | null;
 }
 
 export interface FinishChoice {
@@ -56,6 +60,7 @@ export interface FinishChoice {
 export interface PlacedExtra extends PlacedPose {
   readonly id: string;
   readonly extraId: ExtraId;
+  readonly piece: number;
 }
 
 export interface CushionWork {
@@ -65,7 +70,8 @@ export interface CushionWork {
 
 export interface CommissionRun {
   readonly id: string;
-  readonly gigId: string;
+  readonly gigId: string | null;
+  readonly purpose: RunPurpose;
   readonly brief: Brief;
   readonly stage: RunStage;
   readonly reached: RunStage;
@@ -81,14 +87,22 @@ export interface CommissionRun {
   readonly extras: readonly PlacedExtra[];
   readonly nextExtraNumber: number;
   readonly cushion: CushionWork | null;
+  readonly renJobs: readonly ApprenticeJobId[];
 }
 
 export const EMPTY_DESIGN: PieceDesign = { productId: null, options: {}, woodId: null };
 
-export function createRun(id: string, gigId: string, brief: Brief, day: number): CommissionRun {
+export function createRun(
+  id: string,
+  gigId: string | null,
+  brief: Brief,
+  day: number,
+  purpose: RunPurpose = COMMISSION_PURPOSE,
+): CommissionRun {
   return {
     id,
     gigId,
+    purpose,
     brief,
     stage: "brief",
     reached: "brief",
@@ -104,5 +118,6 @@ export function createRun(id: string, gigId: string, brief: Brief, day: number):
     extras: [],
     nextExtraNumber: 1,
     cushion: null,
+    renJobs: [],
   };
 }

@@ -28,3 +28,17 @@ export function panel<I extends string>(id: I, label: string, parts: readonly Su
 export function overallScore(panels: readonly Pick<PanelScore, "score">[], latePenalty: number): number {
   return clamp(Math.round(average(panels.map((entry) => entry.score))) - latePenalty, 0, 100);
 }
+
+export function bestSubScore(parts: readonly SubScore[]): SubScore | null {
+  return parts.reduce<SubScore | null>(
+    (top, entry) => (top === null || entry.value * entry.weight > top.value * top.weight ? entry : top),
+    null,
+  );
+}
+
+export function panelVerdict(score: number): string {
+  if (score >= 85) return "Delighted";
+  if (score >= 70) return "Loved it";
+  if (score >= 55) return "Enjoyed it";
+  return "Warmly cheered";
+}

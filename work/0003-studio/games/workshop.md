@@ -1,6 +1,6 @@
 # Workshop & Wood — Game Design (id: `workshop`)
 
-A playable slice of the Maker Studio contract (`work/0003-studio/design.md`), at about a third of ADEEVA's depth. You turn Uncle Bram's old garage into a small furniture workshop. Neighbours bring you commissions. For each one you design a piece from parts, pick a wood, lay the parts out on boards, then saw, join, sand and finish it, and deliver it. All names, text and art are original, and the studio safety promise applies on every screen.
+A game in the Maker Studio contract (`work/0003-studio/design.md`). §1–§8 describe the garage slice as built; §10 grows it to ADEEVA's depth with a second career (the Furniture Showroom) and the Larkspur Craft Fair. You turn Uncle Bram's old garage into a small furniture workshop. Neighbours bring you commissions. For each one you design a piece from parts, pick a wood, lay the parts out on boards, then saw, join, sand and finish it, and deliver it. All names, text and art are original, and the studio safety promise applies on every screen.
 
 ## 1. Fantasy and audience
 
@@ -12,7 +12,7 @@ A playable slice of the Maker Studio contract (`work/0003-studio/design.md`), at
 - **Why it is good for kids (without overclaiming):** it practises steady pointer control, spatial planning (fitting parts on boards), and working to a budget and a deadline. It shows that careful work is rewarded. It does **not** teach real woodworking or tool use, and says so.
 - **Parent page sentences (exact):** "This game does not teach real woodworking, tool use or finishing. It uses no real measurements or plans."
 
-**Kid-facing labels** (the design terms on the left never appear on screen; in particular "tenon", "dowel", "grain" and "offcut" are never shown):
+**Kid-facing labels** (the design terms on the left never appear on screen; in particular "tenon", "dowel", "grain", "offcut", "bevel" and "kerf" are never shown):
 
 | Design term                | Label on screen                         |
 | -------------------------- | --------------------------------------- |
@@ -25,9 +25,9 @@ A playable slice of the Maker Studio contract (`work/0003-studio/design.md`), at
 
 ## 2. Core loop and stages
 
-**Career (only one):** _Garage Workshop Maker_ in "the Garage on Larkspur Road". Start: 100 coins, reputation 0, weekly rent 100 (Challenging ×1.5 = 150), paid to Uncle Bram, who is kind but firm. Shift: "Sweeping at Pell's Timber Yard" pays 30 coins for a whole untouched day, on every difficulty.
+**First career:** _Garage Workshop Maker_ (the second, _Showroom Maker_, is in §10) in "the Garage on Larkspur Road". Start: 100 coins, reputation 0, weekly rent 100 (Challenging ×1.5 = 150), paid to Uncle Bram, who is kind but firm. Shift: "Sweeping at Pell's Timber Yard" pays 30 coins for a whole untouched day, on every difficulty.
 
-**Hub loop:** read the pinned notes (offers) → accept a commission → run it → deliver → End Day. Rent is due at the end of every 7th day, exactly as ADEEVA's `weeklyBill`. There is no own-stock or show mode in this slice.
+**Hub loop:** read the pinned notes (offers) → accept a commission → run it → deliver → End Day. Rent is due at the end of every 7th day, exactly as ADEEVA's `weeklyBill`. The garage has no own-stock or show mode; the showroom adds both (§10).
 
 **`CommissionRun.stage`** = `brief → design → timber → layout → saw → join → sand → finish → review → done`
 
@@ -369,10 +369,314 @@ Games never import each other (ESLint), so ADEEVA's textile modules are not reus
 - **Wood is respected.** Woods are fictional catalogue entries with no claims about real forests, sourcing or sustainability.
 - **Randomness is free.** Knots, offers and brief variations come from the seeded RNG; nothing can be rerolled or bought with money. Decor is fixed-price and cosmetic. There are no ads, no chat and no network.
 
-## 9. Out of scope for this slice
+## 9. Out of scope (slice and depth)
 
-- A second career (a furniture shop, restoration studio or carpentry school), a hired apprentice, and any show or market mode.
-- More products (chairs, beds, cabinets with drawers, outdoor play sets), turning or carving mini-games, mixing woods in one piece, and upholstery beyond one cushion seam.
-- Trait-gated clients for Trendsetter and Charmer (each has a story beat only).
+- A third career (restoration studio, carpentry school), more than one apprentice, staff, any online shop, and selling at the Fair itself.
+- Cabinets with drawers, bunk or loft beds, high chairs, cots, outdoor play sets and anything to climb; turning or carving mini-games; mixing woods in one piece or one set; upholstery beyond one cushion seam.
+- Rival makers who are scored, ranked or shown losing; entry fees, prize money in real currency and leaderboards.
 - A street map of delivered pieces, damage over time, broken pieces, returns, weather and wood movement.
-- Real measurements, printable plans, photo import, and any online sharing or leaderboards.
+- Real measurements, printable plans, photo import, and any online sharing.
+
+## 10. Depth: Furniture Showroom and Larkspur Craft Fair
+
+Phase B (`work/0003-studio/roadmap.md`) grows Workshop & Wood to ADEEVA's depth. ADEEVA grows Student → Label, with 3-look collections and a runway. Here the **Garage Workshop Maker** grows into a **Showroom Maker** in the same save. Uncle Bram's empty bicycle shop next door becomes **the Larkspur Road Showroom**. There you design **matched sets** (one wood, one finish, one style across every piece), take on **Ren**, an apprentice who handles simple steps, and each season bring one set to the **Larkspur Craft Fair** on the village green, where a booth reveal is cheered by four warm panels. Nobody is sent home, ranked against other makers or timed against a rival. Everything in §1–§9 still applies unless this section changes it.
+
+All new woods, products, options, finishes, extras and clients in §10.8 are open in **both** careers by their reputation gates, so a garage player meets new content in weeks 2–3. Set runs, the floor, Open House, Ren, the Fair and the showroom upgrades belong to the showroom career.
+
+### 10.1 Careers, unlock and "start here"
+
+`content/career.ts` becomes a list, `CAREER_IDS = ["garage", "showroom"]`; `GameState.career` is new.
+
+| id         | on screen             | place                                 | start coins | start rep | weekly rent (Std; Challenging)         | shift (any difficulty)                      |
+| ---------- | --------------------- | ------------------------------------- | ----------- | --------- | -------------------------------------- | ------------------------------------------- |
+| `garage`   | Garage Workshop Maker | the Garage on Larkspur Road           | 100         | 0         | 100; 150                               | "Sweeping at Pell's Timber Yard", 30        |
+| `showroom` | Showroom Maker        | the Larkspur Road Showroom, next door | 360         | 30        | 160; 240, label "Garage and shop rent" | "Stacking boards at Pell's Timber Yard", 45 |
+
+- **Unlock (same save):** while `career === "garage"`, `showroomOfferReady` runs after each delivery and at End Day. It passes when reputation ≥ **45**, beat `ww-showroom-offer` is not yet seen, and the trigger `showroom-offer` is not already queued (as Patisserie's `salonOfferReady`); `delivered` ≥ **14** stays only as a guard, since reputation 45 already needs 15+ deliveries. When it passes it queues `showroom-offer`.
+- **Pacing:** offers run about one a day, so a player delivers about one piece a day. Each delivery gives +3 reputation on a pass and −1 on a Standard fail. A decent Standard player gets the offer on days 18–22 (late week 3), matching ADEEVA's Student Showcase and Patisserie's parlour key.
+
+| player                     | reputation per delivery | offer lands |
+| -------------------------- | ----------------------- | ----------- |
+| pass rate 95%              | 2.8                     | day 17      |
+| pass rate 88%              | 2.5                     | day 19      |
+| pass rate 80%              | 2.2                     | day 22      |
+| pass rate 70%              | 1.8                     | days 26–27  |
+| Relaxed                    | —                       | ≈ day 16    |
+| Challenging (75%, fail −3) | 1.5                     | days 28–34  |
+
+- **Story beat `ww-showroom-offer`:** Bram jingles a second key. Choices use the typed story effect (`StoryBeat<StoryTrigger, "open-showroom">`, as ADEEVA and Thrift-Flip). **"Open the showroom"** dispatches `openShowroom`. **"Not yet"** sets the flag `showroom-later`, and the hub keeps a "Bram's old shop" card with the same Open button (`canOpenShowroom`), so the offer never expires.
+- **`openShowroom`:** sets `career: "showroom"` and keeps coins, reputation, buzz, boards, upgrades, decor, log, active gigs and any run on the bench. It adds **Bram's Spare Board Pile** (2 long pine, 1 wide pine panel, 2 long beech; ≈ 42 coins of boards) and opens Season 1 on the next week start (`showroom.seasonStartDay`). The showroom rent applies from the first settlement on or after that day, so the week in progress still pays 100. Before `seasonStartDay` sets may be built, but there is no Open House. Illegal (same state reference) when already `showroom` or below the thresholds.
+- **"Start here" (older players):** New Game gains a **Career** step between Trait and Difficulty using the shared `ui/newGame/CareerStep` with `careerDraft` and `careerFacts`. Cards: "Garage Workshop (start here if you're new)" and "Furniture Showroom (for makers who know the bench; suggested 12+)". The suggestion is a label, never a gate; Garage is preselected. A showroom start gets 360 coins, reputation 30, Bram's Spare Board Pile plus 2 more long pine, `seasonStartDay = 1`, and the intro beat `ww-intro-showroom` in place of `ww-key`. The first-commission coach starts off, and the first hub shows a one-time **"Want a quick bench tour?"** toggle that turns it back on.
+- **Studio reputation:** `profile.startedAs` is fixed at New Game. `module.ts` switches from `fixedStartReputation` to `earnedReputation(..., (profile) => startOf(profile.startedAs))`, as ADEEVA's `careerReputation`; a missing `startedAs` (v1 save) means a start of 0. Opening the showroom never changes earned studio reputation.
+- **Rest the shop:** on season day 1 the theme card (§10.7) also offers **"Rest the shop this season"** (`restShowroom`): rent 100, no Fair entry, no Open House sales, Ren's wage paused. Floor sets and rosettes are kept; the choice resets next season.
+
+### 10.2 How play changes
+
+A **season** is 14 days anchored at `seasonStartDay` (always a week start; `seasonDay = day − seasonStartDay + 1`), never at global week parity. Seasons cycle Spring → Summer → Autumn → Winter.
+
+| Season day | What happens                                                                                                                                                                                                                                                            |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–6, 8–12  | Working days: commissions and set runs; Ren takes jobs                                                                                                                                                                                                                  |
+| 7          | Working day; at End Day **Open House** sells one floor set (below), then rent and Ren's wage                                                                                                                                                                            |
+| 13         | **Fair Day**: the bench stays open until the Fair is staged (§10.6); staging uses the rest of the day. With no eligible set, it is an ordinary working day. Eligible sets are those made since the previous Fair Day, so Season 1 also takes sets made before it starts |
+| 14         | Working day; staging here is late (−10 except Relaxed; costs 4 h); End Day: Open House, rent, next season                                                                                                                                                               |
+
+- **Commissions keep coming** from all 16 clients (§10.8). Offers, the gig cap of 3 and buzz rules are the engine's. A commission due on Fair Day is due the next day instead.
+- **Bench:** still one run at a time, and still one run type. `CommissionRun` gains `purpose: {kind: "commission"} | {kind: "set", setId, templateId, setJoint}`, the pattern of Patisserie's `BakeRun.purpose`. A set run's `brief` comes from Workshop's own `fairBrief(theme, booth)` (the same idea as Patisserie's, never imported), its `gigId` is `null` (the field widens to `string | null`), and its `design` holds the shared wood and slot choices with `productId: null`; the pieces come from the template.
+- **Set part ids** are namespaced `"<pieceIndex>:<partId>"`. `pieceParts(run)` returns one flat part list, so placements, cuts, joints and sanding stay keyed by part id, and layout, saw, join and sand work unchanged. Per-piece quality groups the records by the prefix. `PlacedExtra` gains `piece: number`.
+- **Matched cushions:** `cushion` stays one field. One fabric and one seam cover every seat in the set, +1 h in total.
+- **Setting aside:** a commission follows the existing rule. A set run can be set aside only before its first saw line is recorded; after that `setAside` is refused (same reference) with "Finish the set first." Sets never touch `log` or `delivered`.
+- **Showroom floor:** 2 bays (3 with the Hand Cart). Every finished set stands in a bay. `startSet` is refused while every bay is full: "The floor is full. Open House is on day 7."
+- **Open House** (End Day of season days 7 and 14, 0 h): **at most one** floor set marked **For sale** goes home with a family for its set price (§10.3), +3 buzz. The player picks it on the floor; the oldest is the default. Other For-sale sets wait their turn and never spoil. The season's **Fair pick** is "Saved for the Fair" until the Fair is staged or skipped. A set marked **Keep on show** never sells and gives +2 buzz per Open House. With nothing For sale the card reads "A quiet Open House. Visitors loved the smell of fresh wood." and pays 0, with no penalty.
+- **Hub additions:** a Season ribbon (season, theme, booth, days to Fair Day), the showroom floor scene, Ren's card, the Fair Board and the Rosette Rail (§10.7).
+
+### 10.3 Matched sets (the set run)
+
+`startSet {templateId}` (any working day, a free floor bay, an empty bench) opens a run with a set purpose and stages `design → timber → layout → saw → join → sand → finish → review`. The checklist reads "Ready for the Fair" against the season theme and booth (§10.6), as guidance only.
+
+| id              | name            | pieces                                       | count | booths | pine boards | hours (with Ren) |
+| --------------- | --------------- | -------------------------------------------- | ----- | ------ | ----------- | ---------------- |
+| reading-corner  | Reading Corner  | bookshelf, footstool                         | 2     | 1–2    | 31          | 12 (10)          |
+| hallway-welcome | Hallway Welcome | coat-rack, footstool                         | 2     | 1–2    | 25          | 12 (10)          |
+| cottage-bedroom | Cottage Bedroom | cottage-bed, bedside-table                   | 2     | 1–2    | 60          | 12 (10)          |
+| breakfast-nook  | Breakfast Nook  | breakfast-table, dining-chair ×2             | 3     | 2–4    | 54          | 15 (13)          |
+| garden-corner   | Garden Corner   | window-bench, planter-box ×2                 | 3     | 2–4    | 52          | 15 (13)          |
+| playroom        | Playroom Pals   | toy-chest, step-stool, bookshelf             | 3     | 2–4    | 64          | 16 (14)          |
+| family-table    | Family Table    | breakfast-table, dining-chair ×3             | 4     | 4      | 70          | 18 (16)          |
+| guest-room      | Guest Room      | cottage-bed, bedside-table ×2, wall-cupboard | 4     | 4      | 104         | 19 (17)          |
+
+- **Hours:** design 1 + timber 1 (Ren 0) + per piece saw 2 and join 2 (a **twin**, a repeat of a product already in the set, saws in 1) + sand 1 (Ren 0) + finish 1, +1 for matched cushions. A set spans 1–2 days.
+- **Matchable pairs:** each template lists `matchablePairs` in content, the most show-surface pairs a legal layout can put on shared boards (§10.4). The bed's headboard and footboard each fill a wide panel alone, so the Cottage Bedroom has 0.
+- **Matched by design (`setStyle`):** one wood, one finish (and paint), and one choice per slot (edge, legs, accent) applied to every piece that has that slot. The design preview shows the whole set side by side. Changing the wood clears the board plan, as §2.
+- **Set joint:** each product marks its **show joints** in content (`JointDef.show`: the ones a visitor can see; leg joints never are). At design the player picks one **set joint**, Peg, Slot or Comb, and every show joint in the set uses it. Other joints keep their own kind.
+- **Piece quality** is §5's formula per piece (woodFit against the theme tags or `natural`); **set quality** is the mean piece quality. Set spend = boards + finish price × pieces + extras + fabrics.
+- **Set price** = `round(Σ showPrice × (0.6 + 0.6 × setQuality ÷ 100) × fineWood × harmony × rosette)`: fineWood = 1 + 0.15 per hammer above 1; harmony = 1.1 when the set's Harmony Table score (§10.6, computable without a Fair) is ≥ 80; rosette = 1.1 only for the set that won a Silver Rosette or better, whose floor price is recomputed when the Fair settles. `showPrice` per product is in §10.8.
+
+### 10.4 Mini-game twists (the existing games, used in fresh ways)
+
+| Twist                      | Reuses                        | What is new                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| -------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Plan the whole set**     | Plan your boards (§3.1)       | Every part of every piece goes onto the set's boards, grouped by piece in the tray. A **board filmstrip** shows one board large and every board as a thumbnail to switch to (tap, or ← / →); on the keyboard a picked part goes to another board with **Move to board ▸**. **Matched faces** = achieved pairs ÷ `template.matchablePairs`, capped at 1; a pair is two show-surface parts of different pieces on one board (two chair seats side by side on one panel). Show me never matches faces. Set runs add the Assist **Plan the rest**: it places every unplaced part legally, each capped at 0.9 for wood lines, and never matches faces. |
+| **Saw the twin**           | Saw (§3.2)                    | A twin's lines show the first piece's cut as a faint ghost to follow. The ghost lives in UI session state only: it is never saved and is gone after a reload. Scoring is unchanged; the twin takes 1 h instead of 2. A twin also offers **Saw it like my first**: each line records the first piece's matching line accuracy − 0.05, with no tracing. Matching Jigs widen the twin's tolerance ×1.15.                                                                                                                                                                                                                                             |
+| **Matching joints**        | Join (§3.3)                   | Show joints use the set joint's close-up; the first one seated is pinned beside the mat as "your first joint" to compare. Comb earns the most Set joint points (§10.6) and has the tightest gate.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Even shine**             | Sand (§3.4)                   | All show surfaces of the set in one stage; a **shine bar** shows each piece's smoothness side by side. **Evenness** = `clamp(100 − 2 × (max − min piece quality), 0, 100)`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **One finish, set extras** | Finish (§3.5)                 | One finish for the set; extras are placed per piece. **Matching hardware** = share of placed extra kinds that appear on every piece × 100, leaving out each product's own required extras (`needs`, such as the wall cupboard's hinges and the coat rack's hooks); 70 ("simple and calm") with no other extras.                                                                                                                                                                                                                                                                                                                                   |
+| **Arrange the floor**      | `boardLayout` placement rules | A top-down shop floor (300 × 200) with one rug per bay: drag each piece's footprint, in bounds, no overlap, turned in 90° steps, keyboard as §3.1. A set wholly on its own rug gives +2 buzz at Open House. 0 h; otherwise unscored.                                                                                                                                                                                                                                                                                                                                                                                                              |
+
+### 10.5 Ren, the apprentice
+
+- **Who:** Ren Calloway, 19, from the evening woodwork club, introduced by Bram in `ww-ren-hello` at the first showroom season start. Ren is an adult, cheerful and learning; nobody scolds anyone.
+- **Hire:** **Take Ren on** on Ren's card. The wage is 40 a week (× rent multiplier: Relaxed 0, Challenging 60), following ADEEVA's `assistantHired` and `assistantPaidThroughDay`: taking Ren on pays the current week's wage unless `paidThroughDay` already covers today (refused when coins are short), and each weekly settlement with Ren hired pays the next week ahead as a money line (engine `weekSettlement` and `weekMoneyLines`). **Give Ren the week off** stops the wage from the next settlement; Ren can be taken on again at any time, so a week off just before rent day saves nothing. Ren rests with the shop too: no hire and no jobs in a rested season. Showroom career only.
+- **Jobs** (a 56 px **Hand this to Ren** button on the stage card, for commissions and sets; at most **2 a day**, 3 with Ren's Own Bench; none once the Fair is staged):
+
+| job              | stage  | effect                                                                                                    |
+| ---------------- | ------ | --------------------------------------------------------------------------------------------------------- |
+| Fetch the boards | timber | Ren buys "what fits my plan" with the player's coins; the trip hour is 0                                  |
+| Sand it          | sand   | every surface records Ren's accuracy; stage hours 0                                                       |
+| Peg joints       | join   | every Peg joint is seated at Ren's accuracy; join hours −1, never below 0; with Ren's Own Bench, Slot too |
+
+- **Records:** `SandRecord` = the hand record | `{byApprentice: true, accuracy}`. Ren's `JointRecord` = `{offsetMm: 0, angleDeg: 0, goodTaps: taps, accuracy, byApprentice: true}`; the parser and the join action accept a record with `byApprentice` only when it was written by `apprenticeJob`. Ren's records are not Assist and are never capped further.
+- **Skill:** level = `1 + floor(jobsDone ÷ 8)`, up to 3; Ren's accuracy is 0.74 / 0.80 / 0.86, fixed, never random. Ren never saws, designs, finishes or does Comb joints ("Ren is still learning those").
+- **Cost:** for a decent player (≈ 0.90), Ren's sanding costs ≈ 2.4 quality at level 1. On an all-Peg piece (birdhouse, bookshelf) Ren's pegs cost ≈ 5–6 quality at level 1 (0.35 × 0.16) and ≈ 1.4 at level 3. An 8-year-old on Assist (0.70) gains a little. Ren is a time-for-quality trade, never a trap.
+- **Art:** Ren is drawn with the studio `AvatarFigure` in apron and goggles; a handed job plays a 2 s scene (dust puff, mallet tock) that reduced motion turns into a fade.
+
+### 10.6 The Larkspur Craft Fair (the event moment, like ADEEVA's runway)
+
+1. **Fair Board** (like ADEEVA's `CollectionBoard`): the theme card (2 tags, a 4-colour palette, 2 mood words) and one slot for a set finished this season that fits the booth. It opens on **"Bram's pick"**: the set with the most theme tags, then the highest quality, ties to the newer set. A set finished on Fair Day can be picked the same day. With no such set by the end of day 14 the Fair is skipped with `ww-fair-skipped`; nothing is lost.
+2. **Planner** (`stageFair {plan}`, one action; `useRovingRadio` groups): the **reveal order** of the pieces ("Save your favourite for last"), a **backdrop** (`linen-drape` "calm", `bunting` "cheerful", `lantern-string` "cosy", electric lights) and **music** (`fiddle-folk` "lively", `acoustic-guitar` "warm", `wind-chimes` "gentle", `brass-band` "bright"), plus a **maker's note** card ("From one board", "Made with Ren", "For Larkspur homes"), flavour only. On Relaxed it opens on "Hattie suggests…" (the theme's best backdrop and music, the best piece last), confirmed with one tap. On Standard and Challenging Hattie names the backdrop only; the player matches the music to the theme's mood word and chooses the order.
+3. **The reveal** (Fair Day; day 14 is late): a booth on the green under a striped canopy, bunting swaying. Two volunteer neighbours (studio `Avatar`) wheel each piece in on a padded trolley under a dust sheet; the player lifts the sheet with a tap, Enter or Space, or it lifts by itself after 3 s. Each lift gives a wood-shine sparkle, and the volunteers dress the piece as it would stand at home: a teapot on the table, books on the shelf, basil in the planter, a quilt on the bed (nobody sits on anything). At the last lift one Story Wall client says one delighted line, falling leaves come down (`PetalFall` with a leaf shape) and visitors gather to clap. Then four panel cards flip up and count. Total ≈ 30 s; **Skip** after the first lift. Reduced motion shows crossfaded stills with captions and the same taps (ADEEVA's `STILL_MS`).
+4. **Panels** (each 0–100 through the engine's `panel()` and `subScore`; every member is an adult neighbour; no one is called a judge):
+
+| panel (members)                                                                                              | parts (weight)                                                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Craft Bench** (Uncle Bram; Mr. Pell of the timber yard; Hattie Rowe, chair maker and Fair organiser)       | Craft 0.5 = set quality · Joints 0.2 = mean joint accuracy × 100 · Set joint 0.1 = Peg 60 / Slot 80 / Comb 100 · Fine wood 0.2 = 60 / 80 / 100 for 1 / 2 / 3 hammers                                                     |
+| **Comfort Corner** (Rosalind of the Corner Cup; Grandma Esi)                                                 | Smooth to touch 0.4 = mean sand score × 100 · Cosy touches 0.3 = share of seat pieces with a cushion (no seats: share of pieces tagged `cosy`) · Solid look 0.3 = share of pieces tagged `sturdy` or in a 2+ hammer wood |
+| **Harmony Table** (Luna, mural painter; Ms. Ingrid, librarian)                                               | Matched faces 0.3 · Evenness 0.3 · Palette 0.2 = share of the set's colours in the theme palette · Matching hardware 0.2 (all §10.4). With `matchablePairs` 0, Matched faces is left out and Evenness weighs 0.6         |
+| **Story Wall** (three past clients drawn each season: adults, or a family pair such as "Milo and Aunt Noor") | Theme 0.4 = share of theme tags in the set's tags · Booth setting 0.3 = engine `stagingScore` (music 70/20 + backdrop 30/10) · Reveal 0.3 = engine `closerStrength` over piece qualities in reveal order                 |
+
+"Comfort" means inviting and smooth to the touch: no panel member sits, stands or climbs on a piece.
+
+5. **Overall** = engine `overallScore` (mean of the 4 panels) − `lateShowPenalty`. **Rosettes** come from fixed bands, never placings: Maker's Ribbon (< 55, "The green clapped for every piece!"), Ribbon of Merit (55–69), Silver Rosette (70–84), Gold Rosette (85–94), Oak Leaf Rosette (95+). Verdict words: Delighted ≥ 85, Loved it ≥ 70, Enjoyed it ≥ 55, Warmly cheered below.
+6. **Rewards (`fairPrize`):** coins `25 + 10 × booth + 3 × max(0, overall − 50)`; reputation from the engine's `showReputation` with `GENTLE_SHOW_SETBACKS` (below 50: 0, or −1 on Challenging); buzz `round(overall ÷ 10)`. **Fair Notes** give one praise line per panel from its best part and one "Next time, try…" tip from the engine's `weakestTip` and `qualityTipLine` on the weakest part. The rosette goes to `fair.rosettesBySet[setId]` and, if better, `fair.rosetteRail[themeId]`. The set returns to the floor For sale at its recomputed price.
+7. **Booths (progression):** the next booth opens when overall ≥ **60** (≥ 65 on Challenging). On Relaxed it moves up only when the player taps **"Move to a bigger booth?"** on the results. There is no step back.
+
+| booth | name         | set sizes | Ready for the Fair (Std; +6 Challenging) | extra             |
+| ----- | ------------ | --------- | ---------------------------------------- | ----------------- |
+| 1     | Corner Stall | 2         | 72                                       | —                 |
+| 2     | Green Pitch  | 2–3       | 74                                       | —                 |
+| 3     | Big Canopy   | 3         | 76                                       | `ww-booth-canopy` |
+| 4     | Oak Pavilion | 3–4       | 78                                       | Rosette Rail goal |
+
+"Ready for the Fair" is a checklist mark only; the booth card says "Ready or not, the green is glad to see you."
+
+### 10.7 Fair themes and the Rosette Rail
+
+On season day 1 one card offers the season's 2 themes (ADEEVA's `NextSeasonPicker` pattern) and Rest the shop (§10.1); Trendsetter sees next season's pair early. A theme's two mood words name its best backdrop and music. Every palette colour comes from a wood tone, paint, finish, extra or cushion fabric.
+
+| id              | season | name            | tags             | palette                              | mood words       | best backdrop  | best music      |
+| --------------- | ------ | --------------- | ---------------- | ------------------------------------ | ---------------- | -------------- | --------------- |
+| orchard-picnic  | Spring | Orchard Picnic  | rustic, natural  | honey-wood, sage, mustard, ivory     | cheerful, lively | bunting        | fiddle-folk     |
+| kite-festival   | Spring | Kite Festival   | playful, modern  | sky, coral, mustard, pale-wood       | cheerful, bright | bunting        | brass-band      |
+| seaside-cabin   | Summer | Seaside Cabin   | natural, cosy    | pale-wood, sky, teal, ivory          | calm, gentle     | linen-drape    | wind-chimes     |
+| little-loft     | Summer | Little Loft     | modern, classic  | pale-wood, charcoal, teal, ivory     | calm, bright     | linen-drape    | brass-band      |
+| harvest-barn    | Autumn | Harvest Barn    | rustic, sturdy   | honey-wood, red-wood, mustard, coral | cosy, lively     | lantern-string | fiddle-folk     |
+| quiet-library   | Autumn | Quiet Library   | classic, elegant | red-wood, navy, ivory, gold          | calm, warm       | linen-drape    | acoustic-guitar |
+| snowy-lodge     | Winter | Snowy Lodge     | cosy, sturdy     | dark-wood, ivory, navy, sage         | cosy, gentle     | lantern-string | wind-chimes     |
+| lantern-evening | Winter | Lantern Evening | elegant, cosy    | dark-wood, lavender, gold, blush     | cosy, warm       | lantern-string | acoustic-guitar |
+
+**Rosette Rail:** a rail over the showroom counter with one hook per theme, showing the best rosette won there. The finale beat `ww-rosette-rail` plays once each of the 4 seasons has a Silver Rosette or better on one of its hooks and a Gold has been won (at least 4 seasons; about 4–6 for a decent player). Gold or better on all 8 hooks plays `ww-every-hook-gold`. Play continues afterwards.
+
+### 10.8 Content, about twice the slice
+
+| kind         | slice | added | total | added ids                                                                                                                       |
+| ------------ | ----- | ----- | ----- | ------------------------------------------------------------------------------------------------------------------------------- |
+| woods        | 12    | 8     | 20    | alder, linden, sycamore, elm, chestnut, apple, pear, hickory                                                                    |
+| products     | 7     | 7     | 14    | dining-chair, breakfast-table, cottage-bed, footstool, planter-box, coat-rack, wall-cupboard                                    |
+| part options | 10    | 6     | 16    | clipped-corners, scallop-edge, block-legs, sled-legs, heart-cutout, moon-cutout                                                 |
+| finishes     | 6     | 4     | 10    | milk-paint, limed-wax, colour-wash, midnight-stain                                                                              |
+| extras       | 8     | 8     | 16    | cup-handle, ceramic-knob, rope-handle, brass-corners, little-wheels, heart-carving, moon-stencil, bird-carving                  |
+| clients      | 8     | 8     | 16    | nana-pearl, coach-farrah, the-okonkwos, grandma-esi (Charmer), mr-haruto, kit-and-zara (Trendsetter), dr-amara, mrs-bellweather |
+| upgrades     | 4     | 4     | 8     | matching-jigs, hand-cart, ren-bench, booth-awning                                                                               |
+| decor        | 3     | 3     | 6     | shop-sign (one of 8 paints, 60), window-ferns (50), rocking-horse (display only, 120)                                           |
+| story beats  | 8     | 19    | 27    | table below                                                                                                                     |
+| new kinds    | —     | 33    | 33    | 2 careers, 8 set templates, 8 Fair themes, 4 booths, 3 backdrops, 4 music, 3 maker's notes, 1 apprentice                        |
+
+**Woods** (§4.1 columns: price, hardness, hammers, knotty, tone, tags, unlock rep): alder 7, 0.25, 1, no, red-wood, rustic/natural, 14 · linden 7, 0.15, 1, no, pale-wood, playful/natural, 16 · sycamore 10, 0.45, 2, no, pale-wood, modern/classic, 18 · elm 11, 0.45, 2, yes, honey-wood, rustic/sturdy, 20 · chestnut 12, 0.45, 2, no, honey-wood, classic/cosy, 24 · apple 14, 0.6, 3, yes, red-wood, playful/cosy, 28 · pear 16, 0.55, 3, no, red-wood, elegant/cosy, 32 · hickory 15, 0.65, 3, no, honey-wood, sturdy/rustic, 34.
+
+**Products** (parts W×H cm; canonical layouts leave room for knots, §3.1. `showPrice` of slice products: birdhouse 25, step-stool 40, plant-stand 40, bookshelf 55, toy-chest 60, bedside-table 60, window-bench 70.)
+
+| id              | parts (W×H)                                                            | slots              | joints (★ show)           | show surfaces        | seat | canonical layout                                                       | pine | showPrice |
+| --------------- | ---------------------------------------------------------------------- | ------------------ | ------------------------- | -------------------- | ---- | ---------------------------------------------------------------------- | ---- | --------- |
+| dining-chair    | seat 40×36, back 38×14, leg ×4 44×5, rail ×2 36×6                      | edge, legs, accent | Slot ×4, Peg ×2 ★ (back)  | seat, back           | yes  | panel: seat + back; long: 4 legs in 2 rows + 2 rails                   | 16   | 50        |
+| breakfast-table | top 84×38, leg ×4 70×6, rail ×2 45×8                                   | edge, legs         | Slot ×4, Peg ×2 ★ (rails) | top                  | no   | panel: top; long 1: 3 legs; long 2: leg + 2 rails                      | 22   | 80        |
+| cottage-bed     | headboard 84×38, footboard 84×28, side rail ×2 110×9, slat ×3 80×8     | edge, accent       | Comb ×4 ★, Peg ×3         | headboard, footboard | no   | panel 1: headboard; panel 2: footboard; long 1: rails; long 2–3: slats | 38   | 90        |
+| footstool       | top 36×26, leg ×4 22×5                                                 | edge, legs         | Slot ×4                   | top                  | yes  | panel: top; short: 4 legs                                              | 13   | 35        |
+| planter-box     | side ×2 50×18, end ×2 18×18, base 46×16                                | edge, accent       | Comb ×4 ★                 | side ×2              | no   | long 1: 2 sides; long 2: base + 2 ends                                 | 12   | 35        |
+| coat-rack       | back 80×14, bracket ×2 14×12, shelf 80×12; needs coat-hook ×3          | edge, accent       | Peg ×2, Slot ×2 ★ (shelf) | back                 | no   | long 1: back + 2 brackets; long 2: shelf                               | 12   | 40        |
+| wall-cupboard   | side ×2 48×16, top 40×16, base 40×16, door 44×36; needs brass-hinge ×2 | edge, accent       | Comb ×4 ★                 | door                 | no   | long 1: 2 sides; long 2: top + base; panel: door                       | 22   | 60        |
+
+Slice show joints: bookshelf Peg ×6, toy-chest Comb ×4, bedside-table Peg ×2 (rails), window-bench Slot ×2 (rails); the rest have none. The cottage bed is a low single bed, always shown made up with a quilt and empty.
+
+**Part options:** every option reshapes inside the part's rectangle, so no part list, joint list or canonical layout changes. `clipped-corners` Clipped corners (modern, classic; 4 short straight corner cuts) · `scallop-edge` Scalloped edge (playful, cosy; 5 shallow arcs) · `block-legs` Block legs (sturdy, modern; straight, with a square foot notch) · `sled-legs` Sled legs (rustic, modern; a curved runner foot on each leg) · `heart-cutout` Heart cut-out (cosy, playful; closed curve) · `moon-cutout` Moon cut-out (elegant, playful; closed crescent).
+
+**Finishes:** `milk-paint` Milk Paint 6 (rustic, playful; one of the 8 paints, softened) · `limed-wax` Limed Wax 6 (natural, rustic; ivory + wood tone) · `colour-wash` Colour Wash 7 (cosy, playful; a paint + wood tone) · `midnight-stain` Midnight Stain 7 (elegant, modern; charcoal).
+
+**Extras:** `cup-handle` Cup Handle 4 (classic, modern; charcoal) · `ceramic-knob` Painted Knob 3 (playful, cosy; sky) · `rope-handle` Rope Handle 3 (rustic, natural) · `brass-corners` Brass Corners 5 (elegant, sturdy; gold) · `little-wheels` Little Wheels 4 (playful, sturdy; charcoal; `allowedOn` excludes every seat or step product: step-stool, footstool, dining-chair, window-bench) · `heart-carving` Carved Heart 4 (cosy, playful) · `moon-stencil` Moon Stencil 2 (elegant, playful; gold) · `bird-carving` Carved Bird 4 (natural, playful).
+
+**Clients** (rolled as §4.5; the cheapest valid pine build of each client's dearest product fits the lowest budget roll with 2–7 coins to spare: Pearl 16, Farrah 30, Okonkwos 27, Esi 32, Haruto 34, Kit and Zara 29, Amara 36, Bellweather 43. New clients enter the draw pool only at reputation ≥ 14 through `freeClients`, so early seeded draws do not move.)
+
+| id              | who                                                | gate / min rep   | products                        | required tags   | favoured colours          | avoid    | required extras | budget | fee     | days | min Q |
+| --------------- | -------------------------------------------------- | ---------------- | ------------------------------- | --------------- | ------------------------- | -------- | --------------- | ------ | ------- | ---- | ----- |
+| nana-pearl      | Nana Pearl, who grows herbs on her balcony         | — / 14           | planter-box                     | natural         | sage, honey-wood, mustard | charcoal | —               | 20–30  | 55–70   | 4–6  | 70    |
+| coach-farrah    | Coach Farrah, junior football club                 | — / 16           | coat-rack                       | sturdy, playful | sky, mustard, coral       | —        | name-plaque ×1  | 32–45  | 70–85   | 4–6  | 72    |
+| the-okonkwos    | The Okonkwo family, new to the corner house        | — / 20           | breakfast-table, dining-chair   | cosy, sturdy    | honey-wood, sage, ivory   | black    | —               | 30–45  | 80–100  | 5–7  | 74    |
+| grandma-esi     | Grandma Esi, who cooks Sunday lunch for the street | Charmer / 16     | breakfast-table                 | cosy, classic   | mustard, coral, red-wood  | —        | name-plaque ×1  | 35–50  | 90–110  | 5–7  | 74    |
+| mr-haruto       | Mr. Haruto, who mends old bicycles                 | — / 24           | footstool, wall-cupboard        | modern, classic | teal, charcoal, pale-wood | coral    | wood-knob ×1    | 40–55  | 85–105  | 5–7  | 76    |
+| kit-and-zara    | Kit and Zara, who make the Larkspur zine           | Trendsetter / 20 | coat-rack, footstool, bookshelf | modern, playful | coral, teal, mustard      | —        | star-stencil ×2 | 32–45  | 95–115  | 4–6  | 76    |
+| dr-amara        | Dr. Amara, the village vet                         | — / 28           | wall-cupboard                   | classic, sturdy | navy, ivory, red-wood     | lavender | brass-knob ×1   | 40–55  | 95–115  | 5–7  | 78    |
+| mrs-bellweather | Mrs. Bellweather, who runs the hilltop guesthouse  | — / 32           | cottage-bed                     | cosy, classic   | blush, ivory, honey-wood  | black    | —               | 50–70  | 130–160 | 6–8  | 80    |
+
+| client          | request                                                    | delighted                                            |
+| --------------- | ---------------------------------------------------------- | ---------------------------------------------------- |
+| nana-pearl      | My basil wants a proper home. A wooden box, please.        | The basil looks proud. So do I!                      |
+| coach-farrah    | Muddy coats everywhere! Our club needs a strong coat rack. | Every coat on a hook. The team cheered!              |
+| the-okonkwos    | Our new kitchen is empty. Could you make us a table?       | Our first breakfast at home. It feels like ours now. |
+| grandma-esi     | Sunday lunch needs a table. Warm and welcoming, please.    | Everyone fits, and everyone's smiling. Wonderful.    |
+| mr-haruto       | Something neat for my workshop. Simple lines, please.      | Neat as a well-tuned bell. Thank you.                |
+| kit-and-zara    | Our zine needs something bold. Surprise us!                | It's going on our next cover!                        |
+| dr-amara        | A cupboard for leads and treats. Sturdy, please.           | The puppies sniffed it and approved. Perfect.        |
+| mrs-bellweather | My guest room needs a bed. Cosy and classic, please.       | Guests will sleep like logs. Charming work.          |
+
+Near-miss lines follow the §4.5 tone in content. Delivery scenes reuse the 4 backdrops: Garden (Pearl, Farrah), Café (Esi, the Okonkwos), Bedroom (Bellweather), Library (Haruto, Amara, Kit and Zara).
+
+**Upgrades** (showroom only, gated by Fair progress, since every showroom player is already past reputation 45; 690 coins in all)
+
+| id            | name                 | price | opens               | effect                                     |
+| ------------- | -------------------- | ----- | ------------------- | ------------------------------------------ |
+| matching-jigs | Matching Jigs        | 160   | booth 1             | twin saw tolerance ×1.15, twin joints ×1.1 |
+| hand-cart     | Showroom Hand Cart   | 180   | booth 2             | +1 bay (build ahead or Keep on show)       |
+| ren-bench     | Ren's Own Bench      | 200   | Ren reaches level 2 | Ren takes 3 jobs a day, and Slot joints    |
+| booth-awning  | Striped Booth Awning | 150   | booth 3             | Story Wall +5 (capped at 100)              |
+
+**Story beats** (player lines voiced by trait as §4.7)
+
+| id                  | trigger                          | lines (short)                                                                                                |
+| ------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| ww-showroom-offer   | showroom-offer                   | **Bram:** "The old bicycle shop next door is empty. Fancy a showroom?" / choice: Open the showroom · Not yet |
+| ww-intro-showroom   | intro-showroom                   | **Bram:** "Garage for making, shop for showing. Both yours." / **You:** (byTrait)                            |
+| ww-showroom-open    | showroom-opened                  | **Narrator:** Dust sheets off; the bell over the door rings. / **You:** (byTrait)                            |
+| ww-ren-hello        | first showroom season start      | **Bram:** "This is Ren. Keen as mustard." / **Ren:** "I can fetch boards and sand. I'll learn the rest."     |
+| ww-first-set        | first set started                | **Bram:** "A set is one idea, told a few times. Same wood, same finish."                                     |
+| ww-first-open-house | first Open House                 | **Narrator:** Visitors run their hands along your work. / **You:** (byTrait)                                 |
+| ww-fair-invite      | first Fair season                | **Hattie Rowe:** "One booth, one set, and tea all day. Every maker gets a rosette."                          |
+| ww-first-fair       | first Fair done                  | **Narrator:** The dust sheet lifts and the green claps. / **You:** (byTrait)                                 |
+| ww-gold-rosette     | first Gold Rosette or better     | **Mr. Pell:** "Boards from my yard never looked so fine."                                                    |
+| ww-booth-canopy     | booth 3 reached                  | **Hattie:** "The Big Canopy! Room for a whole family's table."                                               |
+| ww-booth-pavilion   | booth 4 reached                  | **Bram:** "The Oak Pavilion. I showed a rocking chair here, long ago."                                       |
+| ww-ren-level-2      | Ren reaches level 2              | **Ren:** "I can sand with my eyes nearly closed. Nearly."                                                    |
+| ww-ren-level-3      | Ren reaches level 3              | **Ren:** "Peg joints snug as anything. Thanks for showing me."                                               |
+| ww-fair-skipped     | Fair skipped                     | **Hattie:** "We kept your pitch warm. See you next season!"                                                  |
+| ww-tight-season     | shop grace used (Standard)       | **Bram:** "Lean fortnight? I'll cover the shop half of the rent this once."                                  |
+| ww-rosette-rail     | Silver+ in all 4 seasons, a Gold | **Narrator:** Rosettes hang along the whole rail. / **Bram:** "Proudest garage on Larkspur Road."            |
+| ww-every-hook-gold  | Gold or better on all 8 hooks    | **Bram:** "Gold on every hook. I'm telling the whole street."                                                |
+| ww-trait-kit-zara   | Kit and Zara first pin an offer  | **Kit:** "Our zine wants the boldest piece on Larkspur Road."                                                |
+| ww-trait-esi        | Grandma Esi first pins an offer  | **Grandma Esi:** "A table big enough for the whole street's stories."                                        |
+
+**Hint lines (≤ 12 words):** "Fit matching faces on one board for a set." · "Follow your first cut to make a matching twin." · "Pick one joint for every piece you can see." · "Sand each piece the same for an even shine." · "Put each set on its own rug." · "Hand a simple job to Ren. Two a day." · "Pick a set you finished this season." · "Choose a backdrop, some music, and who comes last."
+
+### 10.9 Economy sanity checks (Standard unless noted)
+
+- **Garage baseline at reputation 45+:** open clients average a fee of ≈ 95. A pass pays ≈ 1.18 × fee ≈ 112 for ≈ 30 of boards and finish (net ≈ +82); a soft fail pays ≈ 38 − 30 = +8. At an 85% pass rate a 10 h commission nets ≈ +71. With the Garage Skylight's 11 h days a fortnight is 154 h ≈ 15.4 commissions ≈ +1093, minus rent 200 ≈ **+893**.
+- **Showroom fortnight (decent, Ren hired, one Breakfast Nook at booth 2):** 13 working days × 11 h = 143 h, plus ≈ 20 h of Ren's jobs, minus the set's 13 h ≈ 150 h ≈ 14.8 commissions ≈ +1050. The Nook in pine costs ≈ 66 (54 boards + oil × 3) and, after a Silver Rosette, sells for `180 × 1.128 × 1.1 × 1.1 ≈ 246`: +180. The Fair (overall ≈ 80) pays 25 + 20 + 90 = 135. Rent −320, Ren −80. **≈ +965 ≈ 1.08 × garage**; without Ren ≈ +904 (≈ 1.0 ×). Bench hours on Fair Day before staging add a little; rosettes, Fair reputation (+7) and buzz are the rest of the reward.
+- **Sets against commissions:** per hour a set beats a commission (at quality 88 with harmony and rosette, × 1.365 in all: Cottage Bedroom ≈ +137 for 10 h, Guest Room ≈ +243 for 17 h, a commission ≈ +71 for 10 h), and sets carry no brief, fail or deadline. So the floor caps them: one set goes home per Open House, two a fortnight. A fortnight with the best set at each Open House and commissions in the other hours lands at Guest Room ×2 ≈ 1.32 ×, Cottage Bedroom ×2 ≈ 1.26 ×, the Nook ≈ 1.08 ×. The set-max bot must stay ≤ 1.3 ×; if it lands above, D6 lowers the wall cupboard's `showPrice` 5 at a time. The Hand Cart adds a bay for building ahead or Keep on show, never a third sale.
+- **Fine wood in a set:** hickory makes the Nook's boards ≈ 135 (2.5 ×) but its price × 1.3 (≈ 264 before harmony and rosette, against 203 in pine), lifts Fine wood from 60 to 100 (+8 Craft Bench), and narrows saw and join to 0.74. A trade, not a trap.
+- **Decent panels** (set quality 88, joints 0.88, Slot set joint, pine, sand 0.88, one of two chairs cushioned, matched faces 0.67, piece spread 4, palette 0.75, matching hardware, one theme tag, Hattie's backdrop with the music matched by mood word, best piece last): Craft ≈ 44 + 18 + 8 + 12 = 82; Comfort ≈ 35 + 15 + 30 = 80; Harmony ≈ 20 + 28 + 15 + 20 = 83; Story ≈ 20 + 30 + 27 = 77. **Overall ≈ 80: Silver Rosette**, and the booth advances.
+- **Other players:** full Assist (quality 79, joints 0.7, Show me and Plan the rest so matched faces 0) ≈ 72 (Silver, advances). A careless set (off theme and palette, no matched faces or cushions, wrong backdrop and music) ≈ 58 (Merit, stays). Mastery (quality 93, Comb, both theme tags, faces 1.0, every seat cushioned) ≈ 95 (Oak Leaf in reach).
+- **Pass rate target 75–90%:** decent quality is ≈ 88 ± 4.5 (pine ≈ 91, 3-hammer woods ≈ 87). By minimum quality a decent piece passes ≈ 99% up to 78, 96% at 80 and 91% at 82 (Lindqvist); tag, extra or deadline slips cost ≈ 8%. Over the 16-client pool that is **≈ 84%**. A Ren-sanded piece (−2.4) still clears every minimum up to 78; a Ren-pegged birdhouse or bookshelf (−5.6 at level 1) still clears Grandpa Teodor (55) and Ms. Ingrid (65). Minimums are read from `content/client.ts`, never from this doc; if the simulation lands outside 75–90%, the minimum quality of the 4 highest new clients moves ±2 at a time.
+- **No bankruptcy spiral:** the weekly costs are rent 160 + Ren 40 = 200, and 6 shifts pay 270. A week of all soft fails (7 × 8 = 56) loses ≈ 144, but Ren's week off, **Rest the shop** (rent 100) and shifts turn it round: 3 shifts (135) + 4 soft fails (32) − 100 = +67. **Shop grace** (Standard, once per season): if coins after rent would go below 0, Bram covers 60 and `ww-tight-season` plays. Floor sets never spoil and wait for the next Open House.
+- **Relaxed is always recoverable:** rent and wage are ×0, every commission passes, the shift pays 45 and every Fair pays at least 35 coins and a ribbon. Coins never fall at a week's end.
+- **Challenging:** rent 240, Ren 60, minimums +6, a fail pays 0 and costs −3 reputation, booths need 65. 6 shifts (270) cover the rent with Ren on a week off, and the existing A Lean Week beat points there. A decent player passes ≈ 75–80%.
+- **Unlock pacing:** decent Standard on days 18–22; ≈ 70% pass on days 26–27; Relaxed ≈ day 16; Challenging ≈ days 28–34 (§10.1).
+
+### 10.10 Save migration (schema 1 → 2)
+
+- `SCHEMA_VERSION = 2`. A new `core/saveMigrations.ts` exports `SAVE_MIGRATIONS = { 1: addShowroomFields }` (the empty map leaves `save.ts`), passed to the engine's `parseSaveWith` as ADEEVA, Patisserie and Thrift-Flip do.
+- `addShowroomFields(raw)` is pure and returns a new object. It adds `career: "garage"`, `showroom: null`, `fair: null`, `apprentice: null` and `profile.startedAs: "garage"`. When `activeRun` is not null it adds `purpose: {kind: "commission"}` and `piece: 0` to each placed extra; part ids, `gigId`, `brief`, `design`, `cushion` and every hand-made joint and sand record stay as they are (a record without `byApprentice` is hand work). Calendar, gigs, briefs, boards with their knots, upgrades, decor, log, `delivered`, story (`seen`, `flags`, `queue`), trends and RNG are kept, so an in-progress commission continues exactly. Wood, product, option, finish and extra id unions are widened, never narrowed.
+- v2 shapes: `showroom = {seasonStartDay, seasonNumber, themeId, rested, floor: FloorSet[], graceSeason, nextSetNumber}`, where a `FloorSet` is `{setId, templateId, madeDay, pieces, quality, harmony, price, forSale, rug}`; `fair = {booth, pickSetId, results, rosetteRail: Record<FairThemeId, RosetteId | null>, rosettesBySet}`; `apprentice = {hired, paidThroughDay, jobsDone, jobsToday}`. The parser rejects a showroom save with `showroom: null`, a garage save that has one, a set-purpose run in a garage save, and a `byApprentice` record without a hired apprentice.
+- `earnedReputation` accepts version ≤ 2, so `reputationOf` reads both. An eligible v1 player sees `ww-showroom-offer` after their next delivery or End Day; the migration itself never queues a beat or grants anything.
+- **Fixtures** (committed v1 saves captured from the current build): fresh on day 1; mid-commission at join with 2 joints seated and a cushion chosen; mid-finish with placed extras that carry no `piece` field; at the threshold (reputation 45, 14 delivered, 3 active gigs); and a full rack with spare pieces, all upgrades and decor. Each loads, continues to a delivery and End Day, and saves as v2; the threshold one gets the offer and opens the showroom. A deep-frozen fixture proves the input is never mutated. v3 and damaged saves are reported, never reset.
+- **Slice stays still:** every slice-era seeded test passes unchanged, since new clients only join the draw at reputation ≥ 14.
+
+### 10.11 Safety notes for the showroom and the Fair
+
+- **Kind fair, not a TV format.** On screen it is a "Craft Fair" with "panels" of named neighbours. Never shown: judge, elimination, rounds, winner, loser, challenge, "going home", countdowns, rivals or rankings. Neighbouring stalls are scenery and never scored. Every set gets a rosette from fixed bands; lines praise first and the one tip starts "Next time, try…".
+- **No real technique.** Twin sawing, set joints and even shine are game rules with game numbers. There are no power tools anywhere, and Ren never uses one. The §8 Saw line and hub footer stay, and Ren's card adds "Ren's jobs are game jobs. Real tools need a grown-up." "Bevel" and "kerf" join the words never shown, beside "tenon", "dowel", "grain" and "offcut".
+- **Nothing to climb or test.** No one sits, stands, lies on or climbs any piece on screen, at the Fair or in the showroom; the reveal dresses pieces with objects only. "Comfort" is about looking inviting and feeling smooth. The cottage bed is a low single bed shown made up and empty, never raised and with no ladder. Little Wheels never go on a seat or step piece. No piece claims to be safe for real use.
+- **Fair work, told kindly.** Ren is an adult on a fair wage who is never scolded, rushed or blamed; "Give Ren the week off" is a friendly pause and the word "fire" never appears. Rent and grace come from Bram, with no eviction or debt words.
+- **Adults stay public.** The Fair is a busy village green; no adult asks the player to meet privately or keep a secret. Children appear only beside their family.
+- **Finishes stay colours.** New finishes are names, colours and tags only, with no chemistry, drying or ventilation talk. Lights are electric strings; nothing has a flame.
+- **Randomness is free; coins only.** Themes, visitors and briefs come from the seeded RNG; nothing can be bought or rerolled. There is no entry fee, no real money and no online sharing. Before shipping, check that "Larkspur Craft Fair", "Larkspur Road Showroom" and the new client names are not real trading or event names.
+
+### 10.12 Build and test plan
+
+- **Reuse first; extend without breaking anything:** `ui/newGame/CareerStep`, `careerDraft` and `careerFacts`; the engine's `panelScore` (`panel`, `subScore`, `overallScore`), `showOrder` (`closerStrength`), `showDay` (`stagingScore`, `lateShowPenalty`, `showReputation`, `GENTLE_SHOW_SETBACKS`), `qualityTip` (`weakestTip`, `qualityTipLine`), `weekSettlement` and `weekMoneyLines` (rent and wage lines), `parseSaveWith`, `earnedReputation`, story choices with typed effects and `rngDraw`. `BoothReveal` is built like Patisserie's `FairShowcase`, from `ui/kit` (`useShowClock`, `PanelCard`, `easing`, `useRovingRadio`, `useArmedAfter`) and `ui/art` (`PetalFall` with a new optional `shape` prop whose default keeps petals, `AvatarFigure`, `PlacedLayer`). Workshop touches no other game and imports none; ADEEVA's show files stay where they are (roadmap task 1 owns them). Workshop's own `boardLayout`, `sawRecord`, `joint`, `sanding`, `finishChoice`, `pieceParts`, `pieceQuality` and `pieceEvaluate` take set inputs without changing any commission result.
+- **New content files** (one concept each): `career` (becomes `CAREERS`), `setTemplate` (with `matchablePairs`), `fairTheme`, `fairBooth`, `boothBackdrop`, `fairMusic`, `makersNote`, `panelMember` and `apprentice`; the catalogue files gain their ids, `JointDef.show`, `showPrice` and `ExtraDef.allowedOn`.
+- **New core files:** `showroomOffer` (unlock check and `openShowroom`), `showroomStart`, `seasonCalendar`, `restShowroom`, `shopGrace`, `runPurpose` (the purpose union and `startSet`), `setPartId` (namespacing and piece grouping), `setStyle`, `setJoint`, `matchedFaces`, `planTheRest`, `twinSaw`, `setEvenness`, `matchingHardware`, `setQuality`, `setPrice`, `showroomFloor`, `floorArrange`, `openHouse`, `apprentice` (hire, week off, wage), `apprenticeJob`, `fairBrief`, `fairPick`, `fairPlan`, `fairPanels`, `fairPrize`, `fairSeason` (theme pick, skip, booth step), `rosetteRail`, `showroomUpgrades`, `workshopProfile` and `saveMigrations`. `reduce.ts` (98 lines) sends the new cases to `reduceShowroom.ts` and `reduceFair.ts`, so every file stays ≤ 700 lines.
+- **New UI:** the career cards and the bench-tour toggle; `SetDesign` (side-by-side set preview, set joint chips); the grouped layout tray, the board filmstrip with **Move to board ▸**, **Plan the rest**, and the piece switcher on the saw, join and sand stages; the twin ghost cut line and **Saw it like my first**; the shine bar; `ShowroomFloor` (arrange, For sale, Keep on show, and the Open House pick); `RenCard` and the hand-off scene; `FairBoard`, `FairPlanner`, `BoothReveal` (`GreenBackdrop`, `PaddedTrolley`, `DustSheet`, the home-dressing props) and `FairResults`; `RosetteRail` with `RosetteArt`; `ShowroomBackdrop`; and `PiecePreview` drawings for the 7 new products and 6 options. All work with mouse, touch and keyboard, controls are ≥ 44 px, and reduced motion is respected.
+- **Build order:** D1 careers, migration, unlock and start here; D2 content ×2 in both careers; D3 set runs (purpose, namespaced parts, matched cushions) and the set twists; D4 the floor, Open House and Ren; D5 Fair season, board, planner, reveal, panels, rosettes and the rail; D6 simulation tuning and e2e.
+- **Unit tests:** unlock at 44/45 reputation, the 13/14 delivered guard, no second queue while `showroom-offer` waits, and "Not yet" keeps the card; `startedAs` and studio reputation (missing → 0); rent timing around `seasonStartDay`, no Open House before it, Rest the shop and shop grace; the season calendar when the shop opens in an odd and an even week, Fair Day as a working day before staging and with no eligible set, and the Fair Day deadline shift; set hours, twins, Saw it like my first, matched cushions, `setStyle` per slot and the set joint on show joints only; namespaced part ids through layout, saw, join and sand, per-piece quality, and `setAside` refused after the first saw line; sets never touching `log` or `delivered`; matched faces (including `matchablePairs` 0), Plan the rest (≤ 0.9, no matched faces), evenness, matching hardware without `needs`, and set price at their edges with the rosette on its own set only; the full-floor refusal, one Open House sale with the oldest as default, Saved for the Fair and Keep on show; Ren's daily limit, levels, accuracies, records, hour savings (never below 0) and refusals (saw, Comb, after staging, garage career), and a Ren-pegged decent piece clearing Teodor and Ingrid; every panel formula, rosette band edges, `fairPrize`, booth advance per difficulty, the Relaxed choice and planner defaults per difficulty, late staging, the skipped Fair and the finale rules; upgrade gates by booth and Ren's level; every new action returns the same reference when illegal; the five migration fixtures.
+- **Content tests:** unique ids; every canonical layout fits with knots, for every product with every part option it allows; each template's `matchablePairs` is reached by a legal layout; every theme palette and client colour can be made from a wood tone, paint, finish, extra or fabric; Little Wheels never allowed on a seat or step product; hint lines ≤ 12 words; client lines ≤ 2 sentences; budgets above the cheapest valid build; and no grown-up woodworking words on screen, with "bevel" and "kerf" added to the list.
+- **Simulation (`depthEconomy.test.ts`, seeded, 5 seeds):** a decent garage bot gets the offer between day 15 and day 28 and passes 75–90% of its orders; a decent showroom fortnight earns between 1.0 × and 1.3 × the same bot's garage fortnight; a set-max bot (the best set every Open House) stays ≤ 1.3 × the garage bot; a struggling Standard bot using shifts and Rest the shop never ends two fortnights running below 0; a Relaxed showroom never takes coins below 0 and replays identically.
+- **e2e** (`MAKER_PORT=5193`, 1280×800 and 820×1180, zero network requests): `e2e/workshop/showroomUnlock.spec.ts` (a committed v1 save at the threshold delivers, gets the offer, opens the showroom, saves and reloads); `e2e/workshop/matchedSet.spec.ts` (start here as Showroom Maker, take Ren on, build a Reading Corner by hand with matched faces by drag and by keyboard with the filmstrip and Move to board, hand the sanding to Ren, arrange the floor; at 820×1180 a Guest Room plan finishes with Plan the rest); `e2e/workshop/craftFair.spec.ts` (a prepared Fair Day save: Bram's pick, the planner, the reveal in motion and in reduced motion with a keyboard lift, skip, the rosette on the rail, an Open House sale, save and continue).
+- **Checks:** `MAKER_PORT=5193 pnpm lint`, `pnpm typecheck`, `pnpm test` (twice) and `pnpm e2e` pass, with no `Math.random` or `Date` in core or content, no comments, no file over 700 lines, and every process started for the task stopped at the end.
+
+### 10.13 As built (where the implementation differs)
+
+- **Plan the whole set:** instead of a board filmstrip with **Move to board ▸**, a bench with more than four boards lays them out in two columns, the tray is grouped by piece, and Enter on a tray part finds it a spot (as **Show me**); arrow keys then move it by hand. **Plan the rest** is as specified. Matched faces count, per board, the distinct pieces whose show faces were placed by hand, minus one, summed over boards (`matchedPairs`), capped by `matchablePairs`; a content test finds a legal layout reaching every template's value.
+- **Arrange the floor:** a finished set arrives already laid out on its own rug (`autoSpots`), so the +2 buzz is kept unless the player moves a piece off it. The floor is 300 × 200 with fixed rugs; buying the Hand Cart re-lays every set onto the three narrower rugs. Arrange is drag or keyboard (arrows nudge 2, R turns).
+- **Records:** `JointRecord.byApprentice` is always present (the migration writes `false`), and `SandRecord` gains `renAccuracy: number | null` instead of a union. Each run keeps `renJobs`; a Ren record can't be reset by the player (it would undo the hour Ren saved).
+- **Spending:** a set's brief has budget 0 and the checklist shows "Set cost so far" instead of a budget line; the finish is paid once per piece and the cushion fabric once per seat. Bram's Spare Board Pile is knot-free and free (cost 0, marked as spare pieces).
+- **Open House:** buzz is +3 for a sale, +2 per set kept on show and +2 per set wholly on its own rug. The day transition names the set that went home.
+- **Fair state:** `fair = {booth, pickSetId, visitors, result, boothOffer, rosetteRail, rosettesBySet}` holds this season's result only; the reveal's closing line is a Fair line from one of the season's visitors.
+- **Unlock:** "Not yet" sets `showroom-later` and the hub's "Bram's old shop" card dispatches `openShowroom`. The offer beat can't be dismissed without a choice.
+- **Tests:** unlock pacing is checked by a scripted garage bot (`garageBot.ts`, 3 Standard seeds land on days 18–28; Relaxed 16). The fortnight economy comparison (`depthEconomy.test.ts`) was not built. The v1 fixtures are `fresh`, `midJoin`, `midFinish`, `threshold` and `fullRack`. The e2e coverage is `e2e/workshop/showroomJourney.spec.ts` (the v1 threshold save to a Fair rosette, saved and continued) and `e2e/workshop/showroomScreens.spec.ts` (every new screen at 1280×800 and 820×1180, the reveal in reduced motion with keyboard lifts, the floor by keyboard).

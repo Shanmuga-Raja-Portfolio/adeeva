@@ -8,8 +8,9 @@ import type { JointDef } from "../content/product";
 import { jointKindById } from "./catalog";
 import type { CommissionRun, JointRecord, PieceDesign } from "./commissionRun";
 import type { GameState } from "./gameState";
-import { designJoints, findJoint } from "./pieceParts";
+import { designJoints, findJoint, type RunJoint } from "./pieceParts";
 import { jointTolerance, type JointTolerance } from "./tolerance";
+import { hasJigs, JIG_JOINT_WIDENING, twinSource } from "./twinSaw";
 
 export const ASSIST_JOINT_ACCURACY_CAP = 0.7;
 export const SPLAYED_SLOT_ANGLE_DEG = 8;
@@ -89,10 +90,16 @@ export function jointStartPose(runId: string, jointIndex: number, targetAngle: n
 export function runJointTolerance(
   state: GameState,
   run: CommissionRun,
-  joint: JointDef,
+  joint: RunJoint,
 ): JointTolerance | null {
   const woodId = run.design.woodId;
-  return woodId === null ? null : jointTolerance(state, woodId, joint.kind);
+  if (woodId === null) return null;
+  const tolerance = jointTolerance(state, woodId, joint.kind);
+  if (twinSource(run, joint.piece) === null || !hasJigs(state)) return tolerance;
+  return {
+    offsetMm: tolerance.offsetMm * JIG_JOINT_WIDENING,
+    angleDeg: tolerance.angleDeg * JIG_JOINT_WIDENING,
+  };
 }
 
 function seatedRecord(
@@ -114,6 +121,7 @@ function seatedRecord(
     goodTaps,
     assisted,
     accuracy: assisted ? Math.min(ASSIST_JOINT_ACCURACY_CAP, raw) : raw,
+    byApprentice: false,
   };
 }
 
@@ -125,7 +133,7 @@ export function seatJoint(
   assisted: boolean,
 ): GameState {
   return updateActiveRun(state, "join", (run) => {
-    const joint = findJoint(run.design, jointId);
+    const joint = findJoint(run, jointId);
     if (joint === undefined || Object.hasOwn(run.joints, jointId)) return null;
     const tolerance = runJointTolerance(state, run, joint);
     if (tolerance === null) return null;
@@ -142,19 +150,26 @@ export function seatJoint(
 }
 
 export function resetJoint(state: GameState, jointId: string): GameState {
-  return updateActiveRun(state, "join", (run) =>
-    Object.hasOwn(run.joints, jointId) ? { ...run, joints: recordWithout(run.joints, jointId) } : null,
-  );
+  return updateActiveRun(state, "join", (run) => {
+    const record = Object.hasOwn(run.joints, jointId) ? run.joints[jointId] : undefined;
+    if (record === undefined || record.byApprentice) return null;
+    return { ...run, joints: recordWithout(run.joints, jointId) };
+  });
 }
 
-export function runJointAccuracy(run: CommissionRun): number {
-  const joints = designJoints(run.design);
+export function runJointAccuracy(
+  run: CommissionRun,
+  joints: readonly RunJoint[] = designJoints(run),
+): number {
   if (joints.length === 0) return 0;
   return average(
     joints.map((joint) => (Object.hasOwn(run.joints, joint.id) ? (run.joints[joint.id]?.accuracy ?? 0) : 0)),
   );
 }
 
-export function seatedJointCount(run: CommissionRun): number {
-  return designJoints(run.design).filter((joint) => Object.hasOwn(run.joints, joint.id)).length;
+export function seatedJointCount(
+  run: CommissionRun,
+  joints: readonly RunJoint[] = designJoints(run),
+): number {
+  return joints.filter((joint) => Object.hasOwn(run.joints, joint.id)).length;
 }

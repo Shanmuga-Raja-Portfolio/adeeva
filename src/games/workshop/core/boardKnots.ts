@@ -1,10 +1,10 @@
 import type { Point } from "../../../engine/geometry/point";
 import { nextRandom, type RngState } from "../../../engine/rng";
 import type { BoardSizeId } from "../content/boardSize";
-import type { ProductId } from "../content/product";
 import { WOOD_IDS, type WoodId } from "../content/wood";
-import { boardSizeById, productById, woodById } from "./catalog";
+import { boardSizeById, woodById } from "./catalog";
 import type { Knot } from "./ownedBoard";
+import { designParts, runCanonical, type RunShape } from "./pieceParts";
 
 const MAX_KNOT_REDRAWS = 10;
 export const MIN_KNOT_RADIUS = 2;
@@ -25,14 +25,13 @@ export function knotPolygon(knot: Knot): Point[] {
   });
 }
 
-export function canonicalRects(productId: ProductId | null, size: BoardSizeId): Rect[] {
-  if (productId === null) return [];
-  const product = productById(productId);
-  return product.canonical
+export function canonicalRects(run: RunShape, size: BoardSizeId): Rect[] {
+  const parts = designParts(run);
+  return runCanonical(run)
     .filter((board) => board.size === size)
     .flatMap((board) =>
       board.spots.flatMap((spot) => {
-        const part = product.parts.find((entry) => entry.id === spot.partId);
+        const part = parts.find((entry) => entry.id === spot.partId);
         return part === undefined ? [] : [{ x: spot.x, y: spot.y, width: part.width, height: part.height }];
       }),
     );

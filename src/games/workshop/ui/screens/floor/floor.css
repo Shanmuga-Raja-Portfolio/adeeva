@@ -1,0 +1,99 @@
+.ww-floor {
+  min-height: 100dvh;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ww-floor__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.ww-floor__head h1 {
+  margin: 0;
+  color: var(--ww-slate-deep);
+}
+
+.ww-floor__head p {
+  max-width: 62ch;
+  margin: var(--space-1) 0 0;
+}
+
+.ww-floor__room {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ww-floor__canvas {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 2px solid var(--ww-outline);
+  touch-action: none;
+}
+
+.ww-floor__label {
+  font-family: var(--font-display);
+  font-size: 7px;
+  font-weight: 700;
+  fill: var(--ww-slate-deep);
+}
+
+.ww-floor__piece {
+  cursor: grab;
+}
+
+.ww-floor__piece:focus {
+  outline: none;
+}
+
+.ww-floor__piece--chosen .ww-floor__footprint,
+.ww-floor__piece:focus-visible .ww-floor__footprint,
+.ww-floor__piece--lifted .ww-floor__footprint {
+  stroke: var(--ww-safety);
+  stroke-width: 1.6;
+}
+
+.ww-floor__footprint {
+  fill: rgba(255, 250, 240, 0.35);
+  stroke: var(--ww-outline);
+  stroke-width: 0.8;
+  stroke-dasharray: 2 1;
+}
+
+.ww-floor__piece--lifted {
+  cursor: grabbing;
+  filter: drop-shadow(0 2px 2px rgba(47, 38, 34, 0.35));
+}
+
+.ww-floor__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ww-floor__message {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  min-height: 28px;
+  font-weight: 700;
+  color: var(--ww-slate-deep);
+}
+
+@media (max-width: 860px) {
+  .ww-floor {
+    padding: var(--space-3) var(--space-4) var(--space-6);
+  }
+}

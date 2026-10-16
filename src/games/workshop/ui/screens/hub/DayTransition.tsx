@@ -5,10 +5,11 @@ import type { DaySummary } from "./daySummary";
 
 export interface DayTransitionProps {
   readonly summary: DaySummary;
+  readonly opener: string;
   readonly onDone: () => void;
 }
 
-export function DayTransition({ summary, onDone }: DayTransitionProps) {
+export function DayTransition({ summary, opener, onDone }: DayTransitionProps) {
   return (
     <div className="ww-night" role="dialog" aria-modal="true" aria-labelledby="ww-night-title">
       <div className="ww-night__sky" aria-hidden="true">
@@ -39,7 +40,7 @@ export function DayTransition({ summary, onDone }: DayTransitionProps) {
           ))}
         </ul>
         <Button autoFocus size="lg" onClick={onDone}>
-          Open the garage
+          {opener}
         </Button>
       </section>
     </div>

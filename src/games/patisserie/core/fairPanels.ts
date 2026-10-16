@@ -1,5 +1,5 @@
 import type { ColourId } from "../../../engine/palette";
-import { panel, subScore as part, type SubScore } from "../../../engine/panelScore";
+import { bestSubScore, panel, subScore as part, type SubScore } from "../../../engine/panelScore";
 import { weakestTip, type QualityTip } from "../../../engine/qualityTip";
 import { stagingScore } from "../../../engine/showDay";
 import { closerStrength } from "../../../engine/showOrder";
@@ -48,13 +48,6 @@ const TIPS: Readonly<Record<string, string>> = {
   unveil: "unveiling your best plate last",
 };
 
-export function panelVerdict(score: number): string {
-  if (score >= 85) return "Delighted";
-  if (score >= 70) return "Loved it";
-  if (score >= 55) return "Enjoyed it";
-  return "Warmly cheered";
-}
-
 export function showpiecePlate(entry: FairEntry): ShowPlate {
   return { quality: entry.quality, tags: entry.tags, colours: entry.colours, toppings: entry.toppings };
 }
@@ -75,10 +68,7 @@ function wowToppings(plate: ShowPlate): number {
 
 function withNote(id: FairPanelId, label: string, parts: SubScore[]): FairPanelScore {
   const scored = panel(id, label, parts);
-  const best = parts.reduce<SubScore | null>(
-    (top, entry) => (top === null || entry.value * entry.weight > top.value * top.weight ? entry : top),
-    null,
-  );
+  const best = bestSubScore(parts);
   return { ...scored, note: best === null ? "" : (PRAISE[best.id] ?? "") };
 }
 

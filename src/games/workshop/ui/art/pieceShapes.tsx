@@ -1,110 +1,7 @@
 import type { ReactNode } from "react";
-import type { PartOptionId } from "../../content/partOption";
 import type { ProductId } from "../../content/product";
-
-interface ShapeKit {
-  readonly frame: string;
-  readonly surface: string;
-  readonly edge: PartOptionId | undefined;
-  readonly legs: PartOptionId | undefined;
-  readonly accent: PartOptionId | undefined;
-  readonly highlight: string | null;
-}
-
-const OUTLINE = "#2f2622";
-const GLOW = "#f2c230";
-const HOLE = "#3b2a20";
-
-function stroke(kit: ShapeKit, partIds: readonly string[]) {
-  const lit = kit.highlight !== null && partIds.includes(kit.highlight);
-  return {
-    stroke: lit ? GLOW : OUTLINE,
-    strokeWidth: lit ? 5 : 2.5,
-    strokeLinejoin: "round" as const,
-    className: lit ? "ww-piece__lit" : undefined,
-  };
-}
-
-function panelPath(x: number, y: number, w: number, h: number, edge: PartOptionId | undefined): string {
-  if (edge === "rounded-edge") {
-    const r = Math.min(12, w / 4, h / 4);
-    return `M${x + r} ${y} H${x + w - r} Q${x + w} ${y} ${x + w} ${y + r} V${y + h - r} Q${x + w} ${y + h} ${x + w - r} ${y + h} H${x + r} Q${x} ${y + h} ${x} ${y + h - r} V${y + r} Q${x} ${y} ${x + r} ${y} Z`;
-  }
-  if (edge === "arched-edge") {
-    const rise = Math.min(14, h * 0.3);
-    return `M${x} ${y + rise} Q${x + w / 2} ${y - rise} ${x + w} ${y + rise} V${y + h} H${x} Z`;
-  }
-  return `M${x} ${y} H${x + w} V${y + h} H${x} Z`;
-}
-
-function starPath(cx: number, cy: number, r: number): string {
-  const points = Array.from({ length: 10 }, (_, index) => {
-    const radius = index % 2 === 0 ? r : r * 0.45;
-    const angle = -Math.PI / 2 + (index * Math.PI) / 5;
-    return `${(cx + Math.cos(angle) * radius).toFixed(1)} ${(cy + Math.sin(angle) * radius).toFixed(1)}`;
-  });
-  return `M${points.join(" L")} Z`;
-}
-
-function Accent({ kit, cx, cy, size }: { kit: ShapeKit; cx: number; cy: number; size: number }) {
-  if (kit.accent === "star-cutout")
-    return <path d={starPath(cx, cy, size)} fill={HOLE} stroke={OUTLINE} strokeWidth={1.5} />;
-  if (kit.accent === "leaf-cutout")
-    return (
-      <g fill={HOLE} stroke={OUTLINE} strokeWidth={1.5}>
-        <path
-          d={`M${cx - size} ${cy} Q${cx} ${cy - size} ${cx + size} ${cy} Q${cx} ${cy + size} ${cx - size} ${cy} Z`}
-        />
-        <path d={`M${cx - size * 0.8} ${cy} L${cx + size * 0.8} ${cy}`} stroke="#6b4d3a" strokeWidth={1} />
-      </g>
-    );
-  if (kit.accent === "slats")
-    return (
-      <g stroke={HOLE} strokeWidth={3} strokeLinecap="round">
-        {[-1, 0, 1].map((step) => (
-          <line
-            key={step}
-            x1={cx + step * size * 0.8}
-            y1={cy - size}
-            x2={cx + step * size * 0.8}
-            y2={cy + size}
-          />
-        ))}
-      </g>
-    );
-  return null;
-}
-
-function Leg({
-  kit,
-  id,
-  x,
-  top,
-  bottom,
-  width,
-  side,
-}: {
-  kit: ShapeKit;
-  id: string;
-  x: number;
-  top: number;
-  bottom: number;
-  width: number;
-  side: -1 | 1;
-}) {
-  const props = stroke(kit, [id]);
-  if (kit.legs === "tapered-legs") {
-    const narrow = width * 0.28;
-    const d = `M${x} ${top} H${x + width} L${x + width - narrow} ${bottom} H${x + narrow} Z`;
-    return <path d={d} fill={kit.frame} {...props} />;
-  }
-  if (kit.legs === "splayed-legs") {
-    const lean = side * (bottom - top) * 0.14;
-    const d = `M${x} ${top} H${x + width} L${x + width + lean} ${bottom} H${x + lean} Z`;
-    return <path d={d} fill={kit.frame} {...props} />;
-  }
-  return <rect x={x} y={top} width={width} height={bottom - top} fill={kit.frame} {...props} />;
-}
+import { ROOM_CUSHION_SPOTS, ROOM_DRAWERS } from "./roomShapes";
+import { Accent, HOLE, Leg, OUTLINE, panelPath, stroke, type ShapeKit } from "./shapeKit";
 
 function Birdhouse({ kit }: { kit: ShapeKit }) {
   return (
@@ -270,6 +167,7 @@ function WindowBench({ kit }: { kit: ShapeKit }) {
 }
 
 const DRAWERS: Readonly<Record<ProductId, (props: { kit: ShapeKit }) => ReactNode>> = {
+  ...ROOM_DRAWERS,
   birdhouse: Birdhouse,
   "step-stool": StepStool,
   "plant-stand": PlantStand,
@@ -285,5 +183,6 @@ export function PieceShape({ productId, kit }: { readonly productId: ProductId; 
 }
 
 export const CUSHION_SPOT: Readonly<Partial<Record<ProductId, { x: number; y: number; width: number }>>> = {
+  ...ROOM_CUSHION_SPOTS,
   "window-bench": { x: 80, y: 146, width: 240 },
 };

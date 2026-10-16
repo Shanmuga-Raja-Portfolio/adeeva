@@ -17,9 +17,13 @@ interface DecorPanelProps {
 export function DecorPanel({ state, onBuy }: DecorPanelProps) {
   const [paint, setPaint] = useState<ColourId>("teal");
   return (
-    <Card title="Garage decor" eyebrow="Just for looks" className="ww-hub-card">
+    <Card
+      title={state.career === "showroom" ? "Garage and shop decor" : "Garage decor"}
+      eyebrow="Just for looks"
+      className="ww-hub-card"
+    >
       <ul className="ww-shop">
-        {DECORS.map((decor) => {
+        {DECORS.filter((decor) => !decor.showroomOnly || state.career === "showroom").map((decor) => {
           const owned = state.decor.some((entry) => entry.id === decor.id);
           const choice = decor.takesPaint ? paint : null;
           const issue = decorIssues(state, decor.id, choice)[0];
@@ -29,7 +33,11 @@ export function DecorPanel({ state, onBuy }: DecorPanelProps) {
                 <strong>{decor.name}</strong>
                 <p className="ww-muted">{decor.description}</p>
                 {decor.takesPaint && !owned ? (
-                  <div className="ww-paints" role="radiogroup" aria-label="Door colour">
+                  <div
+                    className="ww-paints"
+                    role="radiogroup"
+                    aria-label={decor.id === "shop-sign" ? "Sign colour" : "Door colour"}
+                  >
                     {PAINT_COLOURS.map((colour) => (
                       <button
                         key={colour}

@@ -21,4 +21,17 @@ export const HINTS = {
   avoidedWood: "This wood is on the 'please avoid' list.",
 } as const;
 
+export const SET_HINTS = {
+  matchFaces: "Fit matching faces on one board for a set.",
+  followFirst: "Follow your first cut to make a matching twin.",
+  setJoint: "Pick one joint for every piece you can see.",
+  evenShine: "Sand each piece the same for an even shine.",
+  rug: "Put each set on its own rug.",
+  ren: "Hand a simple job to Ren. Two a day.",
+  fairPick: "Pick a new set that has not been to the Fair yet.",
+  planner: "Choose a backdrop, some music, and who comes last.",
+} as const;
+
+export const REN_SAFETY_LINE = "Ren's jobs are game jobs. Real tools need a grown-up.";
+
 export const SAFETY_LINE = "Real saws are sharp. Ask an adult before using tools.";

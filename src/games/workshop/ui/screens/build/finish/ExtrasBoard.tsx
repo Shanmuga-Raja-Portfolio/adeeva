@@ -7,6 +7,7 @@ import type { WoodId } from "../../../../content/wood";
 import {
   EXTRA_ROTATION_STEP,
   FINISH_CANVAS,
+  extraFits,
   extraTallies,
   woodById,
   type Action,
@@ -21,6 +22,7 @@ interface ExtrasBoardProps {
   readonly run: CommissionRun;
   readonly woodId: WoodId;
   readonly look: PieceLook;
+  readonly piece: number;
   readonly coins: number;
   readonly dispatch: (action: Action) => boolean;
   readonly onHint: (text: string) => void;
@@ -55,15 +57,16 @@ const DROP_SPOTS: readonly (readonly [number, number])[] = [
   [250, 160],
 ];
 
-export function ExtrasBoard({ run, woodId, look, coins, dispatch, onHint }: ExtrasBoardProps) {
+export function ExtrasBoard({ run, woodId, look, piece, coins, dispatch, onHint }: ExtrasBoardProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<Drag | null>(null);
   const finishRef = useRef<(drag: Drag) => void>(() => undefined);
   const [drag, setDrag] = useState<Drag | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  const tallies = extraTallies(run);
+  const tallies = extraTallies(run).filter((tally) => tally.piece === null || tally.piece === piece);
   const woodHex = woodLook(woodId).base;
-  const chosen = run.extras.find((placed) => placed.id === selected);
+  const onPiece = run.extras.filter((placed) => placed.piece === piece);
+  const chosen = onPiece.find((placed) => placed.id === selected);
 
   const toCanvas = (clientX: number, clientY: number) => {
     const svg = wrapRef.current?.querySelector("svg") ?? null;
@@ -77,10 +80,16 @@ export function ExtrasBoard({ run, woodId, look, coins, dispatch, onHint }: Extr
     finishRef.current = (finished: Drag) => {
       if (finished.kind === "new") {
         if (finished.moved && !inCanvas(finished.x, finished.y)) return;
-        const spot = DROP_SPOTS[run.extras.length % DROP_SPOTS.length] ?? [200, 190];
+        const spot = DROP_SPOTS[onPiece.length % DROP_SPOTS.length] ?? [200, 190];
         const [x, y] = finished.moved ? [finished.x, finished.y] : spot;
-        if (!dispatch({ type: "addExtra", extraId: finished.extraId, x: Math.round(x), y: Math.round(y) }))
-          onHint("Not enough coins for that one.");
+        const action: Action = {
+          type: "addExtra",
+          extraId: finished.extraId,
+          x: Math.round(x),
+          y: Math.round(y),
+          piece,
+        };
+        if (!dispatch(action)) onHint("Not enough coins for that one.");
         else setSelected(`extra-${run.nextExtraNumber}`);
         return;
       }
@@ -179,7 +188,7 @@ export function ExtrasBoard({ run, woodId, look, coins, dispatch, onHint }: Extr
           title="Your piece with its finish"
           className="ww-extras__art"
         >
-          {run.extras.map((placed) => (
+          {onPiece.map((placed) => (
             <circle
               key={placed.id}
               cx={placed.x}
@@ -253,7 +262,7 @@ export function ExtrasBoard({ run, woodId, look, coins, dispatch, onHint }: Extr
       <div className="ww-extras__tin" aria-label="Knobs and extras tin">
         <h3 className="ww-extras__title">Knobs &amp; extras</h3>
         <ul>
-          {EXTRAS.map((extra) => {
+          {EXTRAS.filter((extra) => extraFits(run, extra.id, piece)).map((extra) => {
             const tally = tallies.find((entry) => entry.extra === extra.id);
             return (
               <li key={extra.id}>

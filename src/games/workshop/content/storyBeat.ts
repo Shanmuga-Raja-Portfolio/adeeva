@@ -1,4 +1,5 @@
 import type { StoryBeat } from "../../../engine/story";
+import { SHOWROOM_BEATS } from "./showroomStoryBeat";
 
 export const STORY_TRIGGERS = [
   "intro",
@@ -9,14 +10,35 @@ export const STORY_TRIGGERS = [
   "trait-perfectionist",
   "trait-trendsetter",
   "trait-charmer",
+  "showroom-offer",
+  "intro-showroom",
+  "showroom-opened",
+  "ren-hello",
+  "first-set",
+  "first-open-house",
+  "fair-invite",
+  "first-fair",
+  "gold-rosette",
+  "booth-canopy",
+  "booth-pavilion",
+  "ren-level-2",
+  "ren-level-3",
+  "fair-skipped",
+  "tight-season",
+  "rosette-rail",
+  "every-hook-gold",
+  "kit-zara-offer",
+  "esi-offer",
 ] as const;
 export type StoryTrigger = (typeof STORY_TRIGGERS)[number];
 
-export type StoryBeatDef = StoryBeat<StoryTrigger, never>;
+export type StoryEffect = "open-showroom";
+
+export type StoryBeatDef = StoryBeat<StoryTrigger, StoryEffect>;
 
 export const BEAT_BUZZ: Readonly<Record<string, number>> = { "ww-charmer": 2 };
 
-export const STORY_BEATS: readonly StoryBeatDef[] = [
+const GARAGE_BEATS: readonly StoryBeatDef[] = [
   {
     id: "ww-key",
     trigger: "intro",
@@ -227,3 +249,5 @@ export const STORY_BEATS: readonly StoryBeatDef[] = [
     choices: [],
   },
 ];
+
+export const STORY_BEATS: readonly StoryBeatDef[] = [...GARAGE_BEATS, ...SHOWROOM_BEATS];

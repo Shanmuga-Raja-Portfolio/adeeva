@@ -1,17 +1,17 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { hoursShortfallReason } from "../../../engine/dayHours";
 import { BOARD_SIZE_IDS, type BoardSizeId } from "../content/boardSize";
-import type { ProductId } from "../content/product";
 import type { WoodId } from "../content/wood";
 import { boardKnots, canonicalRects } from "./boardKnots";
-import { boardSizeById, productById, woodById } from "./catalog";
+import { boardSizeById, woodById } from "./catalog";
 import type { CommissionRun } from "./commissionRun";
 import type { GameState } from "./gameState";
 import type { OwnedBoard } from "./ownedBoard";
+import { runCanonical, type RunShape } from "./pieceParts";
 
 export const TIMBER_TRIP_HOURS = 1;
 const TIMBER_RACK_SHARE = 0.9;
-const MAX_BOARDS_PER_BUY = 6;
+const MAX_BOARDS_PER_BUY = 16;
 
 export type BoardCounts = Readonly<Record<BoardSizeId, number>>;
 
@@ -22,9 +22,9 @@ export function boardPrice(state: Pick<GameState, "upgrades">, woodId: WoodId, s
   return Math.round(woodById(woodId).price * boardSizeById(size).priceFactor * rack);
 }
 
-export function planBoards(productId: ProductId): BoardCounts {
+export function planBoards(run: RunShape): BoardCounts {
   const counts = { ...NO_BOARDS };
-  for (const board of productById(productId).canonical) counts[board.size] += 1;
+  for (const board of runCanonical(run)) counts[board.size] += 1;
   return counts;
 }
 
@@ -33,9 +33,9 @@ export function ownedBoardsOf(state: GameState, woodId: WoodId): OwnedBoard[] {
 }
 
 export function missingPlanBoards(state: GameState, run: CommissionRun): BoardCounts {
-  const { productId, woodId } = run.design;
-  if (productId === null || woodId === null) return NO_BOARDS;
-  const plan = planBoards(productId);
+  const woodId = run.design.woodId;
+  if (woodId === null) return NO_BOARDS;
+  const plan = planBoards(run);
   const owned = ownedBoardsOf(state, woodId);
   const missing = { ...NO_BOARDS };
   for (const size of BOARD_SIZE_IDS)
@@ -51,7 +51,11 @@ function boardsCost(state: GameState, woodId: WoodId, sizes: readonly BoardSizeI
   return sizes.reduce((sum, size) => sum + boardPrice(state, woodId, size), 0);
 }
 
-export function buyIssues(state: GameState, sizes: readonly BoardSizeId[]): ActionCheck {
+export function buyIssues(
+  state: GameState,
+  sizes: readonly BoardSizeId[],
+  tripHours = TIMBER_TRIP_HOURS,
+): ActionCheck {
   const run = state.activeRun;
   if (run === null || run.stage !== "timber") return actionCheck(["Visit the timber yard first."]);
   const woodId = run.design.woodId;
@@ -63,15 +67,19 @@ export function buyIssues(state: GameState, sizes: readonly BoardSizeId[]): Acti
   const cost = boardsCost(state, woodId, sizes);
   if (cost > state.coins) reasons.push(`Those boards cost ${cost} coins and you have ${state.coins}.`);
   if (!run.tripPaid) {
-    const hours = hoursShortfallReason(state.calendar, TIMBER_TRIP_HOURS);
+    const hours = hoursShortfallReason(state.calendar, tripHours);
     if (hours !== null) reasons.push(hours);
   }
   return actionCheck(reasons);
 }
 
-export function buyBoards(state: GameState, sizes: readonly BoardSizeId[]): GameState {
+export function buyBoards(
+  state: GameState,
+  sizes: readonly BoardSizeId[],
+  tripHours = TIMBER_TRIP_HOURS,
+): GameState {
   const run = state.activeRun;
-  if (run === null || !buyIssues(state, sizes).ok) return state;
+  if (run === null || !buyIssues(state, sizes, tripHours).ok) return state;
   const woodId = run.design.woodId;
   if (woodId === null) return state;
   let nextBoardNumber = state.nextBoardNumber;
@@ -82,12 +90,12 @@ export function buyBoards(state: GameState, sizes: readonly BoardSizeId[]): Game
       id: `board-${number}`,
       woodId,
       size,
-      knots: boardKnots(number, woodId, size, canonicalRects(run.design.productId, size)),
+      knots: boardKnots(number, woodId, size, canonicalRects(run, size)),
       cost: boardPrice(state, woodId, size),
       spare: false,
     };
   });
-  const hours = run.tripPaid ? 0 : TIMBER_TRIP_HOURS;
+  const hours = run.tripPaid ? 0 : tripHours;
   return {
     ...state,
     coins: state.coins - boardsCost(state, woodId, sizes),
@@ -98,8 +106,8 @@ export function buyBoards(state: GameState, sizes: readonly BoardSizeId[]): Game
   };
 }
 
-export function buyPlan(state: GameState): GameState {
+export function buyPlan(state: GameState, tripHours = TIMBER_TRIP_HOURS): GameState {
   const run = state.activeRun;
   if (run === null) return state;
-  return buyBoards(state, countList(missingPlanBoards(state, run)));
+  return buyBoards(state, countList(missingPlanBoards(state, run)), tripHours);
 }

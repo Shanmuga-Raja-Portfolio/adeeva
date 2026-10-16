@@ -323,3 +323,19 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+.ww-finish__swatch--milk {
+  background: linear-gradient(90deg, #cfe6f4, #f6c3b4, #c9d8c7, #ecd294, #d9cfee);
+}
+
+.ww-finish__swatch--limed {
+  background: repeating-linear-gradient(176deg, #ead9b8 0 6px, #fbf6ea 6px 8px);
+}
+
+.ww-finish__swatch--wash {
+  background: repeating-linear-gradient(176deg, #d9a07a 0 7px, #9cc3c6 7px 9px);
+}
+
+.ww-finish__swatch--midnight {
+  background: repeating-linear-gradient(176deg, #34394a 0 7px, #232733 7px 8px);
+}

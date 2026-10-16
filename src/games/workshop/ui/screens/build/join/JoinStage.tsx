@@ -6,6 +6,7 @@ import { useFocusAfterRender } from "../../../../../../ui/kit/useFocusAfterRende
 import {
   ASSIST_JOINT_ACCURACY_CAP,
   designJoints,
+  designParts,
   jointKindById,
   jointStartPose,
   jointTargetAngle,
@@ -16,6 +17,8 @@ import {
 import { PiecePreview } from "../../../art/PiecePreview";
 import { pieceLook } from "../../../art/pieceLook";
 import { useAssist } from "../../../useAssist";
+import { FirstJointCard } from "../set/FirstJointCard";
+import { RenHandOff } from "../set/RenHandOff";
 import { StageFooter } from "../StageFooter";
 import type { StageProps } from "../stageProps";
 import { JoinBench } from "./JoinBench";
@@ -34,7 +37,7 @@ export function JoinStage(props: StageProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [tries, setTries] = useState(0);
   const focusAfter = useFocusAfterRender();
-  const joints = designJoints(run.design);
+  const joints = designJoints(run);
   const woodId = run.design.woodId;
   const open = joints.filter((joint) => !Object.hasOwn(run.joints, joint.id));
   const joint =
@@ -42,7 +45,17 @@ export function JoinStage(props: StageProps) {
   const index = joint === undefined ? -1 : joints.indexOf(joint);
   const tolerance = joint === undefined ? null : runJointTolerance(state, run, joint);
   const target = joint === undefined ? 0 : jointTargetAngle(run.design, joint);
-  const look = pieceLook(run);
+  const look = joint === undefined ? null : pieceLook(run, joint.piece);
+  const highlight =
+    joint === undefined
+      ? null
+      : (designParts(run).find((part) => part.id === joint.movingPart)?.baseId ?? null);
+  const purpose = run.purpose;
+  const firstShow =
+    purpose.kind === "set"
+      ? joints.find((entry) => entry.kind === purpose.setJoint && Object.hasOwn(run.joints, entry.id))
+      : undefined;
+  const firstRecord = firstShow === undefined ? undefined : run.joints[firstShow.id];
 
   const seat = (pose: JointPose, goodTaps: number) => {
     if (joint === undefined) return;
@@ -76,11 +89,13 @@ export function JoinStage(props: StageProps) {
                 </button>
               ) : (
                 <span className="ww-join__chip ww-join__chip--done">
-                  <Icon name="check" size={14} /> {entry.label} · {fitWord(record.accuracy)}
+                  <Icon name="check" size={14} /> {entry.label} ·{" "}
+                  {record.byApprentice ? "Ren tapped it home" : fitWord(record.accuracy)}
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => dispatch({ type: "resetJoint", jointId: entry.id })}
+                    disabled={record.byApprentice}
                     aria-label={`Redo ${entry.label}`}
                   >
                     Redo
@@ -125,11 +140,19 @@ export function JoinStage(props: StageProps) {
                 <PiecePreview
                   look={look}
                   title="Where this joint goes"
-                  highlight={joint.movingPart}
+                  highlight={highlight}
                   showExtras={false}
                 />
                 <figcaption>The glowing part is the one you are fitting.</figcaption>
               </figure>
+            ) : null}
+            {firstShow !== undefined && firstRecord !== undefined && firstShow.kind === joint.kind ? (
+              <FirstJointCard
+                kind={firstShow.kind}
+                woodId={woodId}
+                record={firstRecord}
+                label={firstShow.label}
+              />
             ) : null}
           </div>
           <div className="ww-join__foot">
@@ -154,6 +177,7 @@ export function JoinStage(props: StageProps) {
           <Icon name="check" size={20} /> Every joint is tapped home. It stands up by itself!
         </p>
       )}
+      <RenHandOff {...props} job="pegs" />
       <StageFooter {...props} ready="All joints are snug. Time to sand!" />
     </div>
   );

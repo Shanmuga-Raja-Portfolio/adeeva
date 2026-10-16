@@ -1,0 +1,260 @@
+.ww-pieces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ww-pieces__chip {
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  border-radius: 999px;
+  border: 2px solid rgba(47, 38, 34, 0.4);
+  background: var(--card);
+  font: inherit;
+  font-weight: 700;
+  color: var(--ww-slate-deep);
+  cursor: pointer;
+}
+
+.ww-pieces__chip[aria-checked="true"] {
+  border-color: var(--ww-outline);
+  background: var(--ww-safety);
+  box-shadow: 0 3px 0 var(--ww-outline);
+}
+
+.ww-ren-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 88px 1fr auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: linear-gradient(90deg, var(--ww-timber-soft), var(--card) 40%);
+}
+
+.ww-ren-card__avatar {
+  width: 88px;
+  height: auto;
+  border-radius: 50%;
+  border: 2px solid var(--ww-outline);
+  background: #fffaf0;
+}
+
+.ww-ren-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ww-ren-scene {
+  position: absolute;
+  inset: -6px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  border-radius: 12px;
+  background: rgba(255, 250, 240, 0.96);
+  border: 3px solid var(--ww-outline);
+  animation: ww-ren-in 2s var(--ease-out) both;
+}
+
+.ww-ren-scene p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--ww-slate-deep);
+}
+
+.ww-ren-scene__ren {
+  height: 120px;
+  width: auto;
+}
+
+.ww-ren-scene__fx {
+  width: 90px;
+  height: 90px;
+}
+
+.ww-ren-scene__mallet {
+  transform-origin: 0 40px;
+  animation: ww-ren-tap 0.5s ease-in-out infinite alternate;
+}
+
+.ww-ren-scene__dust circle {
+  animation: ww-ren-puff 0.8s ease-out infinite;
+}
+
+@keyframes ww-ren-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  12%,
+  85% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes ww-ren-tap {
+  from {
+    transform: rotate(-24deg);
+  }
+  to {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes ww-ren-puff {
+  from {
+    opacity: 0.9;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+.ww-shine {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ww-shine__title {
+  margin: 0;
+  color: var(--ww-slate-deep);
+}
+
+.ww-shine__bars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-3);
+}
+
+.ww-first-joint {
+  margin: 0;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 240px;
+  font-size: var(--text-sm);
+}
+
+.ww-first-joint svg {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.ww-set-card {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ww-set-card h2 {
+  margin: 0;
+  color: var(--ww-slate-deep);
+}
+
+.ww-set-card__pieces {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-weight: 700;
+}
+
+.ww-set-card__pieces li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ww-set-card__theme {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.ww-design__set {
+  min-height: 180px;
+}
+
+.ww-review--set .ww-review__set {
+  width: 100%;
+}
+
+.ww-review__meters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+}
+
+.ww-brief-card__set {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+[data-motion="reduced"] .ww-ren-scene {
+  animation: ad-fade-in 0.3s ease-out both;
+}
+
+[data-motion="reduced"] .ww-ren-scene__mallet,
+[data-motion="reduced"] .ww-ren-scene__dust circle {
+  animation: none;
+}
+
+@media (max-width: 760px) {
+  .ww-ren-card {
+    grid-template-columns: 64px 1fr;
+  }
+  .ww-ren-card__avatar {
+    width: 64px;
+  }
+  .ww-ren-card > .ad-button,
+  .ww-ren-card > .ad-button-wrap {
+    grid-column: 1 / -1;
+  }
+}
+
+.ww-set-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.ww-design--set .ww-design__preview {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-3);
+}
+
+.ww-design--set .ww-design__set {
+  min-height: 200px;
+  background: linear-gradient(180deg, #fffaf0 60%, #f3e3c8);
+  border-radius: 8px;
+}
+
+@media (max-width: 860px) {
+  .ww-set-head {
+    grid-template-columns: 1fr;
+  }
+}

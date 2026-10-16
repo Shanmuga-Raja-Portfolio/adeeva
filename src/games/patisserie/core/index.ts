@@ -113,7 +113,8 @@ export { showpieceIssue } from "./showpiece";
 export { flourishIssue } from "./design";
 export { canStageFair } from "./fairStage";
 export { suggestedPlan, planIssue } from "./fairPlan";
-export { bookPlate, panelVerdict } from "./fairPanels";
+export { panelVerdict } from "../../../engine/panelScore";
+export { bookPlate } from "./fairPanels";
 export { ottisPicks, sidePlateOptions, SIDE_PLATES } from "./sidePlates";
 export {
   currentSeason,

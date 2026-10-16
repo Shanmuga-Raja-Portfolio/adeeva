@@ -1,0 +1,474 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Sam",
+    "look": {
+      "skinTone": "amber",
+      "hairStyle": "ponytail",
+      "hairColour": "auburn",
+      "outfit": "studio-apron"
+    },
+    "trait": "perfectionist",
+    "difficulty": "standard"
+  },
+  "calendar": {
+    "day": 15,
+    "hoursLeft": 10
+  },
+  "coins": 499,
+  "reputation": 45,
+  "buzz": 98,
+  "trends": {
+    "current": ["elegant", "natural"],
+    "next": ["sturdy", "classic"]
+  },
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-28",
+        "clientId": "mr-desmond",
+        "brief": {
+          "clientId": "mr-desmond",
+          "occasion": "A table by the bed",
+          "products": ["bedside-table"],
+          "deadlineDay": 19,
+          "budget": 68,
+          "fee": 91,
+          "requiredTags": ["elegant"],
+          "favouredColours": ["dark-wood", "red-wood"],
+          "avoidColours": ["pale-wood"],
+          "avoidWoods": [],
+          "requiredExtras": [
+            {
+              "extra": "brass-knob",
+              "count": 1
+            }
+          ],
+          "minQuality": 72
+        },
+        "expiresDay": 15
+      },
+      {
+        "id": "gig-30",
+        "clientId": "mr-lindqvist",
+        "brief": {
+          "clientId": "mr-lindqvist",
+          "occasion": "A chest for small tools",
+          "products": ["toy-chest"],
+          "deadlineDay": 20,
+          "budget": 73,
+          "fee": 103,
+          "requiredTags": ["classic"],
+          "favouredColours": ["dark-wood", "honey-wood"],
+          "avoidColours": [],
+          "avoidWoods": ["pine", "spruce"],
+          "requiredExtras": [
+            {
+              "extra": "brass-hinge",
+              "count": 2
+            },
+            {
+              "extra": "brass-knob",
+              "count": 1
+            }
+          ],
+          "minQuality": 82
+        },
+        "expiresDay": 16
+      },
+      {
+        "id": "gig-32",
+        "clientId": "mrs-adaeze",
+        "brief": {
+          "clientId": "mrs-adaeze",
+          "occasion": "Room for the ferns to grow",
+          "products": ["plant-stand"],
+          "deadlineDay": 21,
+          "budget": 30,
+          "fee": 52,
+          "requiredTags": ["natural", "cosy"],
+          "favouredColours": ["sage", "honey-wood"],
+          "avoidColours": ["black"],
+          "avoidWoods": [],
+          "requiredExtras": [],
+          "minQuality": 58
+        },
+        "expiresDay": 17
+      },
+      {
+        "id": "gig-33",
+        "clientId": "cousin-milo",
+        "brief": {
+          "clientId": "cousin-milo",
+          "occasion": "A chest for the dinosaurs",
+          "products": ["toy-chest"],
+          "deadlineDay": 20,
+          "budget": 60,
+          "fee": 57,
+          "requiredTags": ["playful"],
+          "favouredColours": ["sky", "mustard"],
+          "avoidColours": ["dark-wood"],
+          "avoidWoods": [],
+          "requiredExtras": [
+            {
+              "extra": "name-plaque",
+              "count": 1
+            }
+          ],
+          "minQuality": 55
+        },
+        "expiresDay": 17
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-34",
+        "clientId": "grandpa-teodor",
+        "brief": {
+          "clientId": "grandpa-teodor",
+          "occasion": "A home for the robins",
+          "products": ["birdhouse"],
+          "deadlineDay": 20,
+          "budget": 26,
+          "fee": 41,
+          "requiredTags": ["natural"],
+          "favouredColours": ["honey-wood", "sage"],
+          "avoidColours": ["navy"],
+          "avoidWoods": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "acceptedDay": 15
+      },
+      {
+        "id": "gig-35",
+        "clientId": "mrs-adaeze",
+        "brief": {
+          "clientId": "mrs-adaeze",
+          "occasion": "Room for the ferns to grow",
+          "products": ["plant-stand"],
+          "deadlineDay": 21,
+          "budget": 27,
+          "fee": 56,
+          "requiredTags": ["natural", "cosy"],
+          "favouredColours": ["sage", "teal"],
+          "avoidColours": ["black"],
+          "avoidWoods": [],
+          "requiredExtras": [],
+          "minQuality": 58
+        },
+        "acceptedDay": 15
+      },
+      {
+        "id": "gig-36",
+        "clientId": "ms-ingrid",
+        "brief": {
+          "clientId": "ms-ingrid",
+          "occasion": "A shelf for picture books",
+          "products": ["bookshelf"],
+          "deadlineDay": 22,
+          "budget": 37,
+          "fee": 66,
+          "requiredTags": ["classic", "sturdy"],
+          "favouredColours": ["pale-wood", "honey-wood"],
+          "avoidColours": ["coral"],
+          "avoidWoods": [],
+          "requiredExtras": [
+            {
+              "extra": "wood-knob",
+              "count": 2
+            }
+          ],
+          "minQuality": 65
+        },
+        "acceptedDay": 15
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 37
+  },
+  "story": {
+    "seen": ["ww-key", "ww-first-delivery", "ww-perfectionist", "ww-first-week"],
+    "flags": [],
+    "queue": []
+  },
+  "boards": [],
+  "upgrades": [],
+  "decor": [],
+  "activeRun": {
+    "id": "run-14",
+    "gigId": "gig-31",
+    "brief": {
+      "clientId": "grandpa-teodor",
+      "occasion": "A home for the robins",
+      "products": ["birdhouse"],
+      "deadlineDay": 17,
+      "budget": 30,
+      "fee": 35,
+      "requiredTags": ["natural"],
+      "favouredColours": ["sky", "honey-wood"],
+      "avoidColours": ["navy"],
+      "avoidWoods": [],
+      "requiredExtras": [],
+      "minQuality": 55
+    },
+    "stage": "done",
+    "reached": "done",
+    "startedDay": 14,
+    "design": {
+      "productId": "birdhouse",
+      "options": {
+        "edge": "square-edge",
+        "accent": "no-accent"
+      },
+      "woodId": "pine"
+    },
+    "tripPaid": true,
+    "placements": {
+      "roof-1": {
+        "boardId": "board-14",
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "assisted": false
+      },
+      "roof-2": {
+        "boardId": "board-14",
+        "x": 18,
+        "y": 0,
+        "rotation": 0,
+        "assisted": false
+      },
+      "side-1": {
+        "boardId": "board-14",
+        "x": 36,
+        "y": 0,
+        "rotation": 0,
+        "assisted": false
+      },
+      "side-2": {
+        "boardId": "board-14",
+        "x": 50,
+        "y": 0,
+        "rotation": 0,
+        "assisted": false
+      },
+      "gable-1": {
+        "boardId": "board-14",
+        "x": 64,
+        "y": 0,
+        "rotation": 0,
+        "assisted": false
+      },
+      "gable-2": {
+        "boardId": "board-14",
+        "x": 80,
+        "y": 0,
+        "rotation": 0,
+        "assisted": false
+      },
+      "floor": {
+        "boardId": "board-14",
+        "x": 96,
+        "y": 0,
+        "rotation": 0,
+        "assisted": false
+      }
+    },
+    "usedBoards": [
+      {
+        "id": "board-14",
+        "woodId": "pine",
+        "size": "long",
+        "knots": [
+          {
+            "x": 55,
+            "y": 15.5,
+            "r": 2.5
+          },
+          {
+            "x": 111.5,
+            "y": 16.5,
+            "r": 3.5
+          }
+        ],
+        "cost": 6,
+        "spare": false
+      }
+    ],
+    "cuts": {
+      "roof-1#0": {
+        "accuracy": 1,
+        "assisted": false
+      },
+      "roof-2#0": {
+        "accuracy": 1,
+        "assisted": false
+      },
+      "side-1#0": {
+        "accuracy": 1,
+        "assisted": false
+      },
+      "side-2#0": {
+        "accuracy": 1,
+        "assisted": false
+      },
+      "gable-1#0": {
+        "accuracy": 1,
+        "assisted": false
+      },
+      "gable-2#0": {
+        "accuracy": 1,
+        "assisted": false
+      },
+      "floor#0": {
+        "accuracy": 1,
+        "assisted": false
+      }
+    },
+    "joints": {
+      "peg-1": {
+        "offsetMm": 0,
+        "angleDeg": 0,
+        "goodTaps": 2,
+        "assisted": false,
+        "accuracy": 1
+      },
+      "peg-2": {
+        "offsetMm": 0,
+        "angleDeg": 0,
+        "goodTaps": 2,
+        "assisted": false,
+        "accuracy": 1
+      },
+      "peg-3": {
+        "offsetMm": 0,
+        "angleDeg": 0,
+        "goodTaps": 2,
+        "assisted": false,
+        "accuracy": 1
+      },
+      "peg-4": {
+        "offsetMm": 0,
+        "angleDeg": 0,
+        "goodTaps": 2,
+        "assisted": false,
+        "accuracy": 1
+      }
+    },
+    "sanding": {
+      "roof-1": {
+        "passes": [
+          3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+        ],
+        "strokes": 15,
+        "across": 0,
+        "assisted": false
+      }
+    },
+    "finish": {
+      "finishId": "clear-oil",
+      "paint": null
+    },
+    "extras": [],
+    "nextExtraNumber": 1,
+    "cushion": null
+  },
+  "log": [
+    {
+      "runId": "run-1",
+      "clientId": "grandpa-teodor",
+      "day": 1,
+      "productId": "birdhouse",
+      "woodId": "pine",
+      "evaluation": {
+        "criteria": [
+          {
+            "id": "construction",
+            "label": "Built",
+            "passed": true,
+            "detail": "7/7 parts sawn, 4/4 joints snug, 1/1 surfaces sanded.",
+            "weight": 3
+          },
+          {
+            "id": "quality",
+            "label": "Quality",
+            "passed": true,
+            "detail": "Quality 100 against a minimum of 55.",
+            "weight": 2
+          },
+          {
+            "id": "style",
+            "label": "Style",
+            "passed": true,
+            "detail": "Feels natural, just as asked.",
+            "weight": 2
+          },
+          {
+            "id": "colours",
+            "label": "Colours",
+            "passed": true,
+            "detail": "No unwanted colours. 0 favourite colours used.",
+            "weight": 1
+          },
+          {
+            "id": "extras",
+            "label": "Extras",
+            "passed": true,
+            "detail": "No extras were requested.",
+            "weight": 1
+          },
+          {
+            "id": "budget",
+            "label": "Budget",
+            "passed": true,
+            "detail": "Used 10 of 23 coins.",
+            "weight": 1
+          },
+          {
+            "id": "deadline",
+            "label": "On time",
+            "passed": true,
+            "detail": "Delivered on day 1, due by day 4.",
+            "weight": 1
+          }
+        ],
+        "quality": {
+          "saw": 1,
+          "join": 1,
+          "sand": 1,
+          "grain": 1,
+          "woodFit": 1,
+          "quality": 100
+        },
+        "favouredColoursUsed": 0,
+        "score": 100,
+        "stars": 5,
+        "passed": true,
+        "feedback": [],
+        "spend": 10
+      },
+      "reward": {
+        "outcome": "pass",
+        "coins": 56,
+        "reputation": 3,
+        "buzz": 9,
+        "lines": [
+          {
+            "label": "Fee",
+            "amount": 52
+          },
+          {
+            "label": "Neighbourhood favourite",
+            "amount": 4
+          }
+        ],
+        "trendMatches": ["sturdy"]
+      }
+    }
+  ],
+  "delivered": 14,
+  "nextRunNumber": 15,
+  "nextBoardNumber": 15,
+  "rng": 1177001276
+}

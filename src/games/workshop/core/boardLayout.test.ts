@@ -33,7 +33,7 @@ describe("planning the boards", () => {
     const state = withKnot(atLayout());
     const boardId = state.boards[0]?.id ?? "";
     const run = runOf(state);
-    const floor = findPart(run.design, "floor");
+    const floor = findPart(run, "floor");
     if (floor === undefined) throw new Error("No floor");
     expect(placementIssue(state, run, floor, { boardId, x: 106, y: 6, rotation: 0 })?.kind).toBe("knot");
     expect(reduce(state, { type: "placePart", partId: "floor", boardId, x: 106, y: 6, rotation: 0 })).toBe(

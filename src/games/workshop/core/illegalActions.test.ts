@@ -38,7 +38,7 @@ const HUB_ILLEGAL: readonly Action[] = [
     assisted: false,
   },
   { type: "chooseFinish", finishId: "clear-oil", paint: null },
-  { type: "addExtra", extraId: "wood-knob", x: 10, y: 10 },
+  { type: "addExtra", extraId: "wood-knob", x: 10, y: 10, piece: 0 },
   { type: "moveExtra", placedId: "extra-1", x: 1, y: 1, rotation: 0, scale: 1, layer: 1 },
   { type: "removeExtra", placedId: "extra-1" },
   { type: "chooseCushion", fabricId: "sky-gingham" },

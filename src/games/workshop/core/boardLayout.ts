@@ -7,11 +7,11 @@ import { recordWithout } from "../../../engine/recordWithout";
 import type { PartDef } from "../content/product";
 import { HINTS } from "../content/hint";
 import { knotPolygon } from "./boardKnots";
-import { boardSizeById, productById } from "./catalog";
+import { boardSizeById } from "./catalog";
 import { QUARTER_TURNS, type CommissionRun, type PartPlacement, type QuarterTurn } from "./commissionRun";
 import type { GameState } from "./gameState";
 import type { OwnedBoard } from "./ownedBoard";
-import { designParts, findPart } from "./pieceParts";
+import { designParts, findPart, runCanonical, type RunShape } from "./pieceParts";
 
 type LayoutIssueKind = "unplaced" | "off-board" | "knot" | "overlap" | "wrong-wood";
 
@@ -64,7 +64,7 @@ function touchesKnot(board: OwnedBoard, polygon: readonly Point[]): boolean {
 }
 
 function placedNeighbours(run: CommissionRun, boardId: string, exceptPartId: string): Point[][] {
-  return designParts(run.design).flatMap((part) => {
+  return designParts(run).flatMap((part) => {
     if (part.id === exceptPartId) return [];
     const placement = Object.hasOwn(run.placements, part.id) ? run.placements[part.id] : undefined;
     return placement === undefined || placement.boardId !== boardId ? [] : [partPolygon(part, placement)];
@@ -94,7 +94,7 @@ export function placementIssue(
 }
 
 export function layoutIssues(state: GameState, run: CommissionRun): LayoutIssue[] {
-  return designParts(run.design).flatMap((part) => {
+  return designParts(run).flatMap((part) => {
     const placement = Object.hasOwn(run.placements, part.id) ? run.placements[part.id] : undefined;
     if (placement === undefined)
       return [{ partId: part.id, kind: "unplaced" as const, message: `${part.name} still needs a board.` }];
@@ -117,7 +117,7 @@ export function placePart(
 ): GameState {
   if (!Number.isFinite(x) || !Number.isFinite(y) || !isQuarterTurn(rotation)) return state;
   return updateActiveRun(state, "layout", (run) => {
-    const part = findPart(run.design, partId);
+    const part = findPart(run, partId);
     if (part === undefined) return null;
     const placement: PartPlacement = { boardId, x, y, rotation, assisted: false };
     if (placementIssue(state, run, part, placement) !== null) return null;
@@ -142,11 +142,9 @@ export function removePart(state: GameState, partId: string): GameState {
 }
 
 function canonicalSpot(state: GameState, run: CommissionRun, part: PartDef): PartPlacement | null {
-  if (run.design.productId === null) return null;
   const boards = layoutBoards(state, run);
-  const product = productById(run.design.productId);
   const seen = { short: 0, long: 0, panel: 0 };
-  for (const canonical of product.canonical) {
+  for (const canonical of runCanonical(run)) {
     const index = seen[canonical.size];
     seen[canonical.size] += 1;
     const spot = canonical.spots.find((entry) => entry.partId === part.id);
@@ -174,8 +172,11 @@ function scannedSpot(state: GameState, run: CommissionRun, part: PartDef): PartP
   return null;
 }
 
-function unplacedPart(run: CommissionRun, partId: string | null): PartDef | undefined {
-  return designParts(run.design).find(
+function unplacedPart(
+  run: RunShape & Pick<CommissionRun, "placements">,
+  partId: string | null,
+): PartDef | undefined {
+  return designParts(run).find(
     (part) => !Object.hasOwn(run.placements, part.id) && (partId === null || part.id === partId),
   );
 }

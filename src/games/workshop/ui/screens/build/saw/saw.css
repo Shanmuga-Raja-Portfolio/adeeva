@@ -228,3 +228,13 @@
   font-size: var(--text-lg);
   color: var(--ww-forest);
 }
+
+.ww-saw-bench__ghost {
+  fill: none;
+  stroke: #7a5ab8;
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1.4 1;
+  opacity: 0.55;
+}

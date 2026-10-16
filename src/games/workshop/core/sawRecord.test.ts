@@ -28,7 +28,7 @@ function atSaw(clientId: string, plan: PiecePlan): GameState {
 
 function roofCut(state: GameState) {
   const run = runOf(state);
-  const roof = findPart(run.design, "roof-1");
+  const roof = findPart(run, "roof-1");
   if (roof === undefined) throw new Error("No roof");
   return partCuts(state, run, roof);
 }
@@ -152,7 +152,7 @@ describe("sawing", () => {
       options: { edge: "rounded-edge", accent: "star-cutout" },
     });
     const run = runOf(state);
-    const front = findPart(run.design, "gable-1");
+    const front = findPart(run, "gable-1");
     if (front === undefined) throw new Error("No front");
     const cuts = partCuts(state, run, front);
     expect(cuts).toHaveLength(2);

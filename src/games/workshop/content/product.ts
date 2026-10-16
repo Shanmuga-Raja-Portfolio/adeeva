@@ -2,6 +2,8 @@ import type { BoardSizeId } from "./boardSize";
 import type { ExtraNeed } from "./extra";
 import type { JointKindId } from "./jointKind";
 import type { PartSlot } from "./partOption";
+import { joint, part, spot } from "./productParts";
+import { ROOM_PRODUCTS } from "./roomProduct";
 
 export const PRODUCT_IDS = [
   "birdhouse",
@@ -11,10 +13,17 @@ export const PRODUCT_IDS = [
   "toy-chest",
   "bedside-table",
   "window-bench",
+  "dining-chair",
+  "breakfast-table",
+  "cottage-bed",
+  "footstool",
+  "planter-box",
+  "coat-rack",
+  "wall-cupboard",
 ] as const;
 export type ProductId = (typeof PRODUCT_IDS)[number];
 
-type PartRole = "panel" | "leg" | "plain";
+export type PartRole = "panel" | "leg" | "plain";
 
 export interface PartDef {
   readonly id: string;
@@ -29,15 +38,16 @@ export interface JointDef {
   readonly kind: JointKindId;
   readonly label: string;
   readonly movingPart: string;
+  readonly show: boolean;
 }
 
-interface CanonicalSpot {
+export interface CanonicalSpot {
   readonly partId: string;
   readonly x: number;
   readonly y: number;
 }
 
-interface CanonicalBoard {
+export interface CanonicalBoard {
   readonly size: BoardSizeId;
   readonly spots: readonly CanonicalSpot[];
 }
@@ -54,21 +64,16 @@ export interface ProductDef {
   readonly accentPart: string | null;
   readonly canonical: readonly CanonicalBoard[];
   readonly extras: readonly ExtraNeed[];
+  readonly showPrice: number;
+  readonly footprint: Footprint;
 }
 
-function part(id: string, name: string, width: number, height: number, role: PartRole): PartDef {
-  return { id, name, width, height, role };
+export interface Footprint {
+  readonly width: number;
+  readonly depth: number;
 }
 
-function joint(id: string, kind: JointKindId, label: string, movingPart: string): JointDef {
-  return { id, kind, label, movingPart };
-}
-
-function spot(partId: string, x: number, y: number): CanonicalSpot {
-  return { partId, x, y };
-}
-
-export const PRODUCTS: readonly ProductDef[] = [
+const GARAGE_PRODUCTS: readonly ProductDef[] = [
   {
     id: "birdhouse",
     name: "Garden Birdhouse",
@@ -107,6 +112,8 @@ export const PRODUCTS: readonly ProductDef[] = [
       },
     ],
     extras: [],
+    showPrice: 25,
+    footprint: { width: 22, depth: 20 },
   },
   {
     id: "step-stool",
@@ -134,6 +141,8 @@ export const PRODUCTS: readonly ProductDef[] = [
       { size: "long", spots: [spot("step", 0, 0), spot("rail", 35, 0)] },
     ],
     extras: [],
+    showPrice: 40,
+    footprint: { width: 34, depth: 28 },
   },
   {
     id: "plant-stand",
@@ -165,6 +174,8 @@ export const PRODUCTS: readonly ProductDef[] = [
       { size: "long", spots: [spot("leg-4", 0, 0)] },
     ],
     extras: [],
+    showPrice: 40,
+    footprint: { width: 28, depth: 28 },
   },
   {
     id: "bookshelf",
@@ -179,12 +190,12 @@ export const PRODUCTS: readonly ProductDef[] = [
     ],
     slots: ["edge", "accent"],
     joints: [
-      joint("peg-1", "peg", "Top shelf, left", "shelf-1"),
-      joint("peg-2", "peg", "Top shelf, right", "shelf-1"),
-      joint("peg-3", "peg", "Middle shelf, left", "shelf-2"),
-      joint("peg-4", "peg", "Middle shelf, right", "shelf-2"),
-      joint("peg-5", "peg", "Bottom shelf, left", "shelf-3"),
-      joint("peg-6", "peg", "Bottom shelf, right", "shelf-3"),
+      joint("peg-1", "peg", "Top shelf, left", "shelf-1", true),
+      joint("peg-2", "peg", "Top shelf, right", "shelf-1", true),
+      joint("peg-3", "peg", "Middle shelf, left", "shelf-2", true),
+      joint("peg-4", "peg", "Middle shelf, right", "shelf-2", true),
+      joint("peg-5", "peg", "Bottom shelf, left", "shelf-3", true),
+      joint("peg-6", "peg", "Bottom shelf, right", "shelf-3", true),
     ],
     showSurfaces: ["side-1", "side-2"],
     seat: false,
@@ -195,6 +206,8 @@ export const PRODUCTS: readonly ProductDef[] = [
       { size: "long", spots: [spot("shelf-3", 0, 0)] },
     ],
     extras: [],
+    showPrice: 55,
+    footprint: { width: 56, depth: 18 },
   },
   {
     id: "toy-chest",
@@ -210,10 +223,10 @@ export const PRODUCTS: readonly ProductDef[] = [
     ],
     slots: ["edge", "accent"],
     joints: [
-      joint("comb-1", "comb", "Front to left end", "front"),
-      joint("comb-2", "comb", "Front to right end", "front"),
-      joint("comb-3", "comb", "Back to left end", "back"),
-      joint("comb-4", "comb", "Back to right end", "back"),
+      joint("comb-1", "comb", "Front to left end", "front", true),
+      joint("comb-2", "comb", "Front to right end", "front", true),
+      joint("comb-3", "comb", "Back to left end", "back", true),
+      joint("comb-4", "comb", "Back to right end", "back", true),
       joint("peg-1", "peg", "Base, front edge", "base"),
       joint("peg-2", "peg", "Base, back edge", "base"),
     ],
@@ -226,6 +239,8 @@ export const PRODUCTS: readonly ProductDef[] = [
       { size: "panel", spots: [spot("lid", 0, 0), spot("base", 50, 0)] },
     ],
     extras: [{ extra: "brass-hinge", count: 2 }],
+    showPrice: 60,
+    footprint: { width: 52, depth: 32 },
   },
   {
     id: "bedside-table",
@@ -246,8 +261,8 @@ export const PRODUCTS: readonly ProductDef[] = [
       joint("slot-2", "slot", "Leg 2 to top", "leg-2"),
       joint("slot-3", "slot", "Leg 3 to top", "leg-3"),
       joint("slot-4", "slot", "Leg 4 to top", "leg-4"),
-      joint("peg-1", "peg", "Front rail", "rail-1"),
-      joint("peg-2", "peg", "Back rail", "rail-2"),
+      joint("peg-1", "peg", "Front rail", "rail-1", true),
+      joint("peg-2", "peg", "Back rail", "rail-2", true),
     ],
     showSurfaces: ["top"],
     seat: false,
@@ -258,6 +273,8 @@ export const PRODUCTS: readonly ProductDef[] = [
       { size: "long", spots: [spot("leg-4", 0, 0), spot("rail-1", 65, 0), spot("rail-2", 65, 8)] },
     ],
     extras: [],
+    showPrice: 60,
+    footprint: { width: 44, depth: 34 },
   },
   {
     id: "window-bench",
@@ -278,8 +295,8 @@ export const PRODUCTS: readonly ProductDef[] = [
       joint("slot-2", "slot", "Leg 2 to seat", "leg-2"),
       joint("slot-3", "slot", "Leg 3 to seat", "leg-3"),
       joint("slot-4", "slot", "Leg 4 to seat", "leg-4"),
-      joint("slot-5", "slot", "Front rail", "rail-1"),
-      joint("slot-6", "slot", "Back rail", "rail-2"),
+      joint("slot-5", "slot", "Front rail", "rail-1", true),
+      joint("slot-6", "slot", "Back rail", "rail-2", true),
     ],
     showSurfaces: ["seat"],
     seat: true,
@@ -291,5 +308,9 @@ export const PRODUCTS: readonly ProductDef[] = [
       { size: "long", spots: [spot("rail-1", 0, 0), spot("rail-2", 0, 8)] },
     ],
     extras: [],
+    showPrice: 70,
+    footprint: { width: 86, depth: 36 },
   },
 ];
+
+export const PRODUCTS: readonly ProductDef[] = [...GARAGE_PRODUCTS, ...ROOM_PRODUCTS];

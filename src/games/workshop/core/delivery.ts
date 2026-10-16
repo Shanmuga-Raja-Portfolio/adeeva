@@ -4,11 +4,13 @@ import { applyStanding } from "../../../engine/standing";
 import type { GameState, LogEntry } from "./gameState";
 import { evaluatePiece } from "./pieceEvaluate";
 import { pieceReward } from "./rewards";
+import { queueShowroomOffer } from "./showroomOffer";
 import { queueStoryTrigger, queueTraitBeat } from "./storyQueue";
 
 export function canDeliver(state: GameState): ActionCheck {
   const run = state.activeRun;
   if (run === null || run.stage !== "review") return actionCheck(["Finish the piece first."]);
+  if (run.purpose.kind !== "commission") return actionCheck(["Sets go on the showroom floor."]);
   if (!state.gigs.active.some((gig) => gig.id === run.gigId))
     return actionCheck(["This commission is no longer open."]);
   return actionCheck([]);
@@ -39,7 +41,7 @@ export function deliver(state: GameState): GameState {
     log: [...state.log, entry],
   };
   const rewarded = applyStanding(delivered, reward);
-  return queueTraitBeat(queueStoryTrigger(rewarded, "first-delivery"), "charmer");
+  return queueShowroomOffer(queueTraitBeat(queueStoryTrigger(rewarded, "first-delivery"), "charmer"));
 }
 
 export function lastResult(state: GameState, runId: string): LogEntry | null {

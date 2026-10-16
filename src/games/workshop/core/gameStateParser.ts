@@ -17,17 +17,22 @@ import {
   dayParser,
   gigBoardParser,
   knownIdParser,
-  profileParser,
   rngParser,
   storyStateParser,
 } from "../../../engine/stateParsers";
+import { CAREER_IDS } from "../content/career";
 import { UPGRADE_IDS } from "../content/upgrade";
 import { dayHours, SKYLIGHT_HOURS } from "./calendar";
 import { storyBeatById } from "./catalog";
 import { SCHEMA_VERSION, type GameState } from "./gameState";
+import { renJobsPerDay } from "./apprentice";
+import { setNumber } from "./fairPick";
 import { boardNumber } from "./ownedBoard";
 import { decorParser, logEntryParser, woodTrendsParser } from "./resultParsers";
 import { briefParser, clientIdParser, ownedBoardParser, runParser } from "./runParser";
+import { bayCount } from "./showroomFloor";
+import { apprenticeStateParser, fairStateParser, showroomStateParser } from "./showroomParsers";
+import { workshopProfileParser } from "./workshopProfile";
 
 const calendarParser = objectOf<DayClock>({
   day: dayParser,
@@ -40,7 +45,8 @@ function unique<T>(items: readonly T[]): boolean {
 
 const gameStateShapeParser = objectOf<GameState>({
   schemaVersion: oneOf([SCHEMA_VERSION]),
-  profile: profileParser,
+  profile: workshopProfileParser,
+  career: oneOf(CAREER_IDS),
   calendar: calendarParser,
   coins: integerParser,
   reputation: countParser,
@@ -56,6 +62,9 @@ const gameStateShapeParser = objectOf<GameState>({
   delivered: countParser,
   nextRunNumber: dayParser,
   nextBoardNumber: dayParser,
+  showroom: nullable(showroomStateParser),
+  fair: nullable(fairStateParser),
+  apprentice: nullable(apprenticeStateParser),
   rng: rngParser,
 });
 
@@ -78,8 +87,42 @@ const countedStateParser = refined(
   "counters above every saved run and board",
 );
 
-export const gameStateParser = refined(
+function setNumbersBelow(state: GameState): boolean {
+  const showroom = state.showroom;
+  if (showroom === null) return true;
+  const purpose = state.activeRun?.purpose;
+  const setIds = [
+    ...showroom.floor.map((set) => set.setId),
+    ...(purpose?.kind === "set" ? [purpose.setId] : []),
+  ];
+  return setIds.every((id) => setNumber(id) < showroom.nextSetNumber);
+}
+
+function showroomFits(state: GameState): boolean {
+  const bays = bayCount(state);
+  const jobs = state.apprentice === null ? 0 : state.apprentice.jobsToday;
+  return (
+    setNumbersBelow(state) &&
+    (state.showroom?.floor ?? []).every((set) => set.bay < bays) &&
+    jobs <= renJobsPerDay(state)
+  );
+}
+
+function careerFits(state: GameState): boolean {
+  const showroomParts = [state.showroom, state.fair, state.apprentice];
+  if (state.career === "garage")
+    return showroomParts.every((part) => part === null) && state.activeRun?.purpose.kind !== "set";
+  return showroomParts.every((part) => part !== null) && showroomFits(state);
+}
+
+const careerStateParser = refined(
   countedStateParser,
+  careerFits,
+  "a showroom only in the showroom career, with sets in its own bays and Ren within a day's jobs",
+);
+
+export const gameStateParser = refined(
+  careerStateParser,
   (state) => state.calendar.hoursLeft <= dayHours(state),
   "no more hours left today than the garage's day holds",
 );

@@ -22,6 +22,14 @@ const WOOD_BASE: Readonly<Record<WoodId, string>> = {
   cherry: "#b8643f",
   oak: "#cf9a5a",
   walnut: "#6f4a32",
+  alder: "#c98a62",
+  linden: "#f3e4c4",
+  sycamore: "#efe0c2",
+  elm: "#c99662",
+  chestnut: "#bd8650",
+  apple: "#c4704c",
+  pear: "#d2906a",
+  hickory: "#c99a66",
 };
 
 export function woodLook(woodId: WoodId): WoodLook {

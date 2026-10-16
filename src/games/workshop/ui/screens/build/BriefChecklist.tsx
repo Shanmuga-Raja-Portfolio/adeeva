@@ -1,5 +1,6 @@
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Icon } from "../../../../../ui/kit/IconSet";
+import { HATTIE_LOOK } from "../../../content/panelMember";
 import { checklist, clientById, type CommissionRun, type GameState } from "../../../core";
 
 export interface BriefChecklistProps {
@@ -10,6 +11,7 @@ export interface BriefChecklistProps {
 export function BriefChecklist({ state, run }: BriefChecklistProps) {
   const items = checklist(state, run);
   const client = clientById(run.brief.clientId);
+  const isSet = run.purpose.kind === "set";
   const met = items.filter((item) => item.status === "met").length;
   return (
     <aside className="ww-checklist ww-paper" aria-label="Job checklist">
@@ -17,10 +19,12 @@ export function BriefChecklist({ state, run }: BriefChecklistProps) {
       <header className="ww-checklist__head">
         {client !== undefined ? (
           <Avatar look={client.look} size={44} title={client.name} frameColour="#dfe7ee" />
+        ) : isSet ? (
+          <Avatar look={HATTIE_LOOK} size={44} title="Hattie Rowe" frameColour="#f3dcc0" />
         ) : null}
         <div>
-          <span className="ad-eyebrow">The note</span>
-          <strong>{client?.name ?? "A neighbour"}</strong>
+          <span className="ad-eyebrow">{isSet ? "Ready for the Fair" : "The note"}</span>
+          <strong>{isSet ? "Hattie's checklist" : (client?.name ?? "A neighbour")}</strong>
         </div>
         <span className="ww-checklist__count">
           {met}/{items.length}

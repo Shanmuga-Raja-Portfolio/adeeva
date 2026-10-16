@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Kai",
+    "look": {
+      "skinTone": "amber",
+      "hairStyle": "ponytail",
+      "hairColour": "auburn",
+      "outfit": "studio-apron"
+    },
+    "trait": "trendsetter",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 4, "hoursLeft": 11 },
+  "coins": 1090,
+  "reputation": 20,
+  "buzz": 0,
+  "trends": { "current": ["rustic", "classic"], "next": ["playful", "classic"] },
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-3",
+        "clientId": "cousin-milo",
+        "brief": {
+          "clientId": "cousin-milo",
+          "occasion": "A chest for the dinosaurs",
+          "products": ["toy-chest"],
+          "deadlineDay": 6,
+          "budget": 63,
+          "fee": 62,
+          "requiredTags": ["playful"],
+          "favouredColours": ["mustard", "sky"],
+          "avoidColours": ["dark-wood"],
+          "avoidWoods": [],
+          "requiredExtras": [{ "extra": "name-plaque", "count": 1 }],
+          "minQuality": 55
+        },
+        "expiresDay": 4
+      },
+      {
+        "id": "gig-5",
+        "clientId": "mrs-adaeze",
+        "brief": {
+          "clientId": "mrs-adaeze",
+          "occasion": "Room for the ferns to grow",
+          "products": ["plant-stand"],
+          "deadlineDay": 7,
+          "budget": 33,
+          "fee": 47,
+          "requiredTags": ["natural", "cosy"],
+          "favouredColours": ["teal", "sage"],
+          "avoidColours": ["black"],
+          "avoidWoods": [],
+          "requiredExtras": [],
+          "minQuality": 58
+        },
+        "expiresDay": 5
+      },
+      {
+        "id": "gig-7",
+        "clientId": "grandpa-teodor",
+        "brief": {
+          "clientId": "grandpa-teodor",
+          "occasion": "A home for the robins",
+          "products": ["birdhouse"],
+          "deadlineDay": 7,
+          "budget": 26,
+          "fee": 42,
+          "requiredTags": ["natural"],
+          "favouredColours": ["honey-wood", "sage"],
+          "avoidColours": ["navy"],
+          "avoidWoods": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "expiresDay": 6
+      }
+    ],
+    "active": [],
+    "lapsed": [],
+    "nextGigNumber": 8
+  },
+  "story": { "seen": ["ww-key", "ww-first-delivery"], "flags": [], "queue": [] },
+  "boards": [
+    { "id": "board-4", "woodId": "pine", "size": "short", "knots": [], "cost": 0, "spare": true },
+    { "id": "board-8", "woodId": "pine", "size": "short", "knots": [], "cost": 0, "spare": true },
+    { "id": "board-12", "woodId": "pine", "size": "short", "knots": [], "cost": 0, "spare": true }
+  ],
+  "upgrades": ["sturdy-sawhorses", "clamp-rack", "timber-rack", "skylight"],
+  "decor": [
+    { "id": "pegboard-tools", "paint": null },
+    { "id": "door-paint", "paint": "teal" },
+    { "id": "bench-lamp", "paint": null }
+  ],
+  "activeRun": {
+    "id": "run-3",
+    "gigId": "gig-6",
+    "brief": {
+      "clientId": "ms-ingrid",
+      "occasion": "A shelf for picture books",
+      "products": ["bookshelf"],
+      "deadlineDay": 9,
+      "budget": 31,
+      "fee": 74,
+      "requiredTags": ["classic", "sturdy"],
+      "favouredColours": ["honey-wood", "navy"],
+      "avoidColours": ["coral"],
+      "avoidWoods": [],
+      "requiredExtras": [{ "extra": "wood-knob", "count": 2 }],
+      "minQuality": 65
+    },
+    "stage": "done",
+    "reached": "done",
+    "startedDay": 3,
+    "design": {
+      "productId": "bookshelf",
+      "options": { "edge": "square-edge", "accent": "no-accent" },
+      "woodId": "pine"
+    },
+    "tripPaid": true,
+    "placements": {
+      "side-1": { "boardId": "board-9", "x": 0, "y": 0, "rotation": 0, "assisted": false },
+      "side-2": { "boardId": "board-9", "x": 55, "y": 0, "rotation": 0, "assisted": false },
+      "shelf-1": { "boardId": "board-10", "x": 0, "y": 0, "rotation": 0, "assisted": false },
+      "shelf-2": { "boardId": "board-10", "x": 50, "y": 0, "rotation": 0, "assisted": false },
+      "shelf-3": { "boardId": "board-11", "x": 0, "y": 0, "rotation": 0, "assisted": false }
+    },
+    "usedBoards": [
+      {
+        "id": "board-9",
+        "woodId": "pine",
+        "size": "long",
+        "knots": [{ "x": 113.5, "y": 7, "r": 2.5 }],
+        "cost": 6,
+        "spare": false
+      },
+      {
+        "id": "board-10",
+        "woodId": "pine",
+        "size": "long",
+        "knots": [{ "x": 118, "y": 10.5, "r": 2 }],
+        "cost": 6,
+        "spare": false
+      },
+      { "id": "board-11", "woodId": "pine", "size": "long", "knots": [], "cost": 6, "spare": false }
+    ],
+    "cuts": {
+      "side-1#0": { "accuracy": 1, "assisted": false },
+      "side-2#0": { "accuracy": 1, "assisted": false },
+      "shelf-1#0": { "accuracy": 1, "assisted": false },
+      "shelf-2#0": { "accuracy": 1, "assisted": false },
+      "shelf-3#0": { "accuracy": 1, "assisted": false }
+    },
+    "joints": {
+      "peg-1": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 2, "assisted": false, "accuracy": 1 },
+      "peg-2": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 2, "assisted": false, "accuracy": 1 },
+      "peg-3": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 2, "assisted": false, "accuracy": 1 },
+      "peg-4": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 2, "assisted": false, "accuracy": 1 },
+      "peg-5": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 2, "assisted": false, "accuracy": 1 },
+      "peg-6": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 2, "assisted": false, "accuracy": 1 }
+    },
+    "sanding": {
+      "side-1": {
+        "passes": [
+          3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+        ],
+        "strokes": 15,
+        "across": 0,
+        "assisted": false
+      },
+      "side-2": {
+        "passes": [
+          3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+        ],
+        "strokes": 15,
+        "across": 0,
+        "assisted": false
+      }
+    },
+    "finish": { "finishId": "clear-oil", "paint": null },
+    "extras": [],
+    "nextExtraNumber": 1,
+    "cushion": null
+  },
+  "log": [
+    {
+      "runId": "run-1",
+      "clientId": "ms-ingrid",
+      "day": 1,
+      "productId": "bookshelf",
+      "woodId": "pine",
+      "evaluation": {
+        "criteria": [
+          {
+            "id": "construction",
+            "label": "Built",
+            "passed": true,
+            "detail": "5/5 parts sawn, 6/6 joints snug, 2/2 surfaces sanded.",
+            "weight": 3
+          },
+          {
+            "id": "quality",
+            "label": "Quality",
+            "passed": true,
+            "detail": "Quality 100 against a minimum of 65.",
+            "weight": 2
+          },
+          {
+            "id": "style",
+            "label": "Style",
+            "passed": true,
+            "detail": "Feels classic and sturdy, just as asked.",
+            "weight": 2
+          },
+          {
+            "id": "colours",
+            "label": "Colours",
+            "passed": true,
+            "detail": "No unwanted colours. 1 favourite colour used.",
+            "weight": 1
+          },
+          { "id": "extras", "label": "Extras", "passed": false, "detail": "Wooden Knob 0/2", "weight": 1 },
+          {
+            "id": "budget",
+            "label": "Budget",
+            "passed": true,
+            "detail": "Used 22 of 35 coins.",
+            "weight": 1
+          },
+          {
+            "id": "deadline",
+            "label": "On time",
+            "passed": true,
+            "detail": "Delivered on day 1, due by day 7.",
+            "weight": 1
+          }
+        ],
+        "quality": { "saw": 1, "join": 1, "sand": 1, "grain": 1, "woodFit": 1, "quality": 100 },
+        "favouredColoursUsed": 1,
+        "score": 99,
+        "stars": 5,
+        "passed": false,
+        "feedback": ["So close! The brief asked for a few more knobs or extras."],
+        "spend": 22
+      },
+      "reward": {
+        "outcome": "soft-fail",
+        "coins": 32,
+        "reputation": -1,
+        "buzz": 0,
+        "lines": [{ "label": "Part of the fee", "amount": 32 }],
+        "trendMatches": []
+      }
+    },
+    {
+      "runId": "run-2",
+      "clientId": "ms-ingrid",
+      "day": 2,
+      "productId": "bookshelf",
+      "woodId": "pine",
+      "evaluation": {
+        "criteria": [
+          {
+            "id": "construction",
+            "label": "Built",
+            "passed": true,
+            "detail": "5/5 parts sawn, 6/6 joints snug, 2/2 surfaces sanded.",
+            "weight": 3
+          },
+          {
+            "id": "quality",
+            "label": "Quality",
+            "passed": true,
+            "detail": "Quality 100 against a minimum of 65.",
+            "weight": 2
+          },
+          {
+            "id": "style",
+            "label": "Style",
+            "passed": true,
+            "detail": "Feels classic and sturdy, just as asked.",
+            "weight": 2
+          },
+          {
+            "id": "colours",
+            "label": "Colours",
+            "passed": true,
+            "detail": "No unwanted colours. 1 favourite colour used.",
+            "weight": 1
+          },
+          { "id": "extras", "label": "Extras", "passed": false, "detail": "Wooden Knob 0/2", "weight": 1 },
+          {
+            "id": "budget",
+            "label": "Budget",
+            "passed": true,
+            "detail": "Used 22 of 44 coins.",
+            "weight": 1
+          },
+          {
+            "id": "deadline",
+            "label": "On time",
+            "passed": true,
+            "detail": "Delivered on day 2, due by day 7.",
+            "weight": 1
+          }
+        ],
+        "quality": { "saw": 1, "join": 1, "sand": 1, "grain": 1, "woodFit": 1, "quality": 100 },
+        "favouredColoursUsed": 1,
+        "score": 99,
+        "stars": 5,
+        "passed": false,
+        "feedback": ["So close! The brief asked for a few more knobs or extras."],
+        "spend": 22
+      },
+      "reward": {
+        "outcome": "soft-fail",
+        "coins": 27,
+        "reputation": -1,
+        "buzz": 0,
+        "lines": [{ "label": "Part of the fee", "amount": 27 }],
+        "trendMatches": []
+      }
+    },
+    {
+      "runId": "run-3",
+      "clientId": "ms-ingrid",
+      "day": 3,
+      "productId": "bookshelf",
+      "woodId": "pine",
+      "evaluation": {
+        "criteria": [
+          {
+            "id": "construction",
+            "label": "Built",
+            "passed": true,
+            "detail": "5/5 parts sawn, 6/6 joints snug, 2/2 surfaces sanded.",
+            "weight": 3
+          },
+          {
+            "id": "quality",
+            "label": "Quality",
+            "passed": true,
+            "detail": "Quality 100 against a minimum of 65.",
+            "weight": 2
+          },
+          {
+            "id": "style",
+            "label": "Style",
+            "passed": true,
+            "detail": "Feels classic and sturdy, just as asked.",
+            "weight": 2
+          },
+          {
+            "id": "colours",
+            "label": "Colours",
+            "passed": true,
+            "detail": "No unwanted colours. 1 favourite colour used.",
+            "weight": 1
+          },
+          { "id": "extras", "label": "Extras", "passed": false, "detail": "Wooden Knob 0/2", "weight": 1 },
+          {
+            "id": "budget",
+            "label": "Budget",
+            "passed": true,
+            "detail": "Used 22 of 31 coins.",
+            "weight": 1
+          },
+          {
+            "id": "deadline",
+            "label": "On time",
+            "passed": true,
+            "detail": "Delivered on day 3, due by day 9.",
+            "weight": 1
+          }
+        ],
+        "quality": { "saw": 1, "join": 1, "sand": 1, "grain": 1, "woodFit": 1, "quality": 100 },
+        "favouredColoursUsed": 1,
+        "score": 99,
+        "stars": 5,
+        "passed": false,
+        "feedback": ["So close! The brief asked for a few more knobs or extras."],
+        "spend": 22
+      },
+      "reward": {
+        "outcome": "soft-fail",
+        "coins": 30,
+        "reputation": -1,
+        "buzz": 0,
+        "lines": [{ "label": "Part of the fee", "amount": 30 }],
+        "trendMatches": []
+      }
+    }
+  ],
+  "delivered": 3,
+  "nextRunNumber": 4,
+  "nextBoardNumber": 13,
+  "rng": 1447918682
+}

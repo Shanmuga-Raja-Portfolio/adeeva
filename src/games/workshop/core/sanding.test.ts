@@ -129,7 +129,7 @@ describe("long rubs", () => {
   it("keeps strokes up to the limit, then asks for a fresh start", () => {
     const start = withActiveGig(settleStories(newTestGame()), "grandpa-teodor");
     const sanding = playUntil(start, lastGigId(start), BIRDHOUSE_PLAN, "sand");
-    const surface = designSurfaces(runOf(sanding).design)[0];
+    const surface = designSurfaces(runOf(sanding))[0];
     if (surface === undefined) throw new Error("No surface");
     const run = runOf(sanding);
     const tired = {

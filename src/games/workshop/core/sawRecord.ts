@@ -5,15 +5,14 @@ import { ASSIST_CUT_ACCURACY, traceAccuracy } from "../../../engine/geometry/tra
 import { isPathTraced } from "../../../engine/geometry/pathTrace";
 import { fitSamples, samplesFit } from "../../../engine/geometry/traceSamples";
 import { polygonBounds } from "../../../engine/geometry/polygonPlacement";
-import type { PartDef } from "../content/product";
 import { boardSizeById } from "./catalog";
 import type { CommissionRun, CutRecord } from "./commissionRun";
 import { partPolygon, runBoardById } from "./boardLayout";
 import type { GameState } from "./gameState";
 import type { OwnedBoard } from "./ownedBoard";
-import { designParts, findPart } from "./pieceParts";
+import { designParts, findPart, type RunPart } from "./pieceParts";
 import { sawCuts, type SawCut } from "./sawPath";
-import { sawTolerance } from "./tolerance";
+import { twinSawTolerance } from "./twinSaw";
 
 const MAX_SAW_SAMPLES = 20000;
 const SPARE_MIN_LENGTH_CM = 60;
@@ -22,30 +21,33 @@ export function cutKey(partId: string, cutIndex: number): string {
   return `${partId}#${cutIndex}`;
 }
 
-export function partCuts(state: GameState, run: CommissionRun, part: PartDef): SawCut[] {
+export function partCuts(state: GameState, run: CommissionRun, part: RunPart): SawCut[] {
   const placement = Object.hasOwn(run.placements, part.id) ? run.placements[part.id] : undefined;
   const board = placement === undefined ? undefined : runBoardById(state, run, placement.boardId);
   if (placement === undefined || board === undefined) return [];
   return sawCuts(part, run.design, placement, board);
 }
 
-function cutRecord(run: CommissionRun, key: string): CutRecord | undefined {
+export function cutRecord(run: CommissionRun, key: string): CutRecord | undefined {
   return Object.hasOwn(run.cuts, key) ? run.cuts[key] : undefined;
 }
 
-export function isPartSawn(state: GameState, run: CommissionRun, part: PartDef): boolean {
+export function isPartSawn(state: GameState, run: CommissionRun, part: RunPart): boolean {
   const cuts = partCuts(state, run, part);
   return cuts.length > 0 && cuts.every((_, index) => cutRecord(run, cutKey(part.id, index)) !== undefined);
 }
 
-function partSawAccuracy(state: GameState, run: CommissionRun, part: PartDef): number {
+export function partSawAccuracy(state: GameState, run: CommissionRun, part: RunPart): number {
   const cuts = partCuts(state, run, part);
   if (cuts.length === 0) return 0;
   return average(cuts.map((_, index) => cutRecord(run, cutKey(part.id, index))?.accuracy ?? 0));
 }
 
-export function runSawAccuracy(state: GameState, run: CommissionRun): number {
-  const parts = designParts(run.design);
+export function runSawAccuracy(
+  state: GameState,
+  run: CommissionRun,
+  parts: readonly RunPart[] = designParts(run),
+): number {
   return parts.length === 0 ? 0 : average(parts.map((part) => partSawAccuracy(state, run, part)));
 }
 
@@ -56,7 +58,7 @@ export function fitSawSamples(samples: readonly Point[]): readonly Point[] {
 function sparePiece(board: OwnedBoard, run: CommissionRun, number: number): OwnedBoard | null {
   if (board.size !== "long") return null;
   const width = boardSizeById("long").width;
-  const furthest = designParts(run.design).reduce((edge, part) => {
+  const furthest = designParts(run).reduce((edge, part) => {
     const placement = Object.hasOwn(run.placements, part.id) ? run.placements[part.id] : undefined;
     if (placement === undefined || placement.boardId !== board.id) return edge;
     return Math.max(edge, polygonBounds(partPolygon(part, placement)).maxX);
@@ -75,10 +77,10 @@ function sparePiece(board: OwnedBoard, run: CommissionRun, number: number): Owne
   };
 }
 
-function consumeSawnBoards(state: GameState): GameState {
+export function consumeSawnBoards(state: GameState): GameState {
   const run = state.activeRun;
   if (run === null) return state;
-  const parts = designParts(run.design);
+  const parts = designParts(run);
   const finished = state.boards.filter((board) => {
     const onBoard = parts.filter((part) => run.placements[part.id]?.boardId === board.id);
     return onBoard.length > 0 && onBoard.every((part) => isPartSawn(state, run, part));
@@ -107,13 +109,11 @@ export function sawCut(
   samples: readonly Point[],
 ): GameState {
   if (!samplesFit(samples, MAX_SAW_SAMPLES) || !Number.isInteger(cutIndex)) return state;
-  const run = state.activeRun;
-  const woodId = run?.design.woodId ?? null;
-  if (run === null || woodId === null) return state;
-  const tolerance = sawTolerance(state, woodId);
   const recorded = updateActiveRun(state, "saw", (current) => {
-    const part = findPart(current.design, partId);
-    const cut = part === undefined ? undefined : partCuts(state, current, part)[cutIndex];
+    const part = findPart(current, partId);
+    const tolerance = part === undefined ? null : twinSawTolerance(state, current, part);
+    if (part === undefined || tolerance === null) return null;
+    const cut = partCuts(state, current, part)[cutIndex];
     const key = cutKey(partId, cutIndex);
     if (cut === undefined || cutRecord(current, key) !== undefined) return null;
     if (!isPathTraced(cut, samples, tolerance)) return null;
@@ -125,7 +125,7 @@ export function sawCut(
 
 export function sawAssist(state: GameState, partId: string): GameState {
   const recorded = updateActiveRun(state, "saw", (run) => {
-    const part = findPart(run.design, partId);
+    const part = findPart(run, partId);
     if (part === undefined) return null;
     const open = partCuts(state, run, part)
       .map((_, index) => cutKey(partId, index))
@@ -139,6 +139,10 @@ export function sawAssist(state: GameState, partId: string): GameState {
   return recorded === state ? state : consumeSawnBoards(recorded);
 }
 
-export function sawnPartCount(state: GameState, run: CommissionRun): number {
-  return designParts(run.design).filter((part) => isPartSawn(state, run, part)).length;
+export function sawnPartCount(
+  state: GameState,
+  run: CommissionRun,
+  parts: readonly RunPart[] = designParts(run),
+): number {
+  return parts.filter((part) => isPartSawn(state, run, part)).length;
 }

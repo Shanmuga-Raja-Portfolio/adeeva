@@ -46,6 +46,7 @@ export function PlacedPart({
     <g
       className={classes}
       data-part-id={part.id}
+      data-assisted={String(placement.assisted)}
       tabIndex={0}
       role="button"
       aria-label={`${part.name}${along ? "" : ", turned across the wood lines"}. Arrow keys move it, R turns it, Delete puts it back.`}

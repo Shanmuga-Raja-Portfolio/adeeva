@@ -11,22 +11,27 @@ import {
   designSurfaces,
   isSurfaceDone,
   isSurfaceWornOut,
+  runPieces,
   sandAngleLimit,
   sandRecordOf,
   surfaceSmooth,
 } from "../../../../core";
 import { useAssist } from "../../../useAssist";
+import { RenHandOff } from "../set/RenHandOff";
+import { ShineBar } from "../set/ShineBar";
 import { StageFooter } from "../StageFooter";
 import type { StageProps } from "../stageProps";
 import { SandBench } from "./SandBench";
 import "./sand.css";
+
+const REN_LOVELY_PERCENT = 85;
 
 export function SandStage(props: StageProps) {
   const { state, run, dispatch } = props;
   const [assisted, setAssisted] = useAssist("sand");
   const [chosen, setChosen] = useState<string | null>(null);
   const [rubbingOn, setRubbingOn] = useState<string | null>(null);
-  const surfaces = designSurfaces(run.design);
+  const surfaces = designSurfaces(run);
   const woodId = run.design.woodId;
   const open = surfaces.filter((part) => !isSurfaceDone(sandRecordOf(run, part.id)));
   const surface =
@@ -35,7 +40,11 @@ export function SandStage(props: StageProps) {
     open[0] ??
     surfaces[0];
   const record = surface === undefined ? null : sandRecordOf(run, surface.id);
-  const scratchy = record !== null && record.strokes >= 3 && crossShare(record) > ACROSS_WARNING_SHARE;
+  const renShine = record === null ? null : record.renAccuracy;
+  const byRen = renShine !== null;
+  const smoothPercent = record === null ? 0 : Math.round((renShine ?? surfaceSmooth(record)) * 100);
+  const scratchy =
+    record !== null && !byRen && record.strokes >= 3 && crossShare(record) > ACROSS_WARNING_SHARE;
 
   const rub = (points: readonly Point[], stillRubbing: boolean) => {
     if (surface === undefined) return;
@@ -103,26 +112,30 @@ export function SandStage(props: StageProps) {
             <Meter
               label="Smoothness"
               tone="sage"
-              value={Math.round(surfaceSmooth(record) * 100)}
+              value={smoothPercent}
               max={100}
-              valueText={`${Math.round(surfaceSmooth(record) * 100)}%`}
+              valueText={`${smoothPercent}%`}
             />
             <p
               className={scratchy ? "ww-sand__message ww-sand__message--warn" : "ww-sand__message"}
               role="status"
               aria-live="polite"
             >
-              {isSurfaceDone(record)
-                ? `${surface.name} is smooth! Keep rubbing for silky.`
-                : isSurfaceWornOut(record)
-                  ? "That's lots of rubbing! Tap Start this surface again."
-                  : scratchy
-                    ? HINTS.sandAlong
-                    : "Rub until the dust is gone."}
+              {byRen
+                ? `Ren sanded ${surface.name} to ${smoothPercent}%. ${smoothPercent >= REN_LOVELY_PERCENT ? "Lovely and even!" : "Steady work, and Ren is still learning."}`
+                : isSurfaceDone(record)
+                  ? `${surface.name} is smooth! Keep rubbing for silky.`
+                  : isSurfaceWornOut(record)
+                    ? "That's lots of rubbing! Tap Start this surface again."
+                    : scratchy
+                      ? HINTS.sandAlong
+                      : "Rub until the dust is gone."}
             </p>
           </div>
         </div>
       ) : null}
+      {runPieces(run).length > 1 ? <ShineBar run={run} /> : null}
+      <RenHandOff {...props} job="sand" />
       <StageFooter {...props} ready="Smooth as a pebble. Time for a finish!" />
     </div>
   );

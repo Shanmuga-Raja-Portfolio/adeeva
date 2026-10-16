@@ -7,6 +7,7 @@ import { FINISH_IDS, PAINT_COLOURS, type FinishId } from "../content/finish";
 import { extraById, finishById } from "./catalog";
 import type { CommissionRun, FinishChoice } from "./commissionRun";
 import type { GameState } from "./gameState";
+import { runPieces, type RunShape } from "./pieceParts";
 
 export const FINISH_CANVAS = { width: 400, height: 300 } as const;
 export const EXTRA_ROTATION_STEP = 15;
@@ -16,11 +17,13 @@ export function extraNumber(placedId: string): number {
   return idNumber(placedId, "extra");
 }
 
-export function finishPrice(choice: FinishChoice): number {
-  return choice.finishId === null ? 0 : finishById(choice.finishId).price;
+export function finishPrice(run: RunShape, choice: FinishChoice): number {
+  return choice.finishId === null
+    ? 0
+    : finishById(choice.finishId).price * Math.max(1, runPieces(run).length);
 }
 
-export function extrasPrice(run: CommissionRun): number {
+export function extrasPrice(run: Pick<CommissionRun, "extras">): number {
   return run.extras.reduce((sum, placed) => sum + extraById(placed.extraId).price, 0);
 }
 
@@ -38,17 +41,23 @@ export function chooseFinish(state: GameState, finishId: FinishId, paint: Colour
   if (run === null || run.stage !== "finish") return state;
   if (run.finish.finishId === finishId && run.finish.paint === paint) return state;
   const next: FinishChoice = { finishId, paint };
-  const change = finishPrice(next) - finishPrice(run.finish);
+  const change = finishPrice(run, next) - finishPrice(run, run.finish);
   if (change > state.coins) return state;
   return { ...state, coins: state.coins - change, activeRun: { ...run, finish: next } };
 }
 
-export function addExtra(state: GameState, extraId: ExtraId, x: number, y: number): GameState {
+export function extraFits(run: RunShape, extraId: ExtraId, piece: number): boolean {
+  const target = runPieces(run).find((entry) => entry.index === piece);
+  return target !== undefined && !extraById(extraId).notOn.includes(target.productId);
+}
+
+export function addExtra(state: GameState, extraId: ExtraId, x: number, y: number, piece: number): GameState {
   if (!EXTRA_IDS.includes(extraId) || !isOnCanvas(FINISH_CANVAS, x, y)) return state;
   const price = extraById(extraId).price;
   if (price > state.coins) return state;
   const added = updateActiveRun(state, "finish", (run) => {
-    if (run.extras.length >= MAX_EXTRAS) return null;
+    if (!extraFits(run, extraId, piece)) return null;
+    if (run.extras.filter((placed) => placed.piece === piece).length >= MAX_EXTRAS) return null;
     return {
       ...run,
       extras: [
@@ -61,6 +70,7 @@ export function addExtra(state: GameState, extraId: ExtraId, x: number, y: numbe
           rotation: 0,
           scale: 1,
           layer: topLayer(run.extras) + 1,
+          piece,
         },
       ],
       nextExtraNumber: run.nextExtraNumber + 1,

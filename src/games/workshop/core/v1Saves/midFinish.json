@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Robin",
+    "look": {
+      "skinTone": "amber",
+      "hairStyle": "ponytail",
+      "hairColour": "auburn",
+      "outfit": "studio-apron"
+    },
+    "trait": "charmer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 1, "hoursLeft": 1 },
+  "coins": 240,
+  "reputation": 9,
+  "buzz": 0,
+  "trends": { "current": ["playful", "elegant"], "next": ["modern", "playful"] },
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "grandpa-teodor",
+        "brief": {
+          "clientId": "grandpa-teodor",
+          "occasion": "A home for the robins",
+          "products": ["birdhouse"],
+          "deadlineDay": 5,
+          "budget": 29,
+          "fee": 44,
+          "requiredTags": ["natural"],
+          "favouredColours": ["sage", "sky"],
+          "avoidColours": ["navy"],
+          "avoidWoods": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-2",
+        "clientId": "rosalind",
+        "brief": {
+          "clientId": "rosalind",
+          "occasion": "A bench for the café window",
+          "products": ["window-bench"],
+          "deadlineDay": 7,
+          "budget": 53,
+          "fee": 82,
+          "requiredTags": ["cosy"],
+          "favouredColours": ["sage", "blush"],
+          "avoidColours": ["charcoal"],
+          "avoidWoods": [],
+          "requiredExtras": [],
+          "minQuality": 68
+        },
+        "acceptedDay": 1
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 3
+  },
+  "story": { "seen": ["ww-key"], "flags": [], "queue": [] },
+  "boards": [],
+  "upgrades": [],
+  "decor": [],
+  "activeRun": {
+    "id": "run-1",
+    "gigId": "gig-2",
+    "brief": {
+      "clientId": "rosalind",
+      "occasion": "A bench for the café window",
+      "products": ["window-bench"],
+      "deadlineDay": 7,
+      "budget": 53,
+      "fee": 82,
+      "requiredTags": ["cosy"],
+      "favouredColours": ["sage", "blush"],
+      "avoidColours": ["charcoal"],
+      "avoidWoods": [],
+      "requiredExtras": [],
+      "minQuality": 68
+    },
+    "stage": "finish",
+    "reached": "finish",
+    "startedDay": 1,
+    "design": {
+      "productId": "window-bench",
+      "options": { "edge": "rounded-edge", "legs": "splayed-legs" },
+      "woodId": "cedar"
+    },
+    "tripPaid": true,
+    "placements": {
+      "seat": { "boardId": "board-4", "x": 0, "y": 0, "rotation": 0, "assisted": false },
+      "leg-1": { "boardId": "board-1", "x": 0, "y": 0, "rotation": 0, "assisted": false },
+      "leg-2": { "boardId": "board-1", "x": 42, "y": 0, "rotation": 0, "assisted": false },
+      "leg-3": { "boardId": "board-2", "x": 0, "y": 0, "rotation": 0, "assisted": false },
+      "leg-4": { "boardId": "board-2", "x": 42, "y": 0, "rotation": 0, "assisted": false },
+      "rail-1": { "boardId": "board-3", "x": 0, "y": 0, "rotation": 0, "assisted": false },
+      "rail-2": { "boardId": "board-3", "x": 0, "y": 8, "rotation": 0, "assisted": false }
+    },
+    "usedBoards": [
+      { "id": "board-4", "woodId": "cedar", "size": "panel", "knots": [], "cost": 13, "spare": false },
+      {
+        "id": "board-1",
+        "woodId": "cedar",
+        "size": "long",
+        "knots": [
+          { "x": 115.5, "y": 8, "r": 2 },
+          { "x": 110.5, "y": 10.5, "r": 2.5 }
+        ],
+        "cost": 8,
+        "spare": false
+      },
+      {
+        "id": "board-2",
+        "woodId": "cedar",
+        "size": "long",
+        "knots": [{ "x": 95, "y": 17, "r": 3 }],
+        "cost": 8,
+        "spare": false
+      },
+      {
+        "id": "board-3",
+        "woodId": "cedar",
+        "size": "long",
+        "knots": [
+          { "x": 101, "y": 14, "r": 3.5 },
+          { "x": 100.5, "y": 6, "r": 3 },
+          { "x": 111, "y": 15.5, "r": 2.5 }
+        ],
+        "cost": 8,
+        "spare": false
+      }
+    ],
+    "cuts": {
+      "seat#0": { "accuracy": 1, "assisted": false },
+      "leg-1#0": { "accuracy": 1, "assisted": false },
+      "leg-2#0": { "accuracy": 1, "assisted": false },
+      "leg-3#0": { "accuracy": 1, "assisted": false },
+      "leg-4#0": { "accuracy": 1, "assisted": false },
+      "rail-1#0": { "accuracy": 1, "assisted": false },
+      "rail-2#0": { "accuracy": 1, "assisted": false }
+    },
+    "joints": {
+      "slot-1": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 3, "assisted": false, "accuracy": 1 },
+      "slot-2": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 3, "assisted": false, "accuracy": 1 },
+      "slot-3": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 3, "assisted": false, "accuracy": 1 },
+      "slot-4": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 3, "assisted": false, "accuracy": 1 },
+      "slot-5": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 3, "assisted": false, "accuracy": 1 },
+      "slot-6": { "offsetMm": 0, "angleDeg": 0, "goodTaps": 3, "assisted": false, "accuracy": 1 }
+    },
+    "sanding": {
+      "seat": {
+        "passes": [
+          3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+        ],
+        "strokes": 15,
+        "across": 0,
+        "assisted": false
+      }
+    },
+    "finish": { "finishId": "beeswax", "paint": null },
+    "extras": [
+      { "id": "extra-1", "extraId": "wood-knob", "x": 150, "y": 140, "rotation": 0, "scale": 1, "layer": 1 },
+      {
+        "id": "extra-2",
+        "extraId": "leaf-carving",
+        "x": 230,
+        "y": 170,
+        "rotation": 0,
+        "scale": 1,
+        "layer": 2
+      }
+    ],
+    "nextExtraNumber": 3,
+    "cushion": { "fabricId": "blush-floral", "seam": null }
+  },
+  "log": [],
+  "delivered": 0,
+  "nextRunNumber": 2,
+  "nextBoardNumber": 5,
+  "rng": 1703683440
+}

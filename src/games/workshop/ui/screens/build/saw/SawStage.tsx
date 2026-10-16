@@ -4,20 +4,25 @@ import { useToast } from "../../../../../../studio/ToastContext";
 import { Button } from "../../../../../../ui/kit/Button";
 import { Icon } from "../../../../../../ui/kit/IconSet";
 import { ToggleSwitch } from "../../../../../../ui/kit/ToggleSwitch";
-import { HINTS, SAFETY_LINE } from "../../../../content/hint";
+import { HINTS, SAFETY_LINE, SET_HINTS } from "../../../../content/hint";
 import {
   ASSIST_CUT_ACCURACY,
+  canSawLikeFirst,
   cutKey,
   designParts,
+  firstPartId,
+  fromBoard,
   isPartSawn,
   partCuts,
   runBoardById,
-  sawTolerance,
+  toBoard,
+  twinSawTolerance,
 } from "../../../../core";
 import { useAssist } from "../../../useAssist";
 import { StageFooter } from "../StageFooter";
 import type { StageProps } from "../stageProps";
 import { SawBench } from "./SawBench";
+import { ghostKey, rememberCut, tracedCut } from "./twinGhosts";
 import "./saw.css";
 
 export function SawStage(props: StageProps) {
@@ -28,7 +33,7 @@ export function SawStage(props: StageProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [riding, setRiding] = useState(false);
   const [bench, setBench] = useState(0);
-  const parts = designParts(run.design);
+  const parts = designParts(run);
   const woodId = run.design.woodId;
   const open = parts.filter((part) => !isPartSawn(state, run, part));
   const part = parts.find((entry) => entry.id === chosen && !isPartSawn(state, run, entry)) ?? open[0];
@@ -39,7 +44,18 @@ export function SawStage(props: StageProps) {
     (_, index) => part !== undefined && Object.hasOwn(run.cuts, cutKey(part.id, index)),
   );
   const cutIndex = doneCuts.findIndex((done) => !done);
-  const tolerance = woodId === null ? 1 : sawTolerance(state, woodId);
+  const tolerance = part === undefined || woodId === null ? 1 : (twinSawTolerance(state, run, part) ?? 1);
+  const firstId = part === undefined ? null : firstPartId(run, part);
+  const firstPart = firstId === null ? undefined : parts.find((entry) => entry.id === firstId);
+  const firstPlacement = firstId === null ? undefined : run.placements[firstId];
+  const firstSamples = firstId === null ? null : tracedCut(ghostKey(run.id, firstId, cutIndex));
+  const ghost =
+    part === undefined || placement === undefined || firstPart === undefined || firstPlacement === undefined
+      ? null
+      : (firstSamples?.map((point) =>
+          toBoard(fromBoard(point, firstPart, firstPlacement), part, placement),
+        ) ?? null);
+  const echo = part !== undefined && canSawLikeFirst(state, run, part);
 
   const usedBoards = run.usedBoards.length;
   const spares = state.boards.filter((entry) => entry.spare).length;
@@ -55,7 +71,10 @@ export function SawStage(props: StageProps) {
   const complete = (samples: readonly Point[]) => {
     if (part === undefined) return;
     const changed = dispatch({ type: "sawCut", partId: part.id, cut: cutIndex, samples });
-    if (changed) setBench((value) => value + 1);
+    if (changed) {
+      rememberCut(ghostKey(run.id, part.id, cutIndex), samples);
+      setBench((value) => value + 1);
+    }
     setMessage(
       !changed
         ? HINTS.sawAgain
@@ -130,6 +149,7 @@ export function SawStage(props: StageProps) {
             tolerance={tolerance}
             rail={rail}
             riding={riding}
+            ghost={ghost}
             onRideDone={rideDone}
             onComplete={complete}
             onPaused={(coverage) =>
@@ -141,8 +161,26 @@ export function SawStage(props: StageProps) {
               {message ??
                 (rail
                   ? "Tap the rail button and watch it go."
-                  : "Press on the green dot and follow the pencil line.")}
+                  : firstId !== null
+                    ? SET_HINTS.followFirst
+                    : "Press on the green dot and follow the pencil line.")}
             </p>
+            {echo ? (
+              <Button
+                variant="secondary"
+                className="ww-big-button"
+                icon="sparkle"
+                onClick={() => {
+                  if (dispatch({ type: "sawLikeFirst", partId: part.id })) {
+                    setBench((value) => value + 1);
+                    setMessage(`${part.name} is cut out, just like your first!`);
+                  }
+                }}
+                data-testid="saw-like-first"
+              >
+                Saw it like my first
+              </Button>
+            ) : null}
             {rail ? (
               <Button
                 className="ww-big-button"

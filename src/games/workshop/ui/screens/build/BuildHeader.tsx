@@ -3,9 +3,9 @@ import { focusHeading } from "../../../../../studio/focusHeading";
 import { useToast } from "../../../../../studio/ToastContext";
 import { Button } from "../../../../../ui/kit/Button";
 import { StatChip } from "../../../../../ui/kit/StatChip";
-import { clientById } from "../../../core";
+import { clientById, setAsideIssue, setTemplateById } from "../../../core";
 import { SetAsideDialog } from "../SetAsideDialog";
-import { STAGE_TITLES } from "./stageNames";
+import { SET_STAGE_TITLES, STAGE_TITLES } from "./stageNames";
 import type { StageProps } from "./stageProps";
 
 export function BuildHeader({ state, run, dispatch, onExit }: StageProps) {
@@ -30,13 +30,17 @@ export function BuildHeader({ state, run, dispatch, onExit }: StageProps) {
   return (
     <header className="ww-build-header">
       <Button variant="ghost" icon="back" onClick={onExit}>
-        Back to the garage
+        {state.career === "showroom" ? "Back to the shop" : "Back to the garage"}
       </Button>
       <div className="ww-build-header__title">
         <span className="ad-eyebrow">
-          For {client?.name ?? "a neighbour"} · {run.brief.occasion}
+          {run.purpose.kind === "set"
+            ? `Matched set · ${setTemplateById(run.purpose.templateId).name}`
+            : `For ${client?.name ?? "a neighbour"} · ${run.brief.occasion}`}
         </span>
-        <h1>{STAGE_TITLES[run.stage]}</h1>
+        <h1>
+          {(run.purpose.kind === "set" ? SET_STAGE_TITLES[run.stage] : undefined) ?? STAGE_TITLES[run.stage]}
+        </h1>
       </div>
       <div className="ww-build-header__stats">
         <StatChip kind="day" value={state.calendar.day} />
@@ -46,7 +50,12 @@ export function BuildHeader({ state, run, dispatch, onExit }: StageProps) {
         <span data-testid="bench-coins">
           <StatChip kind="coins" value={state.coins} />
         </span>
-        <Button variant="ghost" size="sm" onClick={() => setConfirming(true)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setConfirming(true)}
+          disabledReason={setAsideIssue(state) ?? undefined}
+        >
           Set aside
         </Button>
       </div>

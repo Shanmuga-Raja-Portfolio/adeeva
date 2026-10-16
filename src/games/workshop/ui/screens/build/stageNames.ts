@@ -38,3 +38,10 @@ export const ADVANCE_LABELS: Readonly<Record<RunStage, string>> = {
   review: "Deliver",
   done: "Done",
 };
+
+export const SET_STAGE_TITLES: Readonly<Partial<Record<RunStage, string>>> = {
+  brief: "Hattie's set card",
+  design: "Design the set",
+  review: "Ready for the floor",
+  done: "On the showroom floor",
+};

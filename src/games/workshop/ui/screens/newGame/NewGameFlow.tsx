@@ -7,20 +7,25 @@ import { newSeed } from "../../../../../studio/newSeed";
 import { Button } from "../../../../../ui/kit/Button";
 import type { IconName } from "../../../../../ui/kit/IconSet";
 import { AvatarStep } from "../../../../../ui/newGame/AvatarStep";
+import { CareerStep, type CareerCard } from "../../../../../ui/newGame/CareerStep";
+import {
+  CAREER_STEPS as NEW_GAME_STEPS,
+  careerDraftSettings,
+  careerPlayerDraft,
+  careerStepIssue,
+  type CareerDraft,
+} from "../../../../../ui/newGame/careerDraft";
+import { careerFacts } from "../../../../../ui/newGame/careerFacts";
 import { DifficultyStep } from "../../../../../ui/newGame/DifficultyStep";
 import { NewGameStepper } from "../../../../../ui/newGame/NewGameStepper";
-import {
-  draftSettings,
-  playerDraft,
-  PROFILE_STEPS,
-  stepIssue,
-  type ProfileDraft,
-} from "../../../../../ui/newGame/profileDraft";
 import { TraitStep } from "../../../../../ui/newGame/TraitStep";
+import { CAREERS, type CareerId } from "../../../content/career";
 import { DIFFICULTIES } from "../../../content/difficulty";
 import { STORY_BEATS } from "../../../content/storyBeat";
 import { TRAITS } from "../../../content/trait";
-import type { NewGameSettings } from "../../../core";
+import { newGameIssues, type NewGameSettings } from "../../../core";
+import { GarageBackdrop } from "../../art/GarageBackdrop";
+import { ShowroomBackdrop } from "../../art/ShowroomBackdrop";
 import { Wordmark } from "../../art/Wordmark";
 import type { SaveSlotId } from "../../workshopSlots";
 import "./newGame.css";
@@ -33,11 +38,15 @@ export interface NewGameFlowProps {
   readonly onCancel: () => void;
 }
 
-const headings: Record<(typeof PROFILE_STEPS)[number]["id"], { title: string; lead: string }> = {
+const headings: Record<(typeof NEW_GAME_STEPS)[number]["id"], { title: string; lead: string }> = {
   avatar: { title: "Who's in the garage?", lead: "Make your maker. Goggles and apron come free." },
   trait: {
     title: "What kind of maker are you?",
     lead: "Your trait shapes your perks, your voice and who knocks on the door.",
+  },
+  career: {
+    title: "Where does your maker story begin?",
+    lead: "Garage makers can open the showroom later. Showroom makers start with matched sets, Ren and the Craft Fair.",
   },
   difficulty: {
     title: "How should the days feel?",
@@ -66,13 +75,30 @@ function voiceSample(trait: TraitId, name: string): string {
   );
 }
 
+type NewGameDraft = CareerDraft<CareerId>;
+
+const CAREER_CARDS: readonly CareerCard<CareerId>[] = CAREERS.map((career) => ({
+  id: career.id,
+  name: career.id === "garage" ? "Garage Workshop" : "Furniture Showroom",
+  pitch: career.pitch,
+  placeName: career.workshopName,
+  badge: career.badge,
+  window:
+    career.id === "garage" ? (
+      <GarageBackdrop className="ww-career-window" />
+    ) : (
+      <ShowroomBackdrop className="ww-career-window" />
+    ),
+  facts: careerFacts(career),
+}));
+
 export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: NewGameFlowProps) {
-  const [draft, setDraft] = useState<ProfileDraft>(() => playerDraft(player));
+  const [draft, setDraft] = useState<NewGameDraft>(() => careerPlayerDraft<CareerId>(player, "garage"));
   const [index, setIndex] = useState(0);
-  const step = PROFILE_STEPS[index] ?? PROFILE_STEPS[0];
-  const issue = stepIssue(step.id, draft);
-  const isLast = index === PROFILE_STEPS.length - 1;
-  const update = (patch: Partial<ProfileDraft>) => setDraft((current) => ({ ...current, ...patch }));
+  const step = NEW_GAME_STEPS[index] ?? NEW_GAME_STEPS[0];
+  const issue = careerStepIssue(step.id, draft, newGameIssues);
+  const isLast = index === NEW_GAME_STEPS.length - 1;
+  const update = (patch: Partial<NewGameDraft>) => setDraft((current) => ({ ...current, ...patch }));
   const heading = headings[step.id];
 
   const next = () => {
@@ -81,7 +107,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
       setIndex(index + 1);
       return;
     }
-    const settings = draftSettings(draft, newSeed());
+    const settings = careerDraftSettings(draft, newSeed());
     if (settings !== null) onBegin(settings);
   };
 
@@ -89,13 +115,13 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
     <main className="ww-new-game ad-screen">
       <header className="ww-new-game__header">
         <Wordmark compact />
-        <NewGameStepper steps={PROFILE_STEPS} index={index} />
+        <NewGameStepper steps={NEW_GAME_STEPS} index={index} />
         <span className="ww-new-game__slot">Slot {slot}</span>
       </header>
       <section className="ww-new-game__body" aria-labelledby="ww-new-game-title">
         <div className="ww-new-game__intro" key={`intro-${step.id}`}>
           <span className="ad-eyebrow">
-            Step {index + 1} of {PROFILE_STEPS.length}
+            Step {index + 1} of {NEW_GAME_STEPS.length}
           </span>
           <h1 id="ww-new-game-title" className="ww-new-game__title">
             {heading.title}
@@ -125,6 +151,9 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
               onChange={(trait) => update({ trait })}
             />
           ) : null}
+          {step.id === "career" ? (
+            <CareerStep cards={CAREER_CARDS} value={draft.career} onChange={(career) => update({ career })} />
+          ) : null}
           {step.id === "difficulty" ? (
             <DifficultyStep
               difficulties={DIFFICULTIES}
@@ -147,7 +176,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
           showReason
           onClick={next}
         >
-          {isLast ? "Open the garage" : "Next"}
+          {isLast ? (draft.career === "showroom" ? "Open the showroom" : "Open the garage") : "Next"}
         </Button>
       </footer>
     </main>

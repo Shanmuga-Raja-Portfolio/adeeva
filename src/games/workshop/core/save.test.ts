@@ -34,7 +34,7 @@ describe("saving", () => {
     });
     expect(parseSave("[]").ok).toBe(false);
     const raw = JSON.parse(serialize(newTestGame())) as Record<string, unknown>;
-    expect(parseSave(JSON.stringify({ ...raw, schemaVersion: 2 })).ok).toBe(false);
+    expect(parseSave(JSON.stringify({ ...raw, schemaVersion: 3 })).ok).toBe(false);
     expect(parseSave(JSON.stringify({ ...raw, schemaVersion: 0 })).ok).toBe(false);
     expect(parseSave(JSON.stringify({ ...raw, coins: "lots" })).ok).toBe(false);
     expect(parseSave(JSON.stringify({ ...raw, trends: { current: ["shiny"], next: [] } })).ok).toBe(false);
@@ -72,7 +72,7 @@ describe("saving", () => {
   it("refuses extras whose numbers the next extra would reuse", () => {
     const start = base();
     const atFinish = playUntil(start, lastGigId(start), BIRDHOUSE_PLAN, "finish");
-    const decorated = reduce(atFinish, { type: "addExtra", extraId: "wood-knob", x: 200, y: 150 });
+    const decorated = reduce(atFinish, { type: "addExtra", extraId: "wood-knob", x: 200, y: 150, piece: 0 });
     expect(decorated.activeRun?.extras.map((extra) => extra.id)).toEqual(["extra-1"]);
     const raw = JSON.parse(serialize(decorated)) as { activeRun: Record<string, unknown> } & Record<
       string,

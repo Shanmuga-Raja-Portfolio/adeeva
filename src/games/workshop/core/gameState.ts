@@ -5,20 +5,26 @@ import type { ProfileBase } from "../../../engine/profile";
 import type { RngState } from "../../../engine/rng";
 import type { StoryState } from "../../../engine/story";
 import type { TrendState } from "../../../engine/trendMarket";
+import type { CareerId } from "../content/career";
 import type { DecorId } from "../content/decor";
 import type { ProductId } from "../content/product";
 import type { UpgradeId } from "../content/upgrade";
 import type { WoodTag } from "../content/woodTag";
 import type { WoodId } from "../content/wood";
 import type { Brief } from "./brief";
+import type { ApprenticeState } from "./apprentice";
 import type { CommissionRun } from "./commissionRun";
+import type { FairState } from "./fairState";
 import type { OwnedBoard } from "./ownedBoard";
 import type { Evaluation } from "./pieceEvaluate";
 import type { Reward } from "./rewards";
+import type { ShowroomState } from "./showroomState";
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
-export type Profile = ProfileBase;
+export interface Profile extends ProfileBase {
+  readonly startedAs: CareerId;
+}
 
 export type Offer = BoardOffer<Brief>;
 export type Gig = BoardGig<Brief>;
@@ -42,6 +48,7 @@ export interface LogEntry {
 export interface GameState {
   readonly schemaVersion: typeof SCHEMA_VERSION;
   readonly profile: Profile;
+  readonly career: CareerId;
   readonly calendar: DayClock;
   readonly coins: number;
   readonly reputation: number;
@@ -57,5 +64,8 @@ export interface GameState {
   readonly delivered: number;
   readonly nextRunNumber: number;
   readonly nextBoardNumber: number;
+  readonly showroom: ShowroomState | null;
+  readonly fair: FairState | null;
+  readonly apprentice: ApprenticeState | null;
   readonly rng: RngState;
 }

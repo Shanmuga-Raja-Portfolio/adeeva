@@ -3,6 +3,8 @@ import { boardSizeById, type OwnedBoard, type QuarterTurn } from "../../../../co
 
 const BOARD_GAP = 8;
 const CANVAS_MARGIN = 3;
+const COLUMN_WIDTH = 126;
+const WIDE_BENCH_BOARDS = 4;
 
 export interface BoardSlot {
   readonly board: OwnedBoard;
@@ -17,19 +19,39 @@ interface Footprint {
   readonly height: number;
 }
 
-export function boardSlots(boards: readonly OwnedBoard[]): BoardSlot[] {
+export function benchColumns(boards: readonly OwnedBoard[]): number {
+  return boards.length > WIDE_BENCH_BOARDS ? 2 : 1;
+}
+
+export function canvasWidth(columns: number): number {
+  return COLUMN_WIDTH * columns;
+}
+
+export function boardSlots(boards: readonly OwnedBoard[], columns = 1): BoardSlot[] {
+  const slots: BoardSlot[] = [];
   let y = CANVAS_MARGIN;
-  return boards.map((board) => {
-    const size = boardSizeById(board.size);
-    const slot = { board, x: CANVAS_MARGIN, y, width: size.width, height: size.height };
-    y += size.height + BOARD_GAP;
-    return slot;
-  });
+  for (let start = 0; start < boards.length; start += columns) {
+    const row = boards.slice(start, start + columns);
+    let rowHeight = 0;
+    row.forEach((board, column) => {
+      const size = boardSizeById(board.size);
+      slots.push({
+        board,
+        x: CANVAS_MARGIN + column * COLUMN_WIDTH,
+        y,
+        width: size.width,
+        height: size.height,
+      });
+      rowHeight = Math.max(rowHeight, size.height);
+    });
+    y += rowHeight + BOARD_GAP;
+  }
+  return slots;
 }
 
 export function canvasHeight(slots: readonly BoardSlot[]): number {
-  const last = slots[slots.length - 1];
-  return last === undefined ? 40 : last.y + last.height + CANVAS_MARGIN;
+  if (slots.length === 0) return 40;
+  return Math.max(...slots.map((slot) => slot.y + slot.height)) + CANVAS_MARGIN;
 }
 
 export function footprint(part: PartDef, rotation: QuarterTurn): Footprint {
