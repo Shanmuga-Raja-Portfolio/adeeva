@@ -22,8 +22,11 @@ import { FLOOR_IDS } from "../content/floor";
 import { FURNITURE_IDS } from "../content/furniture";
 import { LIGHT_IDS } from "../content/light";
 import { PAINT_IDS } from "../content/paint";
+import { PLOT_IDS } from "../content/plot";
+import { PURPOSE_IDS } from "../content/roomPurpose";
 import { SOFT_COLOURS } from "../content/softColour";
 import { briefParser } from "./briefParser";
+import { plotById } from "./catalog";
 import { STYLE_CANVAS } from "./decorPlacement";
 import { TURNS, type PlacedPiece } from "./floorPlan";
 import type {
@@ -34,8 +37,9 @@ import type {
   PlacedDecor,
   RollRecord,
   RoomPlan,
+  RunPurpose,
 } from "./makeoverRun";
-import { ROLLER_LOAD } from "./makeoverRun";
+import { MAKEOVER, ROLLER_LOAD, ROLLER_ZONES } from "./makeoverRun";
 import { MAX_PASSES, MAX_STROKES_PER_WALL, ROLL_CANVAS } from "./paintRoll";
 import { isRunConsistent } from "./runConsistency";
 import { RUN_STAGES } from "./runStage";
@@ -55,12 +59,17 @@ const planParser = objectOf<RoomPlan>({
   nextPieceNumber: dayParser,
   wallPaint: nullable(oneOf(PAINT_IDS)),
   featurePaint: nullable(oneOf(PAINT_IDS)),
+  lowerPaint: nullable(oneOf(PAINT_IDS)),
   floor: nullable(oneOf(FLOOR_IDS)),
   lights: arrayOf(oneOf(LIGHT_IDS)),
   tidied: booleanParser,
 });
 
-const edgeParser = objectOf<EdgeRecord>({ accuracy: shareParser, assisted: booleanParser });
+const edgeParser = objectOf<EdgeRecord>({
+  accuracy: shareParser,
+  assisted: booleanParser,
+  byCrew: booleanParser,
+});
 
 const splatParser: Parser<Point> = (input, path) => {
   const outcome = arrayOf(rangeParser(0, ROLL_CANVAS.width))(input, path);
@@ -76,13 +85,16 @@ const rollParser = objectOf<RollRecord>({
   strokes: refined(countParser, (strokes) => strokes <= MAX_STROKES_PER_WALL, "a stroke count in range"),
   splats: arrayOf(splatParser),
   dryStrokes: countParser,
+  smudges: countParser,
   assisted: booleanParser,
+  byCrew: booleanParser,
 });
 
 const floorRecordParser = objectOf<FloorRecord>({
   offset: rangeParser(0, 100),
   accuracy: shareParser,
   assisted: booleanParser,
+  byCrew: booleanParser,
 });
 
 const lightPlaceParser = objectOf<LightPlace>({ col: cellParser, row: cellParser });
@@ -97,6 +109,24 @@ const decorParser = objectOf<PlacedDecor>({
   layer: countParser,
 });
 
+const homeRoomParser = refined(
+  objectOf<Extract<RunPurpose, { readonly kind: "home-room" }>>({
+    kind: oneOf(["home-room"] as const),
+    plotId: oneOf(PLOT_IDS),
+    roomIndex: integerRangeParser(0, 9),
+    purposeId: oneOf(PURPOSE_IDS),
+    hallFloor: nullable(oneOf(FLOOR_IDS)),
+  }),
+  (purpose) => purpose.roomIndex < plotById(purpose.plotId).spaces.length,
+  "a room in this home",
+);
+
+const purposeParser: Parser<RunPurpose> = (input, path) => {
+  const kind = objectOf({ kind: oneOf(["makeover", "home-room"] as const) })(input, path);
+  if (!kind.ok) return kind;
+  return kind.value.kind === "makeover" ? parsed(MAKEOVER) : homeRoomParser(input, path);
+};
+
 const anyKey = () => true;
 
 export const runParser = refined(
@@ -104,6 +134,7 @@ export const runParser = refined(
     id: stringParser,
     gigId: stringParser,
     brief: briefParser,
+    purpose: purposeParser,
     stage: oneOf(RUN_STAGES),
     reached: oneOf(RUN_STAGES),
     startedDay: dayParser,
@@ -114,9 +145,11 @@ export const runParser = refined(
     edges: recordOf(anyKey, edgeParser),
     rolls: recordOf(anyKey, rollParser),
     roller: refined(countParser, (load) => load <= ROLLER_LOAD, "a roller load"),
+    rollerZone: oneOf(ROLLER_ZONES),
     floorLaid: recordOf(anyKey, floorRecordParser),
     lightPlaces: recordOf(anyKey, lightPlaceParser),
     lightAssisted: booleanParser,
+    lightCrew: nullable(shareParser),
     decor: arrayOf(decorParser),
     nextDecorNumber: dayParser,
     softColour: oneOf(SOFT_COLOURS),

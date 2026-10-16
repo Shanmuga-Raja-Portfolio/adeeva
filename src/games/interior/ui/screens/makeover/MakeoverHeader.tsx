@@ -3,7 +3,8 @@ import { focusHeading } from "../../../../../studio/focusHeading";
 import { useToast } from "../../../../../studio/ToastContext";
 import { Button } from "../../../../../ui/kit/Button";
 import { StatChip } from "../../../../../ui/kit/StatChip";
-import { clientById, roomById } from "../../../core";
+import { clientById, purseLeft, roomById } from "../../../core";
+import { homeRoomContext } from "./homeRoomContext";
 import { SetAsideDialog } from "../SetAsideDialog";
 import { STAGE_TITLES } from "./stageNames";
 import type { StageProps } from "./stageProps";
@@ -27,6 +28,7 @@ export function MakeoverHeader({
     if (active === null || active === document.body) focusHeading();
   }, [run.stage]);
   const client = clientById(run.brief.clientId);
+  const home = homeRoomContext(state, run);
   const setAside = () => {
     setConfirming(false);
     if (!dispatch({ type: "abandonRun" })) return;
@@ -35,14 +37,16 @@ export function MakeoverHeader({
   };
   return (
     <header className="is-makeover-header">
-      <Button variant="ghost" icon="back" onClick={onExit}>
-        Back to the loft
+      <Button variant="ghost" icon="back" onClick={onExit} data-testid="makeover-back">
+        {home === null ? "Back to the loft" : "Back to the home"}
       </Button>
       <div className="is-makeover-header__title">
         <span className="ad-eyebrow">
-          For {client?.name ?? "a neighbour"} · {roomById(run.brief.roomId).name}
+          {home === null
+            ? `For ${client?.name ?? "a neighbour"} · ${roomById(run.brief.roomId).name}`
+            : `${home.purpose.name} · ${home.plot.name}`}
         </span>
-        <h1>{STAGE_TITLES[run.stage]}</h1>
+        <h1>{home !== null && run.stage === "shop" ? "Larkspur Supply Yard" : STAGE_TITLES[run.stage]}</h1>
       </div>
       <div className="is-makeover-header__stats">
         <StatChip kind="day" value={state.calendar.day} />
@@ -52,12 +56,19 @@ export function MakeoverHeader({
         <span data-testid="makeover-coins">
           <StatChip kind="coins" value={state.coins} />
         </span>
+        {home === null ? null : (
+          <span className="is-purse-chip" data-testid="makeover-purse">
+            Purse {purseLeft(home.project)}
+          </span>
+        )}
         <Button variant="ghost" size="sm" onClick={onOpenSettings} data-testid="makeover-settings">
           Settings
         </Button>
-        <Button variant="ghost" size="sm" onClick={() => setConfirming(true)}>
-          Set aside
-        </Button>
+        {home === null ? (
+          <Button variant="ghost" size="sm" onClick={() => setConfirming(true)}>
+            Set aside
+          </Button>
+        ) : null}
       </div>
       <SetAsideDialog open={confirming} onConfirm={setAside} onClose={() => setConfirming(false)} />
     </header>

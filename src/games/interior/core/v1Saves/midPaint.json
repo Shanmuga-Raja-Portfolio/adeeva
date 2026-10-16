@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "amber", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 1, "hoursLeft": 8 },
+  "coins": 74,
+  "reputation": 0,
+  "buzz": 0,
+  "stock": {
+    "furniture": {
+      "single-bed": 0,
+      "bunk-bed": 0,
+      "desk": 0,
+      "desk-chair": 0,
+      "wardrobe": 0,
+      "bookcase": 0,
+      "sofa": 0,
+      "armchair": 0,
+      "coffee-table": 0,
+      "dining-table": 0,
+      "toy-box": 0,
+      "window-seat": 0
+    },
+    "paints": {
+      "chalk-white": 0,
+      "sea-glass": 0,
+      "morning-sky": 0,
+      "peach-sorbet": 0,
+      "sunflower": 0,
+      "lilac-mist": 0,
+      "deep-lagoon": 0,
+      "midnight-ink": 0
+    },
+    "floors": {
+      "pine-boards": 0,
+      "oak-boards": 0,
+      "walnut-boards": 0,
+      "cork-tiles": 0,
+      "cloud-carpet": 0,
+      "terracotta": 0,
+      "checkerboard": 0
+    },
+    "lights": {
+      "paper-pendant": 0,
+      "arc-lamp": 0,
+      "clip-lamp": 0,
+      "firefly-string": 0,
+      "brass-sconce": 0,
+      "dome-pendant": 0
+    },
+    "decor": {
+      "cushion-pile": 0,
+      "potted-fern": 0,
+      "framed-print": 0,
+      "woven-basket": 0,
+      "round-rug": 0,
+      "star-garland": 0,
+      "paper-bunting": 0,
+      "wall-clock": 0
+    }
+  },
+  "upgrades": [],
+  "loftDecor": [],
+  "guide": true,
+  "trends": { "current": ["cosy", "calm"], "next": ["bold", "modern"] },
+  "showHomeWeek": 0,
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "nana-pearl",
+        "brief": {
+          "clientId": "nana-pearl",
+          "roomId": "reading-nook",
+          "showHome": false,
+          "deadlineDay": 4,
+          "budget": 44,
+          "fee": 55,
+          "requiredTags": ["cosy"],
+          "favouredColours": ["ivory", "honey-wood"],
+          "avoidColours": ["black"],
+          "mustHaves": [
+            { "itemId": "armchair", "count": 1 },
+            { "itemId": "bookcase", "count": 1 }
+          ],
+          "mood": "warm",
+          "minQuality": 55
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-2",
+        "clientId": "nana-pearl",
+        "brief": {
+          "clientId": "nana-pearl",
+          "roomId": "reading-nook",
+          "showHome": false,
+          "deadlineDay": 6,
+          "budget": 42,
+          "fee": 51,
+          "requiredTags": ["cosy"],
+          "favouredColours": ["ivory", "sage"],
+          "avoidColours": ["black"],
+          "mustHaves": [
+            { "itemId": "armchair", "count": 1 },
+            { "itemId": "bookcase", "count": 1 }
+          ],
+          "mood": "warm",
+          "minQuality": 55
+        },
+        "acceptedDay": 1
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 3
+  },
+  "story": { "seen": ["is-keys"], "flags": [], "queue": [] },
+  "activeRun": {
+    "id": "run-1",
+    "gigId": "gig-2",
+    "brief": {
+      "clientId": "nana-pearl",
+      "roomId": "reading-nook",
+      "showHome": false,
+      "deadlineDay": 6,
+      "budget": 42,
+      "fee": 51,
+      "requiredTags": ["cosy"],
+      "favouredColours": ["ivory", "sage"],
+      "avoidColours": ["black"],
+      "mustHaves": [
+        { "itemId": "armchair", "count": 1 },
+        { "itemId": "bookcase", "count": 1 }
+      ],
+      "mood": "warm",
+      "minQuality": 55
+    },
+    "stage": "paint",
+    "reached": "paint",
+    "startedDay": 1,
+    "seed": 790185062,
+    "plan": {
+      "pieces": [
+        { "id": "piece-1", "furnitureId": "armchair", "col": 0, "row": 0, "rotation": 0 },
+        { "id": "piece-2", "furnitureId": "bookcase", "col": 3, "row": 0, "rotation": 0 }
+      ],
+      "nextPieceNumber": 3,
+      "wallPaint": "chalk-white",
+      "featurePaint": null,
+      "floor": "cork-tiles",
+      "lights": ["arc-lamp", "paper-pendant"],
+      "tidied": false
+    },
+    "spend": 36,
+    "locked": true,
+    "edges": { "back-ceiling": { "accuracy": 0.9687499999999999, "assisted": false } },
+    "rolls": {
+      "back": {
+        "passes": [
+          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0
+        ],
+        "strokes": 2,
+        "splats": [[502, 96]],
+        "dryStrokes": 0,
+        "assisted": false
+      }
+    },
+    "roller": 0,
+    "floorLaid": {},
+    "lightPlaces": {},
+    "lightAssisted": false,
+    "decor": [],
+    "nextDecorNumber": 1,
+    "softColour": "sage"
+  },
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 2,
+  "rng": -759718057
+}

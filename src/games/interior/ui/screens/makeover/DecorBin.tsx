@@ -6,19 +6,23 @@ import { DECOR } from "../../../content/decor";
 import { buyDecorIssue, decorPrice, spareDecor } from "../../../core";
 import { DecorArt } from "../../art/DecorArt";
 import { roomHex } from "../../art/roomHex";
+import { homeRoomContext } from "./homeRoomContext";
 import type { StageProps } from "./stageProps";
 
 export function DecorBin({ state, run, dispatch, title }: StageProps & { readonly title: string }) {
   const toast = useToast();
   const once = useDispatchOnce(state, dispatch);
   const mustHave = new Set(run.brief.mustHaves.map((need) => need.itemId));
+  const home = homeRoomContext(state, run);
+  const storyPieces = new Set(home === null ? [] : home.story.pieces.map((piece) => piece.decorId));
+  const items = [...DECOR].sort((a, b) => Number(storyPieces.has(b.id)) - Number(storyPieces.has(a.id)));
   return (
     <section className="is-bin" aria-labelledby="is-bin-title">
       <h3 id="is-bin-title" className="is-bin__title">
         {title} <span className="is-muted">optional, counts toward the budget</span>
       </h3>
       <ul className="is-bin__items">
-        {DECOR.map((item) => {
+        {items.map((item) => {
           const issue = buyDecorIssue(state, item.id);
           return (
             <li
@@ -31,6 +35,9 @@ export function DecorBin({ state, run, dispatch, title }: StageProps & { readonl
               <span className="is-bin__name">{item.name}</span>
               <span className="is-bin__owned">You have {spareDecor(state, run, item.id)}</span>
               {mustHave.has(item.id) ? <span className="is-tray__must">Must-have</span> : null}
+              {storyPieces.has(item.id) ? (
+                <span className="is-tray__must is-tray__must--story">Story piece</span>
+              ) : null}
               <Button
                 size="sm"
                 variant="secondary"

@@ -190,3 +190,125 @@
     padding-top: 0;
   }
 }
+
+.is-ready {
+  background:
+    radial-gradient(circle at 50% 30%, rgba(246, 215, 122, 0.35), transparent 55%),
+    linear-gradient(180deg, #5c6733 0%, #7d8a4a 40%, #fbf5ee 40.2%);
+}
+
+.is-ready__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+  gap: var(--space-4);
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  align-items: start;
+}
+
+.is-ready__room {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--is-paper);
+  box-shadow: var(--shadow-lg);
+}
+
+.is-ready__cutaway {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.is-ready__badge {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--is-sun);
+  font-weight: 800;
+  box-shadow: var(--shadow-md);
+  animation: is-pop 600ms var(--ease-out) both;
+}
+
+.is-ready__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.is-ready__achebe {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.is-ready__achebe p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.is-ready__quality {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.is-ready__quality strong {
+  font-family: var(--font-display);
+  font-size: 44px;
+  color: var(--is-terracotta);
+}
+
+.is-ready__checks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.is-ready__check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--is-sun-soft);
+  font-weight: 600;
+}
+
+.is-ready__check--good {
+  background: #e7ebd6;
+}
+
+@keyframes is-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .is-ready__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-ready__badge {
+    animation: none;
+  }
+}

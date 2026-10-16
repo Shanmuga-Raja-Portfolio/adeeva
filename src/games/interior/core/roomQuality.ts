@@ -1,9 +1,9 @@
 import { roundShare } from "../../../engine/roundShare";
-import { roomById } from "./catalog";
 import { floorScore } from "./floorLay";
 import type { GameState } from "./gameState";
 import { lightScore } from "./lighting";
 import { placedLights } from "./lightPlacement";
+import { runRoom } from "./runRoom";
 import type { MakeoverRun } from "./makeoverRun";
 import { paintScore } from "./paintScore";
 import { roomFit } from "./roomFit";
@@ -23,17 +23,14 @@ export interface QualityBreakdown {
 const WEIGHTS = { flow: 0.25, paint: 0.25, floor: 0.2, light: 0.2, fit: 0.1 } as const;
 
 function runFlow(state: Pick<GameState, "profile">, run: MakeoverRun): number {
-  const room = roomById(run.brief.roomId);
+  const room = runRoom(run);
   return capped(state, walkThrough(room, run.plan.pieces, difficultyMultiplier(state)).flow, run.plan.tidied);
 }
 
 function runLight(state: Pick<GameState, "profile">, run: MakeoverRun): number {
-  const room = roomById(run.brief.roomId);
-  return capped(
-    state,
-    lightScore(room, run.plan.pieces, placedLights(run), run.brief.mood),
-    run.lightAssisted,
-  );
+  const room = runRoom(run);
+  const raw = lightScore(room, run.plan.pieces, placedLights(run), run.brief.mood);
+  return capped(state, run.lightCrew === null ? raw : Math.min(raw, run.lightCrew), run.lightAssisted);
 }
 
 export function roomQuality(state: Pick<GameState, "profile">, run: MakeoverRun): QualityBreakdown {

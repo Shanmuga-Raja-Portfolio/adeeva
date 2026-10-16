@@ -67,6 +67,7 @@ export const SHOWCASE_LOOKS: readonly RoomLook[] = SHOWCASES.flatMap((showcase) 
   return {
     roomId: showcase.roomId,
     backWall: showcase.back,
+    backLower: null,
     sideWall: showcase.side,
     floor: showcase.floor,
     pieces,

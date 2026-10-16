@@ -20,6 +20,14 @@ const MakeoverFlow = lazy(() =>
   import("./screens/makeover/MakeoverFlow").then((module) => ({ default: module.MakeoverFlow })),
 );
 
+const HomeScreen = lazy(() =>
+  import("./screens/home/HomeScreen").then((module) => ({ default: module.HomeScreen })),
+);
+
+const OpenHouseScreen = lazy(() =>
+  import("./screens/openHouse/OpenHouseScreen").then((module) => ({ default: module.OpenHouseScreen })),
+);
+
 export function InteriorGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
   const warnSaveFailed = useCallback(
@@ -65,6 +73,9 @@ export function InteriorGame({ player, lookOptions, onPlayerChange, onExit }: Ga
     [flush],
   );
   const toHub = useCallback(() => open("hub"), [open]);
+  const toHome = useCallback(() => open("home"), [open]);
+  const toMakeover = useCallback(() => open("makeover"), [open]);
+  const toOpenHouse = useCallback(() => open("openHouse"), [open]);
   const leave = useCallback(() => {
     setLeaveBlocked(false);
     close();
@@ -122,7 +133,9 @@ export function InteriorGame({ player, lookOptions, onPlayerChange, onExit }: Ga
           <LoftHub
             state={screen.game}
             dispatch={dispatch}
-            onOpenMakeover={() => open("makeover")}
+            onOpenMakeover={toMakeover}
+            onOpenHome={toHome}
+            onOpenOpenHouse={toOpenHouse}
             onOpenSettings={openSettings}
             onExitToTitle={saveAndExit}
           />
@@ -133,8 +146,22 @@ export function InteriorGame({ player, lookOptions, onPlayerChange, onExit }: Ga
               state={screen.game}
               dispatch={dispatch}
               onExit={toHub}
+              onExitHome={toHome}
               onOpenSettings={openSettings}
             />
+          ) : null}
+          {screen.name === "home" ? (
+            <HomeScreen
+              state={screen.game}
+              dispatch={dispatch}
+              onExit={toHub}
+              onOpenRoom={toMakeover}
+              onOpenOpenHouse={toOpenHouse}
+              onOpenSettings={openSettings}
+            />
+          ) : null}
+          {screen.name === "openHouse" ? (
+            <OpenHouseScreen state={screen.game} dispatch={dispatch} onExit={toHub} />
           ) : null}
         </ViewLoadBoundary>
         <SettingsDialog

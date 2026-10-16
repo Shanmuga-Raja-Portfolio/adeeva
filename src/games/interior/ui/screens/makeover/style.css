@@ -128,3 +128,19 @@
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
 }
+
+.is-style__story {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--is-sun-soft);
+  font-weight: 700;
+}
+
+.is-style__story--told {
+  background: #e7ebd6;
+  color: #3d4520;
+}

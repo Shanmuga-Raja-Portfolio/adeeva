@@ -1,9 +1,9 @@
 import { ROOM_TAGS, type RoomTag } from "../content/roomTag";
 import { decorById, floorById, furnitureById, lightById, paintById } from "./catalog";
-import type { RoomSource } from "./roomSource";
+import { sourcePaints, type RoomSource } from "./roomSource";
 
 export function roomTags(source: RoomSource): RoomTag[] {
-  const paints = [source.wallPaint, source.featurePaint].flatMap((id) => (id === null ? [] : [id]));
+  const paints = sourcePaints(source);
   const tags = new Set<RoomTag>([
     ...source.pieces.flatMap((piece) => furnitureById(piece.furnitureId).tags),
     ...paints.flatMap((id) => paintById(id).tags),

@@ -381,3 +381,36 @@
     max-height: none;
   }
 }
+
+.is-chip__ribbon {
+  align-self: stretch;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: var(--is-sun);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+.is-chip--palette {
+  border-color: var(--is-sun);
+  background: #fffbea;
+}
+
+.is-chip__swatch--half {
+  background-clip: content-box;
+  border-top-width: 10px;
+  border-top-color: #e9e2d8;
+}
+
+.is-tray__note {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.is-tray__must--story {
+  background: var(--is-sun);
+  color: var(--ink);
+}

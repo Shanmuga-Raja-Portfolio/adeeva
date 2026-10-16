@@ -23,5 +23,6 @@ export function currentBeat(state: GameState): StoryBeatDef | null {
 }
 
 export function seeBeat(state: GameState, beatId: string): GameState {
+  if ((storyBeatById(beatId)?.choices.length ?? 0) > 0) return state;
   return seeBeatWithBuzz(state, beatId, storyBeatById, BEAT_BUZZ);
 }

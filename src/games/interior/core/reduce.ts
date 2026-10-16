@@ -28,6 +28,8 @@ import { abandonRun, startOrder } from "./runLifecycle";
 import { goToStage } from "./stageNavigation";
 import { seeBeat } from "./storyQueue";
 import { buyDecor, buyPlan } from "./warehouse";
+import { reduceLarkspur } from "./reduceLarkspur";
+import { upgradeOpen } from "./upgradeShop";
 
 export function reduce(state: GameState, action: Action): GameState {
   switch (action.type) {
@@ -111,13 +113,17 @@ export function reduce(state: GameState, action: Action): GameState {
       return endDay(state);
     case "workShift":
       return workShift(state);
-    case "buyUpgrade":
-      return buyUpgrade(state, knownUpgrade(action.upgradeId));
+    case "buyUpgrade": {
+      const upgrade = knownUpgrade(action.upgradeId);
+      return upgrade !== undefined && upgradeOpen(state, upgrade) ? buyUpgrade(state, upgrade) : state;
+    }
     case "buyLoftDecor":
       return buyLoftDecor(state, action.decorId);
     case "setGuide":
       return withGuide(state, action.on);
     case "markBeatSeen":
       return seeBeat(state, action.beatId);
+    default:
+      return reduceLarkspur(state, action);
   }
 }

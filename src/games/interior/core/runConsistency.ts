@@ -3,12 +3,12 @@ import { keysWithin } from "../../../engine/keysWithin";
 import { isValidPose } from "../../../engine/placedPose";
 import { hasUniqueIds } from "../../../engine/uniqueIds";
 import { WALL_IDS } from "../content/roomTemplate";
-import { roomById } from "./catalog";
 import { DECOR_ROTATION_STEP, MAX_DECOR, STYLE_CANVAS } from "./decorPlacement";
 import { FLOOR_PIECES, floorAccuracy, floorIssues, isPastGate } from "./floorLay";
 import { placementProblem } from "./floorPlan";
 import { canPlaceLight, lightIssues } from "./lightPlacement";
-import type { MakeoverRun } from "./makeoverRun";
+import { runRoom } from "./runRoom";
+import { isHomeRoom, type MakeoverRun } from "./makeoverRun";
 import { runEdgePaths } from "./paintEdge";
 import { ROLL_COLUMNS, ROLL_ROWS } from "./paintRoll";
 import { paintIssues } from "./paintScore";
@@ -46,7 +46,7 @@ function floorRecordsAreReal(run: MakeoverRun): boolean {
 }
 
 function planIsLegal(run: MakeoverRun): boolean {
-  const room = roomById(run.brief.roomId);
+  const room = runRoom(run);
   const { plan } = run;
   return (
     hasUniqueIds(plan.pieces) &&
@@ -54,7 +54,9 @@ function planIsLegal(run: MakeoverRun): boolean {
     numbersBelow(plan.pieces, "piece", plan.nextPieceNumber) &&
     plan.pieces.every((piece) => placementProblem(room, plan.pieces, piece) === null) &&
     plan.lights.length <= MAX_LIGHTS &&
-    (plan.featurePaint === null || plan.featurePaint !== plan.wallPaint)
+    (plan.featurePaint === null || plan.featurePaint !== plan.wallPaint) &&
+    (plan.lowerPaint === null ||
+      (isHomeRoom(run) && plan.featurePaint === null && plan.lowerPaint !== plan.wallPaint))
   );
 }
 

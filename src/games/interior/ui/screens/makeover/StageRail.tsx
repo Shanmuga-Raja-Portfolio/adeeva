@@ -1,5 +1,5 @@
 import { Icon } from "../../../../../ui/kit/IconSet";
-import { canGoBack, RUN_STAGES, type RunStage } from "../../../core";
+import { canGoBack, isHomeRoom, RUN_STAGES, type RunStage } from "../../../core";
 import { STAGE_LABELS } from "./stageNames";
 import type { StageProps } from "./stageProps";
 
@@ -18,7 +18,9 @@ export function StageRail({ state, run, dispatch }: Omit<StageProps, "onExit">) 
               <span className="is-rail__dot" aria-hidden="true">
                 {done ? <Icon name="check" size={14} /> : index + 1}
               </span>
-              <span className="is-rail__label">{STAGE_LABELS[stage]}</span>
+              <span className="is-rail__label">
+                {stage === "reveal" && isHomeRoom(run) ? "Ready" : STAGE_LABELS[stage]}
+              </span>
             </>
           );
           return (

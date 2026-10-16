@@ -37,6 +37,8 @@ test("home opens Interior Studio with the studio avatar pre-filled, and Back to 
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Charmer" }).click();
   await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("radio", { name: /Show-Home Designer/ })).toBeVisible();
+  await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Relaxed" }).click();
   await page.getByRole("button", { name: "Open the loft" }).click();
   await finishInteriorStories(page);

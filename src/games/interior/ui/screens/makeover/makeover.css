@@ -430,3 +430,44 @@ button.is-rail__button:hover {
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   }
 }
+
+.is-purse-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 2px 12px;
+  border-radius: var(--radius-pill);
+  background: #e7ebd6;
+  border: 2px solid #7d8a4a;
+  color: #3d4520;
+  font-weight: 800;
+  font-size: var(--text-sm);
+}
+
+.is-brief-card__who--home {
+  display: grid;
+  grid-template-columns: auto 1fr minmax(240px, 320px);
+}
+
+@media (max-width: 900px) {
+  .is-brief-card__who--home {
+    grid-template-columns: auto 1fr;
+  }
+
+  .is-brief-card__who--home > .is-story-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1000px) {
+  .is-home__header,
+  .is-makeover--home .is-makeover-header {
+    grid-template-columns: auto 1fr;
+  }
+
+  .is-home__header .is-makeover-header__stats,
+  .is-makeover--home .is-makeover-header__stats {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+}

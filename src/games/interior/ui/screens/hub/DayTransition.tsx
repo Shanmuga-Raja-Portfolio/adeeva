@@ -6,6 +6,7 @@ import type { DaySummary } from "./daySummary";
 export interface DayTransitionProps {
   readonly summary: DaySummary;
   readonly onDone: () => void;
+  readonly doneLabel?: string | undefined;
 }
 
 const WINDOWS = [
@@ -17,7 +18,7 @@ const WINDOWS = [
   [360, 58],
 ] as const;
 
-export function DayTransition({ summary, onDone }: DayTransitionProps) {
+export function DayTransition({ summary, onDone, doneLabel = "Open the loft" }: DayTransitionProps) {
   return (
     <div className="is-night" role="dialog" aria-modal="true" aria-labelledby="is-night-title">
       <div className="is-night__sky" aria-hidden="true">
@@ -54,8 +55,8 @@ export function DayTransition({ summary, onDone }: DayTransitionProps) {
             </li>
           ))}
         </ul>
-        <Button autoFocus size="lg" onClick={onDone}>
-          Open the loft
+        <Button autoFocus size="lg" onClick={onDone} data-testid="day-done">
+          {doneLabel}
         </Button>
       </section>
     </div>

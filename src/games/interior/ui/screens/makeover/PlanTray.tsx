@@ -4,7 +4,7 @@ import { FLOORS } from "../../../content/floor";
 import { FURNITURE, type FurnitureId } from "../../../content/furniture";
 import { LIGHTS, type LightId } from "../../../content/light";
 import { PAINTS, type PaintId } from "../../../content/paint";
-import { MAX_LIGHTS, type MakeoverRun } from "../../../core";
+import { isHomeRoom, MAX_LIGHTS, type MakeoverRun, type PaintSlot } from "../../../core";
 import { FurniturePreview } from "../../art/FurniturePreview";
 import { roomHex } from "../../art/roomHex";
 import type { DragHandlers } from "../../usePointerDrag";
@@ -12,7 +12,8 @@ import type { DragHandlers } from "../../usePointerDrag";
 interface PlanTrayProps {
   readonly run: MakeoverRun;
   readonly furnitureHandlers: (furnitureId: FurnitureId) => DragHandlers;
-  readonly onPaint: (slot: "wall" | "feature", paintId: PaintId | null) => void;
+  readonly palette: readonly PaintId[];
+  readonly onPaint: (slot: PaintSlot, paintId: PaintId | null) => void;
   readonly onFloor: (floorId: (typeof FLOORS)[number]["id"]) => void;
   readonly onAddLight: (lightId: LightId) => void;
   readonly onRemoveLight: (index: number) => void;
@@ -36,6 +37,7 @@ export function trayCardId(furnitureId: FurnitureId): string {
 export function PlanTray({
   run,
   furnitureHandlers,
+  palette,
   onPaint,
   onFloor,
   onAddLight,
@@ -44,6 +46,8 @@ export function PlanTray({
   const { plan, brief } = run;
   const mustHave = new Set(brief.mustHaves.map((need) => need.itemId));
   const soft = roomHex(run.softColour);
+  const paints = [...PAINTS].sort((a, b) => Number(palette.includes(b.id)) - Number(palette.includes(a.id)));
+  const home = isHomeRoom(run);
   return (
     <div className="is-tray">
       <section aria-labelledby="is-tray-furniture">
@@ -77,17 +81,18 @@ export function PlanTray({
           Wall paint
         </h3>
         <div className="is-tray__chips" role="radiogroup" aria-label="Wall paint">
-          {PAINTS.map((paint) => (
+          {paints.map((paint) => (
             <button
               key={paint.id}
               type="button"
               role="radio"
               aria-checked={plan.wallPaint === paint.id}
-              className="is-chip"
+              className={palette.includes(paint.id) ? "is-chip is-chip--palette" : "is-chip"}
               onClick={() => onPaint("wall", paint.id)}
             >
               <span className="is-chip__swatch" style={{ background: roomHex(paint.colour) }} />
               <span className="is-chip__name">{paint.name}</span>
+              {palette.includes(paint.id) ? <span className="is-chip__ribbon">Home palette</span> : null}
               <span className="is-chip__meta">
                 <Icon name="coin" size={11} /> {paint.price} · {paint.tags.join(", ")}
               </span>
@@ -97,6 +102,9 @@ export function PlanTray({
         <h3 className="is-tray__heading">
           Feature wall <span className="is-muted">optional, on the back wall</span>
         </h3>
+        {plan.lowerPaint !== null ? (
+          <p className="is-muted is-tray__note">A two-tone wall takes the place of a feature wall.</p>
+        ) : null}
         <div
           className="is-tray__chips is-tray__chips--small"
           role="radiogroup"
@@ -111,20 +119,65 @@ export function PlanTray({
           >
             <span className="is-chip__name">No feature wall</span>
           </button>
-          {PAINTS.filter((paint) => paint.id !== plan.wallPaint).map((paint) => (
-            <button
-              key={paint.id}
-              type="button"
-              role="radio"
-              aria-checked={plan.featurePaint === paint.id}
-              aria-label={`Feature wall: ${paint.name}`}
-              className="is-chip is-chip--mini"
-              onClick={() => onPaint("feature", paint.id)}
-            >
-              <span className="is-chip__swatch" style={{ background: roomHex(paint.colour) }} />
-            </button>
-          ))}
+          {paints
+            .filter((paint) => paint.id !== plan.wallPaint)
+            .map((paint) => (
+              <button
+                key={paint.id}
+                type="button"
+                role="radio"
+                aria-checked={plan.featurePaint === paint.id}
+                aria-label={`Feature wall: ${paint.name}`}
+                className="is-chip is-chip--mini"
+                disabled={plan.lowerPaint !== null}
+                onClick={() => onPaint("feature", paint.id)}
+              >
+                <span className="is-chip__swatch" style={{ background: roomHex(paint.colour) }} />
+              </button>
+            ))}
         </div>
+        {home ? (
+          <>
+            <h3 className="is-tray__heading">
+              Two-tone wall <span className="is-muted">a second colour below the middle tape</span>
+            </h3>
+            <div
+              className="is-tray__chips is-tray__chips--small"
+              role="radiogroup"
+              aria-label="Two-tone lower paint"
+              data-testid="two-tone-chips"
+            >
+              <button
+                type="button"
+                role="radio"
+                aria-checked={plan.lowerPaint === null}
+                className="is-chip is-chip--none"
+                onClick={() => onPaint("lower", null)}
+              >
+                <span className="is-chip__name">One colour</span>
+              </button>
+              {paints
+                .filter((paint) => paint.id !== plan.wallPaint)
+                .map((paint) => (
+                  <button
+                    key={paint.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={plan.lowerPaint === paint.id}
+                    aria-label={`Two-tone lower half: ${paint.name}`}
+                    className="is-chip is-chip--mini"
+                    disabled={plan.featurePaint !== null}
+                    onClick={() => onPaint("lower", paint.id)}
+                  >
+                    <span
+                      className="is-chip__swatch is-chip__swatch--half"
+                      style={{ background: roomHex(paint.colour) }}
+                    />
+                  </button>
+                ))}
+            </div>
+          </>
+        ) : null}
       </section>
       <section aria-labelledby="is-tray-floor">
         <h3 id="is-tray-floor" className="is-tray__heading">

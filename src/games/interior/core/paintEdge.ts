@@ -8,11 +8,12 @@ import { fitSamples, samplesFit } from "../../../engine/geometry/traceSamples";
 import { WALL_IDS, type RoomTemplate, type WallId } from "../content/roomTemplate";
 import { roomById } from "./catalog";
 import type { GameState } from "./gameState";
-import type { MakeoverRun } from "./makeoverRun";
+import type { EdgeRecord, MakeoverRun } from "./makeoverRun";
 import { withPaintRun } from "./paintWork";
+import { isTwoTone, TWO_TONE_WALL } from "./twoTone";
 import { capped, edgeTolerance } from "./skillTolerance";
 
-type EdgeKind = "ceiling" | "skirting" | "frame";
+type EdgeKind = "ceiling" | "skirting" | "frame" | "mid";
 
 export interface EdgePath {
   readonly id: string;
@@ -40,7 +41,7 @@ const FRAME: readonly Point[] = [
   [6, 36],
 ];
 
-function tapePath(wall: WallId, kind: "ceiling" | "skirting"): EdgePath {
+function tapePath(wall: WallId, kind: "ceiling" | "skirting" | "mid"): EdgePath {
   return { id: `${wall}-${kind}`, wall, kind, points: TAPE, closed: false, width: 60, height: 20 };
 }
 
@@ -48,16 +49,17 @@ function framePath(wall: WallId): EdgePath {
   return { id: `${wall}-frame`, wall, kind: "frame", points: FRAME, closed: true, width: 52, height: 42 };
 }
 
-function wallPaths(room: RoomTemplate, wall: WallId): EdgePath[] {
+function wallPaths(room: RoomTemplate, wall: WallId, twoTone: boolean): EdgePath[] {
   return [
     tapePath(wall, "ceiling"),
     room.framedWalls.includes(wall) ? framePath(wall) : tapePath(wall, "skirting"),
+    ...(twoTone && wall === TWO_TONE_WALL ? [tapePath(wall, "mid")] : []),
   ];
 }
 
-export function runEdgePaths(run: Pick<MakeoverRun, "brief">): EdgePath[] {
+export function runEdgePaths(run: Pick<MakeoverRun, "brief" | "plan">): EdgePath[] {
   const room = roomById(run.brief.roomId);
-  return WALL_IDS.flatMap((wall) => wallPaths(room, wall));
+  return WALL_IDS.flatMap((wall) => wallPaths(room, wall, isTwoTone(run)));
 }
 
 export function fitEdgeSamples(samples: readonly Point[]): readonly Point[] {
@@ -74,17 +76,27 @@ export function edgeAccuracy(path: EdgePath, samples: readonly Point[], toleranc
   );
 }
 
+export const COACH_TAPE: EdgePath = { ...tapePath("back", "ceiling"), id: "coach-tape" };
+
+export function traceScore(
+  state: Pick<GameState, "profile" | "upgrades">,
+  path: EdgePath,
+  samples: readonly Point[],
+): number | null {
+  const tolerance = edgeTolerance(state);
+  if (!samplesFit(samples, MAX_EDGE_SAMPLES) || !isPathTraced(path, samples, tolerance)) return null;
+  return edgeAccuracy(path, samples, tolerance);
+}
+
 function edgeRecordFor(
   state: GameState,
   run: MakeoverRun,
   pathId: string,
   samples: readonly Point[],
-): { readonly accuracy: number; readonly assisted: boolean } | null {
+): EdgeRecord | null {
   const path = runEdgePaths(run).find((entry) => entry.id === pathId);
-  const tolerance = edgeTolerance(state);
-  if (path === undefined || !samplesFit(samples, MAX_EDGE_SAMPLES) || !isPathTraced(path, samples, tolerance))
-    return null;
-  return { accuracy: edgeAccuracy(path, samples, tolerance), assisted: false };
+  const accuracy = path === undefined ? null : traceScore(state, path, samples);
+  return accuracy === null ? null : { accuracy, assisted: false, byCrew: false };
 }
 
 export function recordEdge(state: GameState, pathId: string, samples: readonly Point[]): GameState {

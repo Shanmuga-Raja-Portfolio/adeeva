@@ -5,7 +5,7 @@ import { useSettings } from "../../../../../studio/SettingsContext";
 import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
 import { Meter } from "../../../../../ui/kit/Meter";
 import type { WallId } from "../../../content/roomTemplate";
-import { HINTS } from "../../../content/hints";
+import { HINTS, HOME_HINTS } from "../../../content/hints";
 import {
   coatedShare,
   hasWindow,
@@ -19,9 +19,11 @@ import {
   ROLL_ROWS,
   ROLLER_LOAD,
   rollRecord,
+  TOP_ZONE_ROWS,
   type Action,
   type GameState,
   type MakeoverRun,
+  type RollerZone,
 } from "../../../core";
 import { useSvgId } from "../../../../../ui/art/useSvgId";
 import { BARE_WALL } from "../../art/roomHex";
@@ -31,6 +33,7 @@ interface RollWallProps {
   readonly run: MakeoverRun;
   readonly wall: WallId;
   readonly colour: string;
+  readonly lowerColour: string | null;
   readonly dispatch: (action: Action) => boolean;
 }
 
@@ -47,7 +50,44 @@ interface Stroke {
   readonly startedAt: number;
 }
 
-export function RollWall({ state, run, wall, colour, dispatch }: RollWallProps) {
+function Tray({
+  zone,
+  colour,
+  active,
+  dipping,
+  onDip,
+}: {
+  readonly zone: RollerZone;
+  readonly colour: string;
+  readonly active: boolean;
+  readonly dipping: boolean;
+  readonly onDip: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={[
+        "is-tray-dip",
+        dipping && active ? "is-tray-dip--dipping" : "",
+        active ? "is-tray-dip--active" : "",
+      ]
+        .filter((name) => name.length > 0)
+        .join(" ")}
+      onClick={onDip}
+      data-testid={`dip-${zone}`}
+      aria-pressed={active}
+      aria-label={`Dip the roller in the ${zone === "top" ? "top half" : "bottom half"} tray`}
+    >
+      <svg viewBox="0 0 80 50" aria-hidden="true">
+        <path d="M6 14 L74 14 L64 44 L16 44 Z" fill="#c7ccd4" stroke="#3b2a33" strokeWidth={3} />
+        <path d="M14 22 L66 22 L60 38 L20 38 Z" fill={colour} />
+      </svg>
+      <span>{zone === "top" ? "Top half" : "Bottom half"}</span>
+    </button>
+  );
+}
+
+export function RollWall({ state, run, wall, colour, lowerColour, dispatch }: RollWallProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const { reducedMotion } = useSettings();
   const [stroke, setStroke] = useState<Stroke | null>(null);
@@ -59,6 +99,10 @@ export function RollWall({ state, run, wall, colour, dispatch }: RollWallProps) 
   const record = rollRecord(run, wall);
   const coated = coatedShare(run, wall);
   const full = paintableCells(run, wall).every((cell) => (record.passes[cell] ?? 0) >= 2);
+  const zoned = lowerColour !== null;
+  const rollerColour = zoned && run.rollerZone === "bottom" ? lowerColour : colour;
+  const cellColour = (cell: number) =>
+    zoned && Math.floor(cell / ROLL_COLUMNS) >= TOP_ZONE_ROWS ? lowerColour : colour;
 
   const pointOf = (event: PointerEvent<SVGSVGElement>): Point | null => {
     const point = clientToSvg(svgRef.current, event.clientX, event.clientY);
@@ -92,8 +136,13 @@ export function RollWall({ state, run, wall, colour, dispatch }: RollWallProps) 
     setStroke(null);
     if (polylineLength(done.points) < MIN_STROKE_PX || done.points.length < 2) return;
     const dry = run.roller === 0;
+    const wrongZone =
+      zoned &&
+      !dry &&
+      done.points.some(([, y]) => (y < TOP_ZONE_ROWS * ROLL_CELL_PX ? "top" : "bottom") !== run.rollerZone);
     dispatch({ type: "rollStroke", wall, points: done.points, durationMs: done.durationMs });
-    if (dry) {
+    if (wrongZone) setHint(HOME_HINTS.twoTone);
+    else if (dry) {
       setStreak(done.points);
       setHint(HINTS.rollerDry);
     } else if (isSplat(state, done)) setHint(HINTS.rollerTooFast);
@@ -102,6 +151,13 @@ export function RollWall({ state, run, wall, colour, dispatch }: RollWallProps) 
 
   const dip = () => {
     if (!dispatch({ type: "reloadRoller" })) return;
+    setHint(null);
+    setDipping(true);
+    window.setTimeout(() => setDipping(false), reducedMotion ? 0 : 400);
+  };
+
+  const dipZone = (zone: RollerZone) => {
+    if (!dispatch({ type: "pickTray", zone })) return;
     setHint(null);
     setDipping(true);
     window.setTimeout(() => setDipping(false), reducedMotion ? 0 : 400);
@@ -159,7 +215,7 @@ export function RollWall({ state, run, wall, colour, dispatch }: RollWallProps) 
               y={y - 2}
               width={ROLL_CELL_PX + 4}
               height={ROLL_CELL_PX + 4}
-              fill={passes >= 2 ? colour : `url(#${patternId}-streak)`}
+              fill={passes >= 2 ? cellColour(cell) : `url(#${patternId}-streak)`}
               className="is-roll__coat"
             />
           );
@@ -204,6 +260,24 @@ export function RollWall({ state, run, wall, colour, dispatch }: RollWallProps) 
             />
           ))}
         </g>
+        {zoned ? (
+          <g pointerEvents="none" data-testid="mid-tape">
+            <rect
+              x={0}
+              y={TOP_ZONE_ROWS * ROLL_CELL_PX - 5}
+              width={ROLL_CANVAS.width}
+              height={10}
+              fill="#7fb1e6"
+              opacity={0.85}
+            />
+            <text x={12} y={TOP_ZONE_ROWS * ROLL_CELL_PX - 10} className="is-roll__zone">
+              top half
+            </text>
+            <text x={12} y={TOP_ZONE_ROWS * ROLL_CELL_PX + 22} className="is-roll__zone">
+              bottom half
+            </text>
+          </g>
+        ) : null}
         {streak !== null ? (
           <polyline
             points={streak.map(([x, y]) => `${x},${y}`).join(" ")}
@@ -219,7 +293,7 @@ export function RollWall({ state, run, wall, colour, dispatch }: RollWallProps) 
           <polyline
             points={trail.map(([x, y]) => `${x},${y}`).join(" ")}
             fill="none"
-            stroke={colour}
+            stroke={rollerColour}
             strokeOpacity={run.roller === 0 ? 0.15 : 0.45}
             strokeWidth={64}
             strokeLinecap="round"
@@ -257,7 +331,7 @@ export function RollWall({ state, run, wall, colour, dispatch }: RollWallProps) 
               width={72}
               height={28}
               rx={12}
-              fill={run.roller > 0 ? colour : "#f4ecd8"}
+              fill={run.roller > 0 ? rollerColour : "#f4ecd8"}
               stroke="#3b2a33"
               strokeWidth={3}
             />
@@ -282,19 +356,38 @@ export function RollWall({ state, run, wall, colour, dispatch }: RollWallProps) 
         ) : null}
       </svg>
       <div className="is-roll__side">
-        <button
-          type="button"
-          className={dipping ? "is-tray-dip is-tray-dip--dipping" : "is-tray-dip"}
-          onClick={dip}
-          data-testid="dip-roller"
-          aria-label={`Dip the roller in the paint tray. Paint load ${run.roller} of ${ROLLER_LOAD}.`}
-        >
-          <svg viewBox="0 0 80 50" aria-hidden="true">
-            <path d="M6 14 L74 14 L64 44 L16 44 Z" fill="#c7ccd4" stroke="#3b2a33" strokeWidth={3} />
-            <path d="M14 22 L66 22 L60 38 L20 38 Z" fill={colour} />
-          </svg>
-          <span>Dip the roller</span>
-        </button>
+        {zoned ? (
+          <div className="is-roll__trays" role="group" aria-label="Two paint trays">
+            <Tray
+              zone="top"
+              colour={colour}
+              active={run.rollerZone === "top"}
+              dipping={dipping}
+              onDip={() => dipZone("top")}
+            />
+            <Tray
+              zone="bottom"
+              colour={lowerColour}
+              active={run.rollerZone === "bottom"}
+              dipping={dipping}
+              onDip={() => dipZone("bottom")}
+            />
+          </div>
+        ) : (
+          <button
+            type="button"
+            className={dipping ? "is-tray-dip is-tray-dip--dipping" : "is-tray-dip"}
+            onClick={dip}
+            data-testid="dip-roller"
+            aria-label={`Dip the roller in the paint tray. Paint load ${run.roller} of ${ROLLER_LOAD}.`}
+          >
+            <svg viewBox="0 0 80 50" aria-hidden="true">
+              <path d="M6 14 L74 14 L64 44 L16 44 Z" fill="#c7ccd4" stroke="#3b2a33" strokeWidth={3} />
+              <path d="M14 22 L66 22 L60 38 L20 38 Z" fill={colour} />
+            </svg>
+            <span>Dip the roller</span>
+          </button>
+        )}
         <Meter
           label="Paint on the roller"
           value={run.roller}
@@ -310,6 +403,7 @@ export function RollWall({ state, run, wall, colour, dispatch }: RollWallProps) 
         />
         <p className="is-roll__stats">
           Splats {record.splats.length} · Dry streaks {record.dryStrokes}
+          {zoned ? ` · Smudges ${record.smudges}` : ""}
         </p>
         <p className="is-roll__hint" role="status" aria-live="polite">
           {hint ?? "Roll slowly. Two coats make it perfect."}

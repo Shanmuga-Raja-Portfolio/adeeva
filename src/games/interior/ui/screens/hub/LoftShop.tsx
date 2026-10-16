@@ -4,7 +4,7 @@ import { Icon } from "../../../../../ui/kit/IconSet";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
 import { LOFT_DECOR, type LoftDecorId } from "../../../content/loftDecor";
 import { UPGRADES, type UpgradeId } from "../../../content/upgrade";
-import { loftDecorIssues, upgradePurchaseIssues, type GameState } from "../../../core";
+import { loftDecorIssues, upgradeOpen, upgradePurchaseIssues, type GameState } from "../../../core";
 
 interface LoftShopProps {
   readonly state: GameState;
@@ -49,7 +49,7 @@ function ShopRow({ row }: { readonly row: Row }) {
 }
 
 export function LoftShop({ state, onBuyUpgrade, onBuyDecor }: LoftShopProps) {
-  const upgrades: Row[] = UPGRADES.map((upgrade) => ({
+  const upgrades: Row[] = UPGRADES.filter((upgrade) => upgradeOpen(state, upgrade)).map((upgrade) => ({
     id: upgrade.id,
     name: upgrade.name,
     description: upgrade.description,
@@ -58,7 +58,7 @@ export function LoftShop({ state, onBuyUpgrade, onBuyDecor }: LoftShopProps) {
     issue: upgradePurchaseIssues(state, upgrade)[0],
     buy: (event) => onBuyUpgrade(event, upgrade.id),
   }));
-  const decor: Row[] = LOFT_DECOR.map((item) => ({
+  const decor: Row[] = LOFT_DECOR.filter((item) => upgradeOpen(state, item)).map((item) => ({
     id: item.id,
     name: item.name,
     description: item.description,
@@ -75,7 +75,11 @@ export function LoftShop({ state, onBuyUpgrade, onBuyDecor }: LoftShopProps) {
           <ShopRow key={row.id} row={row} />
         ))}
       </ul>
-      <h4 className="is-shop__heading">Loft decor (just for looks)</h4>
+      <h4 className="is-shop__heading">
+        {state.career === "development"
+          ? "Loft and cabin decor (just for looks)"
+          : "Loft decor (just for looks)"}
+      </h4>
       <ul className="is-shop">
         {decor.map((row) => (
           <ShopRow key={row.id} row={row} />

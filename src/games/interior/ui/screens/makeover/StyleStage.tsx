@@ -2,7 +2,8 @@ import { useRef, useState, type KeyboardEvent } from "react";
 import { Button } from "../../../../../ui/kit/Button";
 import type { SvgPoint } from "../../../../../ui/kit/clientToSvg";
 import { DECOR, type DecorId } from "../../../content/decor";
-import { HINTS } from "../../../content/hints";
+import { Icon } from "../../../../../ui/kit/IconSet";
+import { HINTS, HOME_HINTS } from "../../../content/hints";
 import { roomColourById } from "../../../content/roomColour";
 import { SOFT_COLOURS } from "../../../content/softColour";
 import {
@@ -11,6 +12,7 @@ import {
   DECOR_ROTATION_STEP,
   spareDecor,
   STYLE_CANVAS,
+  tellsStory,
   type PlacedDecor,
 } from "../../../core";
 import { DecorArt } from "../../art/DecorArt";
@@ -19,6 +21,7 @@ import { roomHex } from "../../art/roomHex";
 import { roomLook } from "../../art/roomLook";
 import { usePointerDrag } from "../../usePointerDrag";
 import { DecorBin } from "./DecorBin";
+import { homeRoomContext } from "./homeRoomContext";
 import { StageFooter } from "./StageFooter";
 import type { StageProps } from "./stageProps";
 import "./style.css";
@@ -43,6 +46,8 @@ export function StyleStage(props: StageProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const soft = roomHex(run.softColour);
   const missing = checklist(state, run).some((item) => item.id.startsWith("must-") && item.status !== "met");
+  const home = homeRoomContext(state, run);
+  const telling = home !== null && tellsStory(run, home.story);
 
   const canvasPoint = (spot: SvgPoint | null) => {
     if (spot === null) return null;
@@ -226,6 +231,15 @@ export function StyleStage(props: StageProps) {
             )}
           </div>
           {missing ? <p className="is-style__warn">{HINTS.mustHavesMissing}</p> : null}
+          {home !== null ? (
+            <p
+              className={telling ? "is-style__story is-style__story--told" : "is-style__story"}
+              data-testid="story-status"
+            >
+              <Icon name={telling ? "check" : "sparkle"} size={16} />{" "}
+              {telling ? "This room tells the family's story!" : HOME_HINTS.storyPieces}
+            </p>
+          ) : null}
         </div>
         <aside className="is-style__side">
           <h3 className="is-tray__heading">Your decor box</h3>

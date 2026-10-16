@@ -4,8 +4,17 @@ import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { CLIENTS } from "../../../content/client";
+import { CREW } from "../../../content/crew";
+import {
+  BUILDER_LOOK,
+  BUILDER_NAME,
+  CREW_SPEAKER,
+  LARKSPUR_STORY_BEATS,
+} from "../../../content/larkspurStoryBeat";
+import { HOME_PANELS } from "../../../content/panelMember";
 import { MENTOR_LOOK, MENTOR_NAME, type StoryBeatDef } from "../../../content/storyBeat";
-import { beatLines, currentBeat, type Action, type GameState } from "../../../core";
+import { beatLines, currentBeat, storyChoiceIssue, type Action, type GameState } from "../../../core";
+import { LarkspurBackdrop } from "../../art/LarkspurBackdrop";
 import { LoftBackdrop } from "../../art/LoftBackdrop";
 import "./story.css";
 
@@ -14,21 +23,22 @@ export interface StoryOverlayProps {
   readonly dispatch: (action: Action) => boolean;
 }
 
-function speakerLook(speaker: string): AvatarLook | null {
+const PANEL_PEOPLE = HOME_PANELS.flatMap((panel) => panel.members);
+
+function speakerLook(speaker: string, state: GameState): AvatarLook | null {
   if (speaker === MENTOR_NAME) return MENTOR_LOOK;
-  return CLIENTS.find((client) => client.name === speaker)?.look ?? null;
+  if (speaker === BUILDER_NAME) return BUILDER_LOOK;
+  if (speaker === CREW_SPEAKER) {
+    const hired = state.larkspur?.crew.hired[0];
+    return CREW.find((member) => member.id === hired)?.look ?? CREW[0]?.look ?? null;
+  }
+  const panel = PANEL_PEOPLE.find((member) => member.name.includes(speaker.replace(/^(Mr|Mrs|Ms)\. /, "")));
+  if (panel !== undefined) return panel.look;
+  return CLIENTS.find((client) => client.name === speaker || client.name.includes(speaker))?.look ?? null;
 }
 
-function Portrait({
-  speaker,
-  isPlayer,
-  playerLook,
-}: {
-  speaker: string;
-  isPlayer: boolean;
-  playerLook: AvatarLook;
-}) {
-  const look = isPlayer ? playerLook : speakerLook(speaker);
+function Portrait({ speaker, isPlayer, state }: { speaker: string; isPlayer: boolean; state: GameState }) {
+  const look = isPlayer ? state.profile.look : speakerLook(speaker, state);
   if (look !== null)
     return (
       <Avatar
@@ -52,22 +62,37 @@ function StoryScene({ state, dispatch, beat }: StoryOverlayProps & { readonly be
   const lines = beatLines(beat, profile.trait, profile.name);
   const [shown, setShown] = useState(1);
   const finished = shown >= lines.length;
+  const street = LARKSPUR_STORY_BEATS.some((entry) => entry.id === beat.id);
+  const firstOpenChoice = beat.choices.find((choice) => storyChoiceIssue(state, choice) === null)?.id;
   const advance = () => {
     if (!finished) setShown(shown + 1);
   };
   return (
     <div className="is-story" role="dialog" aria-modal="true" aria-labelledby="is-story-title">
-      <LoftBackdrop
-        className="is-story__backdrop"
-        decor={state.loftDecor}
-        sign={`${profile.name}'s Studio`}
-        evening={beat.trigger === "bankrupt"}
-      />
+      {street ? (
+        <LarkspurBackdrop
+          className="is-story__backdrop"
+          decor={state.loftDecor}
+          time={beat.trigger === "street-of-homes" ? "evening" : "afternoon"}
+          plot={state.larkspur?.plot ?? null}
+          keyWall={state.larkspur?.keyWall}
+          openSign={beat.trigger === "first-open-house"}
+        />
+      ) : (
+        <LoftBackdrop
+          className="is-story__backdrop"
+          decor={state.loftDecor}
+          sign={`${profile.name}'s Studio`}
+          evening={beat.trigger === "bankrupt"}
+        />
+      )}
       <div className="is-story__veil" aria-hidden="true" />
       <div className="is-story__tap" onPointerUp={advance} aria-hidden="true" />
       <section className="is-story__panel is-tape-card">
         <header>
-          <span className="ad-eyebrow">A moment on Marigold Row</span>
+          <span className="ad-eyebrow">
+            {street ? "A moment on Larkspur Close" : "A moment on Marigold Row"}
+          </span>
           <h2 id="is-story-title" className="is-story__title">
             {beat.title}
           </h2>
@@ -85,7 +110,7 @@ function StoryScene({ state, dispatch, beat }: StoryOverlayProps & { readonly be
                 .join(" ")}
             >
               {index === shown - 1 ? (
-                <Portrait speaker={line.speaker} isPlayer={line.isPlayer} playerLook={profile.look} />
+                <Portrait speaker={line.speaker} isPlayer={line.isPlayer} state={state} />
               ) : null}
               <div className="is-story__bubble">
                 {line.speaker === "Narrator" ? null : (
@@ -105,7 +130,24 @@ function StoryScene({ state, dispatch, beat }: StoryOverlayProps & { readonly be
               />
             ))}
           </span>
-          {finished ? (
+          {finished && beat.choices.length > 0 ? (
+            <span className="is-story__choices">
+              {beat.choices.map((choice, index) => (
+                <Button
+                  key={choice.id}
+                  autoFocus={choice.id === firstOpenChoice}
+                  variant={index === 0 ? "primary" : "secondary"}
+                  disabledReason={storyChoiceIssue(state, choice) ?? undefined}
+                  onClick={() =>
+                    dispatch({ type: "chooseStoryOption", beatId: beat.id, choiceId: choice.id })
+                  }
+                  data-testid={`story-choice-${choice.id}`}
+                >
+                  {choice.label}
+                </Button>
+              ))}
+            </span>
+          ) : finished ? (
             <Button autoFocus onClick={() => dispatch({ type: "markBeatSeen", beatId: beat.id })}>
               Continue
             </Button>

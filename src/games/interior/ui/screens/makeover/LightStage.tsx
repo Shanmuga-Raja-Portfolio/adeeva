@@ -2,16 +2,17 @@ import { ownEntry } from "../../../../../engine/ownEntry";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { Button } from "../../../../../ui/kit/Button";
 import type { SvgPoint } from "../../../../../ui/kit/clientToSvg";
-import { HINTS } from "../../../content/hints";
+import { HINTS, HOME_HINTS } from "../../../content/hints";
 import {
   canPlaceLight,
   furnitureById,
+  glowPath,
   lightById,
   litSpots,
   mountCells,
   pieceShape,
   placedLights,
-  roomById,
+  runRoom,
   sunIcons,
 } from "../../../core";
 import { BlueprintGrid, PLAN_CELL } from "../../art/BlueprintGrid";
@@ -60,12 +61,13 @@ function SunBadge({ x, y, hundredths }: { x: number; y: number; hundredths: numb
 
 export function LightStage(props: StageProps) {
   const { state, run, dispatch } = props;
-  const room = roomById(run.brief.roomId);
+  const room = runRoom(run);
   const svgRef = useRef<SVGSVGElement>(null);
   const [showMe] = useAssist("light");
   const [hint, setHint] = useState<string | null>(null);
   const lights = placedLights(run);
   const spots = litSpots(room, run.plan.pieces, lights);
+  const glow = glowPath(room, run.plan.pieces, lights);
   const placeOf = (index: number) => ownEntry(run.lightPlaces, String(index));
 
   const cellAt = (spot: SvgPoint | null): readonly [number, number] | null => {
@@ -133,7 +135,12 @@ export function LightStage(props: StageProps) {
       <div className="is-light__work">
         <div className="is-light__board">
           <p className="is-light__hint" role="status" aria-live="polite">
-            {hint ?? (spots.lit < spots.total ? HINTS.darkSpot : "Every spot people use is lit. Cosy!")}
+            {hint ??
+              (spots.lit < spots.total
+                ? HINTS.darkSpot
+                : glow !== null && glow.glowing < glow.cells.length
+                  ? HOME_HINTS.glowPath
+                  : "Every spot people use is lit. Cosy!")}
           </p>
           <BlueprintGrid ref={svgRef} room={room} title="Lighting plan" className="is-light__grid">
             <defs>
@@ -190,6 +197,31 @@ export function LightStage(props: StageProps) {
                 </g>
               );
             })}
+            {glow === null ? null : (
+              <g data-testid="glow-path" pointerEvents="none">
+                {glow.cells.map(([col, row], step) => {
+                  const lit = glow.lit[step] === true;
+                  return (
+                    <g
+                      key={`path-${col}-${row}`}
+                      transform={`translate(${(col + 0.5) * PLAN_CELL} ${(row + 0.5) * PLAN_CELL})`}
+                    >
+                      <circle
+                        r={lit ? 13 : 8}
+                        fill={lit ? "#ffe39c" : "rgba(255,255,255,0.18)"}
+                        opacity={lit ? 0.85 : 1}
+                      />
+                      <path
+                        d="M-4 -6 q4 -3 8 0 q-1 6 -4 11 q-3 -5 -4 -11 Z"
+                        fill={lit ? "#9c6a3a" : "#ffffff"}
+                        opacity={lit ? 0.9 : 0.5}
+                        transform={`rotate(${step % 2 === 0 ? -14 : 14})`}
+                      />
+                    </g>
+                  );
+                })}
+              </g>
+            )}
             {targets.map(([col, row]) => (
               <rect
                 key={`t${col}-${row}`}

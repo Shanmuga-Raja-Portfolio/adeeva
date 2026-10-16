@@ -1,9 +1,9 @@
 import { ownEntry } from "../../../engine/ownEntry";
 import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import { recordWithout } from "../../../engine/recordWithout";
-import { roomById } from "./catalog";
 import type { GameState } from "./gameState";
 import { bestLightCell, canMountAt, type PlacedLight } from "./lighting";
+import { runRoom } from "./runRoom";
 import type { MakeoverRun } from "./makeoverRun";
 
 export function placedLights(run: MakeoverRun, except: number | null = null): PlacedLight[] {
@@ -16,10 +16,7 @@ export function placedLights(run: MakeoverRun, except: number | null = null): Pl
 export function canPlaceLight(run: MakeoverRun, index: number, col: number, row: number): boolean {
   const lightId = run.plan.lights[index];
   if (lightId === undefined || !Number.isInteger(col) || !Number.isInteger(row)) return false;
-  return canMountAt(roomById(run.brief.roomId), run.plan.pieces, placedLights(run, index), lightId, [
-    col,
-    row,
-  ]);
+  return canMountAt(runRoom(run), run.plan.pieces, placedLights(run, index), lightId, [col, row]);
 }
 
 export function placeLight(state: GameState, index: number, col: number, row: number): GameState {
@@ -46,7 +43,7 @@ export function showMeLight(state: GameState): GameState {
     );
     const lightId = run.plan.lights[index];
     if (lightId === undefined) return null;
-    const cell = bestLightCell(roomById(run.brief.roomId), run.plan.pieces, placedLights(run), lightId);
+    const cell = bestLightCell(runRoom(run), run.plan.pieces, placedLights(run), lightId);
     if (cell === null) return null;
     return {
       ...run,

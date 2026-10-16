@@ -12,6 +12,7 @@ export interface RoomSource {
   readonly pieces: readonly PlacedPiece[];
   readonly wallPaint: PaintId | null;
   readonly featurePaint: PaintId | null;
+  readonly lowerPaint: PaintId | null;
   readonly floor: FloorId | null;
   readonly lights: readonly LightId[];
   readonly decor: readonly DecorId[];
@@ -24,9 +25,18 @@ export function roomSource(run: MakeoverRun): RoomSource {
     pieces: run.plan.pieces,
     wallPaint: run.plan.wallPaint,
     featurePaint: run.plan.featurePaint,
+    lowerPaint: run.plan.lowerPaint,
     floor: run.plan.floor,
     lights: lit ? placedLights(run).map((light) => light.lightId) : run.plan.lights,
     decor: run.decor.map((item) => item.decorId),
     softColour: run.softColour,
   };
+}
+
+export function sourcePaints(
+  source: Pick<RoomSource, "wallPaint" | "featurePaint" | "lowerPaint">,
+): PaintId[] {
+  return [source.wallPaint, source.featurePaint, source.lowerPaint].flatMap((id) =>
+    id === null ? [] : [id],
+  );
 }

@@ -4,6 +4,7 @@ import type { DecorId } from "../content/decor";
 import { SOFT_COLOURS, type SoftColour } from "../content/softColour";
 import { isDecorId } from "./catalog";
 import type { GameState } from "./gameState";
+import { roomStock } from "./homeShelf";
 import type { MakeoverRun } from "./makeoverRun";
 
 export const STYLE_CANVAS = { width: 640, height: 420 } as const;
@@ -15,7 +16,7 @@ export function placedCount(run: MakeoverRun, decorId: DecorId): number {
 }
 
 export function spareDecor(state: GameState, run: MakeoverRun, decorId: DecorId): number {
-  return state.stock.decor[decorId] - placedCount(run, decorId);
+  return roomStock(state, run).decor[decorId] - placedCount(run, decorId);
 }
 
 export function addDecor(state: GameState, decorId: DecorId, x: number, y: number): GameState {

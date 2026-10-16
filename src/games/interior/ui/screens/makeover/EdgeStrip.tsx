@@ -15,7 +15,12 @@ interface EdgeStripProps {
   readonly onFinish: (samples: readonly Point[]) => boolean;
 }
 
-const KIND_NAMES = { ceiling: "Ceiling tape", skirting: "Skirting tape", frame: "Window frame" } as const;
+const KIND_NAMES = {
+  ceiling: "Ceiling tape",
+  skirting: "Skirting tape",
+  frame: "Window frame",
+  mid: "Mid-wall tape",
+} as const;
 
 function pathD(points: readonly Point[], closed: boolean): string {
   return `${points.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x} ${y}`).join(" ")}${closed ? " Z" : ""}`;

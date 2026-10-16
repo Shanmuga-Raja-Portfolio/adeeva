@@ -4,19 +4,23 @@ import type { ProfileBase } from "../../../engine/profile";
 import type { RngState } from "../../../engine/rng";
 import type { StoryState } from "../../../engine/story";
 import type { TrendState } from "../../../engine/trendMarket";
+import type { CareerId } from "../content/career";
 import type { LoftDecorId } from "../content/loftDecor";
 import type { RoomTag } from "../content/roomTag";
 import type { UpgradeId } from "../content/upgrade";
 import type { Brief } from "./brief";
+import type { Larkspur } from "./larkspur";
 import type { MakeoverRun } from "./makeoverRun";
 import type { OpenHouse } from "./openHouse";
 import type { Evaluation } from "./roomEvaluate";
 import type { Reward } from "./rewards";
 import type { Stock } from "./stock";
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
-export type Profile = ProfileBase;
+export interface Profile extends ProfileBase {
+  readonly startedAs: CareerId;
+}
 
 export type Offer = BoardOffer<Brief>;
 export type Gig = BoardGig<Brief>;
@@ -34,6 +38,7 @@ export interface LogEntry {
 export interface GameState {
   readonly schemaVersion: typeof SCHEMA_VERSION;
   readonly profile: Profile;
+  readonly career: CareerId;
   readonly calendar: DayClock;
   readonly coins: number;
   readonly reputation: number;
@@ -47,6 +52,7 @@ export interface GameState {
   readonly gigs: GigBoard;
   readonly story: StoryState;
   readonly activeRun: MakeoverRun | null;
+  readonly larkspur: Larkspur | null;
   readonly log: readonly LogEntry[];
   readonly ordersDelivered: number;
   readonly nextRunNumber: number;

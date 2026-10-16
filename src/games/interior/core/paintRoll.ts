@@ -6,8 +6,10 @@ import { projectOnSegment } from "../../../engine/geometry/segmentProjection";
 import { WALL_IDS, type WallId } from "../content/roomTemplate";
 import { roomById } from "./catalog";
 import type { GameState } from "./gameState";
-import { ROLLER_LOAD, type MakeoverRun, type RollRecord } from "./makeoverRun";
+import { ROLLER_LOAD, ROLLER_ZONES, type MakeoverRun, type RollerZone, type RollRecord } from "./makeoverRun";
 import { withPaintRun } from "./paintWork";
+import { cellZone, zonedWall } from "./twoTone";
+import { edgeScore } from "./paintEdge";
 import { capped, splatSpeed } from "./skillTolerance";
 
 export const ROLL_COLUMNS = 8;
@@ -41,7 +43,9 @@ export function emptyRoll(): RollRecord {
     strokes: 0,
     splats: [],
     dryStrokes: 0,
+    smudges: 0,
     assisted: false,
+    byCrew: false,
   };
 }
 
@@ -127,12 +131,18 @@ export function rollStroke(state: GameState, wall: WallId, stroke: RollStroke): 
     if (record.strokes >= MAX_STROKES_PER_WALL) return null;
     const passes = [...record.passes];
     let load = run.roller;
+    let smudges = record.smudges;
     const dry = load === 0;
+    const zoned = zonedWall(run, wall);
     if (!dry)
       for (const cell of crossedCells(run, wall, stroke.points)) {
         if (load === 0) break;
-        passes[cell] = Math.min(MAX_PASSES, (passes[cell] ?? 0) + 1);
         load -= 1;
+        if (zoned && cellZone(Math.floor(cell / ROLL_COLUMNS)) !== run.rollerZone) {
+          smudges += 1;
+          continue;
+        }
+        passes[cell] = Math.min(MAX_PASSES, (passes[cell] ?? 0) + 1);
       }
     const end = stroke.points[stroke.points.length - 1];
     const splat = isSplat(state, stroke) && end !== undefined;
@@ -141,6 +151,7 @@ export function rollStroke(state: GameState, wall: WallId, stroke: RollStroke): 
       passes,
       strokes: record.strokes + 1,
       dryStrokes: record.dryStrokes + (dry ? 1 : 0),
+      smudges,
       splats: splat ? [...record.splats, splatPoint(end)] : record.splats,
     };
     return { ...run, roller: load, rolls: { ...run.rolls, [wall]: next } };
@@ -149,6 +160,15 @@ export function rollStroke(state: GameState, wall: WallId, stroke: RollStroke): 
 
 export function reloadRoller(state: GameState): GameState {
   return withPaintRun(state, (run) => (run.roller === ROLLER_LOAD ? null : { ...run, roller: ROLLER_LOAD }));
+}
+
+export function pickTray(state: GameState, zone: RollerZone): GameState {
+  if (!ROLLER_ZONES.includes(zone)) return state;
+  return withPaintRun(state, (run) => {
+    if (run.plan.lowerPaint === null) return null;
+    if (run.rollerZone === zone && run.roller === ROLLER_LOAD) return null;
+    return { ...run, rollerZone: zone, roller: ROLLER_LOAD };
+  });
 }
 
 export function rollCoverage(run: MakeoverRun, wall: WallId): number {
@@ -170,9 +190,10 @@ export function isWallRolled(run: MakeoverRun, wall: WallId): boolean {
 
 export function rollScore(state: Pick<GameState, "profile">, run: MakeoverRun, wall: WallId): number {
   const record = rollRecord(run, wall);
+  if (record.byCrew) return rollCoverage(run, wall) * edgeScore(state, run, wall);
   const raw =
     rollCoverage(run, wall) *
-    Math.max(SPLAT_FLOOR, 1 - SPLAT_PENALTY * record.splats.length) *
+    Math.max(SPLAT_FLOOR, 1 - SPLAT_PENALTY * (record.splats.length + record.smudges)) *
     (1 - DRY_PENALTY * Math.min(MAX_DRY_COUNTED, record.dryStrokes));
   return capped(state, raw, record.assisted);
 }

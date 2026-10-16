@@ -1,7 +1,7 @@
 import { criterionPassed, kidSkillLine, type KidBands, type KidLine } from "../../../engine/kidLine";
-import { roomById } from "./catalog";
 import { litSpots } from "./lighting";
 import { placedLights } from "./lightPlacement";
+import { runRoom } from "./runRoom";
 import type { MakeoverRun } from "./makeoverRun";
 import type { Evaluation } from "./roomEvaluate";
 
@@ -19,7 +19,7 @@ function criterionLine(
 
 export function kidSummary(run: MakeoverRun, evaluation: Evaluation): KidLine[] {
   const { quality } = evaluation;
-  const { lit, total } = litSpots(roomById(run.brief.roomId), run.plan.pieces, placedLights(run));
+  const { lit, total } = litSpots(runRoom(run), run.plan.pieces, placedLights(run));
   const spots = `${lit} of ${total} ${total === 1 ? "spot" : "spots"}`;
   return [
     kidSkillLine(

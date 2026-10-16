@@ -172,3 +172,24 @@
   transform-origin: center;
   animation: is-pop var(--duration-slow) var(--ease-out) both;
 }
+
+.is-roll__trays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.is-tray-dip--active {
+  background: var(--is-sun-soft);
+  border-color: var(--is-terracotta);
+  box-shadow: 0 0 0 3px rgba(200, 102, 74, 0.25);
+}
+
+.is-roll__zone {
+  font-size: 13px;
+  font-weight: 800;
+  fill: #2a4f82;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 3px;
+}

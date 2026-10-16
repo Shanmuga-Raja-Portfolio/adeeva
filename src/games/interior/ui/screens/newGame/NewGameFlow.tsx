@@ -7,20 +7,25 @@ import { newSeed } from "../../../../../studio/newSeed";
 import { Button } from "../../../../../ui/kit/Button";
 import type { IconName } from "../../../../../ui/kit/IconSet";
 import { AvatarStep } from "../../../../../ui/newGame/AvatarStep";
+import { CareerStep, type CareerCard } from "../../../../../ui/newGame/CareerStep";
+import { careerFacts } from "../../../../../ui/newGame/careerFacts";
+import {
+  CAREER_STEPS as NEW_GAME_STEPS,
+  careerDraftSettings,
+  careerPlayerDraft,
+  careerStepIssue,
+  type CareerDraft,
+} from "../../../../../ui/newGame/careerDraft";
 import { DifficultyStep } from "../../../../../ui/newGame/DifficultyStep";
 import { NewGameStepper } from "../../../../../ui/newGame/NewGameStepper";
-import {
-  draftSettings,
-  PROFILE_STEPS as NEW_GAME_STEPS,
-  playerDraft,
-  stepIssue,
-  type ProfileDraft as NewGameDraft,
-} from "../../../../../ui/newGame/profileDraft";
 import { TraitStep } from "../../../../../ui/newGame/TraitStep";
+import { CAREERS, type CareerId } from "../../../content/career";
 import { DIFFICULTIES } from "../../../content/difficulty";
 import { STORY_BEATS } from "../../../content/storyBeat";
 import { TRAITS } from "../../../content/trait";
-import type { NewGameSettings } from "../../../core";
+import { newGameIssues, type NewGameSettings } from "../../../core";
+import { LarkspurBackdrop } from "../../art/LarkspurBackdrop";
+import { LoftBackdrop } from "../../art/LoftBackdrop";
 import { Wordmark } from "../../art/Wordmark";
 import type { SaveSlotId } from "../../interiorSlots";
 import "./newGame.css";
@@ -42,10 +47,19 @@ const HEADINGS: Readonly<Record<(typeof NEW_GAME_STEPS)[number]["id"], { title: 
     title: "What makes your rooms special?",
     lead: "Your trait shapes your perks, your voice and who knocks on your door.",
   },
+  career: {
+    title: "Where does your story start?",
+    lead: "Start in the loft, one room at a time, or take the keys to a whole street. Either way, the loft is yours.",
+  },
   difficulty: {
     title: "How busy should Marigold Row be?",
     lead: "Pick the pace that suits you. Every mode tells the same story.",
   },
+};
+
+const STREET_DIFFICULTY = {
+  title: "How busy should Larkspur Close be?",
+  lead: "Pick the pace that suits you. Every mode tells the same story.",
 };
 
 const traitIcons: Record<TraitId, IconName> = {
@@ -61,6 +75,23 @@ const difficultyIcons: Record<DifficultyId, IconName> = {
   challenging: "star",
 };
 
+type NewGameDraft = CareerDraft<CareerId>;
+
+const CAREER_CARDS: readonly CareerCard<CareerId>[] = CAREERS.map((career) => ({
+  id: career.id,
+  name: career.name,
+  pitch: career.pitch,
+  placeName: career.placeName,
+  badge: career.badge,
+  window:
+    career.id === "loft" ? (
+      <LoftBackdrop decor={["swatch-wall", "loft-plant"]} />
+    ) : (
+      <LarkspurBackdrop time="afternoon" plot={1} />
+    ),
+  facts: careerFacts(career),
+}));
+
 function voiceSample(trait: TraitId, name: string): string {
   return playerVoiceSample(
     STORY_BEATS.find((beat) => beat.trigger === "intro"),
@@ -70,13 +101,14 @@ function voiceSample(trait: TraitId, name: string): string {
 }
 
 export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: NewGameFlowProps) {
-  const [draft, setDraft] = useState<NewGameDraft>(() => playerDraft(player));
+  const [draft, setDraft] = useState<NewGameDraft>(() => careerPlayerDraft<CareerId>(player, "loft"));
   const [index, setIndex] = useState(0);
   const step = NEW_GAME_STEPS[index] ?? NEW_GAME_STEPS[0];
-  const issue = stepIssue(step.id, draft);
+  const issue = careerStepIssue(step.id, draft, newGameIssues);
   const isLast = index === NEW_GAME_STEPS.length - 1;
   const update = (patch: Partial<NewGameDraft>) => setDraft((current) => ({ ...current, ...patch }));
-  const heading = HEADINGS[step.id];
+  const heading =
+    step.id === "difficulty" && draft.career === "development" ? STREET_DIFFICULTY : HEADINGS[step.id];
 
   const next = () => {
     if (issue !== null) return;
@@ -84,7 +116,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
       setIndex(index + 1);
       return;
     }
-    const settings = draftSettings(draft, newSeed());
+    const settings = careerDraftSettings(draft, newSeed());
     if (settings !== null) onBegin(settings);
   };
 
@@ -128,6 +160,9 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
               onChange={(trait) => update({ trait })}
             />
           ) : null}
+          {step.id === "career" ? (
+            <CareerStep cards={CAREER_CARDS} value={draft.career} onChange={(career) => update({ career })} />
+          ) : null}
           {step.id === "difficulty" ? (
             <DifficultyStep
               difficulties={DIFFICULTIES}
@@ -150,7 +185,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
           showReason
           onClick={next}
         >
-          {isLast ? "Open the loft" : "Next"}
+          {isLast ? (draft.career === "development" ? "Open the site cabin" : "Open the loft") : "Next"}
         </Button>
       </footer>
     </main>

@@ -8,21 +8,23 @@ import type { PaintId } from "../content/paint";
 import { WALL_IDS } from "../content/roomTemplate";
 import type { Action } from "./action";
 import { rollClientBrief } from "./brief";
-import { clientById, difficultyById, roomById } from "./catalog";
+import { clientById, difficultyById } from "./catalog";
 import { STYLE_CANVAS } from "./decorPlacement";
-import { floorPieces, rightCandidate, runPattern } from "./floorLay";
+import { rightCandidate, runFloorPieces } from "./floorLay";
 import type { GameState } from "./gameState";
 import { bestLightCell } from "./lighting";
 import { placedLights } from "./lightPlacement";
-import type { MakeoverRun } from "./makeoverRun";
+import { ROLLER_LOAD, type MakeoverRun } from "./makeoverRun";
 import { createGame, type NewGameSettings } from "./newGame";
 import { runEdgePaths, type EdgePath } from "./paintEdge";
 import { ROLL_CANVAS, ROLL_CELL_PX, ROLL_ROWS } from "./paintRoll";
 import { reduce } from "./reduce";
+import { runRoom } from "./runRoom";
 import { stageAfter, type RunStage } from "./runStage";
 import { canAdvance } from "./stageReadiness";
 import { currentBeat } from "./storyQueue";
 import { tidyLayout } from "./tidyLayout";
+import { cellZone, zonedWall } from "./twoTone";
 
 export const TEST_LOOK: AvatarLook = {
   skinTone: "amber",
@@ -130,6 +132,64 @@ const TYPICAL: Readonly<Record<string, RoomRecipe>> = {
     lights: ["paper-pendant", "arc-lamp", "arc-lamp", "brass-sconce"],
     decor: ["framed-print", "potted-fern", "wall-clock"],
   },
+  castellanos: {
+    ...HAND,
+    furniture: ["hall-bench", "plant-stand"],
+    wallPaint: "sunflower",
+    floor: "terracotta",
+    lights: ["lantern-pendant"],
+  },
+  "grandpa-amos": {
+    ...HAND,
+    furniture: ["upright-piano", "armchair"],
+    wallPaint: "ruby-velvet",
+    floor: "pine-boards",
+    lights: ["lantern-pendant", "arc-lamp"],
+  },
+  "ms-nakamura": {
+    ...HAND,
+    furniture: ["single-bed", "play-tent", "bean-bag"],
+    wallPaint: "rosehip",
+    floor: "meadow-carpet",
+    lights: ["paper-pendant", "lantern-pendant"],
+  },
+  "supper-club": {
+    ...HAND,
+    furniture: ["dining-set", "sideboard"],
+    wallPaint: "chalk-white",
+    floor: "cherry-boards",
+    lights: ["lantern-pendant", "table-lamp"],
+  },
+  "ms-farrow": {
+    ...HAND,
+    furniture: ["desk", "bookcase", "plant-stand"],
+    wallPaint: "storm-cloud",
+    floor: "slate-tiles",
+    lights: ["dome-pendant", "clip-lamp"],
+  },
+  "bea-and-rufus": {
+    ...HAND,
+    furniture: ["daybed", "plant-stand"],
+    wallPaint: "fern-gully",
+    floor: "meadow-carpet",
+    lights: ["paper-pendant", "lantern-pendant"],
+    decor: ["potted-fern", "potted-fern", "herb-pots"],
+  },
+  solenne: {
+    ...HAND,
+    furniture: ["daybed", "armchair"],
+    wallPaint: "chalk-white",
+    floor: "oak-boards",
+    lights: ["paper-pendant", "arc-lamp"],
+    decor: ["framed-print", "framed-print"],
+  },
+  "the-hollins": {
+    ...HAND,
+    furniture: ["double-bed", "bedside-table", "bedside-table", "chest-of-drawers"],
+    wallPaint: "rose-quartz",
+    floor: "oak-boards",
+    lights: ["table-lamp", "table-lamp", "lantern-pendant"],
+  },
 };
 
 export function recipeFor(clientId: string): RoomRecipe {
@@ -145,6 +205,7 @@ export function newTestGame(overrides: Partial<NewGameSettings> = {}): GameState
     look: TEST_LOOK,
     trait: "dreamer",
     difficulty: "standard",
+    career: "loft",
     ...overrides,
   });
 }
@@ -214,7 +275,7 @@ export function planRoom(state: GameState, recipe: RoomRecipe): GameState {
   if (recipe.featurePaint !== null)
     next = reduce(next, { type: "choosePaint", slot: "feature", paintId: recipe.featurePaint });
   const layout = tidyLayout(
-    roomById(run.brief.roomId),
+    runRoom(run),
     recipe.furniture.map((furnitureId, index) => ({ id: `piece-${index + 1}`, furnitureId })),
   );
   if (layout === null) throw new Error("The furniture does not fit");
@@ -277,7 +338,10 @@ function paint(state: GameState, recipe: RoomRecipe): GameState {
       );
     for (let coat = 0; coat < 2; coat += 1)
       for (let row = 0; row < ROLL_ROWS; row += 1) {
-        next = reduce(next, { type: "reloadRoller" });
+        next = zonedWall(activeRun(next), wall)
+          ? reduce(next, { type: "pickTray", zone: cellZone(row) })
+          : reduce(next, { type: "reloadRoller" });
+        if (activeRun(next).roller < ROLLER_LOAD) next = reduce(next, { type: "reloadRoller" });
         next = must(
           next,
           reduce(next, { type: "rollStroke", wall, points: rowStroke(row), durationMs: 1000 }),
@@ -290,7 +354,7 @@ function paint(state: GameState, recipe: RoomRecipe): GameState {
 
 function layFloor(state: GameState, recipe: RoomRecipe): GameState {
   const run = activeRun(state);
-  return floorPieces(runPattern(run)).reduce(
+  return runFloorPieces(run).reduce(
     (current, piece) =>
       must(
         current,
@@ -313,7 +377,7 @@ function light(state: GameState, recipe: RoomRecipe): GameState {
   return run.plan.lights.reduce((current, lightId, index) => {
     if (recipe.lightAssist) return must(current, reduce(current, { type: "showMeLight" }), "show me");
     const now = activeRun(current);
-    const cell = bestLightCell(roomById(now.brief.roomId), now.plan.pieces, placedLights(now), lightId);
+    const cell = bestLightCell(runRoom(now), now.plan.pieces, placedLights(now), lightId);
     if (cell === null) throw new Error(`No spot for ${lightId}`);
     return must(current, reduce(current, { type: "placeLight", index, col: cell[0], row: cell[1] }), "light");
   }, state);

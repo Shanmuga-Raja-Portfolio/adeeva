@@ -126,6 +126,42 @@ export const BlueprintGrid = forwardRef<SVGSVGElement, BlueprintGridProps>(funct
           door
         </text>
       </g>
+      {room.throughRow === null ? null : (
+        <g data-testid="through-door">
+          <rect
+            x={width - PLAN_CELL + 4}
+            y={room.throughRow * PLAN_CELL + 4}
+            width={PLAN_CELL - 8}
+            height={PLAN_CELL - 8}
+            rx={8}
+            fill="rgba(246, 215, 122, 0.22)"
+            stroke="#f6d77a"
+            strokeWidth={2.5}
+            strokeDasharray="6 4"
+          />
+          <rect
+            x={width - 4}
+            y={room.throughRow * PLAN_CELL + 6}
+            width={8}
+            height={PLAN_CELL - 12}
+            fill="#3c6aa8"
+          />
+          <path
+            d={`M${width - PLAN_CELL * 0.62} ${(room.throughRow + 0.5) * PLAN_CELL} l${PLAN_CELL * 0.36} 0 m-${PLAN_CELL * 0.12} -${PLAN_CELL * 0.12} l${PLAN_CELL * 0.12} ${PLAN_CELL * 0.12} l-${PLAN_CELL * 0.12} ${PLAN_CELL * 0.12}`}
+            fill="none"
+            stroke="#f6d77a"
+            strokeWidth={3}
+            strokeLinecap="round"
+          />
+          <text
+            transform={`translate(${width + 13} ${(room.throughRow + 0.5) * PLAN_CELL}) rotate(90)`}
+            textAnchor="middle"
+            className="is-plan__label"
+          >
+            next door
+          </text>
+        </g>
+      )}
       {children}
     </svg>
   );

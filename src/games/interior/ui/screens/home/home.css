@@ -1,0 +1,660 @@
+.is-home {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--space-6);
+  background:
+    radial-gradient(circle at 96% 8%, rgba(125, 138, 74, 0.16), transparent 34%),
+    linear-gradient(180deg, rgba(60, 106, 168, 0.1), transparent 240px), var(--paper);
+}
+
+.is-home__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.is-home__header {
+  background: linear-gradient(90deg, var(--is-olive), #5c6733);
+}
+
+.is-home__rail {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.is-home__rail ol {
+  flex: 1;
+}
+
+.is-home__due {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--is-sun-soft);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.is-home__hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: min(1360px, calc(100% - 2 * var(--space-5)));
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--card);
+  border: 2px solid var(--is-blue-soft);
+  font-weight: 600;
+  color: var(--is-blue-deep);
+}
+
+.is-home__ghost {
+  position: fixed;
+  z-index: 60;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--is-sun);
+  border: 2px solid var(--ink);
+  font-weight: 800;
+  pointer-events: none;
+  transform: translate(-50%, -120%) rotate(-3deg);
+  box-shadow: var(--shadow-md);
+}
+
+.is-map,
+.is-palette,
+.is-rooms,
+.is-planner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.is-map__layout,
+.is-palette__layout,
+.is-rooms__layout,
+.is-planner__layout {
+  display: grid;
+  gap: var(--space-4);
+  width: min(1360px, calc(100% - 2 * var(--space-5)));
+  margin: 0 auto;
+  align-items: start;
+}
+
+.is-map__layout {
+  grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr);
+}
+
+.is-map__cards,
+.is-map__house,
+.is-palette__pick,
+.is-planner__plan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.is-map__card-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.is-purpose-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 72px;
+  padding: var(--space-3) var(--space-4);
+  border: 3px solid var(--is-terracotta);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(200, 102, 74, 0.12), transparent 60%), #fffaf2;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: grab;
+  touch-action: none;
+  box-shadow: 0 3px 0 var(--is-terracotta-deep);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.is-purpose-card:hover {
+  transform: translateY(-2px) rotate(-0.6deg);
+}
+
+.is-purpose-card:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.is-purpose-card--picked {
+  background: var(--is-sun-soft);
+  border-color: var(--is-sun);
+  box-shadow: 0 0 0 4px rgba(246, 215, 122, 0.6);
+}
+
+.is-purpose-card--placed {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.is-purpose-card__name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 800;
+}
+
+.is-purpose-card__wish,
+.is-purpose-card__where {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.is-purpose-card__where {
+  font-weight: 700;
+  color: var(--is-blue-deep);
+}
+
+.is-map__actions,
+.is-planner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.is-map__spaces {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--space-3);
+}
+
+.is-space {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+  min-height: 220px;
+  padding: var(--space-3);
+  border: 3px dashed var(--is-blue);
+  border-radius: var(--radius-md);
+  background: var(--is-paper);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.is-space:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.is-space--back {
+  background: linear-gradient(180deg, rgba(125, 138, 74, 0.14), transparent 50%), var(--is-paper);
+}
+
+.is-space--hall {
+  border-style: solid;
+  border-color: var(--is-olive);
+  cursor: default;
+}
+
+.is-space--filled {
+  border-style: solid;
+  border-color: var(--is-terracotta);
+  background: #fff4ee;
+}
+
+.is-space--target {
+  box-shadow: 0 0 0 4px rgba(246, 215, 122, 0.55);
+}
+
+.is-space__name {
+  font-weight: 800;
+}
+
+.is-space__plan {
+  width: 100%;
+  height: 110px;
+}
+
+.is-space__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.is-space__side {
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.is-space__side--front {
+  background: var(--is-blue);
+}
+
+.is-space__side--back {
+  background: var(--is-olive);
+}
+
+.is-space__who {
+  margin-top: auto;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.8);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-align: center;
+}
+
+.is-palette__layout {
+  grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+}
+
+.is-palette__story {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.is-palette__house {
+  width: 100%;
+  max-width: 300px;
+  align-self: center;
+}
+
+.is-palette__paints,
+.is-palette__floors {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: var(--space-2);
+}
+
+.is-chip--on {
+  border-color: var(--is-terracotta);
+  box-shadow: 0 0 0 3px rgba(200, 102, 74, 0.25);
+  background: #fff4ee;
+}
+
+.is-chip:disabled {
+  opacity: 0.5;
+}
+
+.is-rooms__layout {
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+}
+
+.is-rooms__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-3);
+}
+
+.is-room-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 2px solid var(--paper-edge);
+  box-shadow: var(--shadow-sm);
+}
+
+.is-room-card--ready {
+  border-color: var(--is-olive);
+  background: radial-gradient(circle at 90% 10%, rgba(246, 215, 122, 0.4), transparent 45%), var(--card);
+}
+
+.is-room-card__head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.is-room-card__stage {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.is-room-card__stage--ready {
+  color: var(--is-olive);
+}
+
+.is-room-card__cutaway {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  background: var(--is-paper);
+}
+
+.is-room-card__empty {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 640 / 420;
+  border-radius: var(--radius-sm);
+  background:
+    repeating-linear-gradient(45deg, rgba(60, 106, 168, 0.08) 0 10px, transparent 10px 20px), var(--is-paper);
+  color: var(--is-blue);
+}
+
+.is-room-card__crew {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--is-sun-soft);
+  font-weight: 700;
+}
+
+.is-room-card__assign {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.is-rooms__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.is-purse {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.is-purse h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--text-xl);
+}
+
+.is-purse p {
+  margin: 0;
+}
+
+.is-crew {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 2px solid var(--is-blue-soft);
+}
+
+.is-crew h2 {
+  margin: 2px 0;
+}
+
+.is-crew p {
+  margin: 0;
+}
+
+.is-crew__list,
+.is-crew__hire {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.is-crew__member {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--is-paper);
+}
+
+.is-crew__member > .ad-button {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.is-crew__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.is-crew__busy {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--is-terracotta-deep);
+}
+
+.is-crew__hire li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.is-crew__hire li > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.is-crew__coach {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.is-crew-coach {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.is-crew-coach p {
+  margin: 0;
+}
+
+.is-crew-coach__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.is-coach-floor__area {
+  width: 100%;
+  max-width: 560px;
+  touch-action: none;
+}
+
+.is-coach-floor__piece {
+  cursor: grab;
+}
+
+.is-coach-floor__piece:focus-visible {
+  outline: 3px solid var(--is-blue);
+}
+
+.is-coach-light__grid {
+  max-width: 100%;
+  height: auto;
+}
+
+.is-coach-light__cell {
+  cursor: pointer;
+}
+
+.is-coach-light__cell:focus-visible {
+  outline: 3px solid var(--is-sun);
+}
+
+.is-planner__layout {
+  grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
+}
+
+.is-planner__story {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.is-planner__preview {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.is-planner__preview svg {
+  width: 100%;
+  height: 100%;
+}
+
+.is-planner__tour {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.is-planner__stop {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 56px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--is-paper);
+  border: 2px solid var(--is-blue-soft);
+}
+
+.is-planner__stop:last-child {
+  border-color: var(--is-sun);
+  background: var(--is-sun-soft);
+}
+
+.is-planner__stop--fixed {
+  grid-template-columns: auto 1fr;
+  opacity: 0.85;
+}
+
+.is-planner__num {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--is-blue);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.is-planner__room {
+  display: flex;
+  flex-direction: column;
+}
+
+.is-planner__moves {
+  display: flex;
+  gap: 4px;
+}
+
+.is-planner__radios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-2);
+}
+
+.is-planner__radio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 56px;
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--paper-edge);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.is-planner__radio span {
+  font-size: var(--text-sm);
+  color: var(--is-blue-deep);
+  font-weight: 700;
+}
+
+.is-planner__radio[aria-checked="true"] {
+  border-color: var(--is-terracotta);
+  background: #fff4ee;
+  box-shadow: 0 0 0 3px rgba(200, 102, 74, 0.25);
+}
+
+.is-planner__radio:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.is-planner__doors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.is-planner__doors p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-weight: 700;
+}
+
+@media (max-width: 960px) {
+  .is-map__layout,
+  .is-palette__layout,
+  .is-rooms__layout,
+  .is-planner__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .is-home__rail {
+    flex-wrap: wrap;
+  }
+}

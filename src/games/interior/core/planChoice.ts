@@ -1,10 +1,10 @@
 import { updateActiveRun } from "../../../engine/activeRunUpdate";
 import type { FloorId } from "../content/floor";
 import type { FurnitureId } from "../content/furniture";
-import { HINTS } from "../content/hints";
+import { HINTS, HOME_HINTS } from "../content/hints";
 import type { LightId } from "../content/light";
 import type { PaintId } from "../content/paint";
-import { isFloorId, isFurnitureId, isLightId, isPaintId, roomById } from "./catalog";
+import { isFloorId, isFurnitureId, isLightId, isPaintId } from "./catalog";
 import {
   isTurn,
   pieceShape,
@@ -15,7 +15,8 @@ import {
 } from "./floorPlan";
 import type { GameState } from "./gameState";
 import { mountCells } from "./lighting";
-import type { MakeoverRun, RoomPlan } from "./makeoverRun";
+import { runRoom } from "./runRoom";
+import { isHomeRoom, type MakeoverRun, type RoomPlan } from "./makeoverRun";
 import { tidyLayout, type TidyPiece } from "./tidyLayout";
 
 export const MAX_PIECES = 12;
@@ -33,6 +34,7 @@ const PROBLEM_HINTS: Readonly<Record<PlacementProblem, string>> = {
   outside: HINTS.outsideRoom,
   overlap: HINTS.overlaps,
   door: HINTS.doorSwing,
+  through: HOME_HINTS.throughDoor,
   window: HINTS.tallByWindow,
 };
 
@@ -69,11 +71,7 @@ export function placementIssue(run: MakeoverRun, placement: PiecePlacement): str
     return HINTS.outsideRoom;
   if (placement.pieceId === null && run.plan.pieces.length >= MAX_PIECES)
     return "The room is full of furniture.";
-  const problem = placementProblem(
-    roomById(run.brief.roomId),
-    run.plan.pieces,
-    candidatePiece(run, placement),
-  );
+  const problem = placementProblem(runRoom(run), run.plan.pieces, candidatePiece(run, placement));
   return problem === null ? null : PROBLEM_HINTS[problem];
 }
 
@@ -91,7 +89,7 @@ export function turnedPlacement(run: MakeoverRun, pieceId: string): PiecePlaceme
   const piece = run.plan.pieces.find((entry) => entry.id === pieceId);
   if (piece === undefined) return null;
   const rotation = ((piece.rotation + 90) % 360) as Turn;
-  const room = roomById(run.brief.roomId);
+  const room = runRoom(run);
   const shape = pieceShape(piece.furnitureId, rotation);
   return {
     pieceId,
@@ -116,8 +114,10 @@ export function removePiece(state: GameState, pieceId: string): GameState {
   );
 }
 
-export function choosePaint(state: GameState, slot: "wall" | "feature", paintId: PaintId | null): GameState {
-  return withPlan(state, (plan) => {
+export type PaintSlot = "wall" | "feature" | "lower";
+
+export function choosePaint(state: GameState, slot: PaintSlot, paintId: PaintId | null): GameState {
+  return withPlan(state, (plan, run) => {
     if (paintId !== null && !isPaintId(paintId)) return null;
     if (slot === "wall") {
       if (paintId === null || paintId === plan.wallPaint) return null;
@@ -125,9 +125,17 @@ export function choosePaint(state: GameState, slot: "wall" | "feature", paintId:
         ...plan,
         wallPaint: paintId,
         featurePaint: plan.featurePaint === paintId ? null : plan.featurePaint,
+        lowerPaint: plan.lowerPaint === paintId ? null : plan.lowerPaint,
       };
     }
-    if (paintId === plan.featurePaint || (paintId !== null && paintId === plan.wallPaint)) return null;
+    if (paintId !== null && paintId === plan.wallPaint) return null;
+    if (slot === "lower") {
+      if (!isHomeRoom(run) || paintId === plan.lowerPaint) return null;
+      if (paintId !== null && plan.featurePaint !== null) return null;
+      return { ...plan, lowerPaint: paintId };
+    }
+    if (slot !== "feature" || paintId === plan.featurePaint) return null;
+    if (paintId !== null && plan.lowerPaint !== null) return null;
     return { ...plan, featurePaint: paintId };
   });
 }
@@ -176,7 +184,7 @@ function tidyPlan(run: MakeoverRun): { readonly pieces: PlacedPiece[]; readonly 
   const items = tidyItems(run);
   if (items.length === 0) return "Place some furniture first.";
   if (items.length > MAX_PIECES) return "That is too much furniture to tidy. Take a piece out.";
-  const pieces = tidyLayout(roomById(run.brief.roomId), items);
+  const pieces = tidyLayout(runRoom(run), items);
   if (pieces === null) return "Not everything fits. Take a piece out, then tidy up.";
   return { pieces, added: items.length - run.plan.pieces.length };
 }
@@ -200,7 +208,7 @@ export function tidyUp(state: GameState): GameState {
 }
 
 function hasLightSpot(run: MakeoverRun): boolean {
-  const room = roomById(run.brief.roomId);
+  const room = runRoom(run);
   return run.plan.lights.some((lightId) => mountCells(room, run.plan.pieces, [], lightId).length > 0);
 }
 

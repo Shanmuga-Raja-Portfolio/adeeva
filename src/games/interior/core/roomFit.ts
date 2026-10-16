@@ -3,7 +3,7 @@ import { NEUTRAL_TAG, type RoomTag } from "../content/roomTag";
 import type { Brief } from "./brief";
 import { floorById, furnitureById, paintById } from "./catalog";
 import { pieceColour } from "./roomColours";
-import type { RoomSource } from "./roomSource";
+import { sourcePaints, type RoomSource } from "./roomSource";
 
 interface FitItem {
   readonly tags: readonly RoomTag[];
@@ -11,9 +11,7 @@ interface FitItem {
 }
 
 function fitItems(source: RoomSource): FitItem[] {
-  const paints = [source.wallPaint, source.featurePaint].flatMap((id) =>
-    id === null ? [] : [paintById(id)],
-  );
+  const paints = sourcePaints(source).map((id) => paintById(id));
   return [
     ...source.pieces.map((piece) => {
       const def = furnitureById(piece.furnitureId);

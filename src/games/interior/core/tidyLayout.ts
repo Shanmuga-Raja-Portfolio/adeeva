@@ -39,8 +39,10 @@ function bestPose(room: RoomTemplate, placed: readonly PlacedPiece[], item: Tidy
     for (const [col, row] of roomCells(room)) {
       const piece: PlacedPiece = { ...item, col, row, rotation };
       if (placementProblem(room, placed, piece) !== null) continue;
-      const flow = walkThrough(room, [...placed, piece], 1).flow;
-      const score = flow * 1000 + tuckBonus(placed, piece) * 100 + wallContact(room, piece);
+      const walk = walkThrough(room, [...placed, piece], 1);
+      const path = walk.throughReached === false ? 0 : 1;
+      const score =
+        path * 5000 + walk.flow * 1000 + tuckBonus(placed, piece) * 100 + wallContact(room, piece);
       if (best === null || score > best.score + 1e-9) best = { piece, score };
     }
   return best === null ? null : best.piece;

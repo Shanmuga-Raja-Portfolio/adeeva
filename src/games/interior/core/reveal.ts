@@ -10,6 +10,7 @@ import { openHouse } from "./openHouse";
 import { roomReward, willPass } from "./rewards";
 import { evaluateRoom } from "./roomEvaluate";
 import { changeStock, EMPTY_CART, type Cart } from "./stock";
+import { checkLarkspurOffer } from "./larkspurOffer";
 import { queueStoryTrigger } from "./storyQueue";
 
 function placedDecorCart(run: MakeoverRun): Cart {
@@ -25,6 +26,8 @@ function placedDecorCart(run: MakeoverRun): Cart {
 export function canReveal(state: GameState): ActionCheck {
   const run = state.activeRun;
   if (run === null || run.stage !== "reveal") return actionCheck(["Finish styling the room first."]);
+  if (run.purpose.kind === "home-room")
+    return actionCheck(["Home rooms open their doors at the Open House."]);
   const reasons = DECOR_IDS.filter((id) => placedCount(run, id) > state.stock.decor[id]).map(
     (id) => `You need another ${decorById(id).name}.`,
   );
@@ -57,7 +60,7 @@ export function reveal(state: GameState): GameState {
     ordersDelivered: state.ordersDelivered + 1,
     log: [...state.log, entry],
   };
-  return queueStoryTrigger(applyStanding(revealed, reward), "first-delivery");
+  return checkLarkspurOffer(queueStoryTrigger(applyStanding(revealed, reward), "first-delivery"));
 }
 
 export function lastResult(state: GameState, runId: string): LogEntry | null {

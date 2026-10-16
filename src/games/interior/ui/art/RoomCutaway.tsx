@@ -38,6 +38,7 @@ interface RoomCutawayProps {
 }
 
 const WINDOW_TOP = 0.8;
+const LOWER_SHARE = 0.4;
 const WINDOW_BOTTOM = 0.36;
 
 function bounds(piece: PlacedPiece) {
@@ -286,6 +287,26 @@ export function RoomCutaway({
         stroke={darken(back, 0.4)}
         strokeWidth={1.5}
       />
+      {look.backLower === null ? null : (
+        <g data-testid="two-tone-band">
+          <polygon
+            points={pointsAttr([
+              lifted(floorPoint(frame, 0, 0), frame.wall * LOWER_SHARE),
+              lifted(floorPoint(frame, room.cols, 0), frame.wall * LOWER_SHARE),
+              floorPoint(frame, room.cols, 0),
+              floorPoint(frame, 0, 0),
+            ])}
+            fill={look.backLower}
+            stroke={darken(look.backLower, 0.4)}
+            strokeWidth={1.5}
+          />
+          <path
+            d={`M${pointsAttr([lifted(floorPoint(frame, 0, 0), frame.wall * LOWER_SHARE)])} L${pointsAttr([lifted(floorPoint(frame, room.cols, 0), frame.wall * LOWER_SHARE)])}`}
+            stroke="#fffaf2"
+            strokeWidth={Math.max(2, frame.scale * 5)}
+          />
+        </g>
+      )}
       <polygon points={pointsAttr(sideQuad)} fill={darken(side, 0.1)} />
       <polygon
         points={pointsAttr(sideQuad)}

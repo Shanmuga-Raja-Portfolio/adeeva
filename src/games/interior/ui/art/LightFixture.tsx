@@ -144,5 +144,137 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
           ))}
         </g>
       );
+    case "lantern-pendant":
+      return (
+        <g transform={`translate(${x} ${y})`}>
+          <path d={`M0 ${-drop} L0 0`} stroke={INK} strokeWidth={line * 0.7} />
+          <circle cx={0} cy={u * 0.26} r={u * 0.46} fill="#ffe7b0" opacity={0.5} />
+          <ellipse
+            cx={0}
+            cy={u * 0.26}
+            rx={u * 0.22}
+            ry={u * 0.26}
+            fill="#fff4dc"
+            stroke={INK}
+            strokeWidth={line}
+          />
+          {[-0.12, 0, 0.12].map((share) => (
+            <path
+              key={share}
+              d={`M${-u * 0.21} ${u * (0.26 + share)} Q0 ${u * (0.32 + share)} ${u * 0.21} ${u * (0.26 + share)}`}
+              fill="none"
+              stroke="#e2c89b"
+              strokeWidth={line * 0.6}
+            />
+          ))}
+          <rect x={-u * 0.06} y={-u * 0.02} width={u * 0.12} height={u * 0.04} fill="#c8914f" />
+        </g>
+      );
+    case "track-spots":
+      return (
+        <g transform={`translate(${x} ${y})`}>
+          <path d={`M0 ${-drop} L0 0`} stroke={INK} strokeWidth={line * 0.7} />
+          <rect
+            x={-u * 0.36}
+            y={-u * 0.04}
+            width={u * 0.72}
+            height={u * 0.08}
+            rx={u * 0.03}
+            fill="#3a3a40"
+            stroke={INK}
+            strokeWidth={line * 0.8}
+          />
+          {[-0.24, 0, 0.24].map((share) => (
+            <g key={share} transform={`translate(${share * u} ${u * 0.04}) rotate(${share * 60})`}>
+              <circle cx={0} cy={u * 0.3} r={u * 0.2} fill="#e6f7ff" opacity={0.45} />
+              <path
+                d={`M${-u * 0.06} 0 L${u * 0.06} 0 L${u * 0.09} ${u * 0.16} L${-u * 0.09} ${u * 0.16} Z`}
+                fill="#3a3a40"
+                stroke={INK}
+                strokeWidth={line * 0.7}
+              />
+            </g>
+          ))}
+        </g>
+      );
+    case "table-lamp":
+      return (
+        <g transform={`translate(${x} ${y})`}>
+          <circle cx={0} cy={-u * 0.4} r={u * 0.36} fill="#fff1b8" opacity={0.45} />
+          <path
+            d={`M${-u * 0.08} 0 L${u * 0.08} 0 L${u * 0.04} ${-u * 0.26} L${-u * 0.04} ${-u * 0.26} Z`}
+            fill="#c9a227"
+            stroke={INK}
+            strokeWidth={line * 0.8}
+          />
+          <path
+            d={`M${-u * 0.18} ${-u * 0.26} L${u * 0.18} ${-u * 0.26} L${u * 0.11} ${-u * 0.52} L${-u * 0.11} ${-u * 0.52} Z`}
+            fill="#fff4dc"
+            stroke={INK}
+            strokeWidth={line}
+          />
+        </g>
+      );
+    case "globe-lamp":
+      return (
+        <g transform={`translate(${x} ${y})`}>
+          <ellipse cx={0} cy={0} rx={u * 0.18} ry={u * 0.05} fill="#9fd0ee" stroke={INK} strokeWidth={line} />
+          <path d={`M0 0 L0 ${-u * 1.25}`} stroke="#5b7a95" strokeWidth={line * 1.6} strokeLinecap="round" />
+          <circle cx={0} cy={-u * 1.42} r={u * 0.44} fill="#e6f7ff" opacity={0.45} />
+          <circle cx={0} cy={-u * 1.42} r={u * 0.2} fill="#f2fbff" stroke={INK} strokeWidth={line} />
+          <circle cx={-u * 0.06} cy={-u * 1.48} r={u * 0.05} fill="#ffffff" />
+        </g>
+      );
+    case "picture-light":
+      return (
+        <g transform={`translate(${x} ${y})`}>
+          <circle cx={0} cy={u * 0.1} r={u * 0.3} fill="#fff1b8" opacity={0.4} />
+          <rect
+            x={-u * 0.04}
+            y={-u * 0.1}
+            width={u * 0.08}
+            height={u * 0.14}
+            fill="#c9a227"
+            stroke={INK}
+            strokeWidth={line * 0.6}
+          />
+          <rect
+            x={-u * 0.26}
+            y={-u * 0.14}
+            width={u * 0.52}
+            height={u * 0.08}
+            rx={u * 0.04}
+            fill="#c9a227"
+            stroke={INK}
+            strokeWidth={line * 0.8}
+          />
+        </g>
+      );
+    case "starry-nightlight":
+      return (
+        <g transform={`translate(${x} ${y})`}>
+          <circle cx={0} cy={-u * 0.22} r={u * 0.36} fill="#e9e1ff" opacity={0.45} />
+          <circle cx={0} cy={-u * 0.2} r={u * 0.17} fill="#b9a7dc" stroke={INK} strokeWidth={line} />
+          {[0, 72, 144, 216, 288].map((turn) => (
+            <circle
+              key={turn}
+              cx={Math.cos((turn * Math.PI) / 180) * u * 0.1}
+              cy={-u * 0.2 + Math.sin((turn * Math.PI) / 180) * u * 0.1}
+              r={u * 0.025}
+              fill="#fff4c2"
+            />
+          ))}
+          <rect
+            x={-u * 0.1}
+            y={-u * 0.04}
+            width={u * 0.2}
+            height={u * 0.05}
+            rx={u * 0.02}
+            fill="#5e2a5a"
+            stroke={INK}
+            strokeWidth={line * 0.6}
+          />
+        </g>
+      );
   }
 }

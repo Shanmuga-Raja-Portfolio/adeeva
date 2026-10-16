@@ -8,8 +8,10 @@ import { floorById } from "./catalog";
 import type { GameState } from "./gameState";
 import type { FloorRecord, MakeoverRun } from "./makeoverRun";
 import { capped, floorTolerance } from "./skillTolerance";
+import { THRESHOLD_PIECES, thresholdFloor } from "./threshold";
 
 export type PieceTone = "plain" | "light" | "dark";
+export type PieceSource = "room" | "hall";
 
 interface FloorPiece {
   readonly index: number;
@@ -18,6 +20,7 @@ interface FloorPiece {
   readonly width: number;
   readonly height: number;
   readonly tone: PieceTone;
+  readonly source: PieceSource;
 }
 
 export interface FloorCandidate {
@@ -25,6 +28,7 @@ export interface FloorCandidate {
   readonly width: number;
   readonly height: number;
   readonly tone: PieceTone;
+  readonly source: PieceSource;
 }
 
 export const FLOOR_PIECES = 6;
@@ -48,7 +52,7 @@ export function floorCanvas(pattern: FloorPattern): { readonly width: number; re
   return pattern === "boards" ? { width: 120, height: 45 } : { width: 90, height: 60 };
 }
 
-export function runPattern(run: MakeoverRun): FloorPattern {
+export function runPattern(run: Pick<MakeoverRun, "plan">): FloorPattern {
   return run.plan.floor === null ? "boards" : floorById(run.plan.floor).pattern;
 }
 
@@ -61,33 +65,51 @@ export function floorPieces(pattern: FloorPattern): FloorPiece[] {
       width,
       height: BOARD_DEPTH,
       tone: "plain",
+      source: "room",
     }));
   return Array.from({ length: FLOOR_PIECES }, (_, index) => {
     const column = index % TILE_COLUMNS;
     const row = Math.floor(index / TILE_COLUMNS);
     const tone: PieceTone = pattern === "checker" ? ((column + row) % 2 === 0 ? "dark" : "light") : "plain";
-    return { index, x: column * TILE, y: row * TILE, width: TILE, height: TILE, tone };
+    return { index, x: column * TILE, y: row * TILE, width: TILE, height: TILE, tone, source: "room" };
   });
 }
 
-function candidate(width: number, height: number, tone: PieceTone): FloorCandidate {
-  return { key: `${width}x${height}-${tone}`, width, height, tone };
+export function runFloorPieces(run: Pick<MakeoverRun, "purpose" | "plan">): FloorPiece[] {
+  const pieces = floorPieces(runPattern(run));
+  if (thresholdFloor(run) === null) return pieces;
+  return pieces.map((piece) => (piece.index < THRESHOLD_PIECES ? { ...piece, source: "hall" } : piece));
+}
+
+function candidate(width: number, height: number, tone: PieceTone, source: PieceSource): FloorCandidate {
+  const suffix = source === "hall" ? "-hall" : "";
+  return { key: `${width}x${height}-${tone}${suffix}`, width, height, tone, source };
 }
 
 function wrongOnes(pattern: FloorPattern, piece: FloorPiece): FloorCandidate[] {
+  const own = piece.source;
   if (pattern === "boards")
-    return [piece.width === 60 ? 30 : 60, 45].map((width) => candidate(width, BOARD_DEPTH, "plain"));
+    return [piece.width === 60 ? 30 : 60, 45].map((width) => candidate(width, BOARD_DEPTH, "plain", own));
   if (pattern === "checker")
-    return [candidate(TILE, TILE, piece.tone === "dark" ? "light" : "dark"), candidate(40, TILE, piece.tone)];
-  return [candidate(20, TILE, "plain"), candidate(40, TILE, "plain")];
+    return [
+      candidate(TILE, TILE, piece.tone === "dark" ? "light" : "dark", own),
+      candidate(40, TILE, piece.tone, own),
+    ];
+  return [candidate(20, TILE, "plain", own), candidate(40, TILE, "plain", own)];
 }
 
 export function rightCandidate(piece: FloorPiece): FloorCandidate {
-  return candidate(piece.width, piece.height, piece.tone);
+  return candidate(piece.width, piece.height, piece.tone, piece.source);
+}
+
+function otherFloor(piece: FloorPiece): FloorCandidate {
+  return candidate(piece.width, piece.height, piece.tone, piece.source === "hall" ? "room" : "hall");
 }
 
 export function floorCandidates(run: MakeoverRun, piece: FloorPiece): FloorCandidate[] {
-  const pool = [rightCandidate(piece), ...wrongOnes(runPattern(run), piece)];
+  const wrong = wrongOnes(runPattern(run), piece);
+  const mixed = thresholdFloor(run) === null ? wrong : [otherFloor(piece), ...wrong.slice(0, 1)];
+  const pool = [rightCandidate(piece), ...mixed];
   let rng = (run.seed + piece.index * 7919) | 0;
   const shuffled: FloorCandidate[] = [];
   while (pool.length > 0) {
@@ -99,7 +121,7 @@ export function floorCandidates(run: MakeoverRun, piece: FloorPiece): FloorCandi
 }
 
 export function isRightPiece(run: MakeoverRun, pieceIndex: number, candidateKey: string): boolean {
-  const piece = floorPieces(runPattern(run))[pieceIndex];
+  const piece = runFloorPieces(run)[pieceIndex];
   return piece !== undefined && rightCandidate(piece).key === candidateKey;
 }
 
@@ -145,6 +167,7 @@ export function layFloor(state: GameState, drop: FloorDrop): GameState {
       offset,
       accuracy: floorAccuracy(offset, tolerance),
       assisted: drop.assisted || offset === 0,
+      byCrew: false,
     };
     const key = String(drop.pieceIndex);
     if (sameFields(ownEntry(run.floorLaid, key), record)) return null;

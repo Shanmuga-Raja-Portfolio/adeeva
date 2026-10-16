@@ -78,6 +78,75 @@ function Detail({ furnitureId, w, d, c }: { furnitureId: FurnitureId; w: number;
       return (
         <rect x={c * 0.12} y={c * 0.12} width={w - c * 0.24} height={d - c * 0.24} rx={c * 0.2} {...line} />
       );
+    case "double-bed":
+    case "daybed":
+      return (
+        <g>
+          <rect x={c * 0.2} y={c * 0.2} width={w * 0.4 - c * 0.2} height={c * 0.45} rx={c * 0.15} {...line} />
+          <rect
+            x={w * 0.55}
+            y={c * 0.2}
+            width={w * 0.45 - c * 0.2}
+            height={c * 0.45}
+            rx={c * 0.15}
+            {...line}
+          />
+          <path d={`M${c * 0.12} ${d * 0.42} L${w - c * 0.12} ${d * 0.42}`} {...line} />
+        </g>
+      );
+    case "bedside-table":
+    case "plant-stand":
+      return <circle cx={w / 2} cy={d / 2} r={c * 0.22} {...line} />;
+    case "chest-of-drawers":
+    case "sideboard":
+    case "console-table":
+      return (
+        <g>
+          {[0.33, 0.66].map((share) => (
+            <path key={share} d={`M${w * share} ${c * 0.18} L${w * share} ${d - c * 0.18}`} {...line} />
+          ))}
+        </g>
+      );
+    case "dining-set":
+      return (
+        <g>
+          <rect x={c * 0.3} y={c * 0.3} width={w - c * 0.6} height={d - c * 0.6} rx={c * 0.2} {...line} />
+          {[0.25, 0.5, 0.75].map((share) => (
+            <circle key={share} cx={w * share} cy={c * 0.14} r={c * 0.07} {...line} />
+          ))}
+        </g>
+      );
+    case "hall-bench":
+      return (
+        <g>
+          <path d={`M${c * 0.2} ${d * 0.6} L${w - c * 0.2} ${d * 0.6}`} {...line} />
+          {[0.3, 0.5, 0.7].map((share) => (
+            <circle key={share} cx={w * share} cy={d * 0.3} r={c * 0.05} {...line} />
+          ))}
+        </g>
+      );
+    case "bean-bag":
+      return (
+        <path
+          d={`M${w * 0.25} ${d * 0.75} Q${w * 0.2} ${d * 0.2} ${w / 2} ${d * 0.22} Q${w * 0.85} ${d * 0.3} ${w * 0.75} ${d * 0.75} Z`}
+          {...line}
+        />
+      );
+    case "play-tent":
+      return (
+        <path
+          d={`M${c * 0.2} ${d - c * 0.2} L${w / 2} ${c * 0.2} L${w - c * 0.2} ${d - c * 0.2} Z`}
+          {...line}
+        />
+      );
+    case "upright-piano":
+      return (
+        <g>
+          {[0.2, 0.35, 0.5, 0.65, 0.8].map((share) => (
+            <path key={share} d={`M${w * share} ${d * 0.5} L${w * share} ${d - c * 0.15}`} {...line} />
+          ))}
+        </g>
+      );
   }
 }
 

@@ -113,3 +113,18 @@
   color: var(--is-olive);
   font-weight: 800;
 }
+
+.is-warehouse__purse {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.is-warehouse__purse p {
+  margin: 0;
+}
+
+.is-shop-stage--yard .is-warehouse__sign {
+  background: linear-gradient(90deg, #7d8a4a, #5c6733);
+}

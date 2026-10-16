@@ -6,6 +6,7 @@ import { furnitureById } from "./catalog";
 import {
   cellKey,
   doorSwing,
+  throughDoorCell,
   inRoom,
   pieceCells,
   pieceUseCells,
@@ -31,6 +32,7 @@ interface WalkThrough {
   readonly roomy: number;
   readonly freeShare: number;
   readonly flow: number;
+  readonly throughReached: boolean | null;
 }
 
 const STEPS: readonly Cell[] = [
@@ -94,9 +96,11 @@ export function walkThrough(
       .filter((cell) => inRoom(room, cell))
       .map((cell) => ({ pieceId: piece.id, cell, reached: reached.has(cellKey(cell)) })),
   );
+  const through = throughDoorCell(room);
   return {
     reached,
     footprints,
+    throughReached: through === null ? null : reached.has(cellKey(through)),
     reach,
     roomy,
     freeShare,

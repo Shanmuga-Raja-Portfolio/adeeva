@@ -50,7 +50,7 @@ export function rollClientBrief(client: ClientDef, roll: BriefRoll, rng: RngStat
   const [budget, afterBudget] = drawInt(rng, template.budget[0], template.budget[1]);
   const [fee, afterFee] = drawInt(afterBudget, template.fee[0], template.fee[1]);
   const [deadlineDays, afterDeadline] = drawInt(afterFee, template.deadlineDays[0], template.deadlineDays[1]);
-  const pool = client.showHome ? trendColours(roll.hotTags) : template.favouredColours;
+  const pool = client.trendBrief ? trendColours(roll.hotTags) : template.favouredColours;
   const [favouredColours, afterColours] = drawDistinct(afterDeadline, pool, FAVOURED_COLOURS_PER_BRIEF);
   return [
     {
@@ -60,7 +60,7 @@ export function rollClientBrief(client: ClientDef, roll: BriefRoll, rng: RngStat
       deadlineDay: roll.day + deadlineDays,
       budget,
       fee,
-      requiredTags: client.showHome ? [...roll.hotTags] : template.requiredTags,
+      requiredTags: client.trendBrief ? [...roll.hotTags] : template.requiredTags,
       favouredColours,
       avoidColours: template.avoidColours,
       mustHaves: template.mustHaves,

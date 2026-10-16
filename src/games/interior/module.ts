@@ -1,6 +1,6 @@
-import { traitGatedReputation } from "../../engine/earnedReputation";
+import { earnedReputation } from "../../engine/earnedReputation";
 import type { GameModule } from "../../studio/gameModule";
-import { CAREER } from "./content/career";
+import { startReputationOf } from "./core/interiorProfile";
 import { SCHEMA_VERSION } from "./core/gameState";
 import { InteriorTileArt } from "./ui/InteriorTileArt";
 
@@ -11,7 +11,7 @@ export const interiorModule: GameModule = {
   ages: "8–15+",
   tileArt: InteriorTileArt,
   load: () => import("./ui/InteriorGame").then((module) => ({ default: module.InteriorGame })),
-  reputationOf: traitGatedReputation(SCHEMA_VERSION, CAREER.startReputation),
+  reputationOf: (rawSave) => earnedReputation(rawSave, SCHEMA_VERSION, startReputationOf),
   parentNote:
     "This game does not teach real painting, DIY, ladder use or electrical work. Its rooms and sizes are made up.",
 };

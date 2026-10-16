@@ -23,7 +23,7 @@ export interface PieceShape {
   readonly depth: number;
 }
 
-export type PlacementProblem = "outside" | "overlap" | "door" | "window";
+export type PlacementProblem = "outside" | "overlap" | "door" | "through" | "window";
 
 export function isTurn(value: number): value is Turn {
   return TURNS.some((turn) => turn === value);
@@ -99,6 +99,10 @@ export function doorSwing(room: RoomTemplate): Cell[] {
   ];
 }
 
+export function throughDoorCell(room: RoomTemplate): Cell | null {
+  return room.throughRow === null ? null : [room.cols - 1, room.throughRow];
+}
+
 function windowCells(room: RoomTemplate): Cell[] {
   return room.windows.flatMap((window) =>
     Array.from({ length: window.to - window.from }, (_, step): Cell =>
@@ -135,6 +139,8 @@ export function placementProblem(
   if (cells.some((cell) => taken.has(cellKey(cell)))) return "overlap";
   const door = keySet(doorSwing(room));
   if (cells.some((cell) => door.has(cellKey(cell)))) return "door";
+  const through = throughDoorCell(room);
+  if (through !== null && cells.some((cell) => cellKey(cell) === cellKey(through))) return "through";
   if (def.tall && !room.roofWindow) {
     const windows = keySet(windowCells(room));
     if (cells.some((cell) => windows.has(cellKey(cell)))) return "window";

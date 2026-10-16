@@ -41,7 +41,7 @@ export function assistPaint(state: GameState, wall: WallId): GameState {
     const edges = Object.fromEntries(
       runEdgePaths(run)
         .filter((path) => path.wall === wall && !Object.hasOwn(run.edges, path.id))
-        .map((path) => [path.id, { accuracy: cap, assisted: true }]),
+        .map((path) => [path.id, { accuracy: cap, assisted: true, byCrew: false }]),
     );
     const cells = paintableCells(run, wall);
     const roll = emptyRoll();

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "amber", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "charmer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 1, "hoursLeft": 10 },
+  "coins": 110,
+  "reputation": 0,
+  "buzz": 0,
+  "stock": {
+    "furniture": {
+      "single-bed": 0,
+      "bunk-bed": 0,
+      "desk": 0,
+      "desk-chair": 0,
+      "wardrobe": 0,
+      "bookcase": 0,
+      "sofa": 0,
+      "armchair": 0,
+      "coffee-table": 0,
+      "dining-table": 0,
+      "toy-box": 0,
+      "window-seat": 0
+    },
+    "paints": {
+      "chalk-white": 0,
+      "sea-glass": 0,
+      "morning-sky": 0,
+      "peach-sorbet": 0,
+      "sunflower": 0,
+      "lilac-mist": 0,
+      "deep-lagoon": 0,
+      "midnight-ink": 0
+    },
+    "floors": {
+      "pine-boards": 0,
+      "oak-boards": 0,
+      "walnut-boards": 0,
+      "cork-tiles": 0,
+      "cloud-carpet": 0,
+      "terracotta": 0,
+      "checkerboard": 0
+    },
+    "lights": {
+      "paper-pendant": 0,
+      "arc-lamp": 0,
+      "clip-lamp": 0,
+      "firefly-string": 0,
+      "brass-sconce": 0,
+      "dome-pendant": 0
+    },
+    "decor": {
+      "cushion-pile": 0,
+      "potted-fern": 0,
+      "framed-print": 0,
+      "woven-basket": 0,
+      "round-rug": 0,
+      "star-garland": 0,
+      "paper-bunting": 0,
+      "wall-clock": 0
+    }
+  },
+  "upgrades": [],
+  "loftDecor": [],
+  "guide": true,
+  "trends": { "current": ["cosy", "calm"], "next": ["bold", "modern"] },
+  "showHomeWeek": 0,
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "nana-pearl",
+        "brief": {
+          "clientId": "nana-pearl",
+          "roomId": "reading-nook",
+          "showHome": false,
+          "deadlineDay": 4,
+          "budget": 44,
+          "fee": 55,
+          "requiredTags": ["cosy"],
+          "favouredColours": ["ivory", "honey-wood"],
+          "avoidColours": ["black"],
+          "mustHaves": [
+            { "itemId": "armchair", "count": 1 },
+            { "itemId": "bookcase", "count": 1 }
+          ],
+          "mood": "warm",
+          "minQuality": 55
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [],
+    "lapsed": [],
+    "nextGigNumber": 2
+  },
+  "story": { "seen": [], "flags": [], "queue": ["is-keys"] },
+  "activeRun": null,
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 1,
+  "rng": 1135788953
+}

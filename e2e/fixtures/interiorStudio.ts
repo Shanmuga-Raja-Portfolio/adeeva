@@ -37,6 +37,11 @@ export async function newDesigner(page: Page, difficulty = "Standard"): Promise<
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Perfectionist" }).click();
   await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("radio", { name: /Junior Room Designer/ })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: difficulty }).click();
   await page.getByRole("button", { name: "Open the loft" }).click();
   await expect(page.getByRole("heading", { name: "Keys to the Loft" })).toBeVisible();
@@ -123,6 +128,20 @@ export async function rollByHand(page: Page, wall: "back" | "side"): Promise<voi
   for (let coat = 0; coat < 2; coat += 1)
     for (let row = 0; row < 5; row += 1) {
       await page.getByTestId("dip-roller").click();
+      const y = row * 64 + 32;
+      const line: Pair[] = Array.from({ length: 13 }, (_, step): Pair => [12 + step * 40.6, y]);
+      await dragPath(page, await toScreen(svg, line), 25);
+    }
+}
+
+export async function rollTwoToneByHand(page: Page): Promise<void> {
+  const roll = page.getByTestId("roll-back");
+  await roll.scrollIntoViewIfNeeded();
+  await settle(page);
+  const svg = roll.locator("svg").first();
+  for (let coat = 0; coat < 2; coat += 1)
+    for (let row = 0; row < 5; row += 1) {
+      await page.getByTestId(row < 3 ? "dip-top" : "dip-bottom").click();
       const y = row * 64 + 32;
       const line: Pair[] = Array.from({ length: 13 }, (_, step): Pair => [12 + step * 40.6, y]);
       await dragPath(page, await toScreen(svg, line), 25);

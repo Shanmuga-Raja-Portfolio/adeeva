@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "amber", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "trendsetter",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 2, "hoursLeft": 5 },
+  "coins": 407,
+  "reputation": 34,
+  "buzz": 20,
+  "stock": {
+    "furniture": {
+      "single-bed": 0,
+      "bunk-bed": 0,
+      "desk": 0,
+      "desk-chair": 0,
+      "wardrobe": 0,
+      "bookcase": 0,
+      "sofa": 0,
+      "armchair": 0,
+      "coffee-table": 0,
+      "dining-table": 0,
+      "toy-box": 0,
+      "window-seat": 0
+    },
+    "paints": {
+      "chalk-white": 0,
+      "sea-glass": 0,
+      "morning-sky": 0,
+      "peach-sorbet": 0,
+      "sunflower": 0,
+      "lilac-mist": 0,
+      "deep-lagoon": 0,
+      "midnight-ink": 0
+    },
+    "floors": {
+      "pine-boards": 0,
+      "oak-boards": 0,
+      "walnut-boards": 0,
+      "cork-tiles": 0,
+      "cloud-carpet": 0,
+      "terracotta": 0,
+      "checkerboard": 0
+    },
+    "lights": {
+      "paper-pendant": 0,
+      "arc-lamp": 0,
+      "clip-lamp": 0,
+      "firefly-string": 0,
+      "brass-sconce": 0,
+      "dome-pendant": 0
+    },
+    "decor": {
+      "cushion-pile": 0,
+      "potted-fern": 1,
+      "framed-print": 1,
+      "woven-basket": 0,
+      "round-rug": 0,
+      "star-garland": 0,
+      "paper-bunting": 0,
+      "wall-clock": 1
+    }
+  },
+  "upgrades": [],
+  "loftDecor": [],
+  "guide": true,
+  "trends": { "current": ["classic", "cosy"], "next": ["bold", "modern"] },
+  "showHomeWeek": 0,
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "nana-pearl",
+        "brief": {
+          "clientId": "nana-pearl",
+          "roomId": "reading-nook",
+          "showHome": false,
+          "deadlineDay": 4,
+          "budget": 44,
+          "fee": 55,
+          "requiredTags": ["cosy"],
+          "favouredColours": ["ivory", "honey-wood"],
+          "avoidColours": ["black"],
+          "mustHaves": [
+            { "itemId": "armchair", "count": 1 },
+            { "itemId": "bookcase", "count": 1 }
+          ],
+          "mood": "warm",
+          "minQuality": 55
+        },
+        "expiresDay": 3
+      },
+      {
+        "id": "gig-4",
+        "clientId": "okafor-twins",
+        "brief": {
+          "clientId": "okafor-twins",
+          "roomId": "shared-bedroom",
+          "showHome": false,
+          "deadlineDay": 6,
+          "budget": 62,
+          "fee": 72,
+          "requiredTags": ["playful"],
+          "favouredColours": ["sky", "coral"],
+          "avoidColours": ["charcoal"],
+          "mustHaves": [
+            { "itemId": "bunk-bed", "count": 1 },
+            { "itemId": "toy-box", "count": 1 }
+          ],
+          "mood": "any",
+          "minQuality": 58
+        },
+        "expiresDay": 4
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-3",
+        "clientId": "bellwind",
+        "brief": {
+          "clientId": "bellwind",
+          "roomId": "show-lounge",
+          "showHome": true,
+          "deadlineDay": 7,
+          "budget": 124,
+          "fee": 156,
+          "requiredTags": ["classic", "cosy"],
+          "favouredColours": ["charcoal", "navy"],
+          "avoidColours": [],
+          "mustHaves": [
+            { "itemId": "sofa", "count": 1 },
+            { "itemId": "armchair", "count": 1 },
+            { "itemId": "framed-print", "count": 1 }
+          ],
+          "mood": "any",
+          "minQuality": 70
+        },
+        "acceptedDay": 1
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 5
+  },
+  "story": { "seen": ["is-keys", "is-first-reveal"], "flags": [], "queue": [] },
+  "activeRun": {
+    "id": "run-2",
+    "gigId": "gig-3",
+    "brief": {
+      "clientId": "bellwind",
+      "roomId": "show-lounge",
+      "showHome": true,
+      "deadlineDay": 7,
+      "budget": 124,
+      "fee": 156,
+      "requiredTags": ["classic", "cosy"],
+      "favouredColours": ["charcoal", "navy"],
+      "avoidColours": [],
+      "mustHaves": [
+        { "itemId": "sofa", "count": 1 },
+        { "itemId": "armchair", "count": 1 },
+        { "itemId": "framed-print", "count": 1 }
+      ],
+      "mood": "any",
+      "minQuality": 70
+    },
+    "stage": "style",
+    "reached": "style",
+    "startedDay": 1,
+    "seed": 1885017327,
+    "plan": {
+      "pieces": [
+        { "id": "piece-1", "furnitureId": "sofa", "col": 0, "row": 0, "rotation": 0 },
+        { "id": "piece-2", "furnitureId": "armchair", "col": 0, "row": 3, "rotation": 0 },
+        { "id": "piece-3", "furnitureId": "coffee-table", "col": 8, "row": 2, "rotation": 90 },
+        { "id": "piece-4", "furnitureId": "bookcase", "col": 8, "row": 0, "rotation": 90 },
+        { "id": "piece-5", "furnitureId": "dining-table", "col": 5, "row": 0, "rotation": 0 }
+      ],
+      "nextPieceNumber": 6,
+      "wallPaint": "chalk-white",
+      "featurePaint": "deep-lagoon",
+      "floor": "oak-boards",
+      "lights": ["paper-pendant", "arc-lamp", "arc-lamp", "brass-sconce"],
+      "tidied": false
+    },
+    "spend": 113,
+    "locked": true,
+    "edges": {
+      "back-ceiling": { "accuracy": 1, "assisted": false },
+      "back-frame": { "accuracy": 1, "assisted": false },
+      "side-ceiling": { "accuracy": 1, "assisted": false },
+      "side-skirting": { "accuracy": 1, "assisted": false }
+    },
+    "rolls": {
+      "back": {
+        "passes": [
+          2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+          2, 2, 2, 2, 2, 2, 2
+        ],
+        "strokes": 10,
+        "splats": [],
+        "dryStrokes": 0,
+        "assisted": false
+      },
+      "side": {
+        "passes": [
+          2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+          2, 2, 2, 2, 2, 2, 2
+        ],
+        "strokes": 10,
+        "splats": [],
+        "dryStrokes": 0,
+        "assisted": false
+      }
+    },
+    "roller": 4,
+    "floorLaid": {
+      "0": { "offset": 0, "accuracy": 1, "assisted": true },
+      "1": { "offset": 0, "accuracy": 1, "assisted": true },
+      "2": { "offset": 0, "accuracy": 1, "assisted": true },
+      "3": { "offset": 0, "accuracy": 1, "assisted": true },
+      "4": { "offset": 0, "accuracy": 1, "assisted": true },
+      "5": { "offset": 0, "accuracy": 1, "assisted": true }
+    },
+    "lightPlaces": {
+      "0": { "col": 6, "row": 0 },
+      "1": { "col": 2, "row": 3 },
+      "2": { "col": 2, "row": 4 },
+      "3": { "col": 2, "row": 0 }
+    },
+    "lightAssisted": false,
+    "decor": [],
+    "nextDecorNumber": 1,
+    "softColour": "sage"
+  },
+  "log": [
+    {
+      "runId": "run-1",
+      "clientId": "bellwind",
+      "day": 1,
+      "evaluation": {
+        "criteria": [
+          {
+            "id": "construction",
+            "label": "Finished",
+            "passed": true,
+            "detail": "2/2 walls, 6/6 floor pieces, 4 lights.",
+            "weight": 3
+          },
+          {
+            "id": "quality",
+            "label": "Quality",
+            "passed": true,
+            "detail": "Quality 92 against a minimum of 70.",
+            "weight": 2
+          },
+          {
+            "id": "style",
+            "label": "Style",
+            "passed": true,
+            "detail": "Feels classic and cosy, just as asked.",
+            "weight": 2
+          },
+          {
+            "id": "colours",
+            "label": "Colours",
+            "passed": true,
+            "detail": "No unwanted colours. 2 favourite colours used.",
+            "weight": 1
+          },
+          {
+            "id": "trims",
+            "label": "Must-haves",
+            "passed": true,
+            "detail": "Sofa 1/1, Armchair 1/1, Framed Print 1/1",
+            "weight": 1
+          },
+          {
+            "id": "budget",
+            "label": "Budget",
+            "passed": true,
+            "detail": "Spent 113 of 123 coins.",
+            "weight": 1
+          },
+          {
+            "id": "deadline",
+            "label": "On time",
+            "passed": true,
+            "detail": "Delivered on day 1, due by day 8.",
+            "weight": 1
+          }
+        ],
+        "quality": { "flow": 1, "paint": 1, "floor": 0.8, "light": 1, "fit": 0.625, "quality": 92 },
+        "favouredColoursUsed": 2,
+        "score": 98,
+        "stars": 5,
+        "passed": true,
+        "feedback": [],
+        "spend": 113
+      },
+      "reward": {
+        "outcome": "pass",
+        "coins": 275,
+        "reputation": 3,
+        "buzz": 22,
+        "lines": [
+          { "label": "Fee", "amount": 172 },
+          { "label": "Street favourite", "amount": 14 },
+          { "label": "Trendsetter eye", "amount": 29 },
+          { "label": "Open House enquiries", "amount": 60 }
+        ],
+        "trendMatches": ["classic", "cosy"]
+      },
+      "openHouse": {
+        "panels": [
+          { "id": "comfort", "label": "Comfort", "score": 100 },
+          { "id": "flow", "label": "Walk-through", "score": 100 },
+          { "id": "wow", "label": "Wow", "score": 85 }
+        ],
+        "score": 95,
+        "enquiries": 5,
+        "coins": 60,
+        "buzz": 10,
+        "quote": "I could move in tomorrow. Every corner feels lovely!"
+      }
+    }
+  ],
+  "ordersDelivered": 14,
+  "nextRunNumber": 3,
+  "rng": -255764781
+}

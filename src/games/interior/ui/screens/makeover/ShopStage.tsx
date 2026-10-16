@@ -2,9 +2,13 @@ import { useToast } from "../../../../../studio/ToastContext";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { useDispatchOnce } from "../../../../../ui/kit/useDispatchOnce";
-import { CAREER } from "../../../content/career";
+import { CAREER, SUPPLY_YARD_NAME } from "../../../content/career";
 import {
   buyPlanIssue,
+  isHomeRoom,
+  purseLeft,
+  topUpIssue,
+  TOP_UP_STEP,
   cartLines,
   decorById,
   floorById,
@@ -62,11 +66,13 @@ export function ShopStage(props: StageProps) {
   const missingLines = cartLines(missing);
   const issue = buyPlanIssue(state);
   const allThere = missingLines.length === 0;
+  const project = state.larkspur?.project ?? null;
+  const home = isHomeRoom(run) && project !== null;
   return (
-    <div className="is-shop-stage">
+    <div className={home ? "is-shop-stage is-shop-stage--yard" : "is-shop-stage"}>
       <div className="is-warehouse">
         <header className="is-warehouse__sign">
-          <span>{CAREER.warehouseName}</span>
+          <span>{home ? SUPPLY_YARD_NAME : CAREER.warehouseName}</span>
         </header>
         <ul className="is-warehouse__shelves" aria-label="Your plan list">
           {needed.map((line) => {
@@ -105,10 +111,32 @@ export function ShopStage(props: StageProps) {
           })}
         </ul>
         <div className="is-warehouse__till">
-          <p>
-            <Icon name="coin" size={18} /> Plan total <strong>{plannedSpend(state, run)}</strong> of a{" "}
-            {run.brief.budget} coin budget
-          </p>
+          {home && project !== null ? (
+            <div className="is-warehouse__purse">
+              <p>
+                <Icon name="coin" size={18} /> Plan total{" "}
+                <strong>{plannedSpend(state, run) - run.spend}</strong> from Bellwind's purse of{" "}
+                <strong data-testid="purse-left">{purseLeft(project)}</strong>
+              </p>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabledReason={topUpIssue(state) ?? undefined}
+                onClick={(event) => {
+                  if (once(event, { type: "topUpPurse" }))
+                    toast(`You added ${TOP_UP_STEP} coins to the purse.`, "info");
+                }}
+                data-testid="top-up"
+              >
+                Top up the purse · {TOP_UP_STEP}
+              </Button>
+            </div>
+          ) : (
+            <p>
+              <Icon name="coin" size={18} /> Plan total <strong>{plannedSpend(state, run)}</strong> of a{" "}
+              {run.brief.budget} coin budget
+            </p>
+          )}
           {allThere ? (
             <p className="is-warehouse__done" role="status">
               <Icon name="check" size={18} /> You have everything on your plan.

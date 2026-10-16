@@ -1,0 +1,31 @@
+export const PART_PRAISE: Readonly<Record<string, string>> = {
+  walk: "There was room to wander everywhere.",
+  through: "Every doorway led happily on to the next room.",
+  map: "Each room sat in just the right space.",
+  spots: "Every cosy spot had a lamp nearby.",
+  glow: "The path between doors glowed so warmly.",
+  mood: "The light felt just right in every room.",
+  finish: "The walls and floors looked crisp and snug.",
+  cosy: "So many rooms felt cosy and calm.",
+  colour: "The colours flowed from room to room.",
+  pieces: "The family's story was in every room.",
+  tags: "The whole home felt just like the family.",
+  welcome: "The music and time of day felt so welcoming.",
+  tour: "The tour saved a lovely surprise for last.",
+};
+
+export const PART_TIPS: Readonly<Record<string, string>> = {
+  walk: "leaving a wider path to every spot people use",
+  through: "keeping the path to each next door clear",
+  map: "putting quiet rooms at the back and big rooms in big spaces",
+  spots: "hanging a lamp nearer the dim spots",
+  glow: "lighting the walk from door to door",
+  mood: "matching warm or cool lights to each room",
+  finish: "edging slowly and lining floor pieces up with the shadow",
+  cosy: "adding a cosy or calm touch to more rooms",
+  colour: "using your palette paints in more rooms",
+  pieces: "putting a story piece in every room",
+  tags: "choosing paints and decor that feel like the story",
+  welcome: "reading the story card for the music and time of day",
+  tour: "saving your favourite room for last",
+};

@@ -1,5 +1,6 @@
 import type { AvatarLook } from "../../../engine/avatar";
 import type { StoryBeat } from "../../../engine/story";
+import { LARKSPUR_STORY_BEATS } from "./larkspurStoryBeat";
 
 export const STORY_TRIGGERS = [
   "intro",
@@ -11,10 +12,30 @@ export const STORY_TRIGGERS = [
   "trait-perfectionist",
   "trait-trendsetter",
   "trait-charmer",
+  "larkspur-offer",
+  "intro-development",
+  "larkspur-opened",
+  "first-project",
+  "first-crew",
+  "first-coaching",
+  "first-open-house",
+  "gold-key",
+  "plot-four",
+  "third-project",
+  "street-end",
+  "street-of-homes",
+  "every-gold",
+  "doors-opened",
+  "sister-home",
+  "letter-solenne",
+  "letter-hollins",
 ] as const;
 export type StoryTrigger = (typeof STORY_TRIGGERS)[number];
 
-export type StoryBeatDef = StoryBeat<StoryTrigger, never>;
+export const STORY_EFFECTS = ["open-larkspur"] as const;
+export type StoryEffect = (typeof STORY_EFFECTS)[number];
+
+export type StoryBeatDef = StoryBeat<StoryTrigger, StoryEffect>;
 
 export const MENTOR_NAME = "Ms. Vale";
 export const MENTOR_LOOK: AvatarLook = {
@@ -26,7 +47,7 @@ export const MENTOR_LOOK: AvatarLook = {
 
 export const BEAT_BUZZ: Readonly<Record<string, number>> = { "is-charmer": 2 };
 
-export const STORY_BEATS: readonly StoryBeatDef[] = [
+const LOFT_STORY_BEATS: readonly StoryBeatDef[] = [
   {
     id: "is-keys",
     trigger: "intro",
@@ -251,3 +272,5 @@ export const STORY_BEATS: readonly StoryBeatDef[] = [
     choices: [],
   },
 ];
+
+export const STORY_BEATS: readonly StoryBeatDef[] = [...LOFT_STORY_BEATS, ...LARKSPUR_STORY_BEATS];

@@ -52,6 +52,7 @@ const NO_RUN_ACTIONS: readonly Action[] = [
     look: newTestGame().profile.look,
     trait: "dreamer",
     difficulty: "standard",
+    career: "loft",
   },
 ];
 

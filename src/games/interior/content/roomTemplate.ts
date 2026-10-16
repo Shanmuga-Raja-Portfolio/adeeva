@@ -10,6 +10,14 @@ export const ROOM_IDS = [
   "attic-room",
   "quiet-study",
   "show-lounge",
+  "entry-hall",
+  "snug",
+  "kids-room",
+  "home-office",
+  "dining-room",
+  "loft-studio",
+  "garden-room",
+  "main-bedroom",
 ] as const;
 export type RoomId = (typeof ROOM_IDS)[number];
 
@@ -28,6 +36,7 @@ export interface RoomTemplate {
   readonly windows: readonly WindowDef[];
   readonly roofWindow: boolean;
   readonly framedWalls: readonly WallId[];
+  readonly throughRow: number | null;
 }
 
 export const ROOMS: readonly RoomTemplate[] = [
@@ -40,6 +49,7 @@ export const ROOMS: readonly RoomTemplate[] = [
     windows: [{ wall: "back", from: 1, to: 3 }],
     roofWindow: false,
     framedWalls: ["back"],
+    throughRow: null,
   },
   {
     id: "shared-bedroom",
@@ -50,6 +60,7 @@ export const ROOMS: readonly RoomTemplate[] = [
     windows: [{ wall: "back", from: 2, to: 4 }],
     roofWindow: false,
     framedWalls: ["back"],
+    throughRow: null,
   },
   {
     id: "first-flat",
@@ -63,6 +74,7 @@ export const ROOMS: readonly RoomTemplate[] = [
     ],
     roofWindow: false,
     framedWalls: ["back"],
+    throughRow: null,
   },
   {
     id: "living-room",
@@ -76,6 +88,7 @@ export const ROOMS: readonly RoomTemplate[] = [
     ],
     roofWindow: false,
     framedWalls: ["back", "side"],
+    throughRow: null,
   },
   {
     id: "cafe-corner",
@@ -89,6 +102,7 @@ export const ROOMS: readonly RoomTemplate[] = [
     ],
     roofWindow: false,
     framedWalls: ["back"],
+    throughRow: null,
   },
   {
     id: "attic-room",
@@ -99,6 +113,7 @@ export const ROOMS: readonly RoomTemplate[] = [
     windows: [],
     roofWindow: true,
     framedWalls: ["back"],
+    throughRow: null,
   },
   {
     id: "quiet-study",
@@ -109,6 +124,7 @@ export const ROOMS: readonly RoomTemplate[] = [
     windows: [{ wall: "side", from: 1, to: 3 }],
     roofWindow: false,
     framedWalls: ["side"],
+    throughRow: null,
   },
   {
     id: "show-lounge",
@@ -122,5 +138,98 @@ export const ROOMS: readonly RoomTemplate[] = [
     ],
     roofWindow: false,
     framedWalls: ["back"],
+    throughRow: null,
+  },
+  {
+    id: "entry-hall",
+    name: "Entrance Hall",
+    cols: 4,
+    rows: 6,
+    doorCol: 1,
+    windows: [{ wall: "side", from: 2, to: 4 }],
+    roofWindow: false,
+    framedWalls: ["side"],
+    throughRow: null,
+  },
+  {
+    id: "snug",
+    name: "Snug",
+    cols: 5,
+    rows: 4,
+    doorCol: 3,
+    windows: [{ wall: "back", from: 1, to: 3 }],
+    roofWindow: false,
+    framedWalls: ["back"],
+    throughRow: null,
+  },
+  {
+    id: "kids-room",
+    name: "Little Bedroom",
+    cols: 5,
+    rows: 5,
+    doorCol: 3,
+    windows: [{ wall: "back", from: 1, to: 3 }],
+    roofWindow: false,
+    framedWalls: ["back"],
+    throughRow: null,
+  },
+  {
+    id: "home-office",
+    name: "Home Office",
+    cols: 5,
+    rows: 5,
+    doorCol: 3,
+    windows: [{ wall: "side", from: 1, to: 3 }],
+    roofWindow: false,
+    framedWalls: ["side"],
+    throughRow: null,
+  },
+  {
+    id: "dining-room",
+    name: "Dining Room",
+    cols: 6,
+    rows: 5,
+    doorCol: 4,
+    windows: [{ wall: "back", from: 1, to: 5 }],
+    roofWindow: false,
+    framedWalls: ["back"],
+    throughRow: null,
+  },
+  {
+    id: "loft-studio",
+    name: "Loft Studio",
+    cols: 6,
+    rows: 5,
+    doorCol: 4,
+    windows: [],
+    roofWindow: true,
+    framedWalls: ["back"],
+    throughRow: null,
+  },
+  {
+    id: "garden-room",
+    name: "Garden Room",
+    cols: 7,
+    rows: 5,
+    doorCol: 5,
+    windows: [
+      { wall: "back", from: 1, to: 3 },
+      { wall: "back", from: 4, to: 6 },
+      { wall: "side", from: 1, to: 3 },
+    ],
+    roofWindow: false,
+    framedWalls: ["back", "side"],
+    throughRow: null,
+  },
+  {
+    id: "main-bedroom",
+    name: "Main Bedroom",
+    cols: 7,
+    rows: 6,
+    doorCol: 5,
+    windows: [{ wall: "back", from: 2, to: 5 }],
+    roofWindow: false,
+    framedWalls: ["back"],
+    throughRow: null,
   },
 ];

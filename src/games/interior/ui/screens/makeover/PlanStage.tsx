@@ -7,10 +7,11 @@ import { HINTS } from "../../../content/hints";
 import {
   difficultyById,
   furnitureById,
+  isHomeRoom,
   pieceShape,
   placementIssue,
   plannedSpend,
-  roomById,
+  runRoom,
   tidyIssue,
   turnedPlacement,
   walkThrough,
@@ -50,7 +51,7 @@ function dragPiece(drag: PlanDrag): { furnitureId: FurnitureId; pieceId: string 
 
 export function PlanStage(props: StageProps) {
   const { state, run, dispatch } = props;
-  const room = roomById(run.brief.roomId);
+  const room = runRoom(run);
   const svgRef = useRef<SVGSVGElement>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [hint, setHint] = useState<string | null>(null);
@@ -321,6 +322,7 @@ export function PlanStage(props: StageProps) {
         </div>
         <PlanTray
           run={run}
+          palette={isHomeRoom(run) ? (state.larkspur?.project?.palette.paints ?? []) : []}
           furnitureHandlers={(furnitureId) => handlers({ source: "tray", furnitureId })}
           onPaint={(slot, paintId) => dispatch({ type: "choosePaint", slot, paintId })}
           onFloor={(floorId) => dispatch({ type: "chooseFloor", floorId })}

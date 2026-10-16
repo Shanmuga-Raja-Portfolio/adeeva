@@ -3,7 +3,7 @@ import { hoursShortfallReason } from "../../../../../engine/dayHours";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { useDispatchOnce } from "../../../../../ui/kit/useDispatchOnce";
-import { canAdvance, leaveHours, RUN_STAGES } from "../../../core";
+import { canAdvance, isHomeRoom, leaveHours, RUN_STAGES } from "../../../core";
 import { ADVANCE_LABELS } from "./stageNames";
 import type { StageProps } from "./stageProps";
 
@@ -29,7 +29,7 @@ export function StageFooter({ state, run, dispatch, onExit, ready, extra }: Stag
             <strong>Out of hours for today.</strong> {hoursReason} Your room waits right here.
           </span>
           <Button variant="secondary" onClick={onExit}>
-            Back to the loft to end the day
+            {isHomeRoom(run) ? "Back to the home to end the day" : "Back to the loft to end the day"}
           </Button>
         </div>
       ) : null}
@@ -52,7 +52,9 @@ export function StageFooter({ state, run, dispatch, onExit, ready, extra }: Stag
           disabledReason={check.ok ? undefined : check.reasons[0]}
           data-testid="advance-stage"
         >
-          {ADVANCE_LABELS[run.stage]}
+          {run.stage === "style" && isHomeRoom(run)
+            ? "Make it ready for visitors"
+            : ADVANCE_LABELS[run.stage]}
           {hours > 0 ? <span className="is-footer__hours">{hours} h</span> : null}
         </Button>
       </div>

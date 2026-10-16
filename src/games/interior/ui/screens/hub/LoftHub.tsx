@@ -8,12 +8,16 @@ import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
 import { useDispatchOnce, type ClickLike } from "../../../../../ui/kit/useDispatchOnce";
 import type { LoftDecorId } from "../../../content/loftDecor";
 import type { UpgradeId } from "../../../content/upgrade";
+import { LARKSPUR_LATER_FLAG } from "../../../content/larkspurStoryBeat";
 import {
+  canOpenLarkspur,
   clientById,
   coachOn,
   currentBeat,
   loftDecorById,
   offersFor,
+  openHouseAlert,
+  purposeById,
   roomById,
   upgradeById,
   type Action,
@@ -23,6 +27,9 @@ import { RoomCutaway } from "../../art/RoomCutaway";
 import { FINISHED, roomLook } from "../../art/roomLook";
 import { CoachBubble } from "../CoachBubble";
 import { SetAsideDialog } from "../SetAsideDialog";
+import { LarkspurOfferCard } from "../larkspur/LarkspurOfferCard";
+import { OpenHouseDayDialog } from "../larkspur/OpenHouseDayDialog";
+import { LarkspurPanel } from "../larkspur/LarkspurPanel";
 import { StoryOverlay } from "../story/StoryOverlay";
 import { daySummary, type DayEndKind } from "./daySummary";
 import { DayTransition } from "./DayTransition";
@@ -39,20 +46,36 @@ interface LoftHubProps {
   readonly state: GameState;
   readonly dispatch: (action: Action) => boolean;
   readonly onOpenMakeover: () => void;
+  readonly onOpenHome: () => void;
+  readonly onOpenOpenHouse: () => void;
   readonly onOpenSettings: () => void;
   readonly onExitToTitle: () => void;
 }
 
 function coachLine(state: GameState): string {
+  const larkspur = state.larkspur;
+  if (larkspur !== null)
+    return larkspur.project === null
+      ? "Pick a family story below to start your first home."
+      : "Tap Go to the home. Map it, pick a palette, then make each room.";
   if (state.gigs.active.length === 0) return "Nana Pearl sent a letter. Tap Accept on it.";
   return "Now tap Start the makeover. Plan, paint, floor and light!";
 }
 
-export function LoftHub({ state, dispatch, onOpenMakeover, onOpenSettings, onExitToTitle }: LoftHubProps) {
+export function LoftHub({
+  state,
+  dispatch,
+  onOpenMakeover,
+  onOpenHome,
+  onOpenOpenHouse,
+  onOpenSettings,
+  onExitToTitle,
+}: LoftHubProps) {
   const toast = useToast();
   const once = useDispatchOnce(state, dispatch);
   const [ending, setEnding] = useState<{ readonly from: GameState; readonly kind: DayEndKind } | null>(null);
   const [settingAside, setSettingAside] = useState(false);
+  const [confirmKind, setConfirmKind] = useState<DayEndKind | null>(null);
   const offers = offersFor(state);
   const run = state.activeRun;
   const inProgress = run !== null && run.stage !== "done" ? run : null;
@@ -78,10 +101,29 @@ export function LoftHub({ state, dispatch, onOpenMakeover, onOpenSettings, onExi
     if (once(event, { type: "buyLoftDecor", decorId }))
       toast(`${loftDecorById(decorId).name} brightens the loft!`);
   };
+  const project = state.larkspur?.project ?? null;
+  const alert = project === null ? null : openHouseAlert(project, state.calendar.day);
   const endDay = (event: ClickLike, kind: DayEndKind) => {
+    if (alert !== null) {
+      setConfirmKind(kind);
+      return;
+    }
     const from = state;
     if (once(event, { type: kind === "shift" ? "workShift" : "endDay" })) setEnding({ from, kind });
   };
+  const confirmEndDay = () => {
+    const kind = confirmKind;
+    setConfirmKind(null);
+    if (kind === null) return;
+    const from = state;
+    if (dispatch({ type: kind === "shift" ? "workShift" : "endDay" })) setEnding({ from, kind });
+  };
+  const takeKeys = (event: ClickLike) => {
+    if (once(event, { type: "openLarkspur" })) toast("The keys to Larkspur Close are yours!");
+  };
+  const laterOffer =
+    state.larkspur === null && state.story.flags.includes(LARKSPUR_LATER_FLAG) && canOpenLarkspur(state).ok;
+  const homeRoom = inProgress !== null && inProgress.purpose.kind === "home-room";
   const setAside = () => {
     setSettingAside(false);
     if (dispatch({ type: "abandonRun" })) toast("The room is set aside. Your table is clear.", "info");
@@ -98,6 +140,16 @@ export function LoftHub({ state, dispatch, onOpenMakeover, onOpenSettings, onExi
             onEndDay={(event) => endDay(event, "rest")}
           />
           <CoachBubble show={coachOn(state) && inProgress === null} text={coachLine(state)} />
+          {state.larkspur !== null ? (
+            <LarkspurPanel
+              state={state}
+              larkspur={state.larkspur}
+              dispatch={dispatch}
+              onOpenHome={onOpenHome}
+              onOpenOpenHouse={onOpenOpenHouse}
+            />
+          ) : null}
+          {laterOffer ? <LarkspurOfferCard onTakeKeys={takeKeys} /> : null}
           <div className="is-hub__grid">
             <div className="is-hub__column">
               <section className="is-inbox" aria-labelledby="is-inbox-title">
@@ -129,17 +181,25 @@ export function LoftHub({ state, dispatch, onOpenMakeover, onOpenSettings, onExi
               {inProgress !== null ? (
                 <Card
                   tone="gold"
-                  eyebrow="On the drawing table"
-                  title={roomById(inProgress.brief.roomId).name}
+                  eyebrow={
+                    inProgress.purpose.kind === "home-room" ? "In your show home" : "On the drawing table"
+                  }
+                  title={
+                    inProgress.purpose.kind === "home-room"
+                      ? purposeById(inProgress.purpose.purposeId).name
+                      : roomById(inProgress.brief.roomId).name
+                  }
                   className="is-hub-card"
                 >
                   <div className="is-hub__bench">
                     <Button onClick={onOpenMakeover} icon="sparkle">
                       Back to the room
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => setSettingAside(true)}>
-                      Set aside
-                    </Button>
+                    {homeRoom ? null : (
+                      <Button variant="ghost" size="sm" onClick={() => setSettingAside(true)}>
+                        Set aside
+                      </Button>
+                    )}
                   </div>
                 </Card>
               ) : null}
@@ -200,6 +260,12 @@ export function LoftHub({ state, dispatch, onOpenMakeover, onOpenSettings, onExi
       ) : null}
       {beat !== null ? <StoryOverlay state={state} dispatch={dispatch} /> : null}
       <SetAsideDialog open={settingAside} onConfirm={setAside} onClose={() => setSettingAside(false)} />
+      <OpenHouseDayDialog
+        alert={confirmKind === null ? null : alert}
+        relaxed={state.profile.difficulty === "relaxed"}
+        onConfirm={confirmEndDay}
+        onClose={() => setConfirmKind(null)}
+      />
     </div>
   );
 }

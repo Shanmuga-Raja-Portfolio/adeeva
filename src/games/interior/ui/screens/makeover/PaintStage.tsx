@@ -26,6 +26,7 @@ export function PaintStage(props: StageProps) {
   const feature =
     run.plan.featurePaint === null ? wallPaint : roomHex(paintById(run.plan.featurePaint).colour);
   const colour = wall === "back" ? feature : wallPaint;
+  const lower = run.plan.lowerPaint === null ? null : roomHex(paintById(run.plan.lowerPaint).colour);
   const tolerance = edgeTolerance(state);
   const paths = runEdgePaths(run).filter((path) => path.wall === wall);
   const look = roomLook(run, BARE);
@@ -33,6 +34,7 @@ export function PaintStage(props: StageProps) {
     ...look,
     backWall: isWallDone(run, "back") ? feature : null,
     sideWall: isWallDone(run, "side") ? wallPaint : null,
+    backLower: isWallDone(run, "back") ? lower : null,
   };
   return (
     <div className="is-paint">
@@ -87,7 +89,15 @@ export function PaintStage(props: StageProps) {
         <h3 className="is-paint__step">
           <span className="is-paint__num">2</span> Dip and roll
         </h3>
-        <RollWall key={wall} state={state} run={run} wall={wall} colour={colour} dispatch={dispatch} />
+        <RollWall
+          key={wall}
+          state={state}
+          run={run}
+          wall={wall}
+          colour={colour}
+          lowerColour={wall === "back" ? lower : null}
+          dispatch={dispatch}
+        />
       </section>
       <StageFooter {...props} ready="Both walls look wonderful!" />
     </div>

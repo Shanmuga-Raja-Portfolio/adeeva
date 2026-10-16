@@ -1,21 +1,12 @@
 import { useEffect, useState } from "react";
-import type { AvatarLook } from "../../../../../engine/avatar";
 import { useSettings } from "../../../../../studio/SettingsContext";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Icon } from "../../../../../ui/kit/IconSet";
+import { VISITOR_LOOKS } from "../../../content/visitor";
 import { roomById, VISITORS, walkThrough, type MakeoverRun, type OpenHouse } from "../../../core";
 import { cutawayFrame, floorPoint } from "../../art/cutawayFrame";
 import { RoomCutaway } from "../../art/RoomCutaway";
 import { FINISHED, roomLook } from "../../art/roomLook";
-
-const VISITOR_LOOKS: readonly AvatarLook[] = [
-  { skinTone: "sand", hairStyle: "ponytail", hairColour: "auburn", outfit: "denim-jacket" },
-  { skinTone: "cocoa", hairStyle: "curly-puff", hairColour: "black", outfit: "cardigan" },
-  { skinTone: "peach", hairStyle: "pixie", hairColour: "blonde", outfit: "blazer" },
-  { skinTone: "chestnut", hairStyle: "braids", hairColour: "dark-brown", outfit: "studio-apron" },
-  { skinTone: "porcelain", hairStyle: "short-bob", hairColour: "brown", outfit: "cardigan" },
-  { skinTone: "amber", hairStyle: "locs", hairColour: "black", outfit: "denim-jacket" },
-];
 
 const STEP_MS = 700;
 

@@ -2,7 +2,7 @@ import { useRef, useState, type KeyboardEvent } from "react";
 import { useSettings } from "../../../../../studio/SettingsContext";
 import { Button } from "../../../../../ui/kit/Button";
 import type { SvgPoint } from "../../../../../ui/kit/clientToSvg";
-import { HINTS } from "../../../content/hints";
+import { HINTS, HOME_HINTS } from "../../../content/hints";
 import {
   dropOffset,
   FLOOR_PIECES,
@@ -10,13 +10,14 @@ import {
   floorById,
   floorCandidates,
   floorCanvas,
-  floorPieces,
+  runFloorPieces,
   floorTolerance,
   isPastGate,
   isRightPiece,
   laidCount,
   runPattern,
   type FloorCandidate,
+  type PieceSource,
   type PieceTone,
 } from "../../../core";
 import { roomHex } from "../../art/roomHex";
@@ -93,18 +94,25 @@ export function FloorStage(props: StageProps) {
   const [wobble, setWobble] = useState<string | null>(null);
   const pattern = runPattern(run);
   const canvas = floorCanvas(pattern);
-  const pieces = floorPieces(pattern);
+  const pieces = runFloorPieces(run);
   const laid = laidCount(run);
   const next = pieces[laid];
   const floor = run.plan.floor === null ? null : floorById(run.plan.floor);
   const base = floor === null ? "#c8914f" : roomHex(floor.colours[0] ?? "ivory");
+  const hallFloor = run.purpose.kind === "home-room" ? run.purpose.hallFloor : null;
+  const threshold = pieces.some((piece) => piece.source === "hall") && hallFloor !== null;
+  const hallBase = hallFloor === null ? base : roomHex(floorById(hallFloor).colours[0] ?? "ivory");
+  const fillFor = (source: PieceSource, tone: PieceTone) =>
+    toneFill(tone, source === "hall" ? hallBase : base);
   const boards = pattern === "boards";
   const tolerance = floorTolerance(state);
   const candidates = next === undefined ? [] : floorCandidates(run, next);
 
-  const shake = (key: string) => {
-    setWobble(key);
-    setHint(HINTS.wrongFloorPiece);
+  const shake = (candidate: FloorCandidate) => {
+    setWobble(candidate.key);
+    setHint(
+      next !== undefined && candidate.source !== next.source ? HOME_HINTS.wrongFloor : HINTS.wrongFloorPiece,
+    );
     window.setTimeout(() => setWobble(null), reducedMotion ? 0 : 450);
   };
 
@@ -129,7 +137,7 @@ export function FloorStage(props: StageProps) {
     const candidate = drag.kind === "tray" ? drag.candidate : pending?.candidate;
     if (candidate === undefined) return;
     if (!isRightPiece(run, laid, candidate.key)) {
-      shake(candidate.key);
+      shake(candidate);
       return;
     }
     const placed = pendingAt(candidate, spot);
@@ -141,7 +149,7 @@ export function FloorStage(props: StageProps) {
   const onTap = (drag: FloorDrag) => {
     if (drag.kind === "pending" || next === undefined) return;
     if (!isRightPiece(run, laid, drag.candidate.key)) {
-      shake(drag.candidate.key);
+      shake(drag.candidate);
       return;
     }
     setPending(
@@ -238,7 +246,7 @@ export function FloorStage(props: StageProps) {
                   <PieceShape
                     width={piece.width}
                     height={piece.height}
-                    fill={toneFill(piece.tone, base)}
+                    fill={fillFor(piece.source, piece.tone)}
                     boards={boards}
                   />
                 </g>
@@ -274,7 +282,7 @@ export function FloorStage(props: StageProps) {
               <PieceShape
                 width={shown.candidate.width}
                 height={shown.candidate.height}
-                fill={toneFill(shown.candidate.tone, base)}
+                fill={fillFor(shown.candidate.source, shown.candidate.tone)}
                 boards={boards}
               />
             </g>
@@ -284,7 +292,9 @@ export function FloorStage(props: StageProps) {
           {hint ??
             (next === undefined
               ? "Every piece is down. Lovely and snug!"
-              : "Pick the piece that fits the pattern.")}
+              : threshold
+                ? HOME_HINTS.threshold
+                : "Pick the piece that fits the pattern.")}
         </p>
         <div className="is-floor__controls">
           <div className="is-floor__tray" aria-label="Floor pieces to pick from">
@@ -313,7 +323,7 @@ export function FloorStage(props: StageProps) {
                       <PieceShape
                         width={candidate.width}
                         height={candidate.height}
-                        fill={toneFill(candidate.tone, base)}
+                        fill={fillFor(candidate.source, candidate.tone)}
                         boards={boards}
                       />
                     </svg>

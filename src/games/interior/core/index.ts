@@ -76,3 +76,66 @@ export { cartLines, type CartLine } from "./stock";
 export { upgradePurchaseIssues } from "../../../engine/upgrades";
 export { visibleNextTrends } from "../../../engine/trendMarket";
 export { beatLines } from "../../../engine/storyVoice";
+export { careerById, crewById, homeStoryById, keyById, plotById, purposeById } from "./catalog";
+export type {
+  CrewAssignment,
+  KeyWall,
+  Larkspur,
+  OpenHouseRecord,
+  Project,
+  ProjectStage,
+  TourChoice,
+} from "./larkspur";
+export { canOpenLarkspur } from "./larkspurOffer";
+export { storyChoiceIssue } from "./storyChoice";
+export { plotFor, startProjectIssue } from "./project";
+export {
+  isMapComplete,
+  mapFit,
+  placePurposeIssue,
+  plotSpaces,
+  purposeFits,
+  roomMapFit,
+  type SpaceView,
+} from "./homeMap";
+export { PALETTE_PAINTS, paletteIssues, PLAN_HOME_HOURS } from "./homePalette";
+export { allRoomsReady, isRoomReady, openHomeRoomIssue } from "./homeRoom";
+export { purseLeft } from "./purse";
+export { TOP_UP_STEP, topUpIssue } from "./purseTopUp";
+export { assignCrewIssue, finishCrewIssue, hireCrewIssue } from "./crewBoard";
+export { crewCap, crewWage, workSkill } from "./crewSkill";
+export { crewLine } from "./crewJob";
+export {
+  COACH_CORNER,
+  COACH_FLOOR_PIECES,
+  COACH_LAMP,
+  COACH_PIECES,
+  coachHours,
+  coachIssue,
+  coachPattern,
+  type CoachRecord,
+} from "./coachCrew";
+export { COACH_TAPE } from "./paintEdge";
+export { achebePlan, planOpenHouseIssue, roomQualities, samePlan, tourRooms } from "./openHousePlan";
+export { STAGING_HOURS, stageIssue } from "./homeOpenHouse";
+export {
+  firstStagingDay,
+  isProjectOpenOn,
+  lateDay,
+  openHouseAlert,
+  openHouseDay,
+  type OpenHouseAlert,
+} from "./projectCalendar";
+export { atLeast, verdictFor } from "./keyWall";
+export { runRoom } from "./runRoom";
+export { glowPath } from "./glowPath";
+export { storyPiecesIn, tellsStory } from "./storyPieces";
+export { isTwoTone, TOP_ZONE_ROWS } from "./twoTone";
+export { runFloorPieces, type PieceSource } from "./floorLay";
+export { isHomeRoom } from "./makeoverRun";
+export { openProject } from "./projectUpdate";
+export { upgradeOpen } from "./upgradeShop";
+export type { PaintSlot } from "./planChoice";
+export { roomQuality } from "./roomQuality";
+export type { RollerZone } from "./makeoverRun";
+export { walkPath } from "./glowPath";

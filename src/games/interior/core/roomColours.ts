@@ -1,6 +1,6 @@
 import { ROOM_COLOUR_IDS, type RoomColour } from "../content/roomColour";
 import { decorById, floorById, furnitureById, lightById, paintById } from "./catalog";
-import type { RoomSource } from "./roomSource";
+import { sourcePaints, type RoomSource } from "./roomSource";
 
 function resolved(colour: RoomColour | "soft", source: RoomSource): RoomColour {
   return colour === "soft" ? source.softColour : colour;
@@ -19,9 +19,7 @@ function hasSoftPieces(source: RoomSource): boolean {
 }
 
 export function surfaceColours(source: RoomSource): RoomColour[] {
-  const paints = [source.wallPaint, source.featurePaint].flatMap((id) =>
-    id === null ? [] : [paintById(id).colour],
-  );
+  const paints = sourcePaints(source).map((id) => paintById(id).colour);
   return ordered([
     ...paints,
     ...(source.floor === null ? [] : floorById(source.floor).colours),

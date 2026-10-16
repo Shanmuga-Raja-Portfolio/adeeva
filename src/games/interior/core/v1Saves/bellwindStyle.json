@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "amber", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "charmer",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 1, "hoursLeft": 3 },
+  "coins": 287,
+  "reputation": 24,
+  "buzz": 0,
+  "stock": {
+    "furniture": {
+      "single-bed": 0,
+      "bunk-bed": 0,
+      "desk": 0,
+      "desk-chair": 0,
+      "wardrobe": 0,
+      "bookcase": 0,
+      "sofa": 0,
+      "armchair": 0,
+      "coffee-table": 0,
+      "dining-table": 0,
+      "toy-box": 0,
+      "window-seat": 0
+    },
+    "paints": {
+      "chalk-white": 0,
+      "sea-glass": 0,
+      "morning-sky": 0,
+      "peach-sorbet": 0,
+      "sunflower": 0,
+      "lilac-mist": 0,
+      "deep-lagoon": 0,
+      "midnight-ink": 0
+    },
+    "floors": {
+      "pine-boards": 0,
+      "oak-boards": 0,
+      "walnut-boards": 0,
+      "cork-tiles": 0,
+      "cloud-carpet": 0,
+      "terracotta": 0,
+      "checkerboard": 0
+    },
+    "lights": {
+      "paper-pendant": 0,
+      "arc-lamp": 0,
+      "clip-lamp": 0,
+      "firefly-string": 0,
+      "brass-sconce": 0,
+      "dome-pendant": 0
+    },
+    "decor": {
+      "cushion-pile": 0,
+      "potted-fern": 1,
+      "framed-print": 1,
+      "woven-basket": 0,
+      "round-rug": 0,
+      "star-garland": 0,
+      "paper-bunting": 0,
+      "wall-clock": 1
+    }
+  },
+  "upgrades": [],
+  "loftDecor": [],
+  "guide": true,
+  "trends": { "current": ["classic", "cosy"], "next": ["bold", "modern"] },
+  "showHomeWeek": 0,
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "nana-pearl",
+        "brief": {
+          "clientId": "nana-pearl",
+          "roomId": "reading-nook",
+          "showHome": false,
+          "deadlineDay": 4,
+          "budget": 44,
+          "fee": 55,
+          "requiredTags": ["cosy"],
+          "favouredColours": ["ivory", "honey-wood"],
+          "avoidColours": ["black"],
+          "mustHaves": [
+            { "itemId": "armchair", "count": 1 },
+            { "itemId": "bookcase", "count": 1 }
+          ],
+          "mood": "warm",
+          "minQuality": 55
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-2",
+        "clientId": "bellwind",
+        "brief": {
+          "clientId": "bellwind",
+          "roomId": "show-lounge",
+          "showHome": true,
+          "deadlineDay": 8,
+          "budget": 123,
+          "fee": 144,
+          "requiredTags": ["classic", "cosy"],
+          "favouredColours": ["honey-wood", "navy"],
+          "avoidColours": [],
+          "mustHaves": [
+            { "itemId": "sofa", "count": 1 },
+            { "itemId": "armchair", "count": 1 },
+            { "itemId": "framed-print", "count": 1 }
+          ],
+          "mood": "any",
+          "minQuality": 70
+        },
+        "acceptedDay": 1
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 3
+  },
+  "story": { "seen": ["is-keys"], "flags": [], "queue": [] },
+  "activeRun": {
+    "id": "run-1",
+    "gigId": "gig-2",
+    "brief": {
+      "clientId": "bellwind",
+      "roomId": "show-lounge",
+      "showHome": true,
+      "deadlineDay": 8,
+      "budget": 123,
+      "fee": 144,
+      "requiredTags": ["classic", "cosy"],
+      "favouredColours": ["honey-wood", "navy"],
+      "avoidColours": [],
+      "mustHaves": [
+        { "itemId": "sofa", "count": 1 },
+        { "itemId": "armchair", "count": 1 },
+        { "itemId": "framed-print", "count": 1 }
+      ],
+      "mood": "any",
+      "minQuality": 70
+    },
+    "stage": "style",
+    "reached": "style",
+    "startedDay": 1,
+    "seed": 790185062,
+    "plan": {
+      "pieces": [
+        { "id": "piece-1", "furnitureId": "sofa", "col": 0, "row": 0, "rotation": 0 },
+        { "id": "piece-2", "furnitureId": "armchair", "col": 0, "row": 3, "rotation": 0 },
+        { "id": "piece-3", "furnitureId": "coffee-table", "col": 8, "row": 2, "rotation": 90 },
+        { "id": "piece-4", "furnitureId": "bookcase", "col": 8, "row": 0, "rotation": 90 },
+        { "id": "piece-5", "furnitureId": "dining-table", "col": 5, "row": 0, "rotation": 0 }
+      ],
+      "nextPieceNumber": 6,
+      "wallPaint": "chalk-white",
+      "featurePaint": "deep-lagoon",
+      "floor": "oak-boards",
+      "lights": ["paper-pendant", "arc-lamp", "arc-lamp", "brass-sconce"],
+      "tidied": false
+    },
+    "spend": 113,
+    "locked": true,
+    "edges": {
+      "back-ceiling": { "accuracy": 1, "assisted": false },
+      "back-frame": { "accuracy": 1, "assisted": false },
+      "side-ceiling": { "accuracy": 1, "assisted": false },
+      "side-skirting": { "accuracy": 1, "assisted": false }
+    },
+    "rolls": {
+      "back": {
+        "passes": [
+          2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+          2, 2, 2, 2, 2, 2, 2
+        ],
+        "strokes": 10,
+        "splats": [],
+        "dryStrokes": 0,
+        "assisted": false
+      },
+      "side": {
+        "passes": [
+          2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+          2, 2, 2, 2, 2, 2, 2
+        ],
+        "strokes": 10,
+        "splats": [],
+        "dryStrokes": 0,
+        "assisted": false
+      }
+    },
+    "roller": 4,
+    "floorLaid": {
+      "0": { "offset": 0, "accuracy": 1, "assisted": true },
+      "1": { "offset": 0, "accuracy": 1, "assisted": true },
+      "2": { "offset": 0, "accuracy": 1, "assisted": true },
+      "3": { "offset": 0, "accuracy": 1, "assisted": true },
+      "4": { "offset": 0, "accuracy": 1, "assisted": true },
+      "5": { "offset": 0, "accuracy": 1, "assisted": true }
+    },
+    "lightPlaces": {
+      "0": { "col": 6, "row": 0 },
+      "1": { "col": 2, "row": 3 },
+      "2": { "col": 2, "row": 4 },
+      "3": { "col": 2, "row": 0 }
+    },
+    "lightAssisted": false,
+    "decor": [],
+    "nextDecorNumber": 1,
+    "softColour": "sage"
+  },
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 2,
+  "rng": -759718057
+}

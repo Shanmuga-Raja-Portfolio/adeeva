@@ -8,6 +8,7 @@ import {
   inRoom,
   isWallEdge,
   pieceCells,
+  throughDoorCell,
   pieceUseCells,
   roomCells,
   type PlacedPiece,
@@ -96,7 +97,8 @@ export function canMountAt(
   if (others.some((light) => light.col === cell[0] && light.row === cell[1])) return false;
   const mount = lightById(lightId).mount;
   if (mount === "ceiling") return true;
-  const door = new Set(doorSwing(room).map(cellKey));
+  const through = throughDoorCell(room);
+  const door = new Set([...doorSwing(room), ...(through === null ? [] : [through])].map(cellKey));
   if (mount === "wall") return isWallEdge(room, cell) && !door.has(key);
   if (mount === "desk")
     return pieces.some(

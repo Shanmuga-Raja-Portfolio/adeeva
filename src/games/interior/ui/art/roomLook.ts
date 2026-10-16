@@ -13,6 +13,7 @@ import { roomHex } from "./roomHex";
 export interface RoomLook {
   readonly roomId: RoomId;
   readonly backWall: string | null;
+  readonly backLower: string | null;
   readonly sideWall: string | null;
   readonly floor: FloorId | null;
   readonly pieces: readonly PlacedPiece[];
@@ -39,6 +40,7 @@ export function roomLook(run: MakeoverRun, parts: LookParts): RoomLook {
   return {
     roomId: run.brief.roomId,
     backWall: parts.walls ? feature : null,
+    backLower: parts.walls && plan.lowerPaint !== null ? roomHex(paintById(plan.lowerPaint).colour) : null,
     sideWall: parts.walls ? wall : null,
     floor: parts.floor ? plan.floor : null,
     pieces: parts.furniture ? plan.pieces : [],

@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ada",
+    "look": { "skinTone": "amber", "hairStyle": "braids", "hairColour": "black", "outfit": "studio-apron" },
+    "trait": "perfectionist",
+    "difficulty": "standard"
+  },
+  "calendar": { "day": 4, "hoursLeft": 10 },
+  "coins": 110,
+  "reputation": 22,
+  "buzz": 58,
+  "stock": {
+    "furniture": {
+      "single-bed": 0,
+      "bunk-bed": 0,
+      "desk": 0,
+      "desk-chair": 0,
+      "wardrobe": 0,
+      "bookcase": 0,
+      "sofa": 0,
+      "armchair": 0,
+      "coffee-table": 0,
+      "dining-table": 0,
+      "toy-box": 0,
+      "window-seat": 0
+    },
+    "paints": {
+      "chalk-white": 0,
+      "sea-glass": 0,
+      "morning-sky": 0,
+      "peach-sorbet": 0,
+      "sunflower": 0,
+      "lilac-mist": 0,
+      "deep-lagoon": 0,
+      "midnight-ink": 0
+    },
+    "floors": {
+      "pine-boards": 0,
+      "oak-boards": 0,
+      "walnut-boards": 0,
+      "cork-tiles": 0,
+      "cloud-carpet": 0,
+      "terracotta": 0,
+      "checkerboard": 0
+    },
+    "lights": {
+      "paper-pendant": 0,
+      "arc-lamp": 0,
+      "clip-lamp": 0,
+      "firefly-string": 0,
+      "brass-sconce": 0,
+      "dome-pendant": 0
+    },
+    "decor": {
+      "cushion-pile": 0,
+      "potted-fern": 0,
+      "framed-print": 0,
+      "woven-basket": 0,
+      "round-rug": 0,
+      "star-garland": 0,
+      "paper-bunting": 0,
+      "wall-clock": 0
+    }
+  },
+  "upgrades": [],
+  "loftDecor": [],
+  "guide": true,
+  "trends": { "current": ["cosy", "calm"], "next": ["bold", "modern"] },
+  "showHomeWeek": 1,
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-4",
+        "clientId": "mrs-halloran",
+        "brief": {
+          "clientId": "mrs-halloran",
+          "roomId": "living-room",
+          "showHome": false,
+          "deadlineDay": 9,
+          "budget": 82,
+          "fee": 101,
+          "requiredTags": ["classic", "calm"],
+          "favouredColours": ["honey-wood", "ivory"],
+          "avoidColours": ["coral"],
+          "mustHaves": [
+            { "itemId": "sofa", "count": 1 },
+            { "itemId": "armchair", "count": 1 },
+            { "itemId": "bookcase", "count": 1 }
+          ],
+          "mood": "warm",
+          "minQuality": 65
+        },
+        "expiresDay": 5
+      },
+      {
+        "id": "gig-5",
+        "clientId": "dr-faraday",
+        "brief": {
+          "clientId": "dr-faraday",
+          "roomId": "quiet-study",
+          "showHome": false,
+          "deadlineDay": 9,
+          "budget": 75,
+          "fee": 116,
+          "requiredTags": ["calm", "classic"],
+          "favouredColours": ["honey-wood", "ivory"],
+          "avoidColours": ["mustard", "coral"],
+          "mustHaves": [
+            { "itemId": "bookcase", "count": 2 },
+            { "itemId": "desk", "count": 1 }
+          ],
+          "mood": "any",
+          "minQuality": 84
+        },
+        "expiresDay": 5
+      },
+      {
+        "id": "gig-6",
+        "clientId": "bellwind",
+        "brief": {
+          "clientId": "bellwind",
+          "roomId": "show-lounge",
+          "showHome": true,
+          "deadlineDay": 10,
+          "budget": 137,
+          "fee": 141,
+          "requiredTags": ["cosy", "calm"],
+          "favouredColours": ["sky", "lavender"],
+          "avoidColours": [],
+          "mustHaves": [
+            { "itemId": "sofa", "count": 1 },
+            { "itemId": "armchair", "count": 1 },
+            { "itemId": "framed-print", "count": 1 }
+          ],
+          "mood": "any",
+          "minQuality": 70
+        },
+        "expiresDay": 6
+      },
+      {
+        "id": "gig-7",
+        "clientId": "bluebell-cafe",
+        "brief": {
+          "clientId": "bluebell-cafe",
+          "roomId": "cafe-corner",
+          "showHome": false,
+          "deadlineDay": 11,
+          "budget": 68,
+          "fee": 96,
+          "requiredTags": ["bright", "natural"],
+          "favouredColours": ["emerald", "mustard"],
+          "avoidColours": ["navy"],
+          "mustHaves": [
+            { "itemId": "dining-table", "count": 2 },
+            { "itemId": "potted-fern", "count": 2 }
+          ],
+          "mood": "warm",
+          "minQuality": 66
+        },
+        "expiresDay": 6
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-1",
+        "clientId": "nana-pearl",
+        "brief": {
+          "clientId": "nana-pearl",
+          "roomId": "reading-nook",
+          "showHome": false,
+          "deadlineDay": 4,
+          "budget": 44,
+          "fee": 55,
+          "requiredTags": ["cosy"],
+          "favouredColours": ["ivory", "honey-wood"],
+          "avoidColours": ["black"],
+          "mustHaves": [
+            { "itemId": "armchair", "count": 1 },
+            { "itemId": "bookcase", "count": 1 }
+          ],
+          "mood": "warm",
+          "minQuality": 55
+        },
+        "acceptedDay": 1
+      },
+      {
+        "id": "gig-2",
+        "clientId": "jun",
+        "brief": {
+          "clientId": "jun",
+          "roomId": "first-flat",
+          "showHome": false,
+          "deadlineDay": 6,
+          "budget": 71,
+          "fee": 83,
+          "requiredTags": ["modern"],
+          "favouredColours": ["teal", "sky"],
+          "avoidColours": ["mustard"],
+          "mustHaves": [
+            { "itemId": "single-bed", "count": 1 },
+            { "itemId": "desk", "count": 1 }
+          ],
+          "mood": "cool",
+          "minQuality": 60
+        },
+        "acceptedDay": 2
+      },
+      {
+        "id": "gig-3",
+        "clientId": "okafor-twins",
+        "brief": {
+          "clientId": "okafor-twins",
+          "roomId": "shared-bedroom",
+          "showHome": false,
+          "deadlineDay": 8,
+          "budget": 68,
+          "fee": 74,
+          "requiredTags": ["playful"],
+          "favouredColours": ["mustard", "coral"],
+          "avoidColours": ["charcoal"],
+          "mustHaves": [
+            { "itemId": "bunk-bed", "count": 1 },
+            { "itemId": "toy-box", "count": 1 }
+          ],
+          "mood": "any",
+          "minQuality": 58
+        },
+        "acceptedDay": 2
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 8
+  },
+  "story": { "seen": ["is-keys", "is-perfectionist", "is-show-home"], "flags": [], "queue": [] },
+  "activeRun": null,
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 1,
+  "rng": -1647318515
+}

@@ -24,4 +24,25 @@ export const COACH_LINES = {
   style: "Add decor. Make it feel like them.",
 } as const;
 
+export const HOME_HINTS = {
+  homeMap: "Big rooms for big furniture. Quiet rooms at the back.",
+  palette: "Pick three paints that feel like one home.",
+  throughDoor: "Keep a path to the next door.",
+  twoTone: "Dip the right tray for each half.",
+  threshold: "Hall floor first, then the room's floor.",
+  wrongFloor: "That piece belongs to the other floor.",
+  glowPath: "Light the way from door to door.",
+  storyPieces: "Put a story piece in every room.",
+  crewBoard: "Crew jobs finish overnight. Paint, then floor, then light.",
+  coaching: "Show the crew how. They'll copy your best work.",
+  planner: "Choose the tour. Save your favourite room for last.",
+  busyRun: "Finish or set aside your makeover first.",
+  busyHomeRoom: "Finish the room you have open first.",
+  homeRoomOpen: "Go back to the home from the room you have open first.",
+  achebePlan: "Ms. Achebe's plan scores up to 70. Change it to beat that.",
+  achebeMap: "Ms. Achebe's map scores up to 80. Change it to beat that.",
+} as const;
+
+export const SITE_SAFETY_LINE = "Real building sites are only for grown-ups with the right gear.";
+
 export const SAFETY_LINE = "Real painting and ladders need a grown-up. Ask an adult first.";
