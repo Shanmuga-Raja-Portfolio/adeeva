@@ -1,6 +1,6 @@
 import { applyStanding } from "../../../engine/standing";
 import { RUNWAY_LIGHTS, type RunwayLightId } from "../../adeeva/content/runwayLight";
-import { RUNWAY_MOODS, type RunwayMoodId } from "../../adeeva/content/runwayMood";
+import { MUSIC_MOODS, type MusicMoodId } from "../../../engine/musicMood";
 import { SHOWCASE_LAST_DAY } from "../content/season";
 import type { ShowcasePlan } from "./boutique";
 import { fillShelf } from "./capsuleShelf";
@@ -33,7 +33,7 @@ export function storyCardsFor(piece: RackPiece): StoryCard[] {
 
 export function hallTip(
   state: GameState,
-): { readonly mood: RunwayMoodId; readonly light: RunwayLightId } | null {
+): { readonly mood: MusicMoodId; readonly light: RunwayLightId } | null {
   const boutique = state.boutique;
   if (boutique === null) return null;
   if (boutique.rosettes.length === 0 && state.profile.difficulty !== "relaxed") return null;
@@ -58,7 +58,7 @@ export function showcaseIssues(state: GameState, plan: ShowcasePlan): string[] {
   if (shelf.length === 0) return ["Put at least one piece on the show shelf."];
   const reasons: string[] = [];
   if (!samePieces(plan.order, shelf)) reasons.push("Choose a walking order for every shelf piece.");
-  if (!RUNWAY_MOODS.some((mood) => mood.id === plan.mood)) reasons.push("Pick the music.");
+  if (!MUSIC_MOODS.some((mood) => mood.id === plan.mood)) reasons.push("Pick the music.");
   if (!RUNWAY_LIGHTS.some((light) => light.id === plan.light)) reasons.push("Pick the lights.");
   const cardsOk = shelf.every((piece) => {
     const card = Object.hasOwn(plan.cards, piece.id) ? plan.cards[piece.id] : undefined;

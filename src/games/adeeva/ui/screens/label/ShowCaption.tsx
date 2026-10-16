@@ -1,7 +1,7 @@
 import { StarRating } from "../../../../../ui/kit/StarRating";
 import { easeOut, window01 } from "../../../../../ui/kit/easing";
 import type { ShowWalker } from "./showCast";
-import type { ShowSceneKind } from "./showTimeline";
+import type { ShowSceneKind } from "../../../../../ui/show/showTimeline";
 
 export interface ShowCaptionProps {
   kind: ShowSceneKind;

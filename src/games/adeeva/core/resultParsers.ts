@@ -1,5 +1,5 @@
 import { RUNWAY_LIGHTS } from "../content/runwayLight";
-import { RUNWAY_MOODS } from "../content/runwayMood";
+import { MUSIC_MOODS } from "../../../engine/musicMood";
 import { colourIdParser, materialIdParser, styleTagParser, themeIdParser } from "./catalogIdParsers";
 import { CRITERION_IDS } from "./criterion";
 import type { QualityBreakdown } from "./dressQuality";
@@ -105,7 +105,7 @@ const finishedLookParser = objectOf<FinishedLook>({
 
 const runwayChoiceParser = objectOf<RunwayChoice>({
   order: refined(arrayOf(integerParser), isWalkOrder, "a walk order using each look once"),
-  mood: oneOf(RUNWAY_MOODS.map((mood) => mood.id)),
+  mood: oneOf(MUSIC_MOODS.map((mood) => mood.id)),
   light: oneOf(RUNWAY_LIGHTS.map((light) => light.id)),
 });
 

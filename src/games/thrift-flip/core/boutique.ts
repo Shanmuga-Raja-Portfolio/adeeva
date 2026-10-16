@@ -1,5 +1,5 @@
 import type { RunwayLightId } from "../../adeeva/content/runwayLight";
-import type { RunwayMoodId } from "../../adeeva/content/runwayMood";
+import type { MusicMoodId } from "../../../engine/musicMood";
 import type { SeamProgress } from "../../adeeva/core/dressRun";
 import type { ConditionGrade } from "../content/condition";
 import type { FindId } from "../content/find";
@@ -33,7 +33,7 @@ export interface WindowDisplay {
 
 export interface ShowcasePlan {
   readonly order: readonly string[];
-  readonly mood: RunwayMoodId;
+  readonly mood: MusicMoodId;
   readonly light: RunwayLightId;
   readonly cards: Readonly<Record<string, string>>;
 }

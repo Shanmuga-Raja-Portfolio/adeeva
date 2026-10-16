@@ -1,0 +1,25 @@
+.ad-music-chip {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  color: rgba(255, 248, 240, 0.8);
+}
+
+.ad-music-chip__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+
+.ad-music-chip__bars i {
+  display: block;
+  width: 3px;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--show-glow);
+  transform-origin: bottom;
+}

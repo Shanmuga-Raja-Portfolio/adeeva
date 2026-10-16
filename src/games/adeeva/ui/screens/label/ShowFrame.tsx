@@ -4,7 +4,7 @@ import { RunwayStage } from "../../art/RunwayStage";
 import type { ShowWalker } from "./showCast";
 import { ShowCaption } from "./ShowCaption";
 import { ShowTitleCard } from "./ShowTitleCard";
-import type { ShowMoment } from "./showTimeline";
+import type { ShowMoment } from "../../../../../ui/show/showTimeline";
 import { StageFigures } from "./StageFigures";
 import { stageShot } from "./stageShot";
 

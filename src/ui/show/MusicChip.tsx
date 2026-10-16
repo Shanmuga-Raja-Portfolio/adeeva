@@ -1,3 +1,5 @@
+import "./MusicChip.css";
+
 export interface MusicChipProps {
   name: string;
   elapsed: number;

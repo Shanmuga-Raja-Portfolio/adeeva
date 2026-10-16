@@ -1,6 +1,11 @@
 import { useEffect, useRef } from "react";
-import { MusicChip } from "./MusicChip";
-import { progressPips, sceneLabel, type ShowMoment, type ShowSegment } from "./showTimeline";
+import { MusicChip } from "../../../../../ui/show/MusicChip";
+import {
+  progressPips,
+  sceneLabel,
+  type ShowMoment,
+  type ShowSegment,
+} from "../../../../../ui/show/showTimeline";
 
 export interface ShowHudProps {
   readonly segments: readonly ShowSegment[];

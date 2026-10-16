@@ -17,7 +17,7 @@ import {
 } from "../../../engine/showDay";
 import { closerStrength } from "../../../engine/showOrder";
 import type { RunwayLightId } from "../../adeeva/content/runwayLight";
-import type { RunwayMoodId } from "../../adeeva/content/runwayMood";
+import type { MusicMoodId } from "../../../engine/musicMood";
 import { ROSETTES, type RosetteId } from "../content/rosette";
 import type { SeasonDef } from "../content/season";
 import { SHOW_PANELS, type ShowPanelId } from "../content/showPanel";
@@ -58,7 +58,7 @@ export interface ShowcaseResult {
 }
 
 export interface ShowcaseStaging {
-  readonly mood: RunwayMoodId;
+  readonly mood: MusicMoodId;
   readonly light: RunwayLightId;
 }
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { RunwayLightId } from "../../../content/runwayLight";
-import type { RunwayMoodId } from "../../../content/runwayMood";
+import type { MusicMoodId } from "../../../../../engine/musicMood";
 import type { ShowThemeDef } from "../../../content/showTheme";
 import { canStageRunway, type Action, type GameState, type LabelSeason } from "../../../core";
 import { useSettings } from "../../../../../studio/SettingsContext";
@@ -26,7 +26,7 @@ export interface RunwayPlannerProps {
 export function RunwayPlanner({ state, season, theme, dispatch, onBack, onStage }: RunwayPlannerProps) {
   const { reducedMotion } = useSettings();
   const [order, setOrder] = useState<number[]>(() => [...(season.runway?.order ?? [0, 1, 2])]);
-  const [mood, setMood] = useState<RunwayMoodId | null>(season.runway?.mood ?? null);
+  const [mood, setMood] = useState<MusicMoodId | null>(season.runway?.mood ?? null);
   const [light, setLight] = useState<RunwayLightId | null>(season.runway?.light ?? null);
   const strongest = strongestLooks(season);
   const allEqual = strongest.length === season.looks.length;
@@ -36,7 +36,7 @@ export function RunwayPlanner({ state, season, theme, dispatch, onBack, onStage 
   const middle = season.looks[order[1] ?? 0]?.evaluation.score ?? 0;
   const stageCheck = canStageRunway(state);
 
-  const commit = (nextOrder: number[], nextMood: RunwayMoodId | null, nextLight: RunwayLightId | null) => {
+  const commit = (nextOrder: number[], nextMood: MusicMoodId | null, nextLight: RunwayLightId | null) => {
     if (nextMood === null || nextLight === null) return;
     dispatch({ type: "chooseRunway", order: nextOrder, mood: nextMood, light: nextLight });
   };
@@ -46,7 +46,7 @@ export function RunwayPlanner({ state, season, theme, dispatch, onBack, onStage 
     commit(next, mood, light);
   };
 
-  const changeMood = (next: RunwayMoodId) => {
+  const changeMood = (next: MusicMoodId) => {
     setMood(next);
     commit(order, next, light);
   };

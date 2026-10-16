@@ -4,7 +4,7 @@ import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { StatChip } from "../../../../../ui/kit/StatChip";
 import { RUNWAY_LIGHTS, type RunwayLightId } from "../../../../adeeva/content/runwayLight";
-import { RUNWAY_MOODS, type RunwayMoodId } from "../../../../adeeva/content/runwayMood";
+import { MUSIC_MOODS, type MusicMoodId } from "../../../../../engine/musicMood";
 import { LightPicker } from "../../../../adeeva/ui/screens/label/LightPicker";
 import { MoodPicker } from "../../../../adeeva/ui/screens/label/MoodPicker";
 import { HINTS } from "../../../content/hint";
@@ -60,7 +60,7 @@ export function ShowcasePlanner({ state, season, dispatch, onStaged, onExit }: S
   const shelf = shelfPieces(state);
   const tip = hallTip(state);
   const [order, setOrder] = useState<readonly string[]>(() => shelf.map((piece) => piece.id));
-  const [mood, setMood] = useState<RunwayMoodId | null>(null);
+  const [mood, setMood] = useState<MusicMoodId | null>(null);
   const [light, setLight] = useState<RunwayLightId | null>(null);
   const [leaving, setLeaving] = useState(false);
   const [cards, setCards] = useState<Readonly<Record<string, string>>>(() =>
@@ -229,7 +229,7 @@ export function ShowcasePlanner({ state, season, dispatch, onStaged, onExit }: S
           </section>
           {tip !== null ? (
             <p className="tf-season__tip" data-testid="hall-tip">
-              Hall tip: this season loves {RUNWAY_MOODS.find((entry) => entry.id === tip.mood)?.name} with{" "}
+              Hall tip: this season loves {MUSIC_MOODS.find((entry) => entry.id === tip.mood)?.name} with{" "}
               {RUNWAY_LIGHTS.find((entry) => entry.id === tip.light)?.name}.
             </p>
           ) : null}

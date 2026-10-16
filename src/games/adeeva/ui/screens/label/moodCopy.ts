@@ -1,7 +1,7 @@
 import type { RunwayLightId } from "../../../content/runwayLight";
-import type { RunwayMoodId } from "../../../content/runwayMood";
+import type { MusicMoodId } from "../../../../../engine/musicMood";
 
-export const MOOD_COPY: Record<RunwayMoodId, string> = {
+export const MOOD_COPY: Record<MusicMoodId, string> = {
   "dreamy-strings": "Soft violins and a slow, glowing swell.",
   "beach-pop": "Bright guitar, hand claps and a sunny beat.",
   "synth-pulse": "Deep bass and shimmering electric synths.",

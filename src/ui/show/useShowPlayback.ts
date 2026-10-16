@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useShowClock } from "../../../../../ui/kit/useShowClock";
+import { useShowClock } from "../kit/useShowClock";
 import {
   crossfadeFrames,
   momentAt,

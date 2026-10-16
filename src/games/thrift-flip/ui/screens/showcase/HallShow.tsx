@@ -2,15 +2,16 @@ import { type CSSProperties, useMemo } from "react";
 import type { AvatarLook } from "../../../../../engine/avatar";
 import { colourById } from "../../../../../engine/palette";
 import { useSettings } from "../../../../../studio/SettingsContext";
-import { RUNWAY_MOODS } from "../../../../adeeva/content/runwayMood";
+import { MUSIC_MOODS } from "../../../../../engine/musicMood";
 import { easeOut, window01 } from "../../../../../ui/kit/easing";
 import { ShowHud } from "../../../../adeeva/ui/screens/label/ShowHud";
 import { ShowTitleCard } from "../../../../adeeva/ui/screens/label/ShowTitleCard";
 import { StageFigures, type CarriedWalker } from "../../../../adeeva/ui/screens/label/StageFigures";
 import { stageShot } from "../../../../adeeva/ui/screens/label/stageShot";
-import { sceneLabel, type ShowMoment } from "../../../../adeeva/ui/screens/label/showTimeline";
-import { useShowPlayback } from "../../../../adeeva/ui/screens/label/useShowPlayback";
-import "../../../../adeeva/ui/screens/label/show.css";
+import { sceneLabel, type ShowMoment } from "../../../../../ui/show/showTimeline";
+import { useShowPlayback } from "../../../../../ui/show/useShowPlayback";
+import "../../../../../ui/show/show.css";
+import "../../../../adeeva/ui/screens/label/runwayShow.css";
 import type { SeasonDef } from "../../../content/season";
 import { SWAP_NEIGHBOURS } from "../../../content/swapNeighbour";
 import { recipeById, storyCardsFor, type RackPiece, type Showcase, type StoryCard } from "../../../core";
@@ -212,7 +213,7 @@ export function HallShow(props: HallShowProps) {
   );
   const { segments, elapsed, moment, frames } = useShowPlayback(cast.length, reducedMotion, onDone);
   const palette = season.palette.map((id) => colourById(id).hex);
-  const moodName = RUNWAY_MOODS.find((mood) => mood.id === showcase.plan.mood)?.name ?? "Music";
+  const moodName = MUSIC_MOODS.find((mood) => mood.id === showcase.plan.mood)?.name ?? "Music";
 
   const accent = colourById(season.palette[0] ?? "blush").hex;
   return (

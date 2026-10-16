@@ -2,7 +2,7 @@ import type { Point } from "../../../engine/geometry/point";
 import type { Rotation } from "../../../engine/geometry/rotation";
 import type { RecipeId } from "../content/recipe";
 import type { RunwayLightId } from "../../adeeva/content/runwayLight";
-import type { RunwayMoodId } from "../../adeeva/content/runwayMood";
+import type { MusicMoodId } from "../../../engine/musicMood";
 import type { ShopSignId } from "../content/shopSign";
 import type { UpgradeId } from "../content/upgrade";
 import type { WindowPropId } from "../content/windowProp";
@@ -89,7 +89,7 @@ export type Action =
   | {
       readonly type: "stageShowcase";
       readonly order: readonly string[];
-      readonly mood: RunwayMoodId;
+      readonly mood: MusicMoodId;
       readonly light: RunwayLightId;
       readonly cards: Readonly<Record<string, string>>;
     }

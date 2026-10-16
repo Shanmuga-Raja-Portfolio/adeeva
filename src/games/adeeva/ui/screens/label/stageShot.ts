@@ -1,6 +1,6 @@
 import { clampUnit, easeInOut, easeOut, window01 } from "../../../../../ui/kit/easing";
 import type { ShowWalker } from "./showCast";
-import type { ShowMoment } from "./showTimeline";
+import type { ShowMoment } from "../../../../../ui/show/showTimeline";
 import { walkProgress } from "./walkProgress";
 
 export interface StageFigure<W = ShowWalker> {

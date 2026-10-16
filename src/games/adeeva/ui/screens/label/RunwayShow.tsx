@@ -1,5 +1,5 @@
 import { type CSSProperties, useMemo } from "react";
-import { RUNWAY_MOODS } from "../../../content/runwayMood";
+import { MUSIC_MOODS } from "../../../../../engine/musicMood";
 import type { ShowThemeDef } from "../../../content/showTheme";
 import {
   colourById,
@@ -12,10 +12,11 @@ import { useSettings } from "../../../../../studio/SettingsContext";
 import { showCast } from "./showCast";
 import { ShowFrame } from "./ShowFrame";
 import { ShowHud } from "./ShowHud";
-import { sceneLabel } from "./showTimeline";
+import { sceneLabel } from "../../../../../ui/show/showTimeline";
 import { themeAccent } from "./themeAccent";
-import { useShowPlayback } from "./useShowPlayback";
-import "./show.css";
+import { useShowPlayback } from "../../../../../ui/show/useShowPlayback";
+import "../../../../../ui/show/show.css";
+import "./runwayShow.css";
 
 export interface RunwayShowProps {
   state: GameState;
@@ -36,7 +37,7 @@ export function RunwayShow({ state, season, theme, runway, result, onDone }: Run
     () => [...theme.palette.map((colour) => colourById(colour).hex), "#fff6ee", "#f2c4c9"],
     [theme.palette],
   );
-  const moodName = RUNWAY_MOODS.find((mood) => mood.id === runway.mood)?.name ?? "Music";
+  const moodName = MUSIC_MOODS.find((mood) => mood.id === runway.mood)?.name ?? "Music";
 
   return (
     <div

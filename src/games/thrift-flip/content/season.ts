@@ -1,7 +1,7 @@
 import type { ColourId } from "../../../engine/palette";
 import type { StyleTag } from "../../../engine/styleTag";
 import type { RunwayLightId } from "../../adeeva/content/runwayLight";
-import type { RunwayMoodId } from "../../adeeva/content/runwayMood";
+import type { MusicMoodId } from "../../../engine/musicMood";
 
 export const SEASON_IDS = ["blossom-mend", "seaside-swap", "orchard-patch", "lantern-night"] as const;
 export type SeasonId = (typeof SEASON_IDS)[number];
@@ -16,7 +16,7 @@ export interface SeasonDef {
   readonly name: string;
   readonly tags: readonly [StyleTag, StyleTag];
   readonly palette: readonly ColourId[];
-  readonly bestMood: RunwayMoodId;
+  readonly bestMood: MusicMoodId;
   readonly bestLight: RunwayLightId;
   readonly banner: string;
 }

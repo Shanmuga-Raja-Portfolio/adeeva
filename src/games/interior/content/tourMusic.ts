@@ -1,6 +1,6 @@
-import { RUNWAY_MOODS, type RunwayMoodId } from "../../adeeva/content/runwayMood";
+import { MUSIC_MOODS, type MusicMoodId } from "../../../engine/musicMood";
 
-export type TourMusicId = RunwayMoodId;
+export type TourMusicId = MusicMoodId;
 
 export interface TourMusicDef {
   readonly id: TourMusicId;
@@ -15,7 +15,7 @@ const WORDS: Readonly<Record<TourMusicId, string>> = {
   "classic-jazz": "mellow",
 };
 
-export const TOUR_MUSIC: readonly TourMusicDef[] = RUNWAY_MOODS.map((mood) => ({
+export const TOUR_MUSIC: readonly TourMusicDef[] = MUSIC_MOODS.map((mood) => ({
   id: mood.id,
   name: mood.name,
   word: WORDS[mood.id],

@@ -1,0 +1,32 @@
+.ad-show__dark,
+.ad-show__burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ad-show__dark {
+  background: #050407;
+}
+
+.ad-show__burst {
+  background: radial-gradient(
+    circle at 50% 55%,
+    #ffffff,
+    rgba(255, 255, 255, 0.6) 60%,
+    rgba(255, 255, 255, 0.2)
+  );
+  mix-blend-mode: screen;
+}
+
+.ad-show-title__rule {
+  display: block;
+  width: min(320px, 60vw);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e6c86e, transparent);
+  transform-origin: center;
+}
+
+.ad-show-caption .ad-stars__off {
+  opacity: 0.35;
+}

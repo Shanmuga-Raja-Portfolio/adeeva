@@ -1,5 +1,5 @@
 import { RUNWAY_LIGHTS, type RunwayLightId } from "../content/runwayLight";
-import { RUNWAY_MOODS, type RunwayMoodId } from "../content/runwayMood";
+import { MUSIC_MOODS, type MusicMoodId } from "../../../engine/musicMood";
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import type { GameState } from "./gameState";
 import { finishedLooks, LOOKS_PER_SEASON, seasonTheme } from "./labelSeason";
@@ -27,12 +27,12 @@ export function canChooseRunway(state: GameState): ActionCheck {
 export function chooseRunway(
   state: GameState,
   order: readonly number[],
-  mood: RunwayMoodId,
+  mood: MusicMoodId,
   light: RunwayLightId,
 ): GameState {
   const season = state.season;
   if (season === null || !canChooseRunway(state).ok || !isWalkOrder(order)) return state;
-  if (!RUNWAY_MOODS.some((entry) => entry.id === mood) || !RUNWAY_LIGHTS.some((entry) => entry.id === light))
+  if (!MUSIC_MOODS.some((entry) => entry.id === mood) || !RUNWAY_LIGHTS.some((entry) => entry.id === light))
     return state;
   const current = season.runway;
   const unchanged =

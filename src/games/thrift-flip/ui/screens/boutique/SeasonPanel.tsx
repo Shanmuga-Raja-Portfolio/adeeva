@@ -10,7 +10,7 @@ import {
 } from "../../../content/season";
 import { hallTip, isShowcaseDay, seasonDay, seasonTheme, type GameState } from "../../../core";
 import { RUNWAY_LIGHTS } from "../../../../adeeva/content/runwayLight";
-import { RUNWAY_MOODS } from "../../../../adeeva/content/runwayMood";
+import { MUSIC_MOODS } from "../../../../../engine/musicMood";
 
 export interface SeasonPanelProps {
   readonly state: GameState;
@@ -84,7 +84,7 @@ export function SeasonPanel({ state, onOpenShowcase }: SeasonPanelProps) {
       )}
       {tip === null ? null : (
         <p className="tf-season__tip">
-          Hall tip: {RUNWAY_MOODS.find((mood) => mood.id === tip.mood)?.name} with{" "}
+          Hall tip: {MUSIC_MOODS.find((mood) => mood.id === tip.mood)?.name} with{" "}
           {RUNWAY_LIGHTS.find((light) => light.id === tip.light)?.name}.
         </p>
       )}

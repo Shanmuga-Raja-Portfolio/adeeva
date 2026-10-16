@@ -1,19 +1,19 @@
 import type { CSSProperties } from "react";
-import { RUNWAY_MOODS, type RunwayMoodId } from "../../../content/runwayMood";
+import { MUSIC_MOODS, type MusicMoodId } from "../../../../../engine/musicMood";
 import type { ShowThemeDef } from "../../../content/showTheme";
 import { MOOD_COPY } from "./moodCopy";
 
 export interface MoodPickerProps {
   theme: Pick<ShowThemeDef, "bestMood" | "name">;
-  value: RunwayMoodId | null;
-  onChange: (mood: RunwayMoodId) => void;
+  value: MusicMoodId | null;
+  onChange: (mood: MusicMoodId) => void;
   whisper?: boolean | undefined;
 }
 
 export function MoodPicker({ theme, value, onChange, whisper = true }: MoodPickerProps) {
   return (
     <div className="ad-rw-choice-grid ad-rw-choice-grid--moods" role="radiogroup" aria-label="Music mood">
-      {RUNWAY_MOODS.map((mood, moodIndex) => {
+      {MUSIC_MOODS.map((mood, moodIndex) => {
         const checked = value === mood.id;
         const suits = whisper && mood.id === theme.bestMood;
         return (

@@ -1,4 +1,4 @@
-import { window01 } from "../../../../../ui/kit/easing";
+import { window01 } from "../kit/easing";
 
 export type ShowSceneKind = "title" | "lights" | "walk" | "finale" | "bow";
 

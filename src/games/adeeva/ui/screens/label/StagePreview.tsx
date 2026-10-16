@@ -1,6 +1,6 @@
 import { dressGarment } from "../../art/avatarDress";
 import type { RunwayLightId } from "../../../content/runwayLight";
-import { RUNWAY_MOODS, type RunwayMoodId } from "../../../content/runwayMood";
+import { MUSIC_MOODS, type MusicMoodId } from "../../../../../engine/musicMood";
 import { AvatarFigure } from "../../../../../ui/art/avatar/Avatar";
 import { RunwayStage } from "../../art/RunwayStage";
 import type { ShowWalker } from "./showCast";
@@ -10,7 +10,7 @@ import { walkProgress } from "./walkProgress";
 export interface StagePreviewProps {
   cast: readonly ShowWalker[];
   light: RunwayLightId | null;
-  mood: RunwayMoodId | null;
+  mood: MusicMoodId | null;
   venue: string;
   reducedMotion: boolean;
 }
@@ -25,7 +25,7 @@ export function StagePreview({ cast, light, mood, venue, reducedMotion }: StageP
   const walker = cast[reducedMotion ? cast.length - 1 : slot];
   const progress = reducedMotion ? 0.5 : walkProgress(local);
   const fade = reducedMotion ? 1 : Math.min(1, local / 0.06, (1 - local) / 0.08);
-  const moodName = RUNWAY_MOODS.find((entry) => entry.id === mood)?.name;
+  const moodName = MUSIC_MOODS.find((entry) => entry.id === mood)?.name;
   return (
     <figure
       className={light === null ? "ad-stage-preview is-unlit" : "ad-stage-preview"}

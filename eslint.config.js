@@ -4,7 +4,7 @@ import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 
 const GAME_IDS = ["adeeva", "thrift-flip", "patisserie", "workshop", "interior", "jewellery", "chef"];
-const ALLOWED_GAME_IMPORTS = { "thrift-flip": ["adeeva"], interior: ["adeeva"] };
+const ALLOWED_GAME_IMPORTS = { "thrift-flip": ["adeeva"] };
 const PURE_GLOBALS = [
   "window",
   "document",

@@ -1,6 +1,6 @@
 import type { ColourId } from "../../../engine/palette";
 import type { RunwayLightId } from "./runwayLight";
-import type { RunwayMoodId } from "./runwayMood";
+import type { MusicMoodId } from "../../../engine/musicMood";
 import type { StyleTag } from "../../../engine/styleTag";
 
 export interface ShowThemeDef {
@@ -10,7 +10,7 @@ export interface ShowThemeDef {
   pitch: string;
   requiredTags: readonly StyleTag[];
   palette: readonly ColourId[];
-  bestMood: RunwayMoodId;
+  bestMood: MusicMoodId;
   bestLight: RunwayLightId;
   budget: number;
   minQuality: number;

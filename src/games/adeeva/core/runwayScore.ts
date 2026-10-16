@@ -1,6 +1,6 @@
 import type { DifficultyId } from "../../../engine/difficulty";
 import type { RunwayLightId } from "../content/runwayLight";
-import type { RunwayMoodId } from "../content/runwayMood";
+import type { MusicMoodId } from "../../../engine/musicMood";
 import type { ShowThemeDef } from "../content/showTheme";
 import type { StyleTag } from "../../../engine/styleTag";
 import { average } from "../../../engine/average";
@@ -53,7 +53,7 @@ const RUNWAY_SETBACKS: ShowSetbacks = { relaxed: 0, standard: -1, challenging: -
 
 export interface RunwayChoice {
   readonly order: readonly number[];
-  readonly mood: RunwayMoodId;
+  readonly mood: MusicMoodId;
   readonly light: RunwayLightId;
 }
 

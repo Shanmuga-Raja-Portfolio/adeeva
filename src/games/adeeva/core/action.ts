@@ -4,7 +4,7 @@ import type { DifficultyId } from "../../../engine/difficulty";
 import type { PartCategory } from "../content/garmentPart";
 import type { GarmentSlot } from "../content/garmentSlot";
 import type { RunwayLightId } from "../content/runwayLight";
-import type { RunwayMoodId } from "../content/runwayMood";
+import type { MusicMoodId } from "../../../engine/musicMood";
 import type { TraitId } from "../../../engine/trait";
 import type { TrimId } from "../content/trim";
 import type { UpgradeId } from "../content/upgrade";
@@ -77,7 +77,7 @@ export type Action =
   | {
       readonly type: "chooseRunway";
       readonly order: readonly number[];
-      readonly mood: RunwayMoodId;
+      readonly mood: MusicMoodId;
       readonly light: RunwayLightId;
     }
   | { readonly type: "stageRunway" }
