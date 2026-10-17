@@ -1,18 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
 import { advance, finishChefStories, freshChef, newChef } from "../fixtures/chefKitchen";
+import { chopClockAtLeast, holdChopBoard } from "../fixtures/chopBoardClock";
 
 test.use({ viewport: { width: 1280, height: 800 } });
 
 const instruction = (page: Page) => page.getByTestId("station-instruction");
-
-async function chopClockAtLeast(page: Page, value: number): Promise<void> {
-  await page.waitForFunction(
-    (target) =>
-      Number(document.querySelector("[data-testid='chop-board']")?.getAttribute("data-clock") ?? 0) >= target,
-    value,
-    { polling: "raf" },
-  );
-}
 
 async function boardMiddle(page: Page): Promise<[number, number]> {
   const surface = page.getByTestId("chop-surface");
@@ -43,6 +35,7 @@ test("the mince board shows one instruction that follows the hold", async ({ pag
   await fillBowls(page);
 
   const board = page.getByTestId("chop-board");
+  const held = await holdChopBoard(page);
   await expect(instruction(page)).toHaveCount(1);
   await expect(page.getByTestId("coach-bubble")).toHaveCount(0);
   await expect(instruction(page)).toHaveText(
@@ -55,10 +48,10 @@ test("the mince board shows one instruction that follows the hold", async ({ pag
   await expect(instruction(page)).toHaveText("When green reaches the knife, press and hold the board.");
   await expect(instruction(page)).not.toContainText(/tap/i);
   await page.mouse.move(x, y);
-  await chopClockAtLeast(page, stretch[0] - 15);
+  await chopClockAtLeast(page, held, stretch[0] - 15);
   await page.mouse.down();
   await expect(instruction(page)).toHaveText("Keep holding, then let go when the green ends!");
-  await chopClockAtLeast(page, stretch[1] - 15);
+  await chopClockAtLeast(page, held, stretch[1] - 15);
   await page.mouse.up();
   await expect(page.getByTestId("simmer-pot")).toBeVisible();
   await expect(instruction(page)).toHaveText("Press and hold, then follow the glowing spoon.");
@@ -78,6 +71,7 @@ test("dice and slice boards ask for taps, switch when the board turns, and Auto-
   await fillBowls(page);
 
   const board = page.getByTestId("chop-board");
+  const held = await holdChopBoard(page);
   await expect(instruction(page)).toHaveText("Tap Start chopping, then tap as marks meet the knife line.");
   const marks = JSON.parse((await board.getAttribute("data-marks")) ?? "[]") as number[];
   const turn = Number(await board.getAttribute("data-turn"));
@@ -86,13 +80,13 @@ test("dice and slice boards ask for taps, switch when the board turns, and Auto-
   await page.getByTestId("chop-start").click();
   await expect(instruction(page)).toHaveText("Tap the board as each mark meets the knife line.");
   for (const mark of marks.filter((at) => at < turn)) {
-    await chopClockAtLeast(page, mark - 20);
+    await chopClockAtLeast(page, held, mark - 20);
     await page.mouse.click(x, y);
   }
-  await chopClockAtLeast(page, turn);
+  await chopClockAtLeast(page, held, turn);
   await expect(instruction(page)).toHaveText("The board turns. Keep tapping on the beat!");
   for (const mark of marks.filter((at) => at > turn)) {
-    await chopClockAtLeast(page, mark - 20);
+    await chopClockAtLeast(page, held, mark - 20);
     await page.mouse.click(x, y);
   }
 

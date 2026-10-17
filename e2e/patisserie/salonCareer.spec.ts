@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { bakeByHand, pourByHand, pourWithHelper, stirByHand, traceByHand } from "../fixtures/bakeBench";
 import { coins, dragBetween, finishBakeryStories, PATISSERIE_URL } from "../fixtures/patisseriePage";
 import { recordScenes } from "../fixtures/sceneLog";
+import { holdShowTime, playToScene, releaseShowTime } from "../fixtures/showTime";
 import { isOutsideRequest } from "../fixtures/outsideRequest";
 
 const THRESHOLD_V1 = readFileSync(
@@ -142,16 +143,20 @@ test("a Corner Baker at the threshold opens the Comet Room and takes a showpiece
   await expect(page.getByTestId("fair-board")).toBeVisible();
   await page.getByTestId("fair-board-next").click();
   await expect(page.getByTestId("fair-planner")).toBeVisible();
+  await page.clock.install();
+  await holdShowTime(page);
   await page.getByTestId("start-showcase").click();
   const showcase = page.getByTestId("fair-showcase");
   await expect(showcase).toBeVisible();
   for (let plate = 1; plate <= 3; plate += 1) {
-    await expect(showcase).toHaveAttribute("data-scene", `wait-${plate}`, { timeout: 15_000 });
+    await playToScene(page, "fair-showcase", `wait-${plate}`);
     await page.getByTestId(plate === 2 ? "cloche-art" : "lift-cloche").click();
     await expect(showcase).toHaveAttribute("data-scene", `reveal-${plate}`);
   }
-  await expect(showcase).toHaveAttribute("data-scene", "finale", { timeout: 15_000 });
-  await expect(page.getByTestId("flip-bench")).toBeVisible({ timeout: 15_000 });
+  await playToScene(page, "fair-showcase", "finale");
+  await playToScene(page, "fair-showcase", "panels");
+  await expect(page.getByTestId("flip-bench")).toBeVisible();
+  await releaseShowTime(page);
   await expect(page.getByTestId("fair-results")).toBeVisible({ timeout: 15_000 });
   const ribbon = await page.getByTestId("fair-ribbon").innerText();
   expect(ribbon).toMatch(/Ribbon|Rosette/);

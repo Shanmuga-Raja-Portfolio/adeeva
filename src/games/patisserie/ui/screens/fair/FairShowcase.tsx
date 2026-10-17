@@ -213,15 +213,13 @@ export function FairShowcase({ theme, result, plates, visitors, skippable, onDon
   const { reducedMotion } = useSettings();
   const steps = useMemo(() => showcaseSteps(plates.length, reducedMotion), [plates.length, reducedMotion]);
   const [index, setIndex] = useState(0);
-  const next = useCallback(() => {
-    setIndex((current) => {
-      if (current + 1 >= steps.length) {
-        onDone();
-        return current;
-      }
-      return current + 1;
-    });
-  }, [steps.length, onDone]);
+  const advanceFrom = useCallback(
+    (from: number) => {
+      if (from + 1 >= steps.length) onDone();
+      else setIndex((current) => (current === from ? from + 1 : current));
+    },
+    [steps.length, onDone],
+  );
   const step = steps[index];
   const canSkip = skippable || steps.slice(0, index).some((entry) => entry.kind === "reveal");
   useEffect(() => {
@@ -244,7 +242,7 @@ export function FairShowcase({ theme, result, plates, visitors, skippable, onDon
         steps={steps}
         index={index}
         reduced={reducedMotion}
-        onNext={next}
+        onNext={() => advanceFrom(index)}
         theme={theme}
         result={result}
         plates={plates}

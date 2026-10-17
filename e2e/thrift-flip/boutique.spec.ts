@@ -7,6 +7,7 @@ import {
   tillDaySave,
 } from "../fixtures/boutiqueSaves";
 import { shooter } from "../fixtures/screens";
+import { holdShowTime, playToScene, playUntil, releaseShowTime, sceneOf } from "../fixtures/showTime";
 import { finishStories } from "../fixtures/story";
 import { scrollIntoView, scrubOneStain, sewSeams, snipStitches } from "../fixtures/thriftBench";
 import { advance, centreOf, coinsIn, drag, svgToScreen } from "../fixtures/thriftPage";
@@ -195,13 +196,20 @@ for (const viewport of VIEWPORTS) {
       await page.keyboard.press("Space");
       await shot("b16-planner-ready", true);
       await page.getByTestId("stage-showcase").focus();
+      await page.clock.install();
+      await holdShowTime(page);
       await page.keyboard.press("Enter");
       const show = page.getByTestId("hall-show");
       await expect(show).toBeVisible();
       await expect(page.getByTestId("skip-show")).toBeFocused();
-      await expect(show).toHaveAttribute("data-scene", "walk-1", { timeout: 20_000 });
-      await expect(page.getByTestId("show-story-card")).toBeVisible({ timeout: 10_000 });
+      const card = page.getByTestId("show-story-card");
+      await playUntil(
+        page,
+        "the first story card",
+        async () => (await sceneOf(page, "hall-show")) === "walk-1" && (await card.isVisible()),
+      );
       await shot("b17-show-walk");
+      await releaseShowTime(page);
       await page.keyboard.press("Enter");
       const results = page.getByTestId("showcase-results");
       await expect(results).toBeVisible();
@@ -352,11 +360,13 @@ test("the Showcase shows still story cards with reduced motion", async ({ page }
   await expect(page.getByRole("dialog", { name: "Leave the Showcase plan?" })).toBeVisible();
   await page.getByTestId("keep-draft").click();
   await expect(page.getByRole("radio", { name: /Spotlight/ })).toHaveAttribute("aria-checked", "true");
+  await page.clock.install();
+  await holdShowTime(page);
   await page.getByTestId("stage-showcase").click();
-  const show = page.getByTestId("hall-show");
-  await expect(show).toHaveAttribute("data-scene", "walk-1", { timeout: 20_000 });
+  await playToScene(page, "hall-show", "walk-1");
   await expect(page.getByTestId("show-story-card").first()).toHaveCSS("opacity", "1");
-  await expect(show).toHaveAttribute("data-scene", "walk-2", { timeout: 20_000 });
+  await playToScene(page, "hall-show", "walk-2");
+  await releaseShowTime(page);
   await page.getByTestId("skip-show").click();
   await expect(page.getByTestId("showcase-results")).toBeVisible();
 });

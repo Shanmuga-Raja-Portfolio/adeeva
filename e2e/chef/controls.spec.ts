@@ -8,20 +8,12 @@ import {
   svgToScreen,
   tasteByHand,
 } from "../fixtures/chefKitchen";
+import { chopClockAtLeast, holdChopBoard } from "../fixtures/chopBoardClock";
 
 test.use({ hasTouch: true, viewport: { width: 820, height: 1180 } });
 
 async function focusedTestId(page: Page): Promise<string> {
   return page.evaluate(() => document.activeElement?.getAttribute("data-testid") ?? "");
-}
-
-async function chopClockAtLeast(page: Page, value: number): Promise<void> {
-  await page.waitForFunction(
-    (target) =>
-      Number(document.querySelector("[data-testid='chop-board']")?.getAttribute("data-clock") ?? 0) >= target,
-    value,
-    { polling: "raf" },
-  );
 }
 
 test("keyboard and touch players get fair, steady controls through a whole lesson", async ({ page }) => {
@@ -53,13 +45,14 @@ test("keyboard and touch players get fair, steady controls through a whole lesso
     "Tap Start chopping, then hold the board for the green stretch.",
   );
   const board = page.getByTestId("chop-board");
+  const held = await holdChopBoard(page);
   const stretch = JSON.parse((await board.getAttribute("data-stretch")) ?? "null") as [number, number] | null;
   if (stretch === null) throw new Error("The first chop should be a mince");
   await page.getByTestId("chop-start").click();
   expect(await focusedTestId(page)).toBe("chop-surface");
-  await chopClockAtLeast(page, stretch[0] - 15);
+  await chopClockAtLeast(page, held, stretch[0] - 15);
   await page.keyboard.down(" ");
-  await chopClockAtLeast(page, stretch[1] - 15);
+  await chopClockAtLeast(page, held, stretch[1] - 15);
   await page.keyboard.up(" ");
   await expect(page.getByRole("button", { name: "Resume" })).toHaveCount(0);
   await expect(page.locator(".ck-step-scores")).toContainText(/Chop [1-9]\d*%/, { timeout: 10_000 });

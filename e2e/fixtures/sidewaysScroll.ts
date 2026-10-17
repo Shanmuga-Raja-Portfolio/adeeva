@@ -19,7 +19,7 @@ export async function widestSidewaysScroll(page: Page): Promise<number> {
     });
     let widest = overflow();
     while (animating || scoresCounting()) {
-      await new Promise((frame) => requestAnimationFrame(frame));
+      await document.documentElement.animate([], { duration: 16 }).finished;
       widest = Math.max(widest, overflow());
     }
     return Math.max(widest, overflow());

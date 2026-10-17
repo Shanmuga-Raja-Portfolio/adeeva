@@ -1,5 +1,7 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { chopBoardFinished, chopClockAtLeast, holdChopBoard, type ChopBoardHandle } from "./chopBoardClock";
 import { isOutsideRequest } from "./outsideRequest";
+import { nextReadyPiece } from "./panReadyPiece";
 
 export const CHEF_URL = "/#/chef";
 
@@ -91,41 +93,36 @@ export async function svgToScreen(svg: Locator, points: readonly Pair[]): Promis
   }, points);
 }
 
-async function clockAtLeast(page: Page, value: number): Promise<void> {
-  await page.waitForFunction(
-    (target) =>
-      Number(document.querySelector("[data-testid='chop-board']")?.getAttribute("data-clock") ?? 0) >= target,
-    value,
-    { polling: "raf" },
-  );
-}
-
-export async function chopMarksByHand(page: Page): Promise<boolean> {
-  const board = page.getByTestId("chop-board");
-  await page.getByTestId("chop-start").click();
+async function chopOnBoard(page: Page, board: ChopBoardHandle): Promise<boolean> {
   const surface = page.getByTestId("chop-surface");
   await surface.scrollIntoViewIfNeeded();
-  const [x, y] = await middle(surface);
   const stretch = JSON.parse((await board.getAttribute("data-stretch")) ?? "null") as Pair | null;
+  const marks = JSON.parse((await board.getAttribute("data-marks")) ?? "[]") as number[];
+  await page.getByTestId("chop-start").click();
+  const [x, y] = await middle(surface);
   if (stretch !== null) {
     await page.mouse.move(x, y);
-    await clockAtLeast(page, stretch[0] - 15);
-    await page.mouse.down();
-    await clockAtLeast(page, stretch[1] - 15);
-    await page.mouse.up();
+    if (await chopClockAtLeast(page, board, stretch[0] - 15)) {
+      await page.mouse.down();
+      await chopClockAtLeast(page, board, stretch[1] - 15);
+      await page.mouse.up();
+    }
     return false;
   }
-  const marks = JSON.parse((await board.getAttribute("data-marks")) ?? "[]") as number[];
   for (const mark of marks) {
-    await clockAtLeast(page, mark - 20);
+    if (!(await chopClockAtLeast(page, board, mark - 20))) break;
     await page.mouse.click(x, y);
   }
   return true;
 }
 
+export async function chopMarksByHand(page: Page): Promise<boolean> {
+  return chopOnBoard(page, await holdChopBoard(page));
+}
+
 export async function chopByHand(page: Page): Promise<void> {
-  if (await chopMarksByHand(page))
-    await expect(page.getByTestId("chop-board")).toHaveAttribute("data-phase", "done", { timeout: 10_000 });
+  const board = await holdChopBoard(page);
+  if (await chopOnBoard(page, board)) await chopBoardFinished(page, board, 10_000);
 }
 
 export async function simmerByHand(page: Page): Promise<void> {
@@ -150,49 +147,21 @@ export async function simmerByHand(page: Page): Promise<void> {
   await page.getByTestId("off-the-heat").click();
 }
 
-interface ReadyPiece {
-  readonly id: string;
-  readonly side: number;
-}
-
-async function nextReadyPiece(page: Page, flipped: readonly string[]): Promise<ReadyPiece | null> {
-  const handle = await page.waitForFunction(
-    (skip) => {
-      const pieces = Array.from(document.querySelectorAll("[data-testid^='piece-']"));
-      if (pieces.length === 0) return { id: "", side: -1 };
-      for (const piece of pieces) {
-        const id = piece.getAttribute("data-testid") ?? "";
-        const side = Number(piece.getAttribute("data-side"));
-        const waitingToTurn = side === 0 && skip.includes(id);
-        if (Number(piece.getAttribute("data-cook")) >= 0.97 && !waitingToTurn) return { id, side };
-      }
-      return false;
-    },
-    flipped,
-    { polling: "raf" },
-  );
-  const ready = (await handle.jsonValue()) as ReadyPiece;
-  return ready.id === "" ? null : ready;
-}
-
 export async function sizzleByHand(page: Page): Promise<void> {
   await page.getByTestId("pan-start").click();
-  const pan = page.getByTestId("sizzle-pan");
-  await pan.scrollIntoViewIfNeeded();
+  await page.getByTestId("sizzle-pan").scrollIntoViewIfNeeded();
   const flipped = new Set<string>();
   for (let guard = 0; guard < 800; guard += 1) {
     const ready = await nextReadyPiece(page, [...flipped]);
     if (ready === null) return;
-    const [x, y] = await middle(page.getByTestId(ready.id).locator("circle").first());
+    const [x, y] = ready.at;
     if (ready.side === 0) {
       await page.mouse.click(x, y);
       flipped.add(ready.id);
     } else {
-      const [tray] = await svgToScreen(pan, [[490, 200]]);
-      if (tray === undefined) throw new Error("No tray");
       await page.mouse.move(x, y);
       await page.mouse.down();
-      await page.mouse.move(tray[0], tray[1], { steps: 8 });
+      await page.mouse.move(ready.tray[0], ready.tray[1], { steps: 8 });
       await page.mouse.up();
     }
   }

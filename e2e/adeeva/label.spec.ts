@@ -22,6 +22,7 @@ import {
   TEST_SEAM_TICKS,
 } from "../../src/games/adeeva/core/testPlaythrough";
 import { settleStories } from "../fixtures/preparedGame";
+import { holdShowTime, playToScene, releaseShowTime } from "../fixtures/showTime";
 import { finishStories } from "../fixtures/story";
 
 const LOOK_TRIMS: readonly (readonly { trimId: TrimId; x: number; y: number }[])[] = [
@@ -206,10 +207,6 @@ async function loadPreparedSave(page: Page, save: string) {
   await expect(page.getByTestId("collection-board")).toBeVisible();
 }
 
-async function waitForScene(page: Page, scene: string) {
-  await expect(page.getByTestId("runway-show")).toHaveAttribute("data-scene", scene, { timeout: 40_000 });
-}
-
 async function restUntilAfterShow(page: Page) {
   for (let guard = 0; guard < 30; guard += 1) {
     const saved = await savedGame(page);
@@ -281,12 +278,15 @@ test("a finished collection walks the runway, earns its reviews and opens the ne
   expect(lightBox.y + lightBox.height).toBeLessThanOrEqual(goBox.y + 1);
   await shot(page, testInfo, "desk-03-planner-ready");
 
+  await page.clock.install();
+  await holdShowTime(page);
   await curtain.click();
   await expect(page.getByTestId("runway-show")).toBeVisible();
   for (const scene of ["lights", "walk-1", "walk-2", "walk-3", "finale", "bow"]) {
-    await waitForScene(page, scene);
+    await playToScene(page, "runway-show", scene);
     await shot(page, testInfo, `desk-04-show-${scene}`);
   }
+  await releaseShowTime(page);
 
   const results = page.getByTestId("show-results");
   await expect(results).toBeVisible({ timeout: 15_000 });
@@ -331,10 +331,13 @@ test("the show plays on a tall tablet, skips to the reviews and crossfades for r
   await page.getByRole("radio", { name: /Spotlight/ }).click();
   await page.getByTestId("stage-preview").scrollIntoViewIfNeeded();
   await shot(page, testInfo, "tab-02-planner");
+  await page.clock.install();
+  await holdShowTime(page);
   await page.getByRole("button", { name: "Raise the curtain" }).click();
-  await waitForScene(page, "walk-1");
+  await playToScene(page, "runway-show", "walk-1");
   await shot(page, testInfo, "tab-03-show-walk1");
-  await waitForScene(page, "walk-2");
+  await playToScene(page, "runway-show", "walk-2");
+  await releaseShowTime(page);
   await page.getByRole("button", { name: /Skip to the reviews/ }).click();
   await expect(page.getByTestId("show-results")).toBeVisible();
   await expect.poll(async () => (await savedGame(page)).resultCoins).not.toBeNull();
@@ -345,11 +348,13 @@ test("the show plays on a tall tablet, skips to the reviews and crossfades for r
   await shot(page, testInfo, "tab-04-results");
 
   await page.emulateMedia({ reducedMotion: "reduce" });
+  await holdShowTime(page);
   await page.getByRole("button", { name: /Watch the show again/ }).click();
-  await waitForScene(page, "walk-1");
+  await playToScene(page, "runway-show", "walk-1");
   await shot(page, testInfo, "tab-05-reduced-walk1");
-  await waitForScene(page, "finale");
+  await playToScene(page, "runway-show", "finale");
   await shot(page, testInfo, "tab-06-reduced-finale");
+  await releaseShowTime(page);
   await page.keyboard.press("Escape");
   await expect(page.getByTestId("show-results")).toBeVisible();
   await page.getByRole("button", { name: "Back to studio" }).last().click();
