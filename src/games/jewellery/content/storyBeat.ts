@@ -1,5 +1,6 @@
-import type { AvatarLook } from "../../../engine/avatar";
 import type { StoryBeat } from "../../../engine/story";
+import { LOFT_STORY_BEATS } from "./loftStoryBeat";
+import { MENTOR_NAME } from "./mentor";
 
 export const STORY_TRIGGERS = [
   "intro",
@@ -11,22 +12,37 @@ export const STORY_TRIGGERS = [
   "trait-perfectionist",
   "trait-trendsetter",
   "trait-charmer",
+  "loft-offer",
+  "intro-loft",
+  "loft-opened",
+  "first-board",
+  "first-gem-market",
+  "first-line-sheet",
+  "first-twin",
+  "first-lookbook",
+  "launch-invite",
+  "first-launch",
+  "first-popup",
+  "copy-request",
+  "gold-lantern",
+  "spot-stage",
+  "spot-grand",
+  "launch-skipped",
+  "tight-season",
+  "lantern-garland",
+  "every-lantern-gold",
+  "abebe-offer",
+  "zara-offer",
 ] as const;
 export type StoryTrigger = (typeof STORY_TRIGGERS)[number];
 
-export type StoryBeatDef = StoryBeat<StoryTrigger, never>;
+export type StoryEffect = "open-loft";
 
-export const MENTOR_NAME = "Mr. Osei";
-export const MENTOR_LOOK: AvatarLook = {
-  skinTone: "cocoa",
-  hairStyle: "pixie",
-  hairColour: "platinum",
-  outfit: "studio-apron",
-};
+export type StoryBeatDef = StoryBeat<StoryTrigger, StoryEffect>;
 
 export const BEAT_BUZZ: Readonly<Record<string, number>> = { "jb-charmer": 2 };
 
-export const STORY_BEATS: readonly StoryBeatDef[] = [
+const BENCH_BEATS: readonly StoryBeatDef[] = [
   {
     id: "jb-key",
     trigger: "intro",
@@ -239,3 +255,5 @@ export const STORY_BEATS: readonly StoryBeatDef[] = [
     choices: [],
   },
 ];
+
+export const STORY_BEATS: readonly StoryBeatDef[] = [...BENCH_BEATS, ...LOFT_STORY_BEATS];

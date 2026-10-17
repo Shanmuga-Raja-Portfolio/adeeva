@@ -2,7 +2,6 @@ import type { Point } from "../../../engine/geometry/point";
 import {
   arrayOf,
   booleanParser,
-  failed,
   integerParser,
   integerRangeParser,
   nullable,
@@ -16,7 +15,7 @@ import {
   type Parser,
 } from "../../../engine/parse";
 import { MAX_PLACED_SCALE, MIN_PLACED_SCALE } from "../../../engine/placedPose";
-import { countParser, dayParser, rngParser, shareParser } from "../../../engine/stateParsers";
+import { countParser, dayParser, pointParser, rngParser, shareParser } from "../../../engine/stateParsers";
 import { DECOR_IDS } from "../content/decor";
 import { FLOOR_IDS } from "../content/floor";
 import { FURNITURE_IDS } from "../content/furniture";
@@ -71,14 +70,7 @@ const edgeParser = objectOf<EdgeRecord>({
   byCrew: booleanParser,
 });
 
-const splatParser: Parser<Point> = (input, path) => {
-  const outcome = arrayOf(rangeParser(0, ROLL_CANVAS.width))(input, path);
-  if (!outcome.ok) return outcome;
-  const [x, y] = outcome.value;
-  return outcome.value.length === 2 && x !== undefined && y !== undefined
-    ? parsed([x, y])
-    : failed(path, "a point");
-};
+const splatParser: Parser<Point> = pointParser(rangeParser(0, ROLL_CANVAS.width));
 
 const rollParser = objectOf<RollRecord>({
   passes: arrayOf(integerRangeParser(0, MAX_PASSES)),

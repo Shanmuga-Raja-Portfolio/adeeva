@@ -10,7 +10,10 @@ import type { Brief } from "./brief";
 import type { DesignOptions, PlacedCharm } from "./pieceLook";
 import type { RunKind, RunStage } from "./runStage";
 
-export type RunPurpose = { readonly kind: "order"; readonly gigId: string } | { readonly kind: "stall" };
+export type RunPurpose =
+  | { readonly kind: "order"; readonly gigId: string }
+  | { readonly kind: "stall" }
+  | { readonly kind: "collection"; readonly slot: number };
 
 export interface PieceDesign {
   readonly productId: ProductId;
@@ -36,6 +39,7 @@ export interface JoinRecord {
   readonly insideTicks: number;
   readonly overTicks: number;
   readonly assisted: boolean;
+  readonly twin: boolean;
 }
 
 export interface SetRecord {
@@ -80,9 +84,12 @@ export interface PieceRun {
   readonly polish: Readonly<Record<string, PolishRecord>>;
   readonly display: DisplayChoice;
   readonly suppliesHourPaid: boolean;
+  readonly twinGlow: boolean;
+  readonly lineSheet: boolean;
+  readonly potStones: readonly number[];
 }
 
-const FRESH_DISPLAY: DisplayChoice = {
+export const FRESH_DISPLAY: DisplayChoice = {
   finish: "high-shine",
   glaze: null,
   chain: null,
@@ -101,8 +108,8 @@ interface NewRun {
   readonly brief: Brief | null;
   readonly day: number;
   readonly seed: number;
-  readonly productId: ProductId;
-  readonly options: DesignOptions;
+  readonly design: PieceDesign;
+  readonly display: DisplayChoice;
 }
 
 export function createPieceRun(fresh: NewRun): PieceRun {
@@ -115,7 +122,7 @@ export function createPieceRun(fresh: NewRun): PieceRun {
     reached: stage,
     startedDay: fresh.day,
     seed: fresh.seed,
-    design: { productId: fresh.productId, options: fresh.options, metalId: null, stoneId: null },
+    design: fresh.design,
     plan: {},
     consumed: null,
     stonesTaken: false,
@@ -123,7 +130,10 @@ export function createPieceRun(fresh: NewRun): PieceRun {
     joins: {},
     sets: {},
     polish: {},
-    display: FRESH_DISPLAY,
+    display: fresh.display,
     suppliesHourPaid: false,
+    twinGlow: false,
+    lineSheet: false,
+    potStones: [],
   };
 }

@@ -10,7 +10,8 @@ const SIDES = [
 
 export function EarringArt({ source, metal, fill, sheen, twinkle }: PieceArtProps) {
   const product = productById(source.productId);
-  const drop = product.id === "drop-pair";
+  const drop = product.parts.some((part) => part.key === "drop-l");
+  const seated = product.seats.length > 0;
   return (
     <g>
       {SIDES.map((side) => {
@@ -45,15 +46,15 @@ export function EarringArt({ source, metal, fill, sheen, twinkle }: PieceArtProp
                 twinkle={twinkle}
               />
             ) : null}
-            {!drop ? (
+            {seated ? (
               <StoneSeatArt
                 cut={seatCut(source)}
                 hex={stoneHex(source)}
                 metal={metal}
                 fill={fill}
                 x={side.x}
-                y={plateY}
-                size={34}
+                y={drop ? plateY + 8 : plateY}
+                size={drop ? 26 : 34}
                 twinkle={twinkle}
               />
             ) : null}

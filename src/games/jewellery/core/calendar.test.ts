@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { DifficultyId } from "../../../engine/difficulty";
-import { dayLength, weeklyBill } from "./calendar";
+import { weeklyBill } from "./calendar";
+import { dayLength } from "./calendarHours";
 import type { GameState } from "./gameState";
 import { reduce } from "./reduce";
 import { newTestGame, settleStories } from "./testPlaythrough";

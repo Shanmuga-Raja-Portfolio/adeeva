@@ -3,10 +3,27 @@ import { daysUntilWeekEnd, weekdayName, weekNumber } from "../../../../../engine
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
-import { CAREER } from "../../../content/career";
-import { canWorkShift, dayLength, isMarketDay, weeklyBill, type GameState } from "../../../core";
+import { ARCADE_NAME, LANDLORD } from "../../../content/career";
+import {
+  canEndDay,
+  canWorkShift,
+  careerById,
+  dayLength,
+  isLanternNight,
+  isMarketDay,
+  isPopupDay,
+  launchStaged,
+  lineNameById,
+  popupDone,
+  rentLabel,
+  seasonByNumber,
+  weeklyBill,
+  type GameState,
+} from "../../../core";
 import { ArcadeBackdrop } from "../../art/ArcadeBackdrop";
 import { BenchAvatar } from "../../art/BenchAvatar";
+import { LoftBackdrop } from "../../art/LoftBackdrop";
+import { garlandLights } from "../loft/garlandLights";
 import { HourBeads } from "./HourBeads";
 import { WeekDrawers } from "./WeekDrawers";
 
@@ -20,35 +37,69 @@ function rentNote(state: GameState): string {
   const rent = weeklyBill(state);
   if (rent === 0) return "No rent on Relaxed. Make for joy!";
   const days = daysUntilWeekEnd(state.calendar.day);
-  if (days === 0) return `${rent} coins of rent go to ${CAREER.landlord} tonight.`;
-  return `${rent} coins of rent are due after Market Day, in ${days} ${days === 1 ? "day" : "days"}.`;
+  const label = rentLabel(state).toLowerCase();
+  if (days === 0) return `${rent} coins of ${label} go to ${LANDLORD} tonight.`;
+  return `${rent} coins of ${label} are due at the week's end, in ${days} ${days === 1 ? "day" : "days"}.`;
+}
+
+function dayNote(state: GameState): string | null {
+  const collection = state.collection;
+  const day = state.calendar.day;
+  if (collection !== null && isLanternNight(state, day) && !launchStaged(state, collection))
+    return "It's Lantern Night! Stage your Launch before the lanterns dim.";
+  if (collection !== null && isPopupDay(state, day))
+    return popupDone(state, collection)
+      ? "Pop-up Day. Your window is all done for this season."
+      : launchStaged(state, collection)
+        ? "It's Pop-up Day! Open your window at the arcade gate."
+        : canEndDay(state).ok
+          ? "Pop-up Day. Your line carries on to next season."
+          : "Pop-up Day! There's still time for a late Launch first.";
+  if (isMarketDay(state, day)) return "It's Market Day! Set out your stall tray before the lanterns dim.";
+  return null;
 }
 
 export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
   const { profile, calendar } = state;
   const shift = canWorkShift(state);
   const total = dayLength(state);
-  const market = isMarketDay(calendar.day);
+  const note = dayNote(state);
+  const career = careerById(state.career);
+  const collection = state.collection;
+  const evening = calendar.hoursLeft <= 3;
+  const end = canEndDay(state);
   return (
     <section className="jb-hub-hero" aria-label="Your day">
-      <ArcadeBackdrop
-        className="jb-hub-hero__backdrop"
-        evening={calendar.hoursLeft <= 3}
-        lanterns={state.decor.includes("lantern-string") ? 13 : 9}
-      />
+      {collection === null ? (
+        <ArcadeBackdrop
+          className="jb-hub-hero__backdrop"
+          evening={evening}
+          lanterns={state.decor.includes("lantern-string") ? 13 : 9}
+        />
+      ) : (
+        <LoftBackdrop
+          className="jb-hub-hero__backdrop"
+          dusk={seasonByNumber(collection.seasonNumber).dusk}
+          evening={evening}
+          garland={garlandLights(state)}
+        />
+      )}
       <div className="jb-hub-hero__figure" aria-hidden="true">
         <BenchAvatar look={profile.look} title={profile.name} />
       </div>
       <div className="jb-hub-hero__card jb-measure">
         <span className="ad-eyebrow">
-          Week {weekNumber(calendar.day)} · {weekdayName(calendar.day)} · {CAREER.arcadeName}
+          Week {weekNumber(calendar.day)} · {weekdayName(calendar.day)} ·{" "}
+          {collection === null
+            ? ARCADE_NAME
+            : `${lineNameById(collection.lineNameId).name} · the Lantern Loft`}
         </span>
         <h1 className="jb-hub-hero__title">
           {dayGreeting(calendar.hoursLeft, total)}, {profile.name}
         </h1>
-        {market ? (
-          <p className="jb-hub-hero__market">
-            <Icon name="star" size={16} /> It's Market Day! Set out your stall tray before the lanterns dim.
+        {note !== null ? (
+          <p className="jb-hub-hero__market" data-testid="day-note">
+            <Icon name="star" size={16} /> {note}
           </p>
         ) : null}
         <WeekDrawers day={calendar.day} />
@@ -62,11 +113,18 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
             icon="bag"
             onClick={onWorkShift}
             disabledReason={shift.ok ? undefined : shift.reasons.join(" ")}
-            aria-label={`${CAREER.shiftName} for ${CAREER.shiftPay} coins`}
+            aria-label={`${career.shiftName} for ${career.shiftPay} coins`}
           >
-            Sort beads · +{CAREER.shiftPay}
+            {career.shiftButton} · +{career.shiftPay}
           </Button>
-          <Button size="lg" icon="calendar" onClick={onEndDay} data-testid="end-day">
+          <Button
+            size="lg"
+            icon="calendar"
+            onClick={onEndDay}
+            disabledReason={end.ok ? undefined : end.reasons[0]}
+            showReason
+            data-testid="end-day"
+          >
             End day
           </Button>
         </div>

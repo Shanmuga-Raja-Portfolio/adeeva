@@ -1,8 +1,8 @@
 import { clientNames } from "../../../../../engine/clientNames";
 import { arrivedClientIds, lapsedClientIds } from "../../../../../engine/gigBoardChanges";
 import { isWeekEnd } from "../../../../../engine/week";
-import { CAREER } from "../../../content/career";
-import { clientById, themeById, weeklyBill, type GameState } from "../../../core";
+import { LANDLORD } from "../../../content/career";
+import { careerById, clientById, themeById, weeklyBill, type GameState } from "../../../core";
 
 export type DayEndKind = "rest" | "shift";
 
@@ -14,11 +14,12 @@ export interface DaySummary {
 
 export function daySummary(previous: GameState, next: GameState, kind: DayEndKind): DaySummary {
   const lines: string[] = [];
-  if (kind === "shift") lines.push(`You sorted beads at the Bead Barn and earned ${CAREER.shiftPay} coins.`);
+  const career = careerById(previous.career);
+  if (kind === "shift") lines.push(`${career.shiftLine} and earned ${career.shiftPay} coins.`);
   if (isWeekEnd(previous.calendar.day)) {
-    const rent = weeklyBill(previous);
+    const rent = weeklyBill(previous, previous.calendar.day);
     lines.push(
-      rent === 0 ? "A new week begins. No rent to pay." : `Rent paid to ${CAREER.landlord}: ${rent} coins.`,
+      rent === 0 ? "A new week begins. No rent to pay." : `Rent paid to ${LANDLORD}: ${rent} coins.`,
     );
     lines.push(`This week shoppers love: ${next.trends.current.join(" and ")}.`);
     lines.push(`Next Market Day theme: ${themeById(next.marketTheme).name}.`);

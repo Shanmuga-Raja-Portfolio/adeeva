@@ -92,7 +92,7 @@ function judgeBudget(spend: number, brief: Brief): Judged {
 }
 
 export function evaluatePiece(
-  state: Pick<GameState, "marketTheme">,
+  state: Pick<GameState, "marketTheme" | "collection">,
   run: PieceRun,
   brief: Brief,
   deliveredDay: number,

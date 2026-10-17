@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Robin",
+    "look": {
+      "skinTone": "amber",
+      "hairStyle": "braids",
+      "hairColour": "black",
+      "outfit": "studio-apron"
+    },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": {
+    "day": 1,
+    "hoursLeft": 10
+  },
+  "coins": 100,
+  "reputation": 0,
+  "buzz": 0,
+  "stock": {
+    "metal": {
+      "copper": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "brass": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "silver": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "bronze": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "rose-gold": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "gold": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      }
+    },
+    "stones": {
+      "sky-glass": 0,
+      "sea-glass": 0,
+      "garnet": 0,
+      "citrine": 0,
+      "peridot": 0,
+      "onyx": 0,
+      "amethyst": 0,
+      "moonstone": 0
+    },
+    "extras": {
+      "fine-chain": 0,
+      "rope-chain": 0,
+      "silk-cord": 0,
+      "star-charm": 0,
+      "leaf-charm": 0,
+      "pearl-drop": 0
+    },
+    "clips": 0
+  },
+  "upgrades": [],
+  "decor": [],
+  "guide": true,
+  "trends": {
+    "current": ["elegant", "playful"],
+    "next": ["elegant", "nature"]
+  },
+  "marketTheme": "harbour-day",
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "gran-mina",
+        "brief": {
+          "clientId": "gran-mina",
+          "occasion": "A pendant for Sundays",
+          "productId": "stone-pendant",
+          "deadlineDay": 5,
+          "budget": 20,
+          "fee": 40,
+          "requiredTags": ["classic"],
+          "favouredColours": ["ivory", "ruby"],
+          "avoidColours": ["black"],
+          "avoidMetals": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [],
+    "lapsed": [],
+    "nextGigNumber": 2
+  },
+  "story": {
+    "seen": [],
+    "flags": [],
+    "queue": ["jb-key"]
+  },
+  "activeRun": null,
+  "stallBox": [],
+  "market": {
+    "shownDay": 0,
+    "last": null
+  },
+  "keepsakes": [],
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 1,
+  "rng": -1327612526
+}

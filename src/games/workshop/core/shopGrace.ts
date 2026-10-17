@@ -1,16 +1,20 @@
+import { GRACE_COINS, graceDue } from "../../../engine/seasonGrace";
 import type { GameState } from "./gameState";
 import { queueStoryTrigger } from "./storyQueue";
 
-export const SHOP_GRACE_COINS = 60;
+export const SHOP_GRACE_COINS = GRACE_COINS;
 
 export function shopGraceDue(state: GameState): boolean {
   const showroom = state.showroom;
   return (
     state.career === "showroom" &&
     showroom !== null &&
-    state.profile.difficulty === "standard" &&
-    state.coins < 0 &&
-    showroom.graceSeason < showroom.seasonNumber
+    graceDue({
+      difficulty: state.profile.difficulty,
+      coins: state.coins,
+      graceSeason: showroom.graceSeason,
+      seasonNumber: showroom.seasonNumber,
+    })
   );
 }
 

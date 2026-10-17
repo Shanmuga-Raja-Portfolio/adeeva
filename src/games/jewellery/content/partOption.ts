@@ -3,13 +3,24 @@ import type { JewelTag } from "./jewelTag";
 export const OPTION_SLOTS = ["shape", "band", "accent"] as const;
 export type OptionSlot = (typeof OPTION_SLOTS)[number];
 
-export const SHAPE_IDS = ["circle", "heart", "leaf", "raindrop", "crescent", "star"] as const;
+export const SHAPE_IDS = [
+  "circle",
+  "heart",
+  "leaf",
+  "raindrop",
+  "crescent",
+  "star",
+  "shell",
+  "flower",
+  "wave",
+  "lantern",
+] as const;
 export type ShapeId = (typeof SHAPE_IDS)[number];
 
-export const BAND_IDS = ["smooth-band", "wavy-band", "hammered-band"] as const;
+export const BAND_IDS = ["smooth-band", "wavy-band", "hammered-band", "twist-band", "beaded-band"] as const;
 export type BandId = (typeof BAND_IDS)[number];
 
-export const ACCENT_IDS = ["plain", "star-window", "dot-row"] as const;
+export const ACCENT_IDS = ["plain", "star-window", "dot-row", "moon-window", "heart-window"] as const;
 export type AccentId = (typeof ACCENT_IDS)[number];
 
 export const OPTION_IDS = [...SHAPE_IDS, ...BAND_IDS, ...ACCENT_IDS] as const;
@@ -48,6 +59,28 @@ export const OPTIONS: readonly OptionDef[] = [
     tags: ["sparkly", "playful"],
     cutting: "Ten edges, ten turns",
   },
+  {
+    id: "shell",
+    slot: "shape",
+    name: "Shell",
+    tags: ["nature", "dainty"],
+    cutting: "Three scallops, one turn",
+  },
+  {
+    id: "flower",
+    slot: "shape",
+    name: "Five Petals",
+    tags: ["nature", "playful"],
+    cutting: "Five curves, five turns",
+  },
+  { id: "wave", slot: "shape", name: "Wave", tags: ["bold", "nature"], cutting: "One S-curve, two turns" },
+  {
+    id: "lantern",
+    slot: "shape",
+    name: "Little Lantern",
+    tags: ["dreamy", "classic"],
+    cutting: "A round body and a top tab",
+  },
   { id: "smooth-band", slot: "band", name: "Smooth Band", tags: ["classic"], cutting: "A straight strip" },
   { id: "wavy-band", slot: "band", name: "Wavy Edge", tags: ["playful"], cutting: "Wavy long edges" },
   {
@@ -56,6 +89,20 @@ export const OPTIONS: readonly OptionDef[] = [
     name: "Hammered Band",
     tags: ["bold", "nature"],
     cutting: "A straight strip with dimples",
+  },
+  {
+    id: "twist-band",
+    slot: "band",
+    name: "Twist Band",
+    tags: ["bold", "playful"],
+    cutting: "Wavy edges that zig and zag",
+  },
+  {
+    id: "beaded-band",
+    slot: "band",
+    name: "Beaded Edge",
+    tags: ["dainty"],
+    cutting: "A straight strip of beads",
   },
   { id: "plain", slot: "accent", name: "Plain", tags: ["classic"], cutting: "Nothing extra" },
   {
@@ -66,4 +113,12 @@ export const OPTIONS: readonly OptionDef[] = [
     cutting: "A tiny star inside",
   },
   { id: "dot-row", slot: "accent", name: "Dot Row", tags: ["dainty"], cutting: "Three tiny circles inside" },
+  { id: "moon-window", slot: "accent", name: "Moon Window", tags: ["dreamy"], cutting: "A tiny moon inside" },
+  {
+    id: "heart-window",
+    slot: "accent",
+    name: "Heart Window",
+    tags: ["playful"],
+    cutting: "A tiny heart inside",
+  },
 ];

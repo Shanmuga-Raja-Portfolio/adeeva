@@ -58,7 +58,7 @@ export function StallPanel({ state, onStartStall, onOpenMarket }: StallPanelProp
         ))}
       </div>
       <p className="jb-hint">Each stall piece takes about 4 hours.</p>
-      {isMarketDay(state.calendar.day) ? (
+      {isMarketDay(state, state.calendar.day) ? (
         <Button
           block
           icon="star"

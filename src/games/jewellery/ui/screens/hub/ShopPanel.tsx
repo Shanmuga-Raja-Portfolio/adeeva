@@ -4,7 +4,7 @@ import { Icon } from "../../../../../ui/kit/IconSet";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
 import { DECOR, type DecorId } from "../../../content/decor";
 import { UPGRADES, type UpgradeId } from "../../../content/upgrade";
-import { decorIssues, upgradePurchaseIssues, type GameState } from "../../../core";
+import { decorIssues, shopUpgradeIssues, type GameState } from "../../../core";
 
 interface ShopPanelProps {
   readonly state: GameState;
@@ -49,15 +49,18 @@ function ShopRow({ row }: { readonly row: Row }) {
 }
 
 export function ShopPanel({ state, onBuyUpgrade, onBuyDecor }: ShopPanelProps) {
-  const upgrades: Row[] = UPGRADES.map((upgrade) => ({
+  const upgradeRows: (Row & { readonly loft: boolean })[] = UPGRADES.map((upgrade) => ({
     id: upgrade.id,
     name: upgrade.name,
     description: upgrade.description,
     price: upgrade.price,
     owned: state.upgrades.includes(upgrade.id),
-    issue: upgradePurchaseIssues(state, upgrade)[0],
+    issue: shopUpgradeIssues(state, upgrade.id)[0],
     buy: (event) => onBuyUpgrade(event, upgrade.id),
+    loft: upgrade.loftSpot !== null,
   }));
+  const upgrades = upgradeRows.filter((row) => !row.loft);
+  const loftUpgrades = state.career === "collection" ? upgradeRows.filter((row) => row.loft) : [];
   const decor: Row[] = DECOR.map((item) => ({
     id: item.id,
     name: item.name,
@@ -75,6 +78,16 @@ export function ShopPanel({ state, onBuyUpgrade, onBuyDecor }: ShopPanelProps) {
           <ShopRow key={row.id} row={row} />
         ))}
       </ul>
+      {loftUpgrades.length > 0 ? (
+        <>
+          <h4 className="jb-shop__heading">Loft upgrades</h4>
+          <ul className="jb-shop" data-testid="loft-upgrades">
+            {loftUpgrades.map((row) => (
+              <ShopRow key={row.id} row={row} />
+            ))}
+          </ul>
+        </>
+      ) : null}
       <h4 className="jb-shop__heading">Stall decor (just for looks)</h4>
       <ul className="jb-shop">
         {decor.map((row) => (

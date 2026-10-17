@@ -5,11 +5,16 @@ import {
 } from "../../../engine/saveEnvelope";
 import { SCHEMA_VERSION, type GameState } from "./gameState";
 import { gameStateParser } from "./gameStateParser";
+import { SAVE_MIGRATIONS } from "./saveMigrations";
 
 export type SaveParseResult = EnvelopeResult<GameState>;
 
 export const serialize: (state: GameState) => string = serializeSave;
 
 export function parseSave(json: string): SaveParseResult {
-  return parseSaveWith(json, { version: SCHEMA_VERSION, migrations: {}, parse: gameStateParser });
+  return parseSaveWith(json, {
+    version: SCHEMA_VERSION,
+    migrations: SAVE_MIGRATIONS,
+    parse: gameStateParser,
+  });
 }

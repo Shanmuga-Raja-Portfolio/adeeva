@@ -7,12 +7,14 @@ import {
   topLayer,
   type PlacedPose,
 } from "../../../engine/placedPose";
-import { isChainId, isCharmId, type ChainId, type CharmId } from "../content/extra";
+import { isChainId, isCharmId, MOTIF_CHARM, type ChainId, type CharmId } from "../content/extra";
 import type { FinishId } from "../content/finish";
 import { HINTS } from "../content/hints";
 import { isGlazeColour, type GlazeColour } from "../content/jewelColour";
 import { extraById, finishById, isFinishId, productById } from "./catalog";
+import type { ShapeId } from "../content/partOption";
 import type { GameState } from "./gameState";
+import { shapeOption } from "./partGeometry";
 import type { PlacedCharm } from "./pieceLook";
 import type { PieceRun } from "./pieceRun";
 
@@ -21,10 +23,19 @@ export const CHARM_ROTATION_STEP = 15;
 export const MAX_CHARM_SCALE = 1.5;
 const MAX_CHARMS = 6;
 
+export function coloredHolder(chain: ChainId | null): boolean {
+  return chain !== null && extraById(chain).colour === "cord";
+}
+
+export function holderCount(run: PieceRun): number {
+  return productById(run.design.productId).holder?.count ?? 0;
+}
+
 export function chooseFinish(state: GameState, finish: FinishId, glaze: GlazeColour | null): GameState {
   if (!isFinishId(finish)) return state;
   if (finish === "glaze" ? glaze === null || !isGlazeColour(glaze) : glaze !== null) return state;
   return updateActiveRun(state, "display", (run) => {
+    if (run.purpose.kind === "collection") return null;
     if (run.display.finish === finish && run.display.glaze === glaze) return null;
     return { ...run, display: { ...run.display, finish, glaze } };
   });
@@ -36,11 +47,12 @@ export function chooseChain(
   cordColour: GlazeColour | null,
 ): GameState {
   if (chain !== null && !isChainId(chain)) return state;
-  const wantsColour = chain === "silk-cord";
+  const wantsColour = coloredHolder(chain);
   if (wantsColour ? cordColour === null || !isGlazeColour(cordColour) : cordColour !== null) return state;
-  if (chain !== null && state.stock.extras[chain] < 1) return state;
   return updateActiveRun(state, "display", (run) => {
-    if (!productById(run.design.productId).needsChain) return null;
+    const holder = productById(run.design.productId).holder;
+    if (holder === null || (chain !== null && !holder.choices.includes(chain))) return null;
+    if (chain !== null && state.stock.extras[chain] < holder.count) return null;
     if (run.display.chain === chain && run.display.cordColour === cordColour) return null;
     return { ...run, display: { ...run.display, chain, cordColour } };
   });
@@ -57,6 +69,14 @@ export function availableCharms(state: GameState, charmId: CharmId): number {
   return state.stock.extras[charmId] - placed;
 }
 
+export function motifCharmShape(state: Pick<GameState, "collection">, run: PieceRun): ShapeId {
+  const motif = state.collection?.brief?.motif;
+  if (run.purpose.kind === "collection" && motif !== undefined) return motif;
+  return productById(run.design.productId).slots.includes("shape")
+    ? shapeOption(run.design.options)
+    : "circle";
+}
+
 export function addCharm(state: GameState, charmId: CharmId, x: number, y: number): GameState {
   if (!isOnCanvas(DISPLAY_CANVAS, x, y) || availableCharms(state, charmId) <= 0) return state;
   return updateActiveRun(state, "display", (run) => {
@@ -64,6 +84,7 @@ export function addCharm(state: GameState, charmId: CharmId, x: number, y: numbe
     const charm: PlacedCharm = {
       id: `charm-${run.display.nextCharmNumber}`,
       charmId,
+      shape: charmId === MOTIF_CHARM ? motifCharmShape(state, run) : null,
       x,
       y,
       rotation: 0,
@@ -122,7 +143,13 @@ export function finishCostIssues(state: GameState, run: PieceRun): string[] {
 export function displayIssues(state: GameState, run: PieceRun): string[] {
   const issues = finishCostIssues(state, run);
   const chain = run.display.chain;
-  if (productById(run.design.productId).needsChain && chain === null) issues.push(HINTS.chainFirst);
-  if (chain !== null && state.stock.extras[chain] < 1) issues.push(`You need a ${extraById(chain).name}.`);
+  const count = holderCount(run);
+  if (count > 0 && chain === null) issues.push(HINTS.chainFirst);
+  if (chain !== null && state.stock.extras[chain] < count)
+    issues.push(
+      count > 1
+        ? `You need ${count} of the ${extraById(chain).name}.`
+        : `You need a ${extraById(chain).name}.`,
+    );
   return issues;
 }

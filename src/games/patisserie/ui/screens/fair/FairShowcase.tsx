@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useMemo, type CSSProperties } from "react";
 import { colourById } from "../../../../../engine/palette";
 import { useSettings } from "../../../../../studio/SettingsContext";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
@@ -12,8 +12,11 @@ import { clientById, fairMusicById, fairTentByNumber, tableClothById, type FairR
 import { BakePreview } from "../../art/BakePreview";
 import { Cloche } from "../../art/Cloche";
 import { GlasshouseBackdrop } from "../../art/GlasshouseBackdrop";
-import { PanelFlipCards } from "./PanelFlipCards";
-import { showcaseSteps, type ShowcaseStep } from "./showcaseSteps";
+import { PanelFlips } from "../../../../../ui/show/PanelFlips";
+import { PANEL_LOOKS } from "./panelLooks";
+import { showcaseSteps } from "./showcaseSteps";
+import { revealedSlots, type RevealStep } from "../../../../../ui/show/revealSteps";
+import { useRevealSteps } from "../../../../../ui/show/useRevealSteps";
 import "./showcase.css";
 import type { ShowPlateView } from "./showPlates";
 
@@ -34,8 +37,8 @@ function restSpot(position: number, count: number): number {
   return REST_SPOTS[position] ?? 50;
 }
 
-function caption(step: ShowcaseStep, plates: readonly ShowPlateView[], theme: FairThemeDef): string {
-  const plate = plates[step.plate];
+function caption(step: RevealStep, plates: readonly ShowPlateView[], theme: FairThemeDef): string {
+  const plate = plates[step.slot];
   switch (step.kind) {
     case "title":
       return `Welcome to the Larkspur Patisserie Fair: ${theme.name}!`;
@@ -55,7 +58,7 @@ function caption(step: ShowcaseStep, plates: readonly ShowPlateView[], theme: Fa
 }
 
 interface StepViewProps extends Omit<FairShowcaseProps, "skippable"> {
-  readonly steps: readonly ShowcaseStep[];
+  readonly steps: readonly RevealStep[];
   readonly index: number;
   readonly reduced: boolean;
   readonly onNext: () => void;
@@ -67,11 +70,8 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
   if (step === undefined) return null;
   const t = step.ms === 0 ? 1 : elapsed / step.ms;
   const order = result.plan.order;
-  const position = step.plate;
-  const revealed = steps
-    .slice(0, index)
-    .filter((entry) => entry.kind === "reveal")
-    .map((entry) => entry.plate);
+  const position = step.slot;
+  const revealed = revealedSlots(steps, index);
   const lights = step.kind === "title" ? 0.15 : step.kind === "lights" ? 0.15 + 0.85 * easeOut(t) : 1;
   const cloth = tableClothById(result.plan.cloth).colour;
   const onTurntable = step.kind === "glide" || step.kind === "wait" || step.kind === "reveal";
@@ -94,7 +94,7 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
   ];
   return (
     <>
-      <div className="pa-showcase__stage" data-step={step.kind} data-plate={step.plate}>
+      <div className="pa-showcase__stage" data-step={step.kind} data-plate={step.slot}>
         <GlasshouseBackdrop className="pa-showcase__backdrop" lights={lights} cloth={cloth} />
         {revealed.map((slotPosition) => {
           const slot = order[slotPosition];
@@ -198,7 +198,14 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
             Lift the cloche
           </button>
         ) : null}
-        {step.kind === "panels" ? <PanelFlipCards panels={result.panels} instant={reduced} /> : null}
+        {step.kind === "panels" ? (
+          <PanelFlips
+            panels={result.panels}
+            iconOf={(id) => PANEL_LOOKS[id].icon}
+            instant={reduced}
+            block="pa-flip"
+          />
+        ) : null}
         {step.kind === "title" || step.kind === "panels" ? null : (
           <p className="pa-showcase__caption" aria-live="polite">
             {caption(step, plates, theme)}
@@ -212,37 +219,21 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
 export function FairShowcase({ theme, result, plates, visitors, skippable, onDone }: FairShowcaseProps) {
   const { reducedMotion } = useSettings();
   const steps = useMemo(() => showcaseSteps(plates.length, reducedMotion), [plates.length, reducedMotion]);
-  const [index, setIndex] = useState(0);
-  const advanceFrom = useCallback(
-    (from: number) => {
-      if (from + 1 >= steps.length) onDone();
-      else setIndex((current) => (current === from ? from + 1 : current));
-    },
-    [steps.length, onDone],
-  );
-  const step = steps[index];
-  const canSkip = skippable || steps.slice(0, index).some((entry) => entry.kind === "reveal");
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && canSkip) onDone();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [canSkip, onDone]);
+  const { index, step, next, canSkip } = useRevealSteps(steps, skippable, onDone);
   const music = fairMusicById(result.plan.music);
   return (
     <section
       className={reducedMotion ? "pa-showcase pa-showcase--still" : "pa-showcase"}
       aria-label={`${theme.name} showcase`}
       data-testid="fair-showcase"
-      data-scene={step === undefined ? "done" : `${step.kind}${step.plate >= 0 ? `-${step.plate + 1}` : ""}`}
+      data-scene={step === undefined ? "done" : `${step.kind}${step.slot >= 0 ? `-${step.slot + 1}` : ""}`}
     >
       <StepView
         key={index}
         steps={steps}
         index={index}
         reduced={reducedMotion}
-        onNext={() => advanceFrom(index)}
+        onNext={next}
         theme={theme}
         result={result}
         plates={plates}

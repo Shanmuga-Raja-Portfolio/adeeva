@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Juno",
+    "look": {
+      "skinTone": "amber",
+      "hairStyle": "braids",
+      "hairColour": "black",
+      "outfit": "studio-apron"
+    },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": {
+    "day": 1,
+    "hoursLeft": 6
+  },
+  "coins": 85,
+  "reputation": 0,
+  "buzz": 0,
+  "stock": {
+    "metal": {
+      "copper": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "brass": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "silver": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "bronze": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "rose-gold": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "gold": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      }
+    },
+    "stones": {
+      "sky-glass": 0,
+      "sea-glass": 0,
+      "garnet": 1,
+      "citrine": 0,
+      "peridot": 0,
+      "onyx": 0,
+      "amethyst": 0,
+      "moonstone": 0
+    },
+    "extras": {
+      "fine-chain": 1,
+      "rope-chain": 0,
+      "silk-cord": 0,
+      "star-charm": 0,
+      "leaf-charm": 0,
+      "pearl-drop": 0
+    },
+    "clips": 0
+  },
+  "upgrades": [],
+  "decor": [],
+  "guide": true,
+  "trends": {
+    "current": ["bold", "classic"],
+    "next": ["elegant", "dreamy"]
+  },
+  "marketTheme": "spring-fair",
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "gran-mina",
+        "brief": {
+          "clientId": "gran-mina",
+          "occasion": "A pendant for Sundays",
+          "productId": "stone-pendant",
+          "deadlineDay": 5,
+          "budget": 27,
+          "fee": 42,
+          "requiredTags": ["classic"],
+          "favouredColours": ["gold", "ruby"],
+          "avoidColours": ["black"],
+          "avoidMetals": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-2",
+        "clientId": "gran-mina",
+        "brief": {
+          "clientId": "gran-mina",
+          "occasion": "A pendant for Sundays",
+          "productId": "stone-pendant",
+          "deadlineDay": 5,
+          "budget": 30,
+          "fee": 38,
+          "requiredTags": ["classic"],
+          "favouredColours": ["gold", "ivory"],
+          "avoidColours": ["black"],
+          "avoidMetals": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "acceptedDay": 1
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 3
+  },
+  "story": {
+    "seen": ["jb-key"],
+    "flags": [],
+    "queue": ["jb-dreamer"]
+  },
+  "activeRun": {
+    "id": "run-1",
+    "purpose": {
+      "kind": "order",
+      "gigId": "gig-2"
+    },
+    "brief": {
+      "clientId": "gran-mina",
+      "occasion": "A pendant for Sundays",
+      "productId": "stone-pendant",
+      "deadlineDay": 5,
+      "budget": 30,
+      "fee": 38,
+      "requiredTags": ["classic"],
+      "favouredColours": ["gold", "ivory"],
+      "avoidColours": ["black"],
+      "avoidMetals": [],
+      "requiredExtras": [],
+      "minQuality": 55
+    },
+    "stage": "join",
+    "reached": "join",
+    "startedDay": 1,
+    "seed": 1141103715,
+    "design": {
+      "productId": "stone-pendant",
+      "options": {
+        "shape": "circle"
+      },
+      "metalId": "brass",
+      "stoneId": "garnet"
+    },
+    "plan": {
+      "plate": {
+        "size": "sheet",
+        "x": 2,
+        "y": 2,
+        "rotation": 0
+      },
+      "seat": {
+        "size": "sheet",
+        "x": 27,
+        "y": 2,
+        "rotation": 0
+      },
+      "loop": {
+        "size": "sheet",
+        "x": 27,
+        "y": 16,
+        "rotation": 0
+      }
+    },
+    "consumed": ["sheet"],
+    "stonesTaken": false,
+    "cuts": {
+      "plate": {
+        "accuracy": 1,
+        "assisted": false
+      },
+      "seat": {
+        "accuracy": 1,
+        "assisted": false
+      },
+      "loop": {
+        "accuracy": 1,
+        "assisted": false
+      }
+    },
+    "joins": {
+      "seat": {
+        "ticks": 90,
+        "insideTicks": 60,
+        "overTicks": 12,
+        "assisted": false
+      }
+    },
+    "sets": {},
+    "polish": {},
+    "display": {
+      "finish": "high-shine",
+      "glaze": null,
+      "chain": null,
+      "cordColour": null,
+      "charms": [],
+      "nextCharmNumber": 1
+    },
+    "suppliesHourPaid": true
+  },
+  "stallBox": [],
+  "market": {
+    "shownDay": 0,
+    "last": null
+  },
+  "keepsakes": [],
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 2,
+  "rng": 1071847761
+}

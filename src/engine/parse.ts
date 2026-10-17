@@ -14,6 +14,10 @@ export function isPlainObject(input: unknown): input is Readonly<Record<string, 
   return typeof input === "object" && input !== null && !Array.isArray(input);
 }
 
+export function isObjectList(input: unknown): boolean {
+  return Array.isArray(input) && input.every((item) => isPlainObject(item));
+}
+
 export const numberParser: Parser<number> = (input, path) =>
   typeof input === "number" && Number.isFinite(input) ? parsed(input) : failed(path, "a finite number");
 

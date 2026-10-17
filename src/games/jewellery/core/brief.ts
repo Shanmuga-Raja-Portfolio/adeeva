@@ -5,9 +5,17 @@ import type { ClientDef, ExtraRequirement } from "../content/client";
 import type { JewelColour } from "../content/jewelColour";
 import type { JewelTag } from "../content/jewelTag";
 import type { MetalId } from "../content/metal";
+import type { StoneId } from "../content/stone";
 import type { ProductId } from "../content/product";
+import type { DesignOptions } from "./pieceLook";
 
 export const FAVOURED_COLOURS_PER_BRIEF = 2;
+
+export interface DesignPreset {
+  readonly options: DesignOptions;
+  readonly metalId: MetalId;
+  readonly stoneId: StoneId | null;
+}
 
 export interface Brief {
   readonly clientId: string;
@@ -22,6 +30,7 @@ export interface Brief {
   readonly avoidMetals: readonly MetalId[];
   readonly requiredExtras: readonly ExtraRequirement[];
   readonly minQuality: number;
+  readonly preset: DesignPreset | null;
 }
 
 export interface BriefRoll {
@@ -53,9 +62,21 @@ export function rollClientBrief(client: ClientDef, roll: BriefRoll, rng: RngStat
       avoidMetals: template.avoidMetals,
       requiredExtras: template.requiredExtras,
       minQuality: template.minQuality + roll.minQualityBonus,
+      preset: null,
     },
     afterColours,
   ];
+}
+
+function samePreset(a: DesignPreset | null, b: DesignPreset | null): boolean {
+  if (a === null || b === null) return a === b;
+  return (
+    a.metalId === b.metalId &&
+    a.stoneId === b.stoneId &&
+    a.options.shape === b.options.shape &&
+    a.options.band === b.options.band &&
+    a.options.accent === b.options.accent
+  );
 }
 
 export function sameBrief(a: Brief, b: Brief): boolean {
@@ -67,6 +88,7 @@ export function sameBrief(a: Brief, b: Brief): boolean {
     a.budget === b.budget &&
     a.fee === b.fee &&
     a.minQuality === b.minQuality &&
+    samePreset(a.preset, b.preset) &&
     sameList(a.requiredTags, b.requiredTags) &&
     sameList(a.favouredColours, b.favouredColours) &&
     sameList(a.avoidColours, b.avoidColours) &&

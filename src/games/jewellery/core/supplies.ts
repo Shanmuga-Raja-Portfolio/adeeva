@@ -1,6 +1,6 @@
 import { actionCheck, type ActionCheck } from "../../../engine/actionCheck";
 import { hoursShortfallReason, spendHours } from "../../../engine/dayHours";
-import { CHAIN_IDS, CLIP_SET, type ExtraId } from "../content/extra";
+import { CLIP_SET, type ExtraId } from "../content/extra";
 import type { MetalId } from "../content/metal";
 import { STOCK_SIZE_IDS, type StockSizeId } from "../content/stockSize";
 import type { StoneId } from "../content/stone";
@@ -17,12 +17,12 @@ import {
 } from "./catalog";
 import { metalLocked, stoneLocked } from "./design";
 import type { GameState } from "./gameState";
+import { currentLineSheet } from "./lineSheet";
 import type { PieceRun } from "./pieceRun";
 import { stockPrice, withExtra, withMetal, withStones, type Stock } from "./stock";
 
 const SUPPLY_VISIT_HOURS = 1;
 export const MAX_CART_COUNT = 9;
-const DEFAULT_CHAIN: ExtraId = "fine-chain";
 
 interface MetalLine {
   readonly metalId: MetalId;
@@ -134,15 +134,15 @@ export function canonicalSizes(run: PieceRun): StockSizeId[] {
   return STOCK_SIZE_IDS.filter((size) => placements.some((placement) => placement.size === size));
 }
 
-function metalCovered(stock: Stock, run: PieceRun): boolean {
+function metalCovered(state: GameState, run: PieceRun): boolean {
   const metalId = run.design.metalId;
   if (metalId === null) return false;
-  const owned = stock.metal[metalId];
-  return owned.wide > 0 || canonicalSizes(run).every((size) => owned[size] > 0);
-}
-
-function chainsOwned(stock: Stock): number {
-  return CHAIN_IDS.reduce((sum, id) => sum + stock.extras[id], 0);
+  const owned = state.stock.metal[metalId];
+  return (
+    owned.wide > 0 ||
+    currentLineSheet(state, run) !== null ||
+    canonicalSizes(run).every((size) => owned[size] > 0)
+  );
 }
 
 function extraNeeds(run: PieceRun): Partial<Record<ExtraId, number>> {
@@ -156,21 +156,27 @@ export function shortfall(state: GameState, run: PieceRun): SupplyCart {
   const product = productById(run.design.productId);
   const { metalId, stoneId } = run.design;
   const metal: MetalLine[] =
-    metalId === null || metalCovered(state.stock, run)
+    metalId === null || metalCovered(state, run)
       ? []
       : canonicalSizes(run)
           .filter((size) => state.stock.metal[metalId][size] === 0)
           .map((size) => ({ metalId, size, count: 1 }));
   const stones: Partial<Record<StoneId, number>> = {};
-  const missingStones = stoneId === null ? 0 : product.seats.length - state.stock.stones[stoneId];
+  const fromPot = run.purpose.kind === "collection";
+  const missingStones = stoneId === null || fromPot ? 0 : product.seats.length - state.stock.stones[stoneId];
   if (stoneId !== null && missingStones > 0) stones[stoneId] = missingStones;
   const extras: Partial<Record<ExtraId, number>> = {};
   for (const [id, count] of entries(extraNeeds(run))) {
     const missing = count - state.stock.extras[id];
     if (missing > 0) extras[id] = missing;
   }
-  const chainCovered = Object.keys(extras).some((id) => CHAIN_IDS.some((chain) => chain === id));
-  if (product.needsChain && !chainCovered && chainsOwned(state.stock) === 0) extras[DEFAULT_CHAIN] = 1;
+  const holder = product.holder;
+  const firstHolder = holder?.choices[0];
+  if (holder !== null && firstHolder !== undefined) {
+    const owned = holder.choices.reduce((sum, id) => sum + state.stock.extras[id] + (extras[id] ?? 0), 0);
+    const missing = holder.count - owned;
+    if (missing > 0) extras[firstHolder] = (extras[firstHolder] ?? 0) + missing;
+  }
   const clips = Math.max(0, product.clipSets - state.stock.clips);
   return { metal, stones, extras, clips };
 }

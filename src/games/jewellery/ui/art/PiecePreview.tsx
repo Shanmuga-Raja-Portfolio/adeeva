@@ -2,14 +2,19 @@ import type { ReactNode } from "react";
 import { PlacedLayer } from "../../../../ui/art/PlacedLayer";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 import { DISPLAY_CANVAS, productById, type PieceSource, type PlacedCharm } from "../../core";
+import { BadgeArt } from "./BadgeArt";
+import { BagCharmArt } from "./BagCharmArt";
+import { BangleArt } from "./BangleArt";
 import { BraceletArt } from "./BraceletArt";
 import { CharmArt } from "./CharmArt";
 import { EarringArt } from "./EarringArt";
+import { HalvesArt } from "./HalvesArt";
 import { MetalDefs, metalFill, sheenFill } from "./MetalDefs";
 import { metalLook } from "./metalLook";
 import { PendantArt } from "./PendantArt";
 import type { PieceArtProps } from "./pieceArtProps";
 import { RingArt } from "./RingArt";
+import { SlideArt } from "./SlideArt";
 import { VelvetCard } from "./VelvetCard";
 
 export interface PiecePreviewProps {
@@ -23,15 +28,22 @@ export interface PiecePreviewProps {
 }
 
 function KindArt(props: PieceArtProps) {
-  switch (productById(props.source.productId).kind) {
+  const product = productById(props.source.productId);
+  switch (product.kind) {
     case "ring":
       return <RingArt {...props} />;
     case "pendant":
-      return <PendantArt {...props} />;
+      return product.id === "friendship-halves" ? <HalvesArt {...props} /> : <PendantArt {...props} />;
     case "earrings":
       return <EarringArt {...props} />;
     case "bracelet":
-      return <BraceletArt {...props} />;
+      return product.id === "bangle" ? <BangleArt {...props} /> : <BraceletArt {...props} />;
+    case "badge":
+      return <BadgeArt {...props} />;
+    case "charm":
+      return <BagCharmArt {...props} />;
+    case "slide":
+      return <SlideArt {...props} />;
   }
 }
 
@@ -72,7 +84,7 @@ export function PiecePreview({
           className="jb-piece__charms"
           render={(charm) => (
             <g transform={charmTransform(charm)}>
-              <CharmArt charmId={charm.charmId} />
+              <CharmArt charmId={charm.charmId} shape={charm.shape} />
             </g>
           )}
         />

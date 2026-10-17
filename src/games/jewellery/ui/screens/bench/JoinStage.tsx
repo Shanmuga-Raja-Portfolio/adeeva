@@ -3,13 +3,23 @@ import { useSettings } from "../../../../../studio/SettingsContext";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
 import { SAFETY_LINE } from "../../../content/hints";
-import { isJoinDone, joinAccuracy, joinZone, metalById, runJoints } from "../../../core";
+import { SegmentedControl } from "../../../../../ui/kit/SegmentedControl";
+import {
+  isJoinDone,
+  joinAccuracy,
+  joinZone,
+  metalById,
+  runJoints,
+  twinOffered,
+  twinZones,
+} from "../../../core";
 import { CelebrationBurst } from "../../art/CelebrationBurst";
 import { metalLook } from "../../art/metalLook";
 import { useAssist } from "../../useAssist";
 import { useFocusCarry } from "../../useFocusCarry";
 import { LampBench } from "./LampBench";
 import { StageFooter } from "./StageFooter";
+import { TwinLampBench } from "./TwinLampBench";
 import { assistHint } from "./stageNames";
 import type { StageProps } from "./stageProps";
 import "./join.css";
@@ -23,6 +33,14 @@ export function JoinStage(props: StageProps) {
   const joints = runJoints(run);
   const firstOpen = joints.find((joint) => !isJoinDone(run.joins[joint.id], joint.ticks))?.id ?? null;
   const [picked, setPicked] = useState<string | null>(null);
+  const [mode, setMode] = useState<"twin" | "single">("twin");
+  const [first, second] = joints;
+  const canTwin =
+    twinOffered(state, run) &&
+    Object.keys(run.joins).length === 0 &&
+    first !== undefined &&
+    second !== undefined;
+  const twinRecorded = Object.values(run.joins).some((record) => record.twin);
   const activeId =
     picked !== null && !isJoinDone(run.joins[picked], joints.find((joint) => joint.id === picked)?.ticks ?? 0)
       ? picked
@@ -74,6 +92,17 @@ export function JoinStage(props: StageProps) {
               );
             })}
           </ul>
+          {canTwin ? (
+            <SegmentedControl
+              label="How to join the pair"
+              value={mode}
+              onChange={setMode}
+              options={[
+                { value: "twin", label: "Join both" },
+                { value: "single", label: "One at a time" },
+              ]}
+            />
+          ) : null}
           <ToggleSwitch
             label="Steady lamp"
             description="The lamp holds the glow in the gold zone."
@@ -87,7 +116,19 @@ export function JoinStage(props: StageProps) {
         </aside>
         <div className="jb-work__stage">
           <CelebrationBurst key={done} active={done > 0} />
-          {active !== undefined && metalId !== null ? (
+          {canTwin && mode === "twin" && metalId !== null && first !== undefined && second !== undefined ? (
+            <TwinLampBench
+              joints={[first, second]}
+              zones={twinZones(state)}
+              warmRate={metalById(metalId).warmRate}
+              assisted={assist}
+              metal={metalLook(metalId, "high-shine")}
+              reducedMotion={reducedMotion}
+              onRecord={(ticks, seams, assisted) =>
+                dispatch({ type: "recordTwinJoin", ticks, seams, assisted })
+              }
+            />
+          ) : active !== undefined && metalId !== null ? (
             <LampBench
               key={`${active.id}-${restarts}`}
               joint={active}
@@ -106,6 +147,13 @@ export function JoinStage(props: StageProps) {
             <div className="jb-work__done">
               <Icon name="sparkle" size={32} />
               <p>Every seam is joined. Smooth as silk!</p>
+              {twinRecorded ? (
+                <p className="jb-twin-note" data-testid="twin-note">
+                  {run.twinGlow
+                    ? "Two seams, one glow: an hour saved!"
+                    : "Both seams joined at once. No twin glow this time, and that's just fine."}
+                </p>
+              ) : null}
             </div>
           )}
         </div>

@@ -13,7 +13,7 @@ export const RUN_STAGES = [
 ] as const;
 export type RunStage = (typeof RUN_STAGES)[number];
 
-export type RunKind = "order" | "stall";
+export type RunKind = "order" | "stall" | "collection";
 
 const STALL_STAGES: readonly RunStage[] = [
   "design",
@@ -28,7 +28,8 @@ const STALL_STAGES: readonly RunStage[] = [
 
 export function stagesFor(kind: RunKind, seats: number): readonly RunStage[] {
   if (kind === "stall") return STALL_STAGES;
-  return seats > 0 ? RUN_STAGES : RUN_STAGES.filter((stage) => stage !== "set");
+  const stages = kind === "collection" ? RUN_STAGES.filter((stage) => stage !== "brief") : RUN_STAGES;
+  return seats > 0 ? stages : stages.filter((stage) => stage !== "set");
 }
 
 export function stageIndex(stage: RunStage): number {

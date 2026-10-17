@@ -4,12 +4,15 @@ import type { ProfileBase } from "../../../engine/profile";
 import type { RngState } from "../../../engine/rng";
 import type { StoryState } from "../../../engine/story";
 import type { TrendState } from "../../../engine/trendMarket";
+import type { CareerId } from "../content/career";
 import type { DecorId } from "../content/decor";
 import type { JewelTag } from "../content/jewelTag";
 import type { ThemeId } from "../content/marketTheme";
 import type { UpgradeId } from "../content/upgrade";
 import type { Brief } from "./brief";
+import type { CollectionState } from "./collectionState";
 import type { KeepsakeEntry } from "./keepsakeCase";
+import type { LaunchState } from "./launchState";
 import type { MarketState } from "./marketDay";
 import type { Evaluation } from "./pieceEvaluate";
 import type { PieceRun } from "./pieceRun";
@@ -17,9 +20,11 @@ import type { Reward } from "./rewards";
 import type { StallPiece } from "./stallBox";
 import type { Stock } from "./stock";
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
-export type Profile = ProfileBase;
+export interface Profile extends ProfileBase {
+  readonly startedAs: CareerId;
+}
 
 export type Offer = BoardOffer<Brief>;
 export type Gig = BoardGig<Brief>;
@@ -36,6 +41,7 @@ export interface LogEntry {
 export interface GameState {
   readonly schemaVersion: typeof SCHEMA_VERSION;
   readonly profile: Profile;
+  readonly career: CareerId;
   readonly calendar: DayClock;
   readonly coins: number;
   readonly reputation: number;
@@ -55,5 +61,7 @@ export interface GameState {
   readonly log: readonly LogEntry[];
   readonly ordersDelivered: number;
   readonly nextRunNumber: number;
+  readonly collection: CollectionState | null;
+  readonly launch: LaunchState | null;
   readonly rng: RngState;
 }

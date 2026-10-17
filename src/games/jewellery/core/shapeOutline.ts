@@ -1,67 +1,19 @@
 import type { Point } from "../../../engine/geometry/point";
-import { polygonBounds } from "../../../engine/geometry/polygonPlacement";
-import type { AccentId, BandId, ShapeId } from "../content/partOption";
+import type { ShapeId } from "../content/partOption";
 import type { StoneCut } from "../content/stone";
+import {
+  arc,
+  arcBetween,
+  ellipsePoints,
+  fitted,
+  starPoints,
+  type Circle,
+  type UnitShape,
+} from "./unitCurves";
 
-export interface UnitShape {
-  readonly points: readonly Point[];
-  readonly dots: readonly number[];
-}
+export { mirroredShape, type UnitShape } from "./unitCurves";
 
 const CURVE_POINTS = 48;
-
-function ellipsePoints(cx: number, cy: number, rx: number, ry: number, count: number): Point[] {
-  return Array.from({ length: count }, (_, index): Point => {
-    const angle = -Math.PI / 2 + (2 * Math.PI * index) / count;
-    return [cx + rx * Math.cos(angle), cy + ry * Math.sin(angle)];
-  });
-}
-
-function arc(
-  cx: number,
-  cy: number,
-  rx: number,
-  ry: number,
-  from: number,
-  to: number,
-  count: number,
-): Point[] {
-  return Array.from({ length: count + 1 }, (_, index): Point => {
-    const angle = from + ((to - from) * index) / count;
-    return [cx + rx * Math.cos(angle), cy + ry * Math.sin(angle)];
-  });
-}
-
-interface Circle {
-  readonly x: number;
-  readonly y: number;
-  readonly r: number;
-}
-
-function arcBetween(
-  circle: Circle,
-  from: Point,
-  to: Point,
-  keep: (point: Point) => boolean,
-  count: number,
-): Point[] {
-  const start = Math.atan2(from[1] - circle.y, from[0] - circle.x);
-  const end = Math.atan2(to[1] - circle.y, to[0] - circle.x);
-  const forward = end > start ? end : end + 2 * Math.PI;
-  const backward = end < start ? end : end - 2 * Math.PI;
-  const middle = (start + forward) / 2;
-  const target = keep([circle.x + circle.r * Math.cos(middle), circle.y + circle.r * Math.sin(middle)])
-    ? forward
-    : backward;
-  return arc(circle.x, circle.y, circle.r, circle.r, start, target, count);
-}
-
-function fitted(points: readonly Point[]): Point[] {
-  const { minX, minY, maxX, maxY } = polygonBounds(points);
-  const spanX = maxX - minX;
-  const spanY = maxY - minY;
-  return points.map(([x, y]): Point => [(x - minX) / spanX, (y - minY) / spanY]);
-}
 
 function circle(): UnitShape {
   return { points: ellipsePoints(0.5, 0.5, 0.5, 0.5, CURVE_POINTS), dots: [] };
@@ -120,16 +72,74 @@ function crescent(): UnitShape {
   return { points: fitted([...outerPoints, ...innerPoints]), dots: [0, outerPoints.length - 1] };
 }
 
-function starPoints(cx: number, cy: number, outer: number, inner: number): Point[] {
-  return Array.from({ length: 10 }, (_, index): Point => {
-    const radius = index % 2 === 0 ? outer : inner;
-    const angle = -Math.PI / 2 + (Math.PI * index) / 5;
-    return [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
-  });
-}
-
 function star(): UnitShape {
   return { points: fitted(starPoints(0.5, 0.5, 0.5, 0.22)), dots: Array.from({ length: 10 }, (_, i) => i) };
+}
+
+function shell(): UnitShape {
+  const across = 36;
+  const top = Array.from({ length: across + 1 }, (_, index): Point => {
+    const t = index / across;
+    return [t, 0.42 - 0.34 * Math.sin(Math.PI * t) - 0.08 * Math.abs(Math.sin(3 * Math.PI * t))];
+  });
+  const side = 8;
+  const right = Array.from({ length: side }, (_, index): Point => {
+    const t = (index + 1) / side;
+    return [1 - 0.5 * t, 0.42 + 0.58 * t - 0.12 * Math.sin(Math.PI * t)];
+  });
+  const left = Array.from({ length: side - 1 }, (_, index): Point => {
+    const t = (index + 1) / side;
+    return [0.5 - 0.5 * t, 1 - 0.58 * t - 0.12 * Math.sin(Math.PI * t)];
+  });
+  return { points: fitted([...top, ...right, ...left]), dots: [across + side] };
+}
+
+function flower(): UnitShape {
+  const petals = 5;
+  const steps = 14;
+  const points: Point[] = [];
+  const dots: number[] = [];
+  for (let petal = 0; petal < petals; petal += 1)
+    for (let step = 0; step < steps; step += 1) {
+      const angle = -Math.PI / 2 + Math.PI / petals + (2 * Math.PI * (petal + step / steps)) / petals;
+      if (step === 0) dots.push(points.length);
+      const radius = 0.5 * (0.42 + 0.58 * Math.abs(Math.cos((petals * (angle + Math.PI / 2)) / 2)));
+      points.push([0.5 + radius * Math.cos(angle), 0.5 + radius * Math.sin(angle)]);
+    }
+  return { points: fitted(points), dots };
+}
+
+function wave(): UnitShape {
+  const steps = 28;
+  const middle = (x: number) => 0.62 - 0.24 * x + 0.12 * Math.sin(2 * Math.PI * x);
+  const top = Array.from({ length: steps + 1 }, (_, index): Point => {
+    const x = index / steps;
+    return [x, middle(x) - 0.34 * Math.sin(Math.PI * x)];
+  });
+  const bottom = Array.from({ length: steps - 1 }, (_, index): Point => {
+    const x = 1 - (index + 1) / steps;
+    return [x, middle(x) + 0.3 * Math.sin(Math.PI * x)];
+  });
+  return { points: fitted([...top, ...bottom]), dots: [0, steps] };
+}
+
+function lantern(): UnitShape {
+  const cx = 0.5;
+  const cy = 0.61;
+  const rx = 0.5;
+  const ry = 0.39;
+  const tab = 0.12;
+  const joinAngle = Math.asin(tab / rx);
+  const joinY = cy - ry * Math.cos(joinAngle);
+  const body = arc(cx, cy, rx, ry, -Math.PI / 2 + joinAngle, (3 * Math.PI) / 2 - joinAngle, 40);
+  const points: Point[] = [
+    [cx - tab, 0],
+    [cx + tab, 0],
+    [cx + tab, joinY],
+    ...body.slice(1, -1),
+    [cx - tab, joinY],
+  ];
+  return { points, dots: [0, 1, 2, points.length - 1] };
 }
 
 const SHAPES: Readonly<Record<ShapeId, () => UnitShape>> = {
@@ -139,37 +149,57 @@ const SHAPES: Readonly<Record<ShapeId, () => UnitShape>> = {
   raindrop,
   crescent,
   star,
+  shell,
+  flower,
+  wave,
+  lantern,
 };
 
 export function shapeOutline(shape: ShapeId): UnitShape {
   return SHAPES[shape]();
 }
 
-function wavyBand(): UnitShape {
-  const count = 56;
-  const wave = (x: number) => 0.15 * Math.sin(2 * Math.PI * 7 * x);
-  const top = Array.from({ length: count + 1 }, (_, index): Point => {
-    const x = index / count;
-    return [x, 0.15 + wave(x)];
-  });
-  const bottom = Array.from({ length: count + 1 }, (_, index): Point => {
-    const x = 1 - index / count;
-    return [x, 0.85 + wave(x)];
-  });
-  return { points: fitted([...top, ...bottom]), dots: [] };
+const SPLIT_X = 0.5;
+const ON_LINE = 1e-9;
+
+interface ClipPoint {
+  readonly point: Point;
+  readonly dot: boolean;
+  readonly cut: boolean;
 }
 
-export function bandOutline(band: BandId): UnitShape {
-  if (band === "wavy-band") return wavyBand();
-  return {
-    points: [
-      [0, 0],
-      [1, 0],
-      [1, 1],
-      [0, 1],
-    ],
-    dots: [],
-  };
+function splitPoint(a: Point, b: Point): Point {
+  const t = (SPLIT_X - a[0]) / (b[0] - a[0]);
+  return [SPLIT_X, a[1] + (b[1] - a[1]) * t];
+}
+
+export function leftHalf(shape: UnitShape): UnitShape {
+  const count = shape.points.length;
+  const kept: ClipPoint[] = [];
+  shape.points.forEach((current, index) => {
+    const next = shape.points[(index + 1) % count];
+    if (next === undefined) return;
+    const inside = current[0] <= SPLIT_X + ON_LINE;
+    const nextInside = next[0] <= SPLIT_X + ON_LINE;
+    if (inside)
+      kept.push({
+        point: current,
+        dot: shape.dots.includes(index),
+        cut: Math.abs(current[0] - SPLIT_X) <= ON_LINE,
+      });
+    if (inside !== nextInside) kept.push({ point: splitPoint(current, next), dot: true, cut: true });
+  });
+  const dots = kept.flatMap((entry, index) => {
+    const before = kept[(index + kept.length - 1) % kept.length];
+    const after = kept[(index + 1) % kept.length];
+    const endsCut = entry.cut && ((before?.cut ?? false) || (after?.cut ?? false));
+    return entry.dot || endsCut ? [index] : [];
+  });
+  return { points: fitted(kept.map((entry) => entry.point)), dots };
+}
+
+export function halfOutline(shape: ShapeId): UnitShape {
+  return leftHalf(shapeOutline(shape));
 }
 
 function roundedSquare(): UnitShape {
@@ -204,52 +234,4 @@ export function loopOutline(): UnitShape {
   const left = arc(0.2, 0.5, 0.2, 0.5, Math.PI / 2, (3 * Math.PI) / 2, 12);
   const right = arc(0.8, 0.5, 0.2, 0.5, -Math.PI / 2, Math.PI / 2, 12);
   return { points: [...left, ...right], dots: [] };
-}
-
-interface AccentAnchor {
-  readonly x: number;
-  readonly y: number;
-  readonly size: number;
-  readonly vertical: boolean;
-}
-
-const ACCENT_ANCHORS: Readonly<Record<ShapeId, AccentAnchor>> = {
-  circle: { x: 0.5, y: 0.5, size: 0.34, vertical: false },
-  heart: { x: 0.5, y: 0.42, size: 0.3, vertical: false },
-  leaf: { x: 0.5, y: 0.5, size: 0.3, vertical: true },
-  raindrop: { x: 0.5, y: 0.64, size: 0.3, vertical: false },
-  crescent: { x: 0.2, y: 0.52, size: 0.2, vertical: true },
-  star: { x: 0.5, y: 0.53, size: 0.24, vertical: false },
-};
-
-export function accentOutlines(accent: AccentId, shape: ShapeId): UnitShape[] {
-  const anchor = ACCENT_ANCHORS[shape];
-  if (accent === "plain") return [];
-  if (accent === "star-window") {
-    const half = anchor.size / 2;
-    return [
-      {
-        points: starPoints(anchor.x, anchor.y, half, half * 0.45),
-        dots: Array.from({ length: 10 }, (_, i) => i),
-      },
-    ];
-  }
-  const radius = anchor.size * 0.2;
-  const gap = anchor.size * 0.5;
-  return [-1, 0, 1].map((offset) => ({
-    points: ellipsePoints(
-      anchor.vertical ? anchor.x : anchor.x + offset * gap,
-      anchor.vertical ? anchor.y + offset * gap : anchor.y,
-      radius,
-      radius,
-      20,
-    ),
-    dots: [],
-  }));
-}
-
-export function mirroredShape(shape: UnitShape): UnitShape {
-  const count = shape.points.length;
-  const points = [...shape.points].reverse().map(([x, y]): Point => [1 - x, y]);
-  return { points, dots: shape.dots.map((index) => count - 1 - index) };
 }

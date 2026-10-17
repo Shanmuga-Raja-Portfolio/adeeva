@@ -3,8 +3,7 @@ import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { StatChip } from "../../../../../ui/kit/StatChip";
-import { CAREER } from "../../../content/career";
-import { difficultyById } from "../../../core";
+import { careerById, difficultyById } from "../../../core";
 import type { SlotRead } from "../../jewellerySlots";
 
 export interface SaveSlotCardProps {
@@ -63,7 +62,7 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
           <span className="ad-eyebrow">{label}</span>
           <h3 className="jb-slot__name">{state.profile.name}</h3>
           <span className="jb-muted">
-            {CAREER.name} · {difficultyById(state.profile.difficulty).name}
+            {careerById(state.career).name} · {difficultyById(state.profile.difficulty).name}
           </span>
         </div>
       </div>

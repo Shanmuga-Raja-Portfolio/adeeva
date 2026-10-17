@@ -3,9 +3,11 @@ import { Icon } from "../../../../../ui/kit/IconSet";
 import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
 import { jewelColourById } from "../../../content/jewelColour";
 import { productById, runSeats, seatCut, setTolerance, startPose, stoneById } from "../../../core";
+import { tintedHex } from "../../art/pieceArtProps";
 import { CelebrationBurst } from "../../art/CelebrationBurst";
 import { metalLook } from "../../art/metalLook";
 import { useAssist } from "../../useAssist";
+import { PotPicker } from "./PotPicker";
 import { StageFooter } from "./StageFooter";
 import { assistHint } from "./stageNames";
 import type { StageProps } from "./stageProps";
@@ -25,6 +27,11 @@ export function SetStage(props: StageProps) {
   const part = product.parts.find((entry) => entry.key === activeKey);
   const cut = seatCut(run.design);
   const done = seats.filter((seat) => Object.hasOwn(run.sets, seat)).length;
+  const collection = run.purpose.kind === "collection" ? state.collection : null;
+  const potReady = collection === null || run.potStones.length === seats.length;
+  const potIndex = activeKey === null ? undefined : run.potStones[seats.indexOf(activeKey)];
+  const potStone = collection === null || potIndex === undefined ? undefined : collection.stonePot[potIndex];
+  const baseHex = stoneId === null ? "#ffffff" : jewelColourById(stoneById(stoneId).colour).hex;
   return (
     <div className="jb-set">
       <div className="jb-work">
@@ -63,6 +70,9 @@ export function SetStage(props: StageProps) {
               );
             })}
           </ul>
+          {collection !== null ? (
+            <PotPicker collection={collection} run={run} seats={seats.length} dispatch={dispatch} />
+          ) : null}
           <ToggleSwitch
             label="Gentle tweezers"
             description="The stone snaps in and the claws close."
@@ -73,11 +83,16 @@ export function SetStage(props: StageProps) {
         </aside>
         <div className="jb-work__stage">
           <CelebrationBurst key={done} active={done > 0} />
-          {activeKey !== null && part !== undefined && stoneId !== null && metalId !== null ? (
+          {!potReady ? (
+            <div className="jb-work__done">
+              <Icon name="sparkle" size={32} />
+              <p>Pick stones from your Line Pot first.</p>
+            </div>
+          ) : activeKey !== null && part !== undefined && stoneId !== null && metalId !== null ? (
             <StoneBench
-              key={`${activeKey}-${redo ?? "new"}-${assist ? "tweezers" : "hand"}`}
+              key={`${activeKey}-${redo ?? "new"}-${assist ? "tweezers" : "hand"}-${run.potStones.join(".")}`}
               cut={cut}
-              hex={jewelColourById(stoneById(stoneId).colour).hex}
+              hex={tintedHex(baseHex, potStone?.tint)}
               stoneMm={part.width * 0.8}
               start={startPose(run.seed, seats.indexOf(activeKey), cut)}
               tolerance={setTolerance(state)}

@@ -4,17 +4,20 @@ import { colourById } from "../../../../../engine/palette";
 import { Button } from "../../../../../ui/kit/Button";
 import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
 import { Icon } from "../../../../../ui/kit/IconSet";
-import { CHAIN_IDS, CHARM_IDS, type ChainId, type CharmId } from "../../../content/extra";
+import { CHARM_IDS, type ChainId, type CharmId } from "../../../content/extra";
 import { FINISHES, type FinishId } from "../../../content/finish";
 import { HINTS } from "../../../content/hints";
 import { GLAZE_COLOURS, type GlazeColour } from "../../../content/jewelColour";
 import {
   availableCharms,
   CHARM_ROTATION_STEP,
+  coloredHolder,
   DISPLAY_CANVAS,
   dullSpotsLeft,
   extraById,
+  finishById,
   MAX_CHARM_SCALE,
+  motifCharmShape,
   productById,
   runSource,
   type PlacedCharm,
@@ -76,7 +79,12 @@ export function DisplayStage(props: StageProps) {
   );
   const source = { ...runSource(run), charms };
   const chosen = charms.find((charm) => charm.id === selected);
-  const ownedChains = CHAIN_IDS.filter((id) => state.stock.extras[id] > 0 || display.chain === id);
+  const holder = product.holder;
+  const ownedChains = (holder?.choices ?? []).filter(
+    (id) => state.stock.extras[id] >= (holder?.count ?? 1) || display.chain === id,
+  );
+  const lineFinish = run.purpose.kind === "collection";
+  const motifShape = motifCharmShape(state, run);
 
   const update = (charm: PlacedCharm, change: Partial<PlacedPose>) => {
     const pose = clampPose(DISPLAY_CANVAS, { ...poseOf(charm), ...change });
@@ -196,7 +204,7 @@ export function DisplayStage(props: StageProps) {
                   {charm.id === selected ? (
                     <circle r={20} fill="none" stroke="#e8a33d" strokeWidth={1.4} strokeDasharray="3 3" />
                   ) : null}
-                  <CharmArt charmId={charm.charmId} />
+                  <CharmArt charmId={charm.charmId} shape={charm.shape} />
                 </g>
               ))}
           </PiecePreview>
@@ -241,31 +249,42 @@ export function DisplayStage(props: StageProps) {
         <div className="jb-display__controls">
           <section className="jb-design__group">
             <h3>Finish</h3>
-            <ChoiceGrid<FinishId>
-              label="Finish"
-              value={display.finish}
-              onChange={(finish) =>
-                dispatch({
-                  type: "chooseFinish",
-                  finish,
-                  glaze: finish === "glaze" ? (display.glaze ?? "sky") : null,
-                })
-              }
-              choices={FINISHES.map((finish) => ({
-                value: finish.id,
-                label: `${finish.name}, ${finish.price} coins`,
-                content: (
-                  <>
-                    <span className={`jb-finish-chip jb-finish-chip--${finish.id}`} />
-                    <span className="jb-choice__name">{finish.name}</span>
-                    <span className="jb-choice__sub">
-                      <Icon name="coin" size={12} /> {finish.price}
-                    </span>
-                  </>
-                ),
-              }))}
-            />
-            {display.finish === "glaze" ? (
+            {lineFinish ? (
+              <p className="jb-line-lock" data-testid="line-finish">
+                <span className={`jb-finish-chip jb-finish-chip--${display.finish}`} />
+                <span>
+                  <strong>{finishById(display.finish).name}</strong> for the whole line. Every piece shares
+                  it.
+                </span>
+              </p>
+            ) : null}
+            {lineFinish ? null : (
+              <ChoiceGrid<FinishId>
+                label="Finish"
+                value={display.finish}
+                onChange={(finish) =>
+                  dispatch({
+                    type: "chooseFinish",
+                    finish,
+                    glaze: finish === "glaze" ? (display.glaze ?? "sky") : null,
+                  })
+                }
+                choices={FINISHES.map((finish) => ({
+                  value: finish.id,
+                  label: `${finish.name}, ${finish.price} coins`,
+                  content: (
+                    <>
+                      <span className={`jb-finish-chip jb-finish-chip--${finish.id}`} />
+                      <span className="jb-choice__name">{finish.name}</span>
+                      <span className="jb-choice__sub">
+                        <Icon name="coin" size={12} /> {finish.price}
+                      </span>
+                    </>
+                  ),
+                }))}
+              />
+            )}
+            {display.finish === "glaze" && !lineFinish ? (
               <GlazePicker
                 label="Glaze colour"
                 value={display.glaze}
@@ -273,9 +292,12 @@ export function DisplayStage(props: StageProps) {
               />
             ) : null}
           </section>
-          {product.needsChain ? (
+          {holder !== null ? (
             <section className="jb-design__group">
-              <h3>Chain or cord</h3>
+              <h3>{holder.choices.includes("bag-clip") ? "Bag clip" : "Chain or cord"}</h3>
+              {holder.count > 1 ? (
+                <p className="jb-hint">Uses {holder.count}: one for each half, so two friends can share.</p>
+              ) : null}
               {ownedChains.length === 0 ? <p className="jb-hint">{HINTS.chainFirst}</p> : null}
               <ChoiceGrid<ChainId>
                 label="Chain or cord"
@@ -284,7 +306,7 @@ export function DisplayStage(props: StageProps) {
                   dispatch({
                     type: "chooseChain",
                     chain,
-                    cordColour: chain === "silk-cord" ? (display.cordColour ?? "lavender") : null,
+                    cordColour: coloredHolder(chain) ? (display.cordColour ?? "lavender") : null,
                   })
                 }
                 choices={ownedChains.map((id) => ({
@@ -298,11 +320,11 @@ export function DisplayStage(props: StageProps) {
                   ),
                 }))}
               />
-              {display.chain === "silk-cord" ? (
+              {display.chain !== null && coloredHolder(display.chain) ? (
                 <GlazePicker
                   label="Cord colour"
                   value={display.cordColour}
-                  onPick={(cordColour) => dispatch({ type: "chooseChain", chain: "silk-cord", cordColour })}
+                  onPick={(cordColour) => dispatch({ type: "chooseChain", chain: display.chain, cordColour })}
                 />
               ) : null}
             </section>
@@ -323,7 +345,7 @@ export function DisplayStage(props: StageProps) {
                     aria-label={`Add ${extraById(id).name}, ${left} left`}
                   >
                     <svg viewBox="-20 -22 40 40" aria-hidden="true">
-                      <CharmArt charmId={id} />
+                      <CharmArt charmId={id} shape={motifShape} />
                     </svg>
                     <span>{extraById(id).name}</span>
                     <span className="jb-choice__sub">{left} left</span>
@@ -332,12 +354,21 @@ export function DisplayStage(props: StageProps) {
               })}
             </div>
             <p className="jb-hint">Tap a charm to add it. Drag to move. Tap it again to put it back.</p>
+            {run.purpose.kind === "collection" ? (
+              <p className="jb-hint">The Motif Charm takes your line's motif: {motifShape}.</p>
+            ) : null}
           </section>
         </div>
       </div>
       <StageFooter
         {...props}
-        ready={run.purpose.kind === "stall" ? "Ready for the stall box!" : "Ready to wrap in a gift box!"}
+        ready={
+          run.purpose.kind === "stall"
+            ? "Ready for the stall box!"
+            : run.purpose.kind === "collection"
+              ? "Ready to join the line!"
+              : "Ready to wrap in a gift box!"
+        }
       />
     </div>
   );

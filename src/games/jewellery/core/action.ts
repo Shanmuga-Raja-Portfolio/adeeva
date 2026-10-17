@@ -2,20 +2,30 @@ import type { AvatarLook } from "../../../engine/avatar";
 import type { DifficultyId } from "../../../engine/difficulty";
 import type { Point } from "../../../engine/geometry/point";
 import type { Rotation } from "../../../engine/geometry/rotation";
+import type { MusicMoodId } from "../../../engine/musicMood";
 import type { TraitId } from "../../../engine/trait";
+import type { CareerId } from "../content/career";
 import type { DecorId } from "../content/decor";
 import type { ChainId, CharmId } from "../content/extra";
 import type { FinishId } from "../content/finish";
 import type { GlazeColour } from "../content/jewelColour";
+import type { LanternColourId } from "../content/lanternColour";
+import type { LaunchThemeId } from "../content/launchTheme";
+import type { LineNameId } from "../content/lineName";
+import type { BackdropId } from "../content/lookbookBackdrop";
 import type { MetalId } from "../content/metal";
 import type { OptionId, OptionSlot } from "../content/partOption";
 import type { StallProductId } from "../content/product";
 import type { StockSizeId } from "../content/stockSize";
 import type { StoneId } from "../content/stone";
+import type { PriceTagId } from "../content/priceTag";
 import type { TrayClothId } from "../content/stallTray";
 import type { UpgradeId } from "../content/upgrade";
+import type { CollectionBrief } from "./collectionState";
+import type { PropChoice } from "./lookbook";
 import type { RunStage } from "./runStage";
 import type { SupplyCart } from "./supplies";
+import type { TwinSeam } from "./twinLamp";
 
 export type Action =
   | {
@@ -25,6 +35,8 @@ export type Action =
       readonly look: AvatarLook;
       readonly trait: TraitId;
       readonly difficulty: DifficultyId;
+      readonly career: CareerId;
+      readonly lineNameId: LineNameId;
     }
   | { readonly type: "acceptOffer"; readonly offerId: string }
   | { readonly type: "declineOffer"; readonly offerId: string }
@@ -105,4 +117,54 @@ export type Action =
   | { readonly type: "buyUpgrade"; readonly upgradeId: UpgradeId }
   | { readonly type: "buyDecor"; readonly decorId: DecorId }
   | { readonly type: "setGuide"; readonly on: boolean }
-  | { readonly type: "markBeatSeen"; readonly beatId: string };
+  | { readonly type: "markBeatSeen"; readonly beatId: string }
+  | {
+      readonly type: "chooseStoryOption";
+      readonly beatId: string;
+      readonly choiceId: string;
+      readonly lineNameId: LineNameId | null;
+    }
+  | { readonly type: "openLoft"; readonly lineNameId: LineNameId }
+  | { readonly type: "setBenchTour"; readonly on: boolean }
+  | { readonly type: "pickLaunchTheme"; readonly themeId: LaunchThemeId }
+  | { readonly type: "restLine" }
+  | { readonly type: "renameLine"; readonly lineNameId: LineNameId }
+  | { readonly type: "confirmCollection"; readonly brief: CollectionBrief }
+  | { readonly type: "buyGems"; readonly picks: readonly number[] }
+  | { readonly type: "startCollectionPiece"; readonly slot: number }
+  | { readonly type: "choosePotStones"; readonly indices: readonly number[] }
+  | {
+      readonly type: "recordTwinJoin";
+      readonly ticks: number;
+      readonly seams: readonly [TwinSeam, TwinSeam];
+      readonly assisted: boolean;
+    }
+  | { readonly type: "addToCollection" }
+  | {
+      readonly type: "styleLookbookPage";
+      readonly pieceId: string;
+      readonly backdrop: BackdropId;
+      readonly props: readonly PropChoice[];
+    }
+  | { readonly type: "styleEveryPage"; readonly fromPieceId: string }
+  | {
+      readonly type: "snapLookbookPage";
+      readonly pieceId: string;
+      readonly lampAngle: number;
+      readonly assisted: boolean;
+    }
+  | { readonly type: "closeLookbook" }
+  | {
+      readonly type: "stageLaunch";
+      readonly order: readonly string[];
+      readonly lantern: LanternColourId;
+      readonly music: MusicMoodId;
+      readonly card: number;
+    }
+  | { readonly type: "moveSpot" }
+  | {
+      readonly type: "openPopup";
+      readonly plinth: string;
+      readonly tags: Readonly<Record<string, PriceTagId>>;
+      readonly shelf: readonly string[];
+    };

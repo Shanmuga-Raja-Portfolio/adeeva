@@ -87,24 +87,28 @@ describe("warming and cooling", () => {
 
   it("rewards a quick, steady rhythm and punishes overheating", () => {
     const careful = pulse(0.35, "standard", 2, 240);
-    expect(isJoinDone({ ...careful, assisted: false }, 240)).toBe(true);
-    const carefulScore = joinAccuracy({ ...careful, assisted: false });
+    expect(isJoinDone({ ...careful, assisted: false, twin: false }, 240)).toBe(true);
+    const carefulScore = joinAccuracy({ ...careful, assisted: false, twin: false });
     expect(carefulScore).toBeGreaterThan(0.8);
-    const late = joinAccuracy({ ...pulse(0.35, "standard", 12, 240), assisted: false });
+    const late = joinAccuracy({ ...pulse(0.35, "standard", 12, 240), assisted: false, twin: false });
     expect(late).toBeLessThan(carefulScore);
     expect(late).toBeGreaterThan(0.3);
-    const fastSilver = joinAccuracy({ ...pulse(0.45, "challenging", 12, 240), assisted: false });
+    const fastSilver = joinAccuracy({ ...pulse(0.45, "challenging", 12, 240), assisted: false, twin: false });
     expect(fastSilver).toBeLessThan(late);
-    const relaxed = joinAccuracy({ ...pulse(0.35, "relaxed", 12, 240), assisted: false });
+    const relaxed = joinAccuracy({ ...pulse(0.35, "relaxed", 12, 240), assisted: false, twin: false });
     expect(relaxed).toBeGreaterThan(late);
   });
 
   it("scores 1 − 1.5 × over ÷ counted, capped at 0.8 with the steady lamp", () => {
-    expect(joinAccuracy({ ticks: 300, insideTicks: 240, overTicks: 20, assisted: false })).toBeCloseTo(
-      1 - (1.5 * 20) / 260,
+    expect(
+      joinAccuracy({ ticks: 300, insideTicks: 240, overTicks: 20, assisted: false, twin: false }),
+    ).toBeCloseTo(1 - (1.5 * 20) / 260);
+    expect(joinAccuracy({ ticks: 240, insideTicks: 240, overTicks: 0, assisted: true, twin: false })).toBe(
+      0.8,
     );
-    expect(joinAccuracy({ ticks: 240, insideTicks: 240, overTicks: 0, assisted: true })).toBe(0.8);
-    expect(joinAccuracy({ ticks: 300, insideTicks: 100, overTicks: 200, assisted: false })).toBe(0);
+    expect(joinAccuracy({ ticks: 300, insideTicks: 100, overTicks: 200, assisted: false, twin: false })).toBe(
+      0,
+    );
   });
 });
 
@@ -131,6 +135,7 @@ describe("recording a seam", () => {
       insideTicks: 80,
       overTicks: 10,
       assisted: false,
+      twin: false,
     });
     expect(
       reduce(first, {

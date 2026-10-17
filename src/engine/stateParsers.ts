@@ -1,14 +1,17 @@
 import type { GigBoard, Gig, LapsedGig, Offer } from "./gigBoard";
 import { avatarLookParser } from "./avatar";
 import { DIFFICULTY_IDS } from "./difficulty";
+import type { Point } from "./geometry/point";
 import {
   arrayOf,
   booleanParser,
+  failed,
   integerParser,
   integerRangeParser,
   numberParser,
   objectOf,
   oneOf,
+  parsed,
   rangeParser,
   refined,
   stringParser,
@@ -114,3 +117,14 @@ export const profileShape = {
 } as const;
 
 export const profileParser = objectOf<ProfileBase>(profileShape);
+
+export function pointParser(axis: Parser<number>): Parser<Point> {
+  return (input, path) => {
+    const outcome = arrayOf(axis)(input, path);
+    if (!outcome.ok) return outcome;
+    const [x, y] = outcome.value;
+    return outcome.value.length === 2 && x !== undefined && y !== undefined
+      ? parsed([x, y])
+      : failed(path, "a point");
+  };
+}

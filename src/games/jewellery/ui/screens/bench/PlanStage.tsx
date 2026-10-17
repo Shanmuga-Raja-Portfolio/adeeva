@@ -7,8 +7,10 @@ import { HINTS } from "../../../content/hints";
 import type { PartDef } from "../../../content/product";
 import type { StockSizeId } from "../../../content/stockSize";
 import {
+  currentLineSheet,
   designInput,
   freeSpot,
+  lineSheetHoles,
   partOutline,
   placedPart,
   placementIssue,
@@ -57,6 +59,11 @@ export function PlanStage(props: StageProps) {
   const [hint, setHint] = useState<string | null>(null);
   const look = metalLook(run.design.metalId, "high-shine");
   const tray = product.parts.filter((part) => !Object.hasOwn(run.plan, part.key));
+  const lineSheet = currentLineSheet(state, run);
+  const holes = lineSheetHoles(state, run);
+  const holeRuns = new Set(
+    lineSheet?.holes.filter((hole) => hole.runId !== run.id).map((hole) => hole.runId) ?? [],
+  );
 
   const tryPlace = (part: PartDef, placement: Placement): boolean => {
     const issue = placementIssue(state, run, part.key, placement);
@@ -239,6 +246,19 @@ export function PlanStage(props: StageProps) {
                       strokeWidth={0.2}
                     />
                   ))}
+                  {size === "wide" && lineSheet !== null
+                    ? holes.map((hole, index) => (
+                        <path
+                          key={`hole-${index}`}
+                          d={outlinePath(hole)}
+                          fill="#1c1220"
+                          fillOpacity={0.72}
+                          stroke={look.dark}
+                          strokeWidth={0.35}
+                          data-testid="line-hole"
+                        />
+                      ))
+                    : null}
                   {product.parts.map((part) => {
                     const placement = run.plan[part.key];
                     if (placement === undefined || placement.size !== size) return null;
@@ -280,7 +300,15 @@ export function PlanStage(props: StageProps) {
                   })}
                 </svg>
                 <figcaption>
-                  {sheet.name} · {sheet.width}×{sheet.height}
+                  {size === "wide" && lineSheet !== null
+                    ? `Line sheet · ${sheet.width}×${sheet.height} · ${
+                        holeRuns.size === 0
+                          ? "fresh for your line"
+                          : `holes from ${holeRuns.size} earlier ${holeRuns.size === 1 ? "piece" : "pieces"}`
+                      }`
+                    : size === "wide" && run.purpose.kind === "collection"
+                      ? `${sheet.name} · ${sheet.width}×${sheet.height} · cut here and it becomes your line sheet`
+                      : `${sheet.name} · ${sheet.width}×${sheet.height}`}
                 </figcaption>
               </figure>
             );

@@ -10,13 +10,18 @@ function metalSpend(run: PieceRun): number {
   if (metalId === null) return 0;
   const planned = plannedSizes(run);
   const sizes = run.consumed ?? (planned.length > 0 ? planned : canonicalSizes(run));
-  return sizes.reduce((sum, size) => sum + stockPrice(metalId, size), 0);
+  return sizes
+    .filter((size) => !(run.lineSheet && size === "wide"))
+    .reduce((sum, size) => sum + stockPrice(metalId, size), 0);
 }
 
 export function pieceSpend(run: PieceRun): number {
   const product = productById(run.design.productId);
-  const stones = run.design.stoneId === null ? 0 : stoneById(run.design.stoneId).price * product.seats.length;
-  const chain = run.display.chain === null ? 0 : extraById(run.display.chain).price;
+  const potted = run.purpose.kind === "collection";
+  const stones =
+    run.design.stoneId === null || potted ? 0 : stoneById(run.design.stoneId).price * product.seats.length;
+  const chain =
+    run.display.chain === null ? 0 : extraById(run.display.chain).price * (product.holder?.count ?? 1);
   const charms = run.display.charms.reduce((sum, charm) => sum + extraById(charm.charmId).price, 0);
   return (
     metalSpend(run) +

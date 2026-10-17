@@ -12,6 +12,18 @@ export const HINTS = {
   avoidMetal: "This metal is on the 'please avoid' list.",
 } as const;
 
+export const LINE_HINTS = {
+  matchTints: "Pick stones with the same tint for a matched line.",
+  planGaps: "Plan around the gaps on your line sheet.",
+  likeMaster: "Cut it like your motif master.",
+  bothZones: "Keep the glow where both gold zones meet.",
+  slideLamp: "Slide the lamp until it sparkles, then snap.",
+  propsClear: "Props can't cover the piece.",
+  plinthPick: "Pick your favourite piece for the window plinth.",
+  tagHearts: "Special tags need more hearts. Gentle tags sell easily.",
+  finishFirst: "Finish every piece before Lantern Night.",
+} as const;
+
 export const COACH_LINES = {
   design: "Pick a shape, a metal and a stone.",
   supplies: "Buy the items marked 'Fits your plan'.",

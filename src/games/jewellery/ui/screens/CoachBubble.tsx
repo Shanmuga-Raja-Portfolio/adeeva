@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Avatar } from "../../../../ui/art/avatar/Avatar";
-import { MENTOR_LOOK, MENTOR_NAME } from "../../content/storyBeat";
+import { MENTOR_LOOK, MENTOR_NAME } from "../../content/mentor";
 import "./coachBubble.css";
 
 export interface CoachBubbleProps {

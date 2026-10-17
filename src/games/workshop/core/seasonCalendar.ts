@@ -1,3 +1,4 @@
+import { nextSeasonStart as nextStartOf, seasonDay as clockDay } from "../../../engine/seasonClock";
 import { FAIR_THEMES, type FairThemeDef } from "../content/fairTheme";
 import { SEASON_DAYS, type SeasonDef } from "../content/season";
 import { seasonByNumber } from "./catalog";
@@ -10,8 +11,7 @@ export const OPEN_HOUSE_SEASON_DAYS: readonly number[] = [7, 14];
 export const THEME_SEASON_DAY = 1;
 
 export function seasonDay(showroom: ShowroomState, day: number): number | null {
-  const offset = day - showroom.seasonStartDay;
-  return offset >= 0 && offset < SEASON_DAYS ? offset + 1 : null;
+  return clockDay(showroom.seasonStartDay, day, SEASON_DAYS);
 }
 
 export function seasonBegun(showroom: ShowroomState, day: number): boolean {
@@ -51,7 +51,7 @@ export function fairDayOf(showroom: ShowroomState): number {
 }
 
 export function nextSeasonStart(showroom: ShowroomState): number {
-  return showroom.seasonStartDay + SEASON_DAYS;
+  return nextStartOf(showroom.seasonStartDay, SEASON_DAYS);
 }
 
 export function currentSeason(showroom: ShowroomState): SeasonDef {

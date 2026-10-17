@@ -1,3 +1,5 @@
+import type { AwardId } from "../content/launchAward";
+import type { LaunchThemeId } from "../content/launchTheme";
 import type { ThemeId } from "../content/marketTheme";
 import type { PieceLook } from "./pieceLook";
 
@@ -5,7 +7,8 @@ export const KEEPSAKE_CASE_SIZE = 30;
 
 export type KeepsakeSource =
   | { readonly kind: "order"; readonly clientId: string; readonly happy: boolean }
-  | { readonly kind: "market"; readonly themeId: ThemeId; readonly score: number };
+  | { readonly kind: "market"; readonly themeId: ThemeId; readonly score: number }
+  | { readonly kind: "collection"; readonly themeId: LaunchThemeId; readonly award: AwardId };
 
 export interface KeepsakeEntry {
   readonly id: string;

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MAX_ACTIVE_GIGS } from "../../../../../engine/gigBoard";
+import { focusHeading } from "../../../../../studio/focusHeading";
 import { useToast } from "../../../../../studio/ToastContext";
 import { Button } from "../../../../../ui/kit/Button";
 import { Card } from "../../../../../ui/kit/Card";
@@ -7,6 +8,8 @@ import { Icon } from "../../../../../ui/kit/IconSet";
 import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
 import { useDispatchOnce, type ClickLike } from "../../../../../ui/kit/useDispatchOnce";
 import type { DecorId } from "../../../content/decor";
+import type { LaunchThemeId } from "../../../content/launchTheme";
+import type { LineNameId } from "../../../content/lineName";
 import type { StallProductId } from "../../../content/product";
 import type { UpgradeId } from "../../../content/upgrade";
 import {
@@ -14,8 +17,12 @@ import {
   coachOn,
   currentBeat,
   decorById,
+  lanternNightUnstaged,
+  launchThemeById,
+  lineNameById,
   offersFor,
   productById,
+  setAsideIssue,
   upgradeById,
   type Action,
   type GameState,
@@ -23,6 +30,11 @@ import {
 import { PiecePreview } from "../../art/PiecePreview";
 import type { PlayView } from "../../jewelleryRoute";
 import { CoachBubble } from "../CoachBubble";
+import { BenchTourCard } from "../loft/BenchTourCard";
+import { LanternNightDialog } from "../loft/LanternNightDialog";
+import { LoftOfferCard } from "../loft/LoftOfferCard";
+import { LoftPanel } from "../loft/LoftPanel";
+import { SeasonRibbon } from "../loft/SeasonRibbon";
 import { SetAsideDialog } from "../SetAsideDialog";
 import { StoryOverlay } from "../story/StoryOverlay";
 import { ChalkBoard } from "./ChalkBoard";
@@ -55,11 +67,17 @@ export function BenchHub({ state, dispatch, onOpen, onOpenSettings, onExitToTitl
   const once = useDispatchOnce(state, dispatch);
   const [ending, setEnding] = useState<{ readonly from: GameState; readonly kind: DayEndKind } | null>(null);
   const [settingAside, setSettingAside] = useState(false);
+  const [nightKind, setNightKind] = useState<DayEndKind | null>(null);
   const offers = offersFor(state);
   const run = state.activeRun;
   const onBench = run !== null && run.stage !== "done" ? run : null;
   const beat = ending === null ? currentBeat(state) : null;
   const overlayOpen = ending !== null || beat !== null;
+  const hadOverlay = useRef(overlayOpen);
+  useEffect(() => {
+    if (hadOverlay.current && !overlayOpen) focusHeading();
+    hadOverlay.current = overlayOpen;
+  }, [overlayOpen]);
   const latest = state.keepsakes.slice(-3).reverse();
 
   const accept = (event: ClickLike, offerId: string, clientId: string) => {
@@ -82,9 +100,28 @@ export function BenchHub({ state, dispatch, onOpen, onOpenSettings, onExitToTitl
   const buyDecor = (event: ClickLike, decorId: DecorId) => {
     if (once(event, { type: "buyDecor", decorId })) toast(`${decorById(decorId).name} brightens your stall!`);
   };
-  const endDay = (event: ClickLike, kind: DayEndKind) => {
+  const finishDay = (event: ClickLike, kind: DayEndKind) => {
+    setNightKind(null);
     const from = state;
     if (once(event, { type: kind === "shift" ? "workShift" : "endDay" })) setEnding({ from, kind });
+  };
+  const endDay = (event: ClickLike, kind: DayEndKind) => {
+    if (lanternNightUnstaged(state)) setNightKind(kind);
+    else finishDay(event, kind);
+  };
+  const openLoft = (event: ClickLike, lineNameId: LineNameId) => {
+    if (once(event, { type: "openLoft", lineNameId }))
+      toast(`${lineNameById(lineNameId).name} has a home in the Lantern Loft!`);
+  };
+  const pickTheme = (event: ClickLike, themeId: LaunchThemeId) => {
+    if (once(event, { type: "pickLaunchTheme", themeId }))
+      toast(`${launchThemeById(themeId).name} it is! Open the Collection Board next.`);
+  };
+  const restLine = (event: ClickLike) => {
+    if (once(event, { type: "restLine" })) toast("Your line rests this season. Bench rent only.", "info");
+  };
+  const startLinePiece = (event: ClickLike, slot: number) => {
+    if (once(event, { type: "startCollectionPiece", slot })) onOpen("bench");
   };
   const setAside = () => {
     setSettingAside(false);
@@ -101,6 +138,7 @@ export function BenchHub({ state, dispatch, onOpen, onOpenSettings, onExitToTitl
             onWorkShift={(event) => endDay(event, "shift")}
             onEndDay={(event) => endDay(event, "rest")}
           />
+          <SeasonRibbon state={state} />
           <CoachBubble show={coachOn(state) && onBench === null} text={coachLine(state)} />
           <div className="jb-hub__grid">
             <div className="jb-hub__column">
@@ -131,10 +169,14 @@ export function BenchHub({ state, dispatch, onOpen, onOpenSettings, onExitToTitl
               <StockDrawers state={state} />
             </div>
             <div className="jb-hub__column">
+              <BenchTourCard state={state} dispatch={dispatch} />
+              <LoftOfferCard state={state} onOpen={openLoft} />
               {onBench !== null ? (
                 <Card
                   tone="gold"
-                  eyebrow="On the bench"
+                  eyebrow={
+                    onBench.purpose.kind === "collection" ? "On the bench · for your line" : "On the bench"
+                  }
                   title={productById(onBench.design.productId).name}
                   className="jb-hub-card"
                 >
@@ -142,12 +184,24 @@ export function BenchHub({ state, dispatch, onOpen, onOpenSettings, onExitToTitl
                     <Button onClick={() => onOpen("bench")} icon="sparkle">
                       Back to the bench
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => setSettingAside(true)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSettingAside(true)}
+                      disabledReason={setAsideIssue(state) ?? undefined}
+                    >
                       Set aside
                     </Button>
                   </div>
                 </Card>
               ) : null}
+              <LoftPanel
+                state={state}
+                onOpen={onOpen}
+                onPickTheme={pickTheme}
+                onRest={restLine}
+                onStartPiece={startLinePiece}
+              />
               <Card
                 title="Your orders"
                 eyebrow={`${state.gigs.active.length} of ${MAX_ACTIVE_GIGS} on the go`}
@@ -210,7 +264,22 @@ export function BenchHub({ state, dispatch, onOpen, onOpenSettings, onExitToTitl
         <DayTransition summary={daySummary(ending.from, state, ending.kind)} onDone={() => setEnding(null)} />
       ) : null}
       {beat !== null ? <StoryOverlay state={state} dispatch={dispatch} /> : null}
-      <SetAsideDialog open={settingAside} onConfirm={setAside} onClose={() => setSettingAside(false)} />
+      <LanternNightDialog
+        open={nightKind !== null}
+        difficulty={state.profile.difficulty}
+        onStage={() => {
+          setNightKind(null);
+          onOpen("launch");
+        }}
+        onEndAnyway={(event) => finishDay(event, nightKind ?? "rest")}
+        onClose={() => setNightKind(null)}
+      />
+      <SetAsideDialog
+        open={settingAside}
+        onConfirm={setAside}
+        onClose={() => setSettingAside(false)}
+        linePiece={state.activeRun?.purpose.kind === "collection"}
+      />
     </div>
   );
 }

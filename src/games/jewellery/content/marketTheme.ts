@@ -22,7 +22,7 @@ export const MARKET_THEMES: readonly MarketThemeDef[] = [
   },
   {
     id: "lantern-night",
-    name: "Lantern Night",
+    name: "Lantern Glow Market",
     tags: ["dreamy", "sparkly"],
     palette: ["navy", "lavender", "gold", "ivory"],
     blurb: "Paper lanterns everywhere. Shoppers want twinkly, dreamy pieces.",

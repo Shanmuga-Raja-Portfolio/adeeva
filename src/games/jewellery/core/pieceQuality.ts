@@ -1,7 +1,7 @@
 import { average } from "../../../engine/average";
 import { roundShare as share } from "../../../engine/roundShare";
 import { NEUTRAL_JEWEL_TAG, type JewelTag } from "../content/jewelTag";
-import { metalById, productById, themeById } from "./catalog";
+import { launchThemeById, metalById, productById, themeById } from "./catalog";
 import { runCutPaths } from "./cutRecord";
 import type { GameState } from "./gameState";
 import { isJoinDone, joinAccuracy } from "./joiningLamp";
@@ -23,11 +23,11 @@ export interface QualityBreakdown {
   readonly quality: number;
 }
 
-function cutScore(run: PieceRun): number {
+export function cutScore(run: PieceRun): number {
   return average(runCutPaths(run).map((path) => run.cuts[path.id]?.accuracy ?? 0));
 }
 
-function joinScore(run: PieceRun): number {
+export function joinScore(run: PieceRun): number {
   return average(
     runJoints(run).map((joint) => {
       const record = run.joins[joint.id];
@@ -36,7 +36,7 @@ function joinScore(run: PieceRun): number {
   );
 }
 
-function setScore(run: PieceRun): number {
+export function setScore(run: PieceRun): number {
   return average(runSeats(run).map((seat) => run.sets[seat]?.accuracy ?? 0));
 }
 
@@ -47,12 +47,17 @@ export function metalFit(run: PieceRun, wanted: readonly JewelTag[], avoided: re
   return tags.includes(NEUTRAL_JEWEL_TAG) || tags.some((tag) => wanted.includes(tag)) ? 1 : 0;
 }
 
-function runMetalFit(state: Pick<GameState, "marketTheme">, run: PieceRun): number {
+type QualityView = Pick<GameState, "marketTheme" | "collection">;
+
+function runMetalFit(state: QualityView, run: PieceRun): number {
+  const lineTheme = state.collection?.themeId ?? null;
+  if (run.purpose.kind === "collection" && lineTheme !== null)
+    return metalFit(run, launchThemeById(lineTheme).tags, []);
   if (run.brief === null) return metalFit(run, themeById(state.marketTheme).tags, []);
   return metalFit(run, run.brief.requiredTags, run.brief.avoidMetals);
 }
 
-export function pieceQuality(state: Pick<GameState, "marketTheme">, run: PieceRun): QualityBreakdown {
+export function pieceQuality(state: QualityView, run: PieceRun): QualityBreakdown {
   const hasStones = productById(run.design.productId).seats.length > 0;
   const cut = share(cutScore(run));
   const join = share(joinScore(run));

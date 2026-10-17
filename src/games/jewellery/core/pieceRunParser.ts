@@ -2,6 +2,7 @@ import { ROTATIONS } from "../../../engine/geometry/rotation";
 import {
   arrayOf,
   booleanParser,
+  integerRangeParser,
   nullable,
   numberParser,
   objectOf,
@@ -40,6 +41,11 @@ import { RUN_STAGES } from "./runStage";
 const purposeParser: Parser<RunPurpose> = (input, path) => {
   const stall = objectOf<{ readonly kind: "stall" }>({ kind: oneOf(["stall"] as const) })(input, path);
   if (stall.ok) return stall;
+  const line = objectOf<{ readonly kind: "collection"; readonly slot: number }>({
+    kind: oneOf(["collection"] as const),
+    slot: integerRangeParser(0, 4),
+  })(input, path);
+  if (line.ok) return line;
   return objectOf<{ readonly kind: "order"; readonly gigId: string }>({
     kind: oneOf(["order"] as const),
     gigId: stringParser,
@@ -67,6 +73,7 @@ const joinParser = objectOf<JoinRecord>({
   insideTicks: countParser,
   overTicks: countParser,
   assisted: booleanParser,
+  twin: booleanParser,
 });
 
 const offsetParser = rangeParser(-MAX_STONE_OFFSET_MM, MAX_STONE_OFFSET_MM);
@@ -116,6 +123,9 @@ export const pieceRunParser = refined(
     polish: recordOf(anyKey, polishParser),
     display: displayParser,
     suppliesHourPaid: booleanParser,
+    twinGlow: booleanParser,
+    lineSheet: booleanParser,
+    potStones: arrayOf(integerRangeParser(0, 64)),
   }),
   isRunConsistent,
   "a piece whose steps, design and work fit together",

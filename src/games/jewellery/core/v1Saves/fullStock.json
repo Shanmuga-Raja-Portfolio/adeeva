@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Ivy",
+    "look": {
+      "skinTone": "amber",
+      "hairStyle": "braids",
+      "hairColour": "black",
+      "outfit": "studio-apron"
+    },
+    "trait": "dreamer",
+    "difficulty": "standard"
+  },
+  "calendar": {
+    "day": 1,
+    "hoursLeft": 10
+  },
+  "coins": 900,
+  "reputation": 40,
+  "buzz": 0,
+  "stock": {
+    "metal": {
+      "copper": {
+        "sheet": 3,
+        "strip": 2,
+        "wide": 1
+      },
+      "brass": {
+        "sheet": 3,
+        "strip": 2,
+        "wide": 1
+      },
+      "silver": {
+        "sheet": 3,
+        "strip": 2,
+        "wide": 1
+      },
+      "bronze": {
+        "sheet": 3,
+        "strip": 2,
+        "wide": 1
+      },
+      "rose-gold": {
+        "sheet": 3,
+        "strip": 2,
+        "wide": 1
+      },
+      "gold": {
+        "sheet": 3,
+        "strip": 2,
+        "wide": 1
+      }
+    },
+    "stones": {
+      "sky-glass": 4,
+      "sea-glass": 4,
+      "garnet": 4,
+      "citrine": 4,
+      "peridot": 4,
+      "onyx": 4,
+      "amethyst": 4,
+      "moonstone": 4
+    },
+    "extras": {
+      "fine-chain": 3,
+      "rope-chain": 3,
+      "silk-cord": 3,
+      "star-charm": 3,
+      "leaf-charm": 3,
+      "pearl-drop": 3
+    },
+    "clips": 5
+  },
+  "upgrades": ["steady-peg", "gentle-lamp", "magnifier", "comfy-stool"],
+  "decor": ["lantern-string", "mirror-easel", "velvet-awning"],
+  "guide": true,
+  "trends": {
+    "current": ["nature", "dainty"],
+    "next": ["sparkly", "bold"]
+  },
+  "marketTheme": "lantern-night",
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-1",
+        "clientId": "gran-mina",
+        "brief": {
+          "clientId": "gran-mina",
+          "occasion": "A pendant for Sundays",
+          "productId": "stone-pendant",
+          "deadlineDay": 4,
+          "budget": 30,
+          "fee": 40,
+          "requiredTags": ["classic"],
+          "favouredColours": ["gold", "ruby"],
+          "avoidColours": ["black"],
+          "avoidMetals": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "expiresDay": 3
+      }
+    ],
+    "active": [],
+    "lapsed": [],
+    "nextGigNumber": 2
+  },
+  "story": {
+    "seen": ["jb-key"],
+    "flags": [],
+    "queue": []
+  },
+  "activeRun": null,
+  "stallBox": [],
+  "market": {
+    "shownDay": 0,
+    "last": null
+  },
+  "keepsakes": [],
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 1,
+  "rng": -1327612521
+}

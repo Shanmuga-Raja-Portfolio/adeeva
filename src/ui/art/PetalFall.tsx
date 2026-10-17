@@ -1,6 +1,6 @@
 import { seededUnit } from "./seedFromText";
 
-export type FallShape = "petal" | "leaf";
+export type FallShape = "petal" | "leaf" | "star";
 
 export interface PetalFallProps {
   t: number;
@@ -11,6 +11,8 @@ export interface PetalFallProps {
 }
 
 const LEAF_PATH = "M0 -1 C0.7 -0.6 0.7 0.6 0 1 C-0.7 0.6 -0.7 -0.6 0 -1 Z";
+const STAR_PATH =
+  "M0 -1 L0.24 -0.33 L0.95 -0.31 L0.38 0.12 L0.59 0.81 L0 0.4 L-0.59 0.81 L-0.38 0.12 L-0.95 -0.31 L-0.24 -0.33 Z";
 
 const PETALS = 34;
 const SEED = 613;
@@ -35,11 +37,11 @@ export function PetalFall({ t, colours, width = 1600, height = 940, shape = "pet
         const size = 9 + seededUnit(SEED, index * 5 + 4) * 9;
         const colour = colours[index % Math.max(1, colours.length)] ?? "#f2c4c9";
         const transform = `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${turn.toFixed(1)}) scale(1 ${(0.5 + 0.5 * Math.abs(Math.cos(local * 7 + index))).toFixed(3)})`;
-        if (shape === "leaf")
+        if (shape === "leaf" || shape === "star")
           return (
             <path
               key={index}
-              d={LEAF_PATH}
+              d={shape === "leaf" ? LEAF_PATH : STAR_PATH}
               fill={colour}
               opacity={0.9}
               transform={`${transform} scale(${(size * 0.9).toFixed(1)})`}

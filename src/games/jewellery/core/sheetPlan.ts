@@ -4,11 +4,12 @@ import { polygonsOverlap } from "../../../engine/geometry/polygonOverlap";
 import { placedPolygon, polygonBounds } from "../../../engine/geometry/polygonPlacement";
 import { isRotation, type Rotation } from "../../../engine/geometry/rotation";
 import { recordWithout } from "../../../engine/recordWithout";
-import { HINTS } from "../content/hints";
+import { HINTS, LINE_HINTS } from "../content/hints";
 import type { PartDef } from "../content/product";
 import { STOCK_SIZE_IDS, type StockSizeId } from "../content/stockSize";
 import { isStockSizeId, productById, productPart, stockSizeById } from "./catalog";
 import type { GameState } from "./gameState";
+import { currentLineSheet, lineSheetHoles } from "./lineSheet";
 import { designInput, partOutline } from "./partGeometry";
 import type { PieceRun, Placement } from "./pieceRun";
 import { ownedSizes } from "./stock";
@@ -24,7 +25,10 @@ export function placedPart(run: PieceRun, part: PartDef, placement: Placement): 
 export function planSheets(state: GameState, run: PieceRun): StockSizeId[] {
   if (run.consumed !== null) return [...run.consumed];
   const metalId = run.design.metalId;
-  return metalId === null ? [] : ownedSizes(state.stock, metalId);
+  if (metalId === null) return [];
+  const owned = ownedSizes(state.stock, metalId);
+  const line = currentLineSheet(state, run) !== null;
+  return STOCK_SIZE_IDS.filter((size) => owned.includes(size) || (line && size === "wide"));
 }
 
 function inBounds(polygon: readonly Point[], size: StockSizeId): boolean {
@@ -63,7 +67,9 @@ export function placementIssue(
     const otherPart = productPart(run.design.productId, otherKey);
     return otherPart !== undefined && polygonsOverlap(polygon, placedPart(run, otherPart, other));
   });
-  return overlaps ? HINTS.ownSpace : null;
+  if (overlaps) return HINTS.ownSpace;
+  const holes = placement.size === "wide" ? lineSheetHoles(state, run) : [];
+  return holes.some((hole) => polygonsOverlap(polygon, hole)) ? LINE_HINTS.planGaps : null;
 }
 
 export function placePart(state: GameState, partKey: string, placement: Placement): GameState {
@@ -89,14 +95,30 @@ export function removePart(state: GameState, partKey: string): GameState {
   });
 }
 
+function edgeSpot(
+  state: GameState,
+  run: PieceRun,
+  part: PartDef,
+  sizes: readonly StockSizeId[],
+): Placement | null {
+  for (const size of sizes) {
+    const sheet = stockSizeById(size);
+    for (let y = 0; y <= sheet.height - part.height; y += SEARCH_STEP / 2) {
+      const placement: Placement = { size, x: 0, y, rotation: 0 };
+      if (placementIssue(state, run, part.key, placement) === null) return placement;
+    }
+  }
+  return null;
+}
+
 export function freeSpot(state: GameState, run: PieceRun, part: PartDef): Placement | null {
   const canonical = productById(run.design.productId).canonical[part.key];
-  if (canonical !== undefined && placementIssue(state, run, part.key, canonical) === null) return canonical;
+  const lineFirst = currentLineSheet(state, run) !== null;
+  if (!lineFirst && canonical !== undefined && placementIssue(state, run, part.key, canonical) === null)
+    return canonical;
   const sheets = planSheets(state, run);
-  const sizes = [
-    ...sheets.filter((size) => size === canonical?.size),
-    ...sheets.filter((size) => size !== canonical?.size),
-  ];
+  const first = lineFirst ? "wide" : canonical?.size;
+  const sizes = [...sheets.filter((size) => size === first), ...sheets.filter((size) => size !== first)];
   for (const size of sizes) {
     const sheet = stockSizeById(size);
     for (const rotation of SEARCH_ROTATIONS)
@@ -106,7 +128,7 @@ export function freeSpot(state: GameState, run: PieceRun, part: PartDef): Placem
           if (placementIssue(state, run, part.key, placement) === null) return placement;
         }
   }
-  return null;
+  return edgeSpot(state, run, part, sizes);
 }
 
 export function showMePlan(state: GameState): GameState {

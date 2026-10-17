@@ -17,3 +17,50 @@
   pointer-events: none;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
 }
+
+.jb-shine-bar {
+  display: grid;
+  gap: 6px;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--jb-amber-soft);
+}
+
+.jb-shine-bar ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jb-shine-bar__row {
+  display: grid;
+  grid-template-columns: minmax(70px, 1fr) 2fr 40px;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+}
+
+.jb-shine-bar__row--now {
+  font-weight: 700;
+  color: var(--jb-plum-deep);
+}
+
+.jb-shine-bar__track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(42, 29, 44, 0.12);
+  overflow: hidden;
+}
+
+.jb-shine-bar__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #fff3b0, var(--jb-amber));
+}
+
+.jb-shine-bar__value {
+  text-align: right;
+}

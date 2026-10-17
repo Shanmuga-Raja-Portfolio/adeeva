@@ -9,9 +9,9 @@ import type { StallProductId } from "../content/product";
 import type { StoneId } from "../content/stone";
 import type { Action } from "./action";
 import { rollClientBrief } from "./brief";
-import { clientById, difficultyById, productById } from "./catalog";
+import { difficultyById, orderClientById, productById } from "./catalog";
 import { runCutPaths } from "./cutRecord";
-import { CHARM_ROTATION_STEP, DISPLAY_CANVAS } from "./displayChoice";
+import { CHARM_ROTATION_STEP, coloredHolder, DISPLAY_CANVAS } from "./displayChoice";
 import type { GameState } from "./gameState";
 import { runJoints } from "./joinRecord";
 import { createGame, type NewGameSettings } from "./newGame";
@@ -83,6 +83,8 @@ export function newTestGame(overrides: Partial<NewGameSettings> = {}): GameState
     look: TEST_LOOK,
     trait: "dreamer",
     difficulty: "standard",
+    career: "bench",
+    lineNameId: "little-lantern",
     ...overrides,
   });
 }
@@ -102,7 +104,7 @@ export function dispatchAll(state: GameState, actions: readonly Action[]): GameS
 }
 
 export function withOrder(state: GameState, clientId: string): GameState {
-  const client = clientById(clientId);
+  const client = orderClientById(clientId);
   if (client === undefined) throw new Error(`Unknown client ${clientId}`);
   const [brief, rng] = rollClientBrief(
     client,
@@ -195,15 +197,18 @@ function stockUp(state: GameState, plan: PiecePlan): GameState {
   const run = state.activeRun;
   if (run === null) return state;
   const missing = shortfall(state, run);
-  const extras: Partial<Record<ChainId | CharmId, number>> = { ...missing.extras };
-  if (
-    productById(run.design.productId).needsChain &&
+  const holder = productById(run.design.productId).holder;
+  const fallback = holder?.choices[0];
+  const swapHolder =
+    holder !== null &&
     plan.chain !== null &&
-    state.stock.extras[plan.chain] < 1
-  ) {
-    extras[plan.chain] = 1;
-    if (plan.chain !== "fine-chain") delete extras["fine-chain"];
-  }
+    holder.choices.includes(plan.chain) &&
+    holder.count > state.stock.extras[plan.chain];
+  const extras: Partial<Record<ChainId | CharmId, number>> = Object.fromEntries(
+    Object.entries(missing.extras).filter(([id]) => !swapHolder || id !== fallback || id === plan.chain),
+  );
+  if (swapHolder && holder !== null && plan.chain !== null)
+    extras[plan.chain] = Math.max(extras[plan.chain] ?? 0, holder.count - state.stock.extras[plan.chain]);
   for (const charm of plan.charms) {
     const wanted = plan.charms.filter((id) => id === charm).length;
     const have = state.stock.extras[charm];
@@ -253,9 +258,20 @@ function joinAll(state: GameState, plan: PiecePlan): GameState {
   );
 }
 
-function setAll(state: GameState, plan: PiecePlan): GameState {
+function potPicked(state: GameState): GameState {
   const run = state.activeRun;
-  if (run === null) return state;
+  const pot = state.collection?.stonePot ?? [];
+  if (run === null || run.purpose.kind !== "collection" || run.stonesTaken) return state;
+  const indices = pot.flatMap((stone, index) =>
+    !stone.used && stone.stoneId === run.design.stoneId ? [index] : [],
+  );
+  return reduce(state, { type: "choosePotStones", indices: indices.slice(0, runSeats(run).length) });
+}
+
+function setAll(state: GameState, plan: PiecePlan): GameState {
+  const picked = potPicked(state);
+  const run = picked.activeRun;
+  if (run === null) return picked;
   const claws = clawCount(seatCut(run.design));
   return runSeats(run).reduce(
     (next, seatKey) =>
@@ -268,7 +284,7 @@ function setAll(state: GameState, plan: PiecePlan): GameState {
         claws: Array.from({ length: claws }, () => plan.clawTravel),
         assisted: plan.setAssist,
       }),
-    state,
+    picked,
   );
 }
 
@@ -292,8 +308,19 @@ function dressUp(state: GameState, plan: PiecePlan): GameState {
   const run = state.activeRun;
   if (run === null) return state;
   const actions: Action[] = [{ type: "chooseFinish", finish: plan.finish, glaze: plan.glaze }];
-  if (productById(run.design.productId).needsChain && plan.chain !== null)
-    actions.push({ type: "chooseChain", chain: plan.chain, cordColour: plan.cordColour });
+  const holder = productById(run.design.productId).holder;
+  const chain =
+    holder === null || plan.chain === null
+      ? null
+      : holder.choices.includes(plan.chain)
+        ? plan.chain
+        : holder.choices[0];
+  if (chain !== null && chain !== undefined)
+    actions.push({
+      type: "chooseChain",
+      chain,
+      cordColour: coloredHolder(chain) ? (plan.cordColour ?? "sky") : null,
+    });
   plan.charms.forEach((charmId, index) =>
     actions.push({
       type: "addCharm",

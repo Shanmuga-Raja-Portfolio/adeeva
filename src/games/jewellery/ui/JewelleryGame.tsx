@@ -14,6 +14,7 @@ import { NewGameFlow } from "./screens/newGame/NewGameFlow";
 import { SettingsDialog } from "./screens/settings/SettingsDialog";
 import { TitleScreen } from "./screens/title/TitleScreen";
 import { AssistProvider } from "./useAssist";
+import { TintLabelsProvider } from "./useTintLabels";
 import "./theme.css";
 
 const PieceFlow = lazy(() =>
@@ -24,6 +25,21 @@ const MarketDay = lazy(() =>
 );
 const KeepsakeCase = lazy(() =>
   import("./screens/keepsake/KeepsakeCase").then((module) => ({ default: module.KeepsakeCase })),
+);
+const CollectionBoard = lazy(() =>
+  import("./screens/board/CollectionBoard").then((module) => ({ default: module.CollectionBoard })),
+);
+const GemMarket = lazy(() =>
+  import("./screens/gems/GemMarket").then((module) => ({ default: module.GemMarket })),
+);
+const Lookbook = lazy(() =>
+  import("./screens/lookbook/Lookbook").then((module) => ({ default: module.Lookbook })),
+);
+const LaunchFlow = lazy(() =>
+  import("./screens/launch/LaunchFlow").then((module) => ({ default: module.LaunchFlow })),
+);
+const PopupWindow = lazy(() =>
+  import("./screens/popup/PopupWindow").then((module) => ({ default: module.PopupWindow })),
 );
 
 export function JewelleryGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
@@ -100,76 +116,94 @@ export function JewelleryGame({ player, lookOptions, onPlayerChange, onExit }: G
 
   return (
     <AssistProvider>
-      <div className="jb-root">
-        {screen.name === "title" ? (
-          <TitleScreen
+      <TintLabelsProvider>
+        <div className="jb-root">
+          {screen.name === "title" ? (
+            <TitleScreen
+              slots={slots}
+              canSave={canSave}
+              onLoad={(slot, game) => {
+                load(slot, game);
+                toHub();
+              }}
+              onNewGame={(slot) => setRoute({ name: "newGame", slot })}
+              onDeleteSlot={handleDelete}
+              onOpenSettings={openSettings}
+              onExitToStudio={onExit}
+            />
+          ) : null}
+          {screen.name === "newGame" ? (
+            <NewGameFlow
+              slot={screen.slot}
+              player={player}
+              lookOptions={lookOptions}
+              onBegin={(settings) => handleBegin(screen.slot, settings)}
+              onCancel={() => setRoute({ name: "title" })}
+            />
+          ) : null}
+          {screen.name === "hub" ? (
+            <BenchHub
+              state={screen.game}
+              dispatch={dispatch}
+              onOpen={open}
+              onOpenSettings={openSettings}
+              onExitToTitle={saveAndExit}
+            />
+          ) : null}
+          <ViewLoadBoundary>
+            {screen.name === "bench" ? (
+              <PieceFlow state={screen.game} dispatch={dispatch} onExit={toHub} />
+            ) : null}
+            {screen.name === "market" ? (
+              <MarketDay state={screen.game} dispatch={dispatch} onExit={toHub} />
+            ) : null}
+            {screen.name === "keepsakes" ? <KeepsakeCase state={screen.game} onExit={toHub} /> : null}
+            {screen.name === "board" ? (
+              <CollectionBoard state={screen.game} dispatch={dispatch} onExit={toHub} />
+            ) : null}
+            {screen.name === "gems" ? (
+              <GemMarket state={screen.game} dispatch={dispatch} onExit={toHub} />
+            ) : null}
+            {screen.name === "lookbook" ? (
+              <Lookbook state={screen.game} dispatch={dispatch} onExit={toHub} />
+            ) : null}
+            {screen.name === "launch" ? (
+              <LaunchFlow state={screen.game} dispatch={dispatch} onOpen={open} onExit={toHub} />
+            ) : null}
+            {screen.name === "popup" ? (
+              <PopupWindow state={screen.game} dispatch={dispatch} onExit={toHub} />
+            ) : null}
+          </ViewLoadBoundary>
+          <SettingsDialog
+            open={settingsOpen}
+            onClose={() => setSettingsOpen(false)}
             slots={slots}
-            canSave={canSave}
-            onLoad={(slot, game) => {
-              load(slot, game);
-              toHub();
-            }}
-            onNewGame={(slot) => setRoute({ name: "newGame", slot })}
+            activeSlot={session.slot}
+            difficulty={session.game?.profile.difficulty ?? null}
             onDeleteSlot={handleDelete}
-            onOpenSettings={openSettings}
-            onExitToStudio={onExit}
           />
-        ) : null}
-        {screen.name === "newGame" ? (
-          <NewGameFlow
-            slot={screen.slot}
-            player={player}
-            lookOptions={lookOptions}
-            onBegin={(settings) => handleBegin(screen.slot, settings)}
-            onCancel={() => setRoute({ name: "title" })}
-          />
-        ) : null}
-        {screen.name === "hub" ? (
-          <BenchHub
-            state={screen.game}
-            dispatch={dispatch}
-            onOpen={open}
-            onOpenSettings={openSettings}
-            onExitToTitle={saveAndExit}
-          />
-        ) : null}
-        <ViewLoadBoundary>
-          {screen.name === "bench" ? (
-            <PieceFlow state={screen.game} dispatch={dispatch} onExit={toHub} />
-          ) : null}
-          {screen.name === "market" ? (
-            <MarketDay state={screen.game} dispatch={dispatch} onExit={toHub} />
-          ) : null}
-          {screen.name === "keepsakes" ? <KeepsakeCase state={screen.game} onExit={toHub} /> : null}
-        </ViewLoadBoundary>
-        <SettingsDialog
-          open={settingsOpen}
-          onClose={() => setSettingsOpen(false)}
-          slots={slots}
-          activeSlot={session.slot}
-          onDeleteSlot={handleDelete}
-        />
-        <Dialog
-          open={leaveBlocked}
-          title="We couldn't save"
-          onClose={() => setLeaveBlocked(false)}
-          footer={
-            <>
-              <Button variant="ghost" onClick={leave}>
-                Leave anyway
-              </Button>
-              <Button autoFocus onClick={() => setLeaveBlocked(false)}>
-                Stay
-              </Button>
-            </>
-          }
-        >
-          <p>
-            This browser didn't let us store your latest progress. If you leave now, everything since your
-            last save will be lost. Stay to keep making, and we will try again as you go.
-          </p>
-        </Dialog>
-      </div>
+          <Dialog
+            open={leaveBlocked}
+            title="We couldn't save"
+            onClose={() => setLeaveBlocked(false)}
+            footer={
+              <>
+                <Button variant="ghost" onClick={leave}>
+                  Leave anyway
+                </Button>
+                <Button autoFocus onClick={() => setLeaveBlocked(false)}>
+                  Stay
+                </Button>
+              </>
+            }
+          >
+            <p>
+              This browser didn't let us store your latest progress. If you leave now, everything since your
+              last save will be lost. Stay to keep making, and we will try again as you go.
+            </p>
+          </Dialog>
+        </div>
+      </TintLabelsProvider>
     </AssistProvider>
   );
 }

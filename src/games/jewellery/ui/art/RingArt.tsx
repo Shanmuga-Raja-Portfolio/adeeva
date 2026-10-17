@@ -1,5 +1,6 @@
 import { productById, seatCut, bandOption } from "../../core";
 import { Glint } from "./Glint";
+import { PlateArt } from "./PlateArt";
 import { glazeHex, stoneHex, type PieceArtProps } from "./pieceArtProps";
 import { StoneSeatArt } from "./StoneSeatArt";
 
@@ -21,6 +22,7 @@ export function RingArt({ source, metal, fill, sheen, twinkle }: PieceArtProps) 
   const band = bandOption(source.options);
   const width = product.id === "stone-ring" ? 18 : 15;
   const glaze = glazeHex(source);
+  const top = product.parts.find((part) => part.key === "top");
   const dimples = Array.from({ length: 9 }, (_, index) => {
     const angle = Math.PI * (0.12 + (0.76 * index) / 8);
     return { x: CX - RX * Math.cos(angle), y: CY + RY * Math.sin(angle) };
@@ -66,6 +68,29 @@ export function RingArt({ source, metal, fill, sheen, twinkle }: PieceArtProps) 
           strokeDasharray="6 4"
         />
       ) : null}
+      {band === "twist-band" ? (
+        <path
+          d={arcPath(true)}
+          fill="none"
+          stroke={metal.dark}
+          strokeWidth={width * 0.8}
+          strokeDasharray="2.4 7"
+          opacity={0.5}
+        />
+      ) : null}
+      {band === "beaded-band"
+        ? dimples.map((dot, index) => (
+            <circle
+              key={index}
+              cx={dot.x}
+              cy={dot.y - 1}
+              r={width * 0.32}
+              fill={metal.light}
+              stroke={metal.line}
+              strokeWidth={0.8}
+            />
+          ))
+        : null}
       {band === "hammered-band"
         ? dimples.map((dot, index) => (
             <ellipse
@@ -80,6 +105,27 @@ export function RingArt({ source, metal, fill, sheen, twinkle }: PieceArtProps) 
           ))
         : null}
       <path d={arcPath(true, 3)} fill="none" stroke={sheen} strokeWidth={width * 0.3} opacity={0.9} />
+      {top !== undefined ? (
+        <g>
+          <path
+            d={`M${CX - 8} ${CY - RY + 3} L${CX - 5} ${CY - RY - 10} L${CX + 5} ${CY - RY - 10} L${CX + 8} ${CY - RY + 3} Z`}
+            fill={fill}
+            stroke={metal.line}
+            strokeWidth={1.2}
+          />
+          <PlateArt
+            part={top}
+            source={source}
+            metal={metal}
+            fill={fill}
+            sheen={sheen}
+            x={CX}
+            y={CY - RY - 34}
+            box={58}
+            twinkle={twinkle}
+          />
+        </g>
+      ) : null}
       {product.seats.length > 0 ? (
         <g>
           <path

@@ -3,7 +3,7 @@ import { focusHeading } from "../../../../../studio/focusHeading";
 import { useToast } from "../../../../../studio/ToastContext";
 import { Button } from "../../../../../ui/kit/Button";
 import { StatChip } from "../../../../../ui/kit/StatChip";
-import { clientById, productById } from "../../../core";
+import { clientById, productById, setAsideIssue } from "../../../core";
 import { SetAsideDialog } from "../SetAsideDialog";
 import { STAGE_TITLES } from "./stageNames";
 import type { StageProps } from "./stageProps";
@@ -30,15 +30,21 @@ export function BenchHeader({ state, run, dispatch, onExit }: StageProps) {
   return (
     <header className="jb-bench-header">
       <Button variant="ghost" icon="back" onClick={onExit}>
-        Back to the arcade
+        {state.career === "collection" ? "Back to the loft" : "Back to the arcade"}
       </Button>
       <div className="jb-bench-header__title">
         <span className="ad-eyebrow">
-          {client !== undefined && run.brief !== null
-            ? `For ${client.name} · ${productById(run.design.productId).name}`
-            : `A ${productById(run.design.productId).name} for Market Day`}
+          {run.purpose.kind === "collection"
+            ? `For your line · ${productById(run.design.productId).name}`
+            : client !== undefined && run.brief !== null
+              ? `For ${client.name} · ${productById(run.design.productId).name}`
+              : `A ${productById(run.design.productId).name} for Market Day`}
         </span>
-        <h1>{STAGE_TITLES[run.stage]}</h1>
+        <h1>
+          {run.purpose.kind === "collection" && run.stage === "review"
+            ? "Ready for the line"
+            : STAGE_TITLES[run.stage]}
+        </h1>
       </div>
       <div className="jb-bench-header__stats">
         <StatChip kind="day" value={state.calendar.day} />
@@ -48,11 +54,21 @@ export function BenchHeader({ state, run, dispatch, onExit }: StageProps) {
         <span data-testid="bench-coins">
           <StatChip kind="coins" value={state.coins} />
         </span>
-        <Button variant="ghost" size="sm" onClick={() => setConfirming(true)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setConfirming(true)}
+          disabledReason={setAsideIssue(state) ?? undefined}
+        >
           Set aside
         </Button>
       </div>
-      <SetAsideDialog open={confirming} onConfirm={setAside} onClose={() => setConfirming(false)} />
+      <SetAsideDialog
+        open={confirming}
+        onConfirm={setAside}
+        onClose={() => setConfirming(false)}
+        linePiece={state.activeRun?.purpose.kind === "collection"}
+      />
     </header>
   );
 }

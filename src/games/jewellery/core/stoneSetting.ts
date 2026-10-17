@@ -10,6 +10,7 @@ import { seatCut } from "./partGeometry";
 import type { PieceRun, SetRecord } from "./pieceRun";
 import { skillMultiplier, type SkillState } from "./skillTolerance";
 import { withStones } from "./stock";
+import { takePotStones } from "./stonePot";
 
 const BASE_SEAT_DISTANCE_MM = 0.8;
 const BASE_SEAT_ANGLE = 8;
@@ -127,6 +128,7 @@ export function runSeats(run: PieceRun): readonly string[] {
 
 function takeStones(state: GameState, run: PieceRun): GameState | null {
   if (run.stonesTaken) return state;
+  if (run.purpose.kind === "collection") return takePotStones(state, run);
   const stoneId = run.design.stoneId;
   const count = runSeats(run).length;
   if (stoneId === null || state.stock.stones[stoneId] < count) return null;

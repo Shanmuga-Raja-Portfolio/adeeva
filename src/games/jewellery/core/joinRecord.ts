@@ -16,12 +16,13 @@ export function recordJoin(state: GameState, jointId: string, sample: JoinRecord
     const joint = runJoints(run).find((entry) => entry.id === jointId);
     if (joint === undefined) return null;
     const before = run.joins[jointId];
-    if (isJoinDone(before, joint.ticks) || !joinGrows(before, sample)) return null;
+    if (before?.twin === true || isJoinDone(before, joint.ticks) || !joinGrows(before, sample)) return null;
     const record: JoinRecord = {
       ticks: sample.ticks,
       insideTicks: sample.insideTicks,
       overTicks: sample.overTicks,
       assisted: (before?.assisted ?? false) || sample.assisted,
+      twin: false,
     };
     return { ...run, joins: { ...run.joins, [jointId]: record } };
   });
@@ -30,8 +31,9 @@ export function recordJoin(state: GameState, jointId: string, sample: JoinRecord
 export function restartJoin(state: GameState, jointId: string): GameState {
   return updateActiveRun(state, "join", (run) => {
     const joint = runJoints(run).find((entry) => entry.id === jointId);
-    if (joint === undefined || !Object.hasOwn(run.joins, jointId)) return null;
-    if (isJoinDone(run.joins[jointId], joint.ticks)) return null;
+    const record = run.joins[jointId];
+    if (joint === undefined || record === undefined || record.twin) return null;
+    if (isJoinDone(record, joint.ticks)) return null;
     return { ...run, joins: recordWithout(run.joins, jointId) };
   });
 }

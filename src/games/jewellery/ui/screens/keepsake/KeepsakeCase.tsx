@@ -3,8 +3,10 @@ import { Button } from "../../../../../ui/kit/Button";
 import { Dialog } from "../../../../../ui/kit/Dialog";
 import { StarRating } from "../../../../../ui/kit/StarRating";
 import {
+  awardById,
   clientById,
   KEEPSAKE_CASE_SIZE,
+  launchThemeById,
   productById,
   themeById,
   type GameState,
@@ -20,6 +22,8 @@ interface KeepsakeCaseProps {
 
 function sourceName(entry: KeepsakeEntry): string {
   if (entry.source.kind === "order") return `For ${clientById(entry.source.clientId)?.name ?? "a neighbour"}`;
+  if (entry.source.kind === "collection")
+    return `${launchThemeById(entry.source.themeId).name} · ${awardById(entry.source.award).name}`;
   return `${themeById(entry.source.themeId).name} · shopper score ${entry.source.score}`;
 }
 

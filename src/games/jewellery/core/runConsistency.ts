@@ -11,6 +11,9 @@ import { plannedSizes } from "./sheetPlan";
 import { runStages } from "./stageNavigation";
 import { clawCount, runSeats } from "./stoneSetting";
 import { seatCut } from "./partGeometry";
+import { coloredHolder } from "./displayChoice";
+import { MOTIF_CHARM } from "../content/extra";
+import { twinRecordsFit } from "./twinLamp";
 
 function stagesAreReal(run: PieceRun): boolean {
   const stages = runStages(run);
@@ -57,7 +60,7 @@ function workFitsProduct(run: PieceRun): boolean {
         record.passes.length === POLISH_CELLS &&
         record.passes.every((passes) => isCount(passes) && passes <= MAX_PASSES),
     ) &&
-    (product.needsChain || run.display.chain === null)
+    (run.display.chain === null || (product.holder?.choices.includes(run.display.chain) ?? false))
   );
 }
 
@@ -81,10 +84,26 @@ function workMatchesStage(run: PieceRun): boolean {
   return !(past(run, "polish") && polishIssues(run).length > 0);
 }
 
+function lineWorkFits(run: PieceRun): boolean {
+  const collection = run.purpose.kind === "collection";
+  const seats = runSeats(run).length;
+  if (!collection && (run.potStones.length > 0 || run.lineSheet)) return false;
+  if (run.potStones.length > seats || new Set(run.potStones).size !== run.potStones.length) return false;
+  if (collection && run.stonesTaken && run.potStones.length !== seats) return false;
+  if (run.lineSheet && !(run.consumed ?? []).includes("wide")) return false;
+  return run.display.charms.every((charm) => (charm.charmId === MOTIF_CHARM) === (charm.shape !== null));
+}
+
 export function isRunConsistent(run: PieceRun): boolean {
   if ((run.purpose.kind === "order") !== (run.brief !== null)) return false;
   if (run.brief !== null && run.brief.productId !== run.design.productId) return false;
   if ((run.display.glaze !== null) !== (run.display.finish === "glaze")) return false;
-  if ((run.display.cordColour !== null) !== (run.display.chain === "silk-cord")) return false;
-  return stagesAreReal(run) && workFitsProduct(run) && workMatchesStage(run);
+  if ((run.display.cordColour !== null) !== coloredHolder(run.display.chain)) return false;
+  return (
+    stagesAreReal(run) &&
+    workFitsProduct(run) &&
+    workMatchesStage(run) &&
+    twinRecordsFit(run) &&
+    lineWorkFits(run)
+  );
 }

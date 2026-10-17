@@ -3,7 +3,7 @@ import { useSettings } from "../../../../../studio/SettingsContext";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
 import { SAFETY_LINE } from "../../../content/hints";
-import { cutToleranceMm, runCutPaths } from "../../../core";
+import { cutToleranceMm, motifPathIds, runCutPaths } from "../../../core";
 import { CelebrationBurst } from "../../art/CelebrationBurst";
 import { metalLook } from "../../art/metalLook";
 import { readCutDraft, writeCutDraft } from "../../cutDraft";
@@ -30,6 +30,10 @@ export function CutStage(props: StageProps) {
   const piece = `${run.id}-${run.seed}`;
   const draftKey = `${activeId ?? "none"}-${assist ? "rail" : "hand"}`;
   const done = paths.filter((path) => Object.hasOwn(run.cuts, path.id)).length;
+  const master = run.purpose.kind === "collection" ? (state.collection?.motifMaster ?? null) : null;
+  const motifIds =
+    run.purpose.kind === "collection" ? motifPathIds(run, state.collection?.brief?.motif ?? null) : [];
+  const motifCut = active !== undefined && motifIds.includes(active.id);
   useFocusCarry(
     stageRef,
     `${active?.id ?? "none"}-${assist ? "rail" : "hand"}`,
@@ -73,6 +77,14 @@ export function CutStage(props: StageProps) {
               );
             })}
           </ul>
+          {motifIds.length > 0 ? (
+            <p className="jb-master-chip" data-testid="motif-master">
+              <Icon name="star" size={14} />
+              {master === null
+                ? "Your first motif cut becomes the motif master."
+                : `Motif master: ${Math.round(master * 100)}%. Match its gold outline!`}
+            </p>
+          ) : null}
           <ToggleSwitch
             label="Guide rail"
             description="The saw follows the line and turns at the dots."
@@ -95,6 +107,7 @@ export function CutStage(props: StageProps) {
               assisted={assist}
               metal={metalLook(metalId, "high-shine")}
               reducedMotion={reducedMotion}
+              masterOutline={motifCut && master !== null}
               draft={readCutDraft(piece, draftKey)}
               onDraft={(strokes) => writeCutDraft(piece, draftKey, strokes)}
               onDone={(strokes, pxPerMm) => {

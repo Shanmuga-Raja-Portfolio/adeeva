@@ -7,13 +7,14 @@ import { CelebrationBurst } from "../../art/CelebrationBurst";
 import { metalLook } from "../../art/metalLook";
 import { useAssist } from "../../useAssist";
 import { PolishPad } from "./PolishPad";
+import { ShineBar } from "./ShineBar";
 import { StageFooter } from "./StageFooter";
 import { assistHint } from "./stageNames";
 import type { StageProps } from "./stageProps";
 import "./polish.css";
 
 export function PolishStage(props: StageProps) {
-  const { run, dispatch } = props;
+  const { state, run, dispatch } = props;
   const { reducedMotion } = useSettings();
   const [assist, setAssist] = useAssist("polish");
   const [restarts, setRestarts] = useState(0);
@@ -70,6 +71,9 @@ export function PolishStage(props: StageProps) {
             onChange={setAssist}
           />
           <p className="jb-hint">{assistHint("the buffing wheel")}</p>
+          {run.purpose.kind === "collection" && state.collection !== null ? (
+            <ShineBar collection={state.collection} run={run} />
+          ) : null}
         </aside>
         <div className="jb-work__stage">
           <CelebrationBurst key={polishedCount} active={polishedCount > 0} />

@@ -28,7 +28,13 @@ async function tireSeamInSave(page: Page, jointId: string): Promise<void> {
       const save = JSON.parse(window.localStorage.getItem(key) ?? "{}") as {
         activeRun: { joins: Record<string, unknown> };
       };
-      save.activeRun.joins[joint] = { ticks: 3600, insideTicks: 20, overTicks: 3000, assisted: false };
+      save.activeRun.joins[joint] = {
+        ticks: 3600,
+        insideTicks: 20,
+        overTicks: 3000,
+        assisted: false,
+        twin: false,
+      };
       window.localStorage.setItem(key, JSON.stringify(save));
     }
   }, jointId);

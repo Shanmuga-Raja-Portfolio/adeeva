@@ -46,3 +46,61 @@
   min-width: 56px;
   touch-action: none;
 }
+
+.jb-pot-picker {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #24525e, #133540);
+  color: #f4ecdc;
+}
+
+.jb-pot-picker .jb-muted {
+  color: #d8e7e8;
+}
+
+.jb-pot-picker__stones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jb-pot-stone {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 64px;
+  min-height: var(--tap);
+  padding: 6px;
+  border: 2px solid rgba(244, 236, 220, 0.25);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+
+.jb-pot-stone svg {
+  width: 44px;
+  height: 44px;
+}
+
+.jb-pot-stone--on {
+  border-color: var(--jb-amber);
+  background: rgba(232, 163, 61, 0.22);
+  box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.35);
+}
+
+.jb-pot-stone:disabled {
+  cursor: default;
+}
+
+.jb-pot-stone__shimmer {
+  color: #ffe2a6;
+  letter-spacing: 1px;
+}

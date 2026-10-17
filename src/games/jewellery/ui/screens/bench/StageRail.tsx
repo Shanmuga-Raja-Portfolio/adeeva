@@ -6,6 +6,8 @@ import type { StageProps } from "./stageProps";
 export function StageRail({ state, run, dispatch }: Omit<StageProps, "onExit">) {
   const stages: readonly RunStage[] = runStages(run).filter((stage) => stage !== "done");
   const current = stages.indexOf(run.stage);
+  const labelOf = (stage: RunStage) =>
+    run.purpose.kind === "collection" && stage === "review" ? "To the line" : STAGE_LABELS[stage];
   return (
     <nav className="jb-rail" aria-label="Making steps">
       <ol>
@@ -18,7 +20,7 @@ export function StageRail({ state, run, dispatch }: Omit<StageProps, "onExit">) 
               <span className="jb-rail__dot" aria-hidden="true">
                 {done ? <Icon name="check" size={14} /> : index + 1}
               </span>
-              <span className="jb-rail__label">{STAGE_LABELS[stage]}</span>
+              <span className="jb-rail__label">{labelOf(stage)}</span>
             </>
           );
           return (
@@ -28,7 +30,7 @@ export function StageRail({ state, run, dispatch }: Omit<StageProps, "onExit">) 
                   type="button"
                   className="jb-rail__button"
                   onClick={() => dispatch({ type: "goToStage", stage })}
-                  aria-label={`Go back to ${STAGE_LABELS[stage]}`}
+                  aria-label={`Go back to ${labelOf(stage)}`}
                 >
                   {content}
                 </button>

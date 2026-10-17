@@ -141,3 +141,25 @@
     animation: none;
   }
 }
+
+.jb-warmth__zone--left {
+  right: 50%;
+}
+
+.jb-warmth__zone--right {
+  left: 50%;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(232, 163, 61, 0.55) 0 6px,
+    rgba(232, 163, 61, 0.3) 6px 12px
+  );
+}
+
+.jb-twin-note {
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--jb-amber-soft);
+  color: var(--jb-plum-deep);
+  font-weight: 700;
+}

@@ -18,6 +18,8 @@ import {
   trendRewardShape,
   wholeRewardLineParser,
 } from "../../../engine/stateParsers";
+import { AWARD_IDS, type AwardId } from "../content/launchAward";
+import { LAUNCH_THEME_IDS, type LaunchThemeId } from "../content/launchTheme";
 import { THEME_IDS, type ThemeId } from "../content/marketTheme";
 import { TRAY_CLOTHS } from "../content/stallTray";
 import { clientIdParser, jewelColourParser, jewelTagParser } from "./briefParser";
@@ -31,7 +33,7 @@ import type { QualityBreakdown } from "./pieceQuality";
 import type { Reward } from "./rewards";
 import type { StallPiece } from "./stallBox";
 
-const scoreParser = integerRangeParser(0, 100);
+export const scoreParser = integerRangeParser(0, 100);
 const starsParser = integerRangeParser(1, 5);
 const themeIdParser = oneOf(THEME_IDS);
 
@@ -75,6 +77,16 @@ const keepsakeSourceParser: Parser<KeepsakeSource> = (input, path) => {
     happy: booleanParser,
   })(input, path);
   if (order.ok) return order;
+  const line = objectOf<{
+    readonly kind: "collection";
+    readonly themeId: LaunchThemeId;
+    readonly award: AwardId;
+  }>({
+    kind: oneOf(["collection"] as const),
+    themeId: oneOf(LAUNCH_THEME_IDS),
+    award: oneOf(AWARD_IDS),
+  })(input, path);
+  if (line.ok) return line;
   return objectOf<{ readonly kind: "market"; readonly themeId: ThemeId; readonly score: number }>({
     kind: oneOf(["market"] as const),
     themeId: themeIdParser,

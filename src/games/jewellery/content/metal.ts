@@ -1,7 +1,18 @@
 import type { JewelColour } from "./jewelColour";
 import type { JewelTag } from "./jewelTag";
 
-export const METAL_IDS = ["copper", "brass", "silver", "bronze", "rose-gold", "gold"] as const;
+export const METAL_IDS = [
+  "copper",
+  "brass",
+  "silver",
+  "bronze",
+  "rose-gold",
+  "gold",
+  "pewter",
+  "steel",
+  "white-gold",
+  "green-gold",
+] as const;
 export type MetalId = (typeof METAL_IDS)[number];
 
 export interface MetalDef {
@@ -89,5 +100,53 @@ export const METALS: readonly MetalDef[] = [
     sparkle: 3,
     tags: ["elegant", "bold"],
     minReputation: 30,
+  },
+  {
+    id: "pewter",
+    name: "Pewter",
+    price: 4,
+    hardness: 0.15,
+    hammers: 1,
+    warmRate: 0.3,
+    tone: "pewter",
+    sparkle: 1,
+    tags: ["classic", "nature"],
+    minReputation: 14,
+  },
+  {
+    id: "steel",
+    name: "Steel",
+    price: 10,
+    hardness: 0.45,
+    hammers: 3,
+    warmRate: 0.48,
+    tone: "steel",
+    sparkle: 2,
+    tags: ["bold", "classic"],
+    minReputation: 20,
+  },
+  {
+    id: "white-gold",
+    name: "White Gold",
+    price: 22,
+    hardness: 0.3,
+    hammers: 2,
+    warmRate: 0.42,
+    tone: "white-gold",
+    sparkle: 3,
+    tags: ["elegant", "dainty"],
+    minReputation: 34,
+  },
+  {
+    id: "green-gold",
+    name: "Green Gold",
+    price: 20,
+    hardness: 0.3,
+    hammers: 2,
+    warmRate: 0.4,
+    tone: "green-gold",
+    sparkle: 3,
+    tags: ["nature", "elegant"],
+    minReputation: 38,
   },
 ];

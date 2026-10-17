@@ -34,17 +34,21 @@ export interface ClientLines {
   readonly nearMiss: string;
 }
 
-export interface ClientDef {
+export interface PersonDef {
   readonly id: string;
   readonly name: string;
   readonly relation: string;
-  readonly traitGate?: TraitId;
-  readonly minReputation: number;
+  readonly child?: boolean;
   readonly look: AvatarLook;
   readonly scene: DeliveryScene;
   readonly avoidNote: string;
-  readonly brief: BriefTemplate;
   readonly lines: ClientLines;
+}
+
+export interface ClientDef extends PersonDef {
+  readonly traitGate?: TraitId;
+  readonly minReputation: number;
+  readonly brief: BriefTemplate;
 }
 
 export const FIRST_CLIENT_ID = "gran-mina";
@@ -108,6 +112,7 @@ export const CLIENTS: readonly ClientDef[] = [
     id: "kiko",
     name: "Kiko",
     relation: "Turning nine, with her dad, Mr. Tanabe",
+    child: true,
     minReputation: 0,
     look: { skinTone: "porcelain", hairStyle: "ponytail", hairColour: "black", outfit: "dungarees" },
     scene: "kitchen",
@@ -266,6 +271,225 @@ export const CLIENTS: readonly ClientDef[] = [
       request: "A ring as true as a good lens. Every line exact.",
       delighted: "Flawless alignment. I couldn't have done better myself.",
       nearMiss: "Good effort. Precision comes with patience.",
+    },
+  },
+  {
+    id: "ms-adaeze",
+    name: "Ms. Adaeze",
+    relation: "Runs the arcade bookshop",
+    minReputation: 14,
+    look: { skinTone: "cocoa", hairStyle: "high-bun", hairColour: "black", outfit: "blazer" },
+    scene: "shop",
+    avoidNote: "Coral feels too loud for a bookshop.",
+    brief: {
+      occasion: "A badge for a reading coat",
+      productId: "coat-badge",
+      requiredTags: ["classic"],
+      favouredColours: ["navy", "ivory", "gold"],
+      avoidColours: ["coral"],
+      avoidMetals: [],
+      requiredExtras: [],
+      budget: [15, 25],
+      fee: [55, 70],
+      deadlineDays: [4, 6],
+      minQuality: 70,
+    },
+    lines: {
+      request: "A badge for my reading coat. Something classic, please.",
+      delighted: "It looks like it came from a story. Wonderful.",
+      nearMiss: "Lovely! One edge is a little fuzzy.",
+    },
+  },
+  {
+    id: "asha-and-meera",
+    name: "Asha and Meera",
+    relation: "Best friends, with Asha's grandad",
+    child: true,
+    minReputation: 16,
+    look: { skinTone: "chestnut", hairStyle: "braids", hairColour: "black", outfit: "dungarees" },
+    scene: "kitchen",
+    avoidNote: "Charcoal is too gloomy for best friends.",
+    brief: {
+      occasion: "A best-friends necklace",
+      productId: "friendship-halves",
+      requiredTags: ["playful"],
+      favouredColours: ["coral", "sky", "lavender"],
+      avoidColours: ["charcoal"],
+      avoidMetals: [],
+      requiredExtras: [],
+      budget: [18, 28],
+      fee: [60, 75],
+      deadlineDays: [4, 6],
+      minQuality: 70,
+    },
+    lines: {
+      request: "One necklace in two halves. One for each of us!",
+      delighted: "They click together! Best friends forever.",
+      nearMiss: "We love it! One half is a bit dull.",
+    },
+  },
+  {
+    id: "captain-rui",
+    name: "Captain Rui",
+    relation: "Runs the harbour ferry",
+    minReputation: 18,
+    look: { skinTone: "honey", hairStyle: "short-bob", hairColour: "dark-brown", outfit: "denim-jacket" },
+    scene: "shop",
+    avoidNote: "Blush doesn't suit a ferry captain.",
+    brief: {
+      occasion: "A strong captain's bangle",
+      productId: "bangle",
+      requiredTags: ["bold"],
+      favouredColours: ["navy", "teal", "silver"],
+      avoidColours: ["blush"],
+      avoidMetals: [],
+      requiredExtras: [],
+      budget: [12, 22],
+      fee: [60, 75],
+      deadlineDays: [4, 6],
+      minQuality: 72,
+    },
+    lines: {
+      request: "A strong bangle for a ferry captain, please.",
+      delighted: "Sturdy as my boat. Thank you, crew-mate.",
+      nearMiss: "Ahoy, it's handsome! The seam looks a bit wobbly.",
+    },
+  },
+  {
+    id: "coach-imani",
+    name: "Coach Imani",
+    relation: "Coaches the junior swim club",
+    minReputation: 22,
+    look: { skinTone: "espresso", hairStyle: "ponytail", hairColour: "black", outfit: "denim-jacket" },
+    scene: "shop",
+    avoidNote: "",
+    brief: {
+      occasion: "A team charm for the kit bag",
+      productId: "bag-charm",
+      requiredTags: ["playful"],
+      favouredColours: ["teal", "sky", "coral"],
+      avoidColours: [],
+      avoidMetals: [],
+      requiredExtras: [{ extraId: "star-charm", count: 1 }],
+      budget: [18, 28],
+      fee: [70, 85],
+      deadlineDays: [4, 6],
+      minQuality: 74,
+    },
+    lines: {
+      request: "Our club needs a team charm for the kit bag.",
+      delighted: "The whole team cheered when they saw it!",
+      nearMiss: "The team likes it! It could shine a bit more.",
+    },
+  },
+  {
+    id: "nana-ife",
+    name: "Nana Ifẹ",
+    relation: "Grows sunflowers on her roof",
+    minReputation: 24,
+    look: { skinTone: "espresso", hairStyle: "curly-puff", hairColour: "platinum", outfit: "cardigan" },
+    scene: "kitchen",
+    avoidNote: "Black feels too heavy for sunflowers.",
+    brief: {
+      occasion: "Sunflower earrings",
+      productId: "stone-drops",
+      requiredTags: ["nature"],
+      favouredColours: ["mustard", "emerald", "gold"],
+      avoidColours: ["black"],
+      avoidMetals: [],
+      requiredExtras: [],
+      budget: [26, 40],
+      fee: [80, 100],
+      deadlineDays: [5, 7],
+      minQuality: 74,
+    },
+    lines: {
+      request: "Earrings that feel like my sunflowers. Bright and green.",
+      delighted: "They glow like my garden at noon. Thank you, dear.",
+      nearMiss: "So pretty! One stone sits a little shy.",
+    },
+  },
+  {
+    id: "mr-abebe",
+    name: "Mr. Abebe",
+    relation: "Plays accordion by the fountain",
+    traitGate: "charmer",
+    minReputation: 16,
+    look: { skinTone: "cocoa", hairStyle: "short-bob", hairColour: "black", outfit: "cardigan" },
+    scene: "foyer",
+    avoidNote: "",
+    brief: {
+      occasion: "A ring for playing tunes",
+      productId: "motif-ring",
+      requiredTags: ["classic", "playful"],
+      favouredColours: ["ruby", "mustard", "gold"],
+      avoidColours: [],
+      avoidMetals: [],
+      requiredExtras: [],
+      budget: [18, 30],
+      fee: [85, 105],
+      deadlineDays: [4, 6],
+      minQuality: 74,
+    },
+    lines: {
+      request: "A ring for playing tunes. Cheerful, like a polka!",
+      delighted: "It makes my fingers want to dance. Bravo!",
+      nearMiss: "A happy ring! The top could sit a bit neater.",
+    },
+  },
+  {
+    id: "zara",
+    name: "Zara",
+    relation: "Draws the arcade's comic strip",
+    traitGate: "trendsetter",
+    minReputation: 18,
+    look: { skinTone: "peach", hairStyle: "pixie", hairColour: "pastel-pink", outfit: "denim-jacket" },
+    scene: "shop",
+    avoidNote: "",
+    brief: {
+      occasion: "A slide for a comic launch",
+      productId: "hair-slide",
+      requiredTags: ["bold", "sparkly"],
+      favouredColours: ["plum", "coral", "gold"],
+      avoidColours: [],
+      avoidMetals: [],
+      requiredExtras: [],
+      budget: [12, 24],
+      fee: [90, 110],
+      deadlineDays: [4, 6],
+      minQuality: 76,
+    },
+    lines: {
+      request: "Make me something bold and sparkly for my comic launch.",
+      delighted: "It's going in my next comic strip!",
+      nearMiss: "Cool! It needs one more sparkly touch.",
+    },
+  },
+  {
+    id: "dr-sorensen",
+    name: "Dr. Sørensen",
+    relation: "The town astronomer",
+    minReputation: 32,
+    look: { skinTone: "porcelain", hairStyle: "long-waves", hairColour: "platinum", outfit: "blazer" },
+    scene: "garden",
+    avoidNote: "Copper and brass fog up her telescope room.",
+    brief: {
+      occasion: "A pendant like the night sky",
+      productId: "stone-pendant",
+      requiredTags: ["dreamy", "elegant"],
+      favouredColours: ["navy", "silver", "sky"],
+      avoidColours: [],
+      avoidMetals: ["copper", "brass"],
+      requiredExtras: [],
+      budget: [30, 44],
+      fee: [110, 130],
+      deadlineDays: [5, 7],
+      minQuality: 80,
+    },
+    lines: {
+      request: "A pendant like the night sky. Exact and elegant, please.",
+      delighted: "Like holding a little star chart. Splendid.",
+      nearMiss: "Beautiful. A few spots could shine a little brighter.",
     },
   },
 ];

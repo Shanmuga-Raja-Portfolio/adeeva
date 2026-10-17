@@ -272,60 +272,6 @@ button.jb-rail__button:hover {
   font-size: var(--text-xs);
 }
 
-.jb-choices {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
-  gap: var(--space-2);
-}
-
-.jb-choice {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  min-height: 56px;
-  padding: var(--space-2);
-  border: 2px solid var(--paper-edge);
-  border-radius: var(--radius-md);
-  background: var(--card);
-  color: var(--ink);
-  font: inherit;
-  cursor: pointer;
-  transition:
-    transform var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
-}
-
-.jb-choice:hover:not(:disabled) {
-  transform: translateY(-2px);
-  border-color: var(--jb-teal);
-}
-
-.jb-choice[aria-checked="true"] {
-  border-color: var(--jb-amber-deep);
-  background: linear-gradient(180deg, #fff8ea, var(--jb-amber-soft));
-  box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.35);
-}
-
-.jb-choice:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.jb-choice__name {
-  font-weight: 700;
-  font-size: var(--text-sm);
-  text-align: center;
-}
-
-.jb-choice__sub {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: var(--text-xs);
-  color: var(--ink-soft);
-}
-
 .jb-shape-thumb {
   width: 40px;
   height: 40px;
@@ -626,4 +572,15 @@ button.jb-rail__button:hover {
   .jb-burst {
     display: none;
   }
+}
+
+.jb-line-lock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--jb-teal-soft);
+  color: var(--jb-teal-deep);
 }

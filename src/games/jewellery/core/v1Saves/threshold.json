@@ -1,0 +1,473 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Sol",
+    "look": {
+      "skinTone": "amber",
+      "hairStyle": "braids",
+      "hairColour": "black",
+      "outfit": "studio-apron"
+    },
+    "trait": "perfectionist",
+    "difficulty": "standard"
+  },
+  "calendar": {
+    "day": 19,
+    "hoursLeft": 10
+  },
+  "coins": 640,
+  "reputation": 45,
+  "buzz": 0,
+  "stock": {
+    "metal": {
+      "copper": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "brass": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "silver": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "bronze": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "rose-gold": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "gold": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      }
+    },
+    "stones": {
+      "sky-glass": 0,
+      "sea-glass": 0,
+      "garnet": 0,
+      "citrine": 0,
+      "peridot": 0,
+      "onyx": 0,
+      "amethyst": 0,
+      "moonstone": 0
+    },
+    "extras": {
+      "fine-chain": 0,
+      "rope-chain": 0,
+      "silk-cord": 0,
+      "star-charm": 0,
+      "leaf-charm": 0,
+      "pearl-drop": 0
+    },
+    "clips": 0
+  },
+  "upgrades": [],
+  "decor": [],
+  "guide": true,
+  "trends": {
+    "current": ["bold", "nature"],
+    "next": ["dreamy", "bold"]
+  },
+  "marketTheme": "spring-fair",
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-18",
+        "clientId": "aunt-lucia",
+        "brief": {
+          "clientId": "aunt-lucia",
+          "occasion": "A leafy pendant for the shop",
+          "productId": "shape-pendant",
+          "deadlineDay": 23,
+          "budget": 18,
+          "fee": 54,
+          "requiredTags": ["nature"],
+          "favouredColours": ["copper", "emerald"],
+          "avoidColours": [],
+          "avoidMetals": ["gold"],
+          "requiredExtras": [
+            {
+              "extraId": "silk-cord",
+              "count": 1
+            }
+          ],
+          "minQuality": 60
+        },
+        "expiresDay": 19
+      },
+      {
+        "id": "gig-19",
+        "clientId": "gran-mina",
+        "brief": {
+          "clientId": "gran-mina",
+          "occasion": "A pendant for Sundays",
+          "productId": "stone-pendant",
+          "deadlineDay": 22,
+          "budget": 27,
+          "fee": 42,
+          "requiredTags": ["classic"],
+          "favouredColours": ["ruby", "ivory"],
+          "avoidColours": ["black"],
+          "avoidMetals": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "expiresDay": 20
+      },
+      {
+        "id": "gig-20",
+        "clientId": "dev",
+        "brief": {
+          "clientId": "dev",
+          "occasion": "A tough-looking ring",
+          "productId": "stack-ring",
+          "deadlineDay": 22,
+          "budget": 13,
+          "fee": 40,
+          "requiredTags": ["bold"],
+          "favouredColours": ["charcoal", "bronze"],
+          "avoidColours": ["blush"],
+          "avoidMetals": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "expiresDay": 21
+      }
+    ],
+    "active": [
+      {
+        "id": "gig-21",
+        "clientId": "dev",
+        "brief": {
+          "clientId": "dev",
+          "occasion": "A tough-looking ring",
+          "productId": "stack-ring",
+          "deadlineDay": 24,
+          "budget": 20,
+          "fee": 44,
+          "requiredTags": ["bold"],
+          "favouredColours": ["charcoal", "bronze"],
+          "avoidColours": ["blush"],
+          "avoidMetals": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "acceptedDay": 19
+      },
+      {
+        "id": "gig-22",
+        "clientId": "kiko",
+        "brief": {
+          "clientId": "kiko",
+          "occasion": "Kiko's ninth birthday",
+          "productId": "charm-bracelet",
+          "deadlineDay": 24,
+          "budget": 18,
+          "fee": 48,
+          "requiredTags": ["playful"],
+          "favouredColours": ["sky", "coral"],
+          "avoidColours": ["charcoal"],
+          "avoidMetals": [],
+          "requiredExtras": [
+            {
+              "extraId": "star-charm",
+              "count": 1
+            }
+          ],
+          "minQuality": 55
+        },
+        "acceptedDay": 19
+      },
+      {
+        "id": "gig-23",
+        "clientId": "gran-mina",
+        "brief": {
+          "clientId": "gran-mina",
+          "occasion": "A pendant for Sundays",
+          "productId": "stone-pendant",
+          "deadlineDay": 22,
+          "budget": 20,
+          "fee": 45,
+          "requiredTags": ["classic"],
+          "favouredColours": ["ruby", "ivory"],
+          "avoidColours": ["black"],
+          "avoidMetals": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "acceptedDay": 19
+      }
+    ],
+    "lapsed": [],
+    "nextGigNumber": 24
+  },
+  "story": {
+    "seen": ["jb-key", "jb-first-delivery", "jb-first-market"],
+    "flags": [],
+    "queue": []
+  },
+  "activeRun": {
+    "id": "run-1",
+    "purpose": {
+      "kind": "order",
+      "gigId": "gig-2"
+    },
+    "brief": {
+      "clientId": "gran-mina",
+      "occasion": "A pendant for Sundays",
+      "productId": "stone-pendant",
+      "deadlineDay": 6,
+      "budget": 23,
+      "fee": 35,
+      "requiredTags": ["classic"],
+      "favouredColours": ["ruby", "ivory"],
+      "avoidColours": ["black"],
+      "avoidMetals": [],
+      "requiredExtras": [],
+      "minQuality": 55
+    },
+    "stage": "done",
+    "reached": "done",
+    "startedDay": 1,
+    "seed": 211452167,
+    "design": {
+      "productId": "stone-pendant",
+      "options": {
+        "shape": "circle"
+      },
+      "metalId": "brass",
+      "stoneId": "garnet"
+    },
+    "plan": {
+      "plate": {
+        "size": "sheet",
+        "x": 2,
+        "y": 2,
+        "rotation": 0
+      },
+      "seat": {
+        "size": "sheet",
+        "x": 27,
+        "y": 2,
+        "rotation": 0
+      },
+      "loop": {
+        "size": "sheet",
+        "x": 27,
+        "y": 16,
+        "rotation": 0
+      }
+    },
+    "consumed": ["sheet"],
+    "stonesTaken": true,
+    "cuts": {
+      "plate": {
+        "accuracy": 1,
+        "assisted": false
+      },
+      "seat": {
+        "accuracy": 1,
+        "assisted": false
+      },
+      "loop": {
+        "accuracy": 1,
+        "assisted": false
+      }
+    },
+    "joins": {
+      "seat": {
+        "ticks": 270,
+        "insideTicks": 240,
+        "overTicks": 0,
+        "assisted": false
+      },
+      "loop": {
+        "ticks": 270,
+        "insideTicks": 240,
+        "overTicks": 0,
+        "assisted": false
+      }
+    },
+    "sets": {
+      "seat": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "claws": [0.8, 0.8, 0.8, 0.8],
+        "accuracy": 1,
+        "assisted": false
+      }
+    },
+    "polish": {
+      "plate": {
+        "passes": [
+          0, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2,
+          2, 2, 0
+        ],
+        "strokes": 12,
+        "assisted": false
+      },
+      "seat": {
+        "passes": [
+          0, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2,
+          2, 2, 0
+        ],
+        "strokes": 12,
+        "assisted": false
+      },
+      "loop": {
+        "passes": [
+          2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+          2, 2, 2
+        ],
+        "strokes": 12,
+        "assisted": false
+      }
+    },
+    "display": {
+      "finish": "high-shine",
+      "glaze": null,
+      "chain": "fine-chain",
+      "cordColour": null,
+      "charms": [],
+      "nextCharmNumber": 1
+    },
+    "suppliesHourPaid": true
+  },
+  "stallBox": [],
+  "market": {
+    "shownDay": 0,
+    "last": null
+  },
+  "keepsakes": [
+    {
+      "id": "run-1",
+      "day": 1,
+      "source": {
+        "kind": "order",
+        "clientId": "gran-mina",
+        "happy": true
+      },
+      "look": {
+        "productId": "stone-pendant",
+        "options": {
+          "shape": "circle"
+        },
+        "metalId": "brass",
+        "stoneId": "garnet",
+        "finish": "high-shine",
+        "glaze": null,
+        "chain": "fine-chain",
+        "cordColour": null,
+        "charms": []
+      },
+      "stars": 5,
+      "line": "It's perfect. I'm wearing it to tea right now."
+    }
+  ],
+  "log": [
+    {
+      "runId": "run-1",
+      "clientId": "gran-mina",
+      "day": 1,
+      "evaluation": {
+        "criteria": [
+          {
+            "id": "construction",
+            "label": "Finished piece",
+            "passed": true,
+            "detail": "3/3 cut, 2/2 joined, 1/1 set, 3/3 polished.",
+            "weight": 3
+          },
+          {
+            "id": "quality",
+            "label": "Quality",
+            "passed": true,
+            "detail": "Quality 100 against a minimum of 55.",
+            "weight": 2
+          },
+          {
+            "id": "style",
+            "label": "Style",
+            "passed": true,
+            "detail": "Feels classic, just as asked.",
+            "weight": 2
+          },
+          {
+            "id": "colours",
+            "label": "Colours",
+            "passed": true,
+            "detail": "No unwanted colours. 1 favourite colour used.",
+            "weight": 1
+          },
+          {
+            "id": "extras",
+            "label": "Extras",
+            "passed": true,
+            "detail": "No extras were asked for.",
+            "weight": 1
+          },
+          {
+            "id": "budget",
+            "label": "Budget",
+            "passed": true,
+            "detail": "Used 15 of 23 coins of materials.",
+            "weight": 1
+          },
+          {
+            "id": "deadline",
+            "label": "On time",
+            "passed": true,
+            "detail": "Delivered on day 1, due by day 6.",
+            "weight": 1
+          }
+        ],
+        "quality": {
+          "cut": 1,
+          "join": 1,
+          "set": 1,
+          "polish": 1,
+          "metalFit": 1,
+          "hasStones": true,
+          "quality": 100
+        },
+        "favouredColoursUsed": 1,
+        "score": 100,
+        "stars": 5,
+        "passed": true,
+        "feedback": [],
+        "spend": 15
+      },
+      "reward": {
+        "outcome": "pass",
+        "coins": 46,
+        "reputation": 3,
+        "buzz": 9,
+        "lines": [
+          {
+            "label": "Fee",
+            "amount": 42
+          },
+          {
+            "label": "Arcade favourite",
+            "amount": 4
+          }
+        ],
+        "trendMatches": ["dainty"]
+      }
+    }
+  ],
+  "ordersDelivered": 14,
+  "nextRunNumber": 2,
+  "rng": 1120636361
+}

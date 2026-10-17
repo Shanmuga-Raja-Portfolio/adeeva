@@ -5,6 +5,10 @@ const METAL_TONES = [
   { id: "copper", name: "Copper", hex: "#c47a4a" },
   { id: "bronze", name: "Bronze", hex: "#a0773e" },
   { id: "rose-gold", name: "Rose Gold", hex: "#d9a08b" },
+  { id: "pewter", name: "Pewter", hex: "#9aa0a6" },
+  { id: "steel", name: "Steel", hex: "#7d8894" },
+  { id: "white-gold", name: "White Gold", hex: "#e6e2d6" },
+  { id: "green-gold", name: "Green Gold", hex: "#b8b25a" },
 ] as const;
 type MetalToneId = (typeof METAL_TONES)[number]["id"];
 

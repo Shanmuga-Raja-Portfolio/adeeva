@@ -4,6 +4,7 @@ import { OPTIONS, type OptionDef, type OptionId, type OptionSlot } from "../cont
 import type { ProductId } from "../content/product";
 import type { StoneId } from "../content/stone";
 import { isMetalId, isOptionId, isStoneId, metalById, optionById, productById, stoneById } from "./catalog";
+import { designLocked, lockedSlots } from "./designLocks";
 import type { GameState } from "./gameState";
 import type { DesignOptions } from "./pieceLook";
 import type { PieceRun } from "./pieceRun";
@@ -38,6 +39,7 @@ export function chooseOption(state: GameState, slot: OptionSlot, optionId: Optio
   return updateActiveRun(state, "design", (run) => {
     const option = optionById(optionId);
     if (option.slot !== slot || !productById(run.design.productId).slots.includes(slot)) return null;
+    if (lockedSlots(run).includes(slot)) return null;
     if (run.design.options[slot] === optionId) return null;
     return redesigned(run, { ...run.design, options: { ...run.design.options, [slot]: optionId } });
   });
@@ -46,14 +48,15 @@ export function chooseOption(state: GameState, slot: OptionSlot, optionId: Optio
 export function chooseMetal(state: GameState, metalId: MetalId): GameState {
   if (!isMetalId(metalId) || metalLocked(state, metalId)) return state;
   return updateActiveRun(state, "design", (run) =>
-    run.design.metalId === metalId ? null : redesigned(run, { ...run.design, metalId }),
+    designLocked(run) || run.design.metalId === metalId ? null : redesigned(run, { ...run.design, metalId }),
   );
 }
 
 export function chooseStone(state: GameState, stoneId: StoneId): GameState {
   if (!isStoneId(stoneId) || stoneLocked(state, stoneId)) return state;
   return updateActiveRun(state, "design", (run) => {
-    if (productById(run.design.productId).seats.length === 0 || run.design.stoneId === stoneId) return null;
+    if (designLocked(run) || productById(run.design.productId).seats.length === 0) return null;
+    if (run.design.stoneId === stoneId) return null;
     return redesigned(run, { ...run.design, stoneId });
   });
 }

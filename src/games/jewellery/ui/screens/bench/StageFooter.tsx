@@ -56,7 +56,11 @@ export function StageFooter({ state, run, dispatch, onExit, ready, extra }: Stag
           disabledReason={check.ok ? undefined : check.reasons[0]}
           data-testid="advance-stage"
         >
-          {finishing ? "Put it in the stall box" : ADVANCE_LABELS[run.stage]}
+          {finishing
+            ? "Put it in the stall box"
+            : run.purpose.kind === "collection" && run.stage === "display"
+              ? "Look it over"
+              : ADVANCE_LABELS[run.stage]}
           {hours > 0 ? <span className="jb-footer__hours">{hours} h</span> : null}
         </Button>
       </div>

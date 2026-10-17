@@ -7,21 +7,28 @@ import { newSeed } from "../../../../../studio/newSeed";
 import { Button } from "../../../../../ui/kit/Button";
 import type { IconName } from "../../../../../ui/kit/IconSet";
 import { AvatarStep } from "../../../../../ui/newGame/AvatarStep";
+import { CareerStep, type CareerCard } from "../../../../../ui/newGame/CareerStep";
+import {
+  CAREER_STEPS as NEW_GAME_STEPS,
+  careerDraftSettings,
+  careerPlayerDraft,
+  careerStepIssue,
+  type CareerDraft,
+} from "../../../../../ui/newGame/careerDraft";
+import { careerFacts } from "../../../../../ui/newGame/careerFacts";
 import { DifficultyStep } from "../../../../../ui/newGame/DifficultyStep";
 import { NewGameStepper } from "../../../../../ui/newGame/NewGameStepper";
-import {
-  draftSettings,
-  PROFILE_STEPS as NEW_GAME_STEPS,
-  playerDraft,
-  stepIssue,
-  type ProfileDraft as NewGameDraft,
-} from "../../../../../ui/newGame/profileDraft";
 import { TraitStep } from "../../../../../ui/newGame/TraitStep";
+import { CAREERS, type CareerId } from "../../../content/career";
 import { DIFFICULTIES } from "../../../content/difficulty";
+import type { LineNameId } from "../../../content/lineName";
 import { STORY_BEATS } from "../../../content/storyBeat";
 import { TRAITS } from "../../../content/trait";
-import type { NewGameSettings } from "../../../core";
+import { newGameIssues, seasonByNumber, type NewGameSettings } from "../../../core";
+import { ArcadeBackdrop } from "../../art/ArcadeBackdrop";
+import { LoftBackdrop } from "../../art/LoftBackdrop";
 import { Wordmark } from "../../art/Wordmark";
+import { LineNamePicker } from "../loft/LineNamePicker";
 import type { SaveSlotId } from "../../jewellerySlots";
 import "./newGame.css";
 
@@ -41,6 +48,10 @@ const HEADINGS: Readonly<Record<(typeof NEW_GAME_STEPS)[number]["id"], { title: 
   trait: {
     title: "What makes your pieces shine?",
     lead: "Your trait shapes your perks, your voice and who stops by.",
+  },
+  career: {
+    title: "Where does your jewellery story begin?",
+    lead: "Bench jewellers can open the Lantern Loft later. Loft designers start with a whole line to launch.",
   },
   difficulty: {
     title: "How should the arcade feel?",
@@ -69,11 +80,39 @@ function voiceSample(trait: TraitId, name: string): string {
   );
 }
 
+type NewGameDraft = CareerDraft<CareerId>;
+
+const CAREER_CARDS: readonly CareerCard<CareerId>[] = CAREERS.map((career) => ({
+  id: career.id,
+  name: career.cardName,
+  pitch: career.pitch,
+  placeName: career.placeName,
+  badge: career.badge,
+  window:
+    career.id === "bench" ? (
+      <ArcadeBackdrop className="jb-career-window" />
+    ) : (
+      <LoftBackdrop className="jb-career-window" dusk={seasonByNumber(1).dusk} garland={[]} />
+    ),
+  facts: careerFacts(career),
+}));
+
+const DEFAULT_LINE: LineNameId = "little-lantern";
+
 export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: NewGameFlowProps) {
-  const [draft, setDraft] = useState<NewGameDraft>(() => playerDraft(player));
+  const [draft, setDraft] = useState<NewGameDraft>(() => careerPlayerDraft<CareerId>(player, "bench"));
+  const [lineNameId, setLineNameId] = useState<LineNameId | null>(null);
   const [index, setIndex] = useState(0);
   const step = NEW_GAME_STEPS[index] ?? NEW_GAME_STEPS[0];
-  const issue = stepIssue(step.id, draft);
+  const lineIssue =
+    step.id === "career" && draft.career === "collection" && lineNameId === null
+      ? "Pick a name for your line."
+      : null;
+  const issue =
+    lineIssue ??
+    careerStepIssue(step.id, draft, (settings) =>
+      newGameIssues({ ...settings, lineNameId: lineNameId ?? DEFAULT_LINE }),
+    );
   const isLast = index === NEW_GAME_STEPS.length - 1;
   const update = (patch: Partial<NewGameDraft>) => setDraft((current) => ({ ...current, ...patch }));
   const heading = HEADINGS[step.id];
@@ -84,8 +123,8 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
       setIndex(index + 1);
       return;
     }
-    const settings = draftSettings(draft, newSeed());
-    if (settings !== null) onBegin(settings);
+    const settings = careerDraftSettings(draft, newSeed());
+    if (settings !== null) onBegin({ ...settings, lineNameId: lineNameId ?? DEFAULT_LINE });
   };
 
   return (
@@ -128,6 +167,18 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
               onChange={(trait) => update({ trait })}
             />
           ) : null}
+          {step.id === "career" ? (
+            <div className="jb-new-game__career">
+              <CareerStep
+                cards={CAREER_CARDS}
+                value={draft.career}
+                onChange={(career) => update({ career })}
+              />
+              {draft.career === "collection" ? (
+                <LineNamePicker value={lineNameId} onChange={setLineNameId} />
+              ) : null}
+            </div>
+          ) : null}
           {step.id === "difficulty" ? (
             <DifficultyStep
               difficulties={DIFFICULTIES}
@@ -150,7 +201,7 @@ export function NewGameFlow({ slot, player, lookOptions, onBegin, onCancel }: Ne
           showReason
           onClick={next}
         >
-          {isLast ? "Open the bench" : "Next"}
+          {isLast ? (draft.career === "collection" ? "Open the Lantern Loft" : "Open the bench") : "Next"}
         </Button>
       </footer>
     </main>

@@ -13,7 +13,9 @@ export function pieceTags(source: PieceSource): JewelTag[] {
     ...(source.stoneId === null || product.seats.length === 0 ? [] : stoneById(source.stoneId).tags),
     ...finishById(source.finish).tags,
     ...(source.chain === null ? [] : extraById(source.chain).tags),
-    ...source.charms.flatMap((charm) => extraById(charm.charmId).tags),
+    ...source.charms.flatMap((charm) =>
+      charm.shape === null ? extraById(charm.charmId).tags : optionById(charm.shape).tags,
+    ),
   ]);
   return JEWEL_TAGS.filter((tag) => found.has(tag));
 }

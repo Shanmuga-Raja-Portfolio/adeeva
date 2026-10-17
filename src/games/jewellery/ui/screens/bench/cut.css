@@ -72,3 +72,16 @@
     animation: none;
   }
 }
+
+.jb-master-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--jb-amber-soft);
+  color: var(--jb-plum-deep);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}

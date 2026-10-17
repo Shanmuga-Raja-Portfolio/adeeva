@@ -1,0 +1,470 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "name": "Wren",
+    "look": {
+      "skinTone": "amber",
+      "hairStyle": "braids",
+      "hairColour": "black",
+      "outfit": "studio-apron"
+    },
+    "trait": "trendsetter",
+    "difficulty": "standard"
+  },
+  "calendar": {
+    "day": 7,
+    "hoursLeft": 7
+  },
+  "coins": 348,
+  "reputation": 0,
+  "buzz": 6,
+  "stock": {
+    "metal": {
+      "copper": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "brass": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "silver": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "bronze": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "rose-gold": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      },
+      "gold": {
+        "sheet": 0,
+        "strip": 0,
+        "wide": 0
+      }
+    },
+    "stones": {
+      "sky-glass": 0,
+      "sea-glass": 0,
+      "garnet": 0,
+      "citrine": 0,
+      "peridot": 0,
+      "onyx": 0,
+      "amethyst": 0,
+      "moonstone": 0
+    },
+    "extras": {
+      "fine-chain": 0,
+      "rope-chain": 0,
+      "silk-cord": 0,
+      "star-charm": 0,
+      "leaf-charm": 0,
+      "pearl-drop": 0
+    },
+    "clips": 0
+  },
+  "upgrades": [],
+  "decor": [],
+  "guide": true,
+  "trends": {
+    "current": ["playful", "bold"],
+    "next": ["elegant", "bold"]
+  },
+  "marketTheme": "spring-fair",
+  "gigs": {
+    "offers": [
+      {
+        "id": "gig-5",
+        "clientId": "dev",
+        "brief": {
+          "clientId": "dev",
+          "occasion": "A tough-looking ring",
+          "productId": "stack-ring",
+          "deadlineDay": 10,
+          "budget": 13,
+          "fee": 35,
+          "requiredTags": ["bold"],
+          "favouredColours": ["copper", "bronze"],
+          "avoidColours": ["blush"],
+          "avoidMetals": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "expiresDay": 7
+      },
+      {
+        "id": "gig-6",
+        "clientId": "kiko",
+        "brief": {
+          "clientId": "kiko",
+          "occasion": "Kiko's ninth birthday",
+          "productId": "charm-bracelet",
+          "deadlineDay": 11,
+          "budget": 22,
+          "fee": 43,
+          "requiredTags": ["playful"],
+          "favouredColours": ["coral", "sky"],
+          "avoidColours": ["charcoal"],
+          "avoidMetals": [],
+          "requiredExtras": [
+            {
+              "extraId": "star-charm",
+              "count": 1
+            }
+          ],
+          "minQuality": 55
+        },
+        "expiresDay": 8
+      },
+      {
+        "id": "gig-7",
+        "clientId": "gran-mina",
+        "brief": {
+          "clientId": "gran-mina",
+          "occasion": "A pendant for Sundays",
+          "productId": "stone-pendant",
+          "deadlineDay": 10,
+          "budget": 28,
+          "fee": 43,
+          "requiredTags": ["classic"],
+          "favouredColours": ["ivory", "ruby"],
+          "avoidColours": ["black"],
+          "avoidMetals": [],
+          "requiredExtras": [],
+          "minQuality": 55
+        },
+        "expiresDay": 9
+      }
+    ],
+    "active": [],
+    "lapsed": [],
+    "nextGigNumber": 8
+  },
+  "story": {
+    "seen": ["jb-key", "jb-first-market"],
+    "flags": [],
+    "queue": []
+  },
+  "activeRun": {
+    "id": "run-3",
+    "purpose": {
+      "kind": "stall"
+    },
+    "brief": null,
+    "stage": "done",
+    "reached": "done",
+    "startedDay": 1,
+    "seed": 22960796,
+    "design": {
+      "productId": "stack-ring",
+      "options": {
+        "band": "wavy-band"
+      },
+      "metalId": "copper",
+      "stoneId": null
+    },
+    "plan": {
+      "band": {
+        "size": "strip",
+        "x": 12,
+        "y": 3.5,
+        "rotation": 0
+      }
+    },
+    "consumed": ["strip"],
+    "stonesTaken": false,
+    "cuts": {
+      "band": {
+        "accuracy": 1,
+        "assisted": false
+      }
+    },
+    "joins": {
+      "ring-seam": {
+        "ticks": 330,
+        "insideTicks": 300,
+        "overTicks": 0,
+        "assisted": false
+      }
+    },
+    "sets": {},
+    "polish": {
+      "band": {
+        "passes": [
+          2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+          2, 2, 2
+        ],
+        "strokes": 12,
+        "assisted": false
+      }
+    },
+    "display": {
+      "finish": "high-shine",
+      "glaze": null,
+      "chain": null,
+      "cordColour": null,
+      "charms": [],
+      "nextCharmNumber": 1
+    },
+    "suppliesHourPaid": true
+  },
+  "stallBox": [
+    {
+      "id": "piece-run-3",
+      "look": {
+        "productId": "stack-ring",
+        "options": {
+          "band": "wavy-band"
+        },
+        "metalId": "copper",
+        "stoneId": null,
+        "finish": "high-shine",
+        "glaze": null,
+        "chain": null,
+        "cordColour": null,
+        "charms": []
+      },
+      "quality": 100,
+      "tags": ["classic", "playful", "nature", "sparkly"],
+      "colours": ["copper"],
+      "madeDay": 2
+    }
+  ],
+  "market": {
+    "shownDay": 7,
+    "last": {
+      "day": 7,
+      "themeId": "spring-fair",
+      "score": 64,
+      "cloth": "plum",
+      "sign": 1,
+      "slots": [
+        {
+          "id": "piece-run-1",
+          "look": {
+            "productId": "shape-pendant",
+            "options": {
+              "shape": "star",
+              "accent": "dot-row"
+            },
+            "metalId": "copper",
+            "stoneId": null,
+            "finish": "high-shine",
+            "glaze": null,
+            "chain": "fine-chain",
+            "cordColour": null,
+            "charms": [
+              {
+                "id": "charm-1",
+                "charmId": "star-charm",
+                "x": 90,
+                "y": 168,
+                "rotation": 0,
+                "scale": 1,
+                "layer": 1
+              },
+              {
+                "id": "charm-2",
+                "charmId": "leaf-charm",
+                "x": 120,
+                "y": 168,
+                "rotation": 0,
+                "scale": 1,
+                "layer": 2
+              }
+            ]
+          },
+          "quality": 100,
+          "tags": ["dainty", "playful", "elegant", "nature", "sparkly"],
+          "colours": ["sage", "gold", "copper"],
+          "madeDay": 1
+        },
+        {
+          "id": "piece-run-2",
+          "look": {
+            "productId": "drop-pair",
+            "options": {
+              "shape": "raindrop"
+            },
+            "metalId": "brass",
+            "stoneId": null,
+            "finish": "high-shine",
+            "glaze": null,
+            "chain": null,
+            "cordColour": null,
+            "charms": [
+              {
+                "id": "charm-1",
+                "charmId": "star-charm",
+                "x": 90,
+                "y": 168,
+                "rotation": 0,
+                "scale": 1,
+                "layer": 1
+              }
+            ]
+          },
+          "quality": 100,
+          "tags": ["classic", "dainty", "bold", "elegant", "sparkly"],
+          "colours": ["gold"],
+          "madeDay": 1
+        },
+        {
+          "id": "piece-run-3",
+          "look": {
+            "productId": "stack-ring",
+            "options": {
+              "band": "wavy-band"
+            },
+            "metalId": "copper",
+            "stoneId": null,
+            "finish": "high-shine",
+            "glaze": null,
+            "chain": null,
+            "cordColour": null,
+            "charms": []
+          },
+          "quality": 100,
+          "tags": ["classic", "playful", "nature", "sparkly"],
+          "colours": ["copper"],
+          "madeDay": 2
+        }
+      ],
+      "sold": [
+        {
+          "pieceId": "piece-run-1",
+          "coins": 30
+        },
+        {
+          "pieceId": "piece-run-2",
+          "coins": 30
+        }
+      ],
+      "lines": [
+        {
+          "label": "Trendsetter eye",
+          "amount": 12
+        }
+      ],
+      "coins": 72,
+      "reputation": 0,
+      "buzz": 6
+    }
+  },
+  "keepsakes": [
+    {
+      "id": "piece-run-1-day-7",
+      "day": 7,
+      "source": {
+        "kind": "market",
+        "themeId": "spring-fair",
+        "score": 64
+      },
+      "look": {
+        "productId": "shape-pendant",
+        "options": {
+          "shape": "star",
+          "accent": "dot-row"
+        },
+        "metalId": "copper",
+        "stoneId": null,
+        "finish": "high-shine",
+        "glaze": null,
+        "chain": "fine-chain",
+        "cordColour": null,
+        "charms": [
+          {
+            "id": "charm-1",
+            "charmId": "star-charm",
+            "x": 90,
+            "y": 168,
+            "rotation": 0,
+            "scale": 1,
+            "layer": 1
+          },
+          {
+            "id": "charm-2",
+            "charmId": "leaf-charm",
+            "x": 120,
+            "y": 168,
+            "rotation": 0,
+            "scale": 1,
+            "layer": 2
+          }
+        ]
+      },
+      "stars": 5,
+      "line": "A shopper took it home from Spring Fair."
+    },
+    {
+      "id": "piece-run-2-day-7",
+      "day": 7,
+      "source": {
+        "kind": "market",
+        "themeId": "spring-fair",
+        "score": 64
+      },
+      "look": {
+        "productId": "drop-pair",
+        "options": {
+          "shape": "raindrop"
+        },
+        "metalId": "brass",
+        "stoneId": null,
+        "finish": "high-shine",
+        "glaze": null,
+        "chain": null,
+        "cordColour": null,
+        "charms": [
+          {
+            "id": "charm-1",
+            "charmId": "star-charm",
+            "x": 90,
+            "y": 168,
+            "rotation": 0,
+            "scale": 1,
+            "layer": 1
+          }
+        ]
+      },
+      "stars": 5,
+      "line": "A shopper took it home from Spring Fair."
+    },
+    {
+      "id": "piece-run-3-day-7",
+      "day": 7,
+      "source": {
+        "kind": "market",
+        "themeId": "spring-fair",
+        "score": 64
+      },
+      "look": {
+        "productId": "stack-ring",
+        "options": {
+          "band": "wavy-band"
+        },
+        "metalId": "copper",
+        "stoneId": null,
+        "finish": "high-shine",
+        "glaze": null,
+        "chain": null,
+        "cordColour": null,
+        "charms": []
+      },
+      "stars": 5,
+      "line": "It sparkled on the tray at Spring Fair."
+    }
+  ],
+  "log": [],
+  "ordersDelivered": 0,
+  "nextRunNumber": 4,
+  "rng": 1383977448
+}

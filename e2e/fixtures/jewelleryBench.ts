@@ -18,6 +18,8 @@ export async function newJeweller(page: Page): Promise<void> {
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Perfectionist" }).click();
   await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("radio", { name: "Lantern Bench" })).toHaveAttribute("aria-checked", "true");
+  await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Standard" }).click();
   await page.getByRole("button", { name: "Open the bench" }).click();
   await expect(page.getByRole("heading", { name: "Lanterns On" })).toBeVisible();

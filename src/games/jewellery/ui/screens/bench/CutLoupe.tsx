@@ -35,6 +35,7 @@ interface CutLoupeProps {
   readonly draft: CutStrokes;
   readonly onDraft: (strokes: CutStrokes) => void;
   readonly onDone: (strokes: CutStrokes, pxPerMm: number) => void;
+  readonly masterOutline?: boolean | undefined;
 }
 
 const MIN_SPACING_MM = 0.08;
@@ -60,6 +61,7 @@ export function CutLoupe({
   draft,
   onDraft,
   onDone,
+  masterOutline = false,
 }: CutLoupeProps) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -266,6 +268,17 @@ export function CutLoupe({
               strokeWidth={tolerance * 2}
               strokeLinejoin="round"
             />
+            {masterOutline ? (
+              <path
+                d={outlinePath(path.points)}
+                fill="none"
+                stroke="#f2c230"
+                strokeOpacity={0.55}
+                strokeWidth={unit * 0.9}
+                strokeLinejoin="round"
+                data-testid="motif-master-outline"
+              />
+            ) : null}
             <path
               d={outlinePath(path.points)}
               fill="none"

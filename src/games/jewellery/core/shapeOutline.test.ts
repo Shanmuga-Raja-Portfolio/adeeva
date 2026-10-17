@@ -4,12 +4,24 @@ import { PRODUCTS } from "../content/product";
 import { STONE_CUTS } from "../content/stone";
 import { designCutPaths, partOutline } from "./partGeometry";
 import { pointInPolygon, polishMask } from "./polish";
-import { accentOutlines, mirroredShape, seatOutline, shapeOutline } from "./shapeOutline";
+import { accentOutlines } from "./accentOutline";
+import { mirroredShape, seatOutline, shapeOutline } from "./shapeOutline";
 
 describe("shape outlines", () => {
   it("carry the corner dots the design asks for", () => {
     const dots = Object.fromEntries(SHAPE_IDS.map((shape) => [shape, shapeOutline(shape).dots.length]));
-    expect(dots).toEqual({ circle: 0, heart: 1, leaf: 0, raindrop: 1, crescent: 2, star: 10 });
+    expect(dots).toEqual({
+      circle: 0,
+      heart: 1,
+      leaf: 0,
+      raindrop: 1,
+      crescent: 2,
+      star: 10,
+      shell: 1,
+      flower: 5,
+      wave: 2,
+      lantern: 4,
+    });
     expect(seatOutline("teardrop").dots).toHaveLength(1);
     expect(seatOutline("round").dots).toHaveLength(0);
   });

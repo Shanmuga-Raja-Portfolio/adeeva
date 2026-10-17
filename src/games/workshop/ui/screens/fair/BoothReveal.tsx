@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useMemo, type CSSProperties } from "react";
 import { useSettings } from "../../../../../studio/SettingsContext";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { PetalFall } from "../../../../../ui/art/PetalFall";
 import { Button } from "../../../../../ui/kit/Button";
 import { easeInOut, easeOut, window01 } from "../../../../../ui/kit/easing";
-import { useCountUp } from "../../../../../ui/kit/useCountUp";
 import { useShowClock } from "../../../../../ui/kit/useShowClock";
 import { REN } from "../../../content/apprentice";
 import type { FairThemeDef } from "../../../content/fairTheme";
@@ -15,11 +14,9 @@ import {
   fairBoothByNumber,
   fairMusicById,
   makersNoteById,
-  panelVerdict,
   productById,
   setTemplateById,
   shadeById,
-  type FairPanelScore,
   type FairResult,
   type FloorSet,
   type ShowroomState,
@@ -30,9 +27,11 @@ import { HomeProps } from "../../art/HomeProps";
 import { PaddedTrolley } from "../../art/PaddedTrolley";
 import { floorLooks, type PieceLook } from "../../art/pieceLook";
 import { PiecePreview } from "../../art/PiecePreview";
+import { PanelFlips } from "../../../../../ui/show/PanelFlips";
 import { PANEL_LOOKS } from "./panelLooks";
-import { restX, revealSteps, type RevealStep } from "./revealSteps";
-import { Icon } from "../../../../../ui/kit/IconSet";
+import { REVEAL_TIMINGS } from "./revealSteps";
+import { restX, revealedSlots, revealSteps, type RevealStep } from "../../../../../ui/show/revealSteps";
+import { useRevealSteps } from "../../../../../ui/show/useRevealSteps";
 import "./reveal.css";
 
 export interface BoothRevealProps {
@@ -99,29 +98,6 @@ function PieceOnStage({
   );
 }
 
-function FlipCard({ panel, order, instant }: { panel: FairPanelScore; order: number; instant: boolean }) {
-  const delay = 300 + order * 500;
-  const score = useCountUp(panel.score, 1200, delay, instant);
-  const look = PANEL_LOOKS[panel.id];
-  return (
-    <article
-      className={`ww-flip ww-flip--${panel.id}`}
-      style={{ animationDelay: instant ? "0ms" : `${delay - 300}ms` }}
-      aria-label={`${panel.label}: ${panel.score} out of 100, ${panelVerdict(panel.score)}`}
-      data-testid={`flip-${panel.id}`}
-    >
-      <span className="ww-flip__icon" aria-hidden="true">
-        <Icon name={look.icon} size={22} />
-      </span>
-      <strong className="ww-flip__name">{panel.label}</strong>
-      <span className="ww-flip__score" aria-hidden="true">
-        {score}
-      </span>
-      <span className="ww-flip__verdict">{panelVerdict(panel.score)}</span>
-    </article>
-  );
-}
-
 interface StepViewProps {
   readonly steps: readonly RevealStep[];
   readonly index: number;
@@ -135,15 +111,20 @@ interface StepViewProps {
   readonly awning: boolean;
 }
 
+function sceneName(step: RevealStep): string {
+  return step.kind === "reveal" ? "lift" : step.kind;
+}
+
 function caption(step: RevealStep, name: string, theme: FairThemeDef): string {
   switch (step.kind) {
     case "title":
+    case "lights":
       return `Welcome to the Larkspur Craft Fair: ${theme.name}!`;
     case "glide":
       return `Here comes the ${name}, under its dust sheet…`;
     case "wait":
       return "Tap the dust sheet to lift it!";
-    case "lift":
+    case "reveal":
       return `The ${name}! The green gasps.`;
     case "finale":
       return "Leaves twirl down and the whole green claps!";
@@ -159,17 +140,14 @@ function StepView({ steps, index, reduced, onNext, theme, result, set, looks, sk
   const t = step.ms === 0 ? 1 : elapsed / step.ms;
   const order = result.plan.order;
   const count = order.length;
-  const revealed = steps
-    .slice(0, index)
-    .filter((entry) => entry.kind === "lift")
-    .map((entry) => entry.slot);
-  const onTrolley = step.kind === "glide" || step.kind === "wait" || step.kind === "lift";
+  const revealed = revealedSlots(steps, index);
+  const onTrolley = step.kind === "glide" || step.kind === "wait" || step.kind === "reveal";
   const currentPiece = onTrolley ? order[step.slot] : undefined;
   const currentLook = currentPiece === undefined ? undefined : looks[currentPiece];
   const target = restX(step.slot, count);
   const glideX = step.kind === "glide" ? -20 + (target + 20) * easeInOut(t) : target;
-  const lift = step.kind === "lift" ? easeOut(window01(t, 0, 0.55)) : 0;
-  const sparkle = step.kind === "lift" ? window01(t, 0.2, 1) : 0;
+  const lift = step.kind === "reveal" ? easeOut(window01(t, 0, 0.55)) : 0;
+  const sparkle = step.kind === "reveal" ? window01(t, 0.2, 1) : 0;
   const clapping = step.kind === "finale" || step.kind === "panels";
   const leaves = clapping && !reduced ? (step.kind === "finale" ? t : 1 + t) * 0.9 : -1;
   const glow = step.kind === "title" ? easeOut(t) : 1;
@@ -214,9 +192,9 @@ function StepView({ steps, index, reduced, onNext, theme, result, set, looks, sk
         >
           <PieceOnStage
             look={currentLook}
-            sheet={step.kind !== "lift" || lift < 1}
+            sheet={step.kind !== "reveal" || lift < 1}
             lift={lift}
-            dressed={step.kind === "lift" && lift > 0.6}
+            dressed={step.kind === "reveal" && lift > 0.6}
             sparkle={sparkle}
           />
           {step.kind === "glide" ? (
@@ -278,11 +256,12 @@ function StepView({ steps, index, reduced, onNext, theme, result, set, looks, sk
         </button>
       ) : null}
       {step.kind === "panels" ? (
-        <div className="ww-flips">
-          {result.panels.map((panel, order) => (
-            <FlipCard key={panel.id} panel={panel} order={order} instant={reduced} />
-          ))}
-        </div>
+        <PanelFlips
+          panels={result.panels}
+          iconOf={(id) => PANEL_LOOKS[id].icon}
+          instant={reduced}
+          block="ww-flip"
+        />
       ) : null}
       {step.kind === "title" || step.kind === "panels" ? null : (
         <p className="ww-reveal__caption" aria-live="polite">
@@ -297,35 +276,19 @@ export function BoothReveal({ theme, result, set, showroom, upgrades, replay, on
   const { reducedMotion } = useSettings();
   const looks = useMemo(() => floorLooks(set), [set]);
   const steps = useMemo(
-    () => revealSteps(result.plan.order.length, reducedMotion),
+    () => revealSteps(result.plan.order.length, reducedMotion, REVEAL_TIMINGS),
     [result.plan.order.length, reducedMotion],
   );
-  const [index, setIndex] = useState(0);
-  const next = useCallback(() => {
-    setIndex((current) => {
-      if (current + 1 >= steps.length) {
-        onDone();
-        return current;
-      }
-      return current + 1;
-    });
-  }, [steps.length, onDone]);
-  const step = steps[index];
-  const canSkip = replay || steps.slice(0, index).some((entry) => entry.kind === "lift");
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && canSkip) onDone();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [canSkip, onDone]);
+  const { index, step, next, canSkip } = useRevealSteps(steps, replay, onDone);
   const music = fairMusicById(result.plan.music);
   return (
     <section
       className={reducedMotion ? "ww-reveal ww-reveal--still" : "ww-reveal"}
       aria-label={`${theme.name} booth reveal`}
       data-testid="booth-reveal"
-      data-scene={step === undefined ? "done" : `${step.kind}${step.slot >= 0 ? `-${step.slot + 1}` : ""}`}
+      data-scene={
+        step === undefined ? "done" : `${sceneName(step)}${step.slot >= 0 ? `-${step.slot + 1}` : ""}`
+      }
     >
       <StepView
         key={index}

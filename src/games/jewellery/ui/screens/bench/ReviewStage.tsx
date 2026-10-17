@@ -1,7 +1,7 @@
 import { Button } from "../../../../../ui/kit/Button";
 import { Meter } from "../../../../../ui/kit/Meter";
 import { useDispatchOnce } from "../../../../../ui/kit/useDispatchOnce";
-import { canDeliver, pieceQuality, productById, runSource } from "../../../core";
+import { canAddToCollection, canDeliver, pieceQuality, productById, runSource } from "../../../core";
 import { GiftBox } from "../../art/GiftBox";
 import { PiecePreview } from "../../art/PiecePreview";
 import { qualityRows } from "./qualityRows";
@@ -11,7 +11,8 @@ import "./review.css";
 export function ReviewStage({ state, run, dispatch }: StageProps) {
   const once = useDispatchOnce(state, dispatch);
   const quality = pieceQuality(state, run);
-  const check = canDeliver(state);
+  const line = run.purpose.kind === "collection";
+  const check = line ? canAddToCollection(state) : canDeliver(state);
   const product = productById(run.design.productId);
   return (
     <div className="jb-review">
@@ -45,16 +46,29 @@ export function ReviewStage({ state, run, dispatch }: StageProps) {
           valueText={`${quality.quality} / 100`}
           tone="gold"
         />
-        <Button
-          size="lg"
-          icon="heart"
-          onClick={(event) => once(event, { type: "deliver" })}
-          disabledReason={check.ok ? undefined : check.reasons[0]}
-          showReason
-          data-testid="deliver"
-        >
-          Tie the ribbon and deliver
-        </Button>
+        {line ? (
+          <Button
+            size="lg"
+            icon="sparkle"
+            onClick={(event) => once(event, { type: "addToCollection" })}
+            disabledReason={check.ok ? undefined : check.reasons[0]}
+            showReason
+            data-testid="add-to-line"
+          >
+            Add it to the line
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            icon="heart"
+            onClick={(event) => once(event, { type: "deliver" })}
+            disabledReason={check.ok ? undefined : check.reasons[0]}
+            showReason
+            data-testid="deliver"
+          >
+            Tie the ribbon and deliver
+          </Button>
+        )}
       </section>
     </div>
   );

@@ -49,11 +49,44 @@ function Totals({ entry, instant }: { readonly entry: LogEntry; readonly instant
   );
 }
 
-export function ResultsStage({ state, run, onExit }: StageProps) {
+function LineResults({ state, run, onExit }: StageProps) {
+  const product = productById(run.design.productId);
+  const piece = state.collection?.pieces.find((entry) => entry.runId === run.id);
+  const made = state.collection?.pieces.length ?? 0;
+  const total = state.collection?.brief?.products.length ?? made;
+  return (
+    <div className="jb-results jb-results--stall" data-testid="results">
+      <section className="jb-results__card jb-measure">
+        <span className="ad-eyebrow">For your line</span>
+        <h1>Onto the velvet tray!</h1>
+        <PiecePreview
+          source={piece?.look ?? runSource(run)}
+          title={`Your ${product.name}`}
+          twinkle
+          className="jb-results__stall-piece"
+        />
+        <p className="jb-results__quality">
+          <Icon name="star" size={18} /> Quality {piece?.quality ?? pieceQuality(state, run).quality}
+          {piece?.carriesMotif === true ? " · carries the motif" : ""}
+        </p>
+        <p className="jb-muted" data-testid="line-progress">
+          {made} of {total} pieces made for the line.
+        </p>
+        <Button size="lg" onClick={onExit} data-testid="results-exit">
+          Back to the loft
+        </Button>
+      </section>
+    </div>
+  );
+}
+
+export function ResultsStage(props: StageProps) {
+  const { state, run, onExit } = props;
   const { reducedMotion } = useSettings();
   const product = productById(run.design.productId);
   const entry = lastResult(state, run.id);
   const source = runSource(run);
+  if (run.purpose.kind === "collection") return <LineResults {...props} />;
   if (entry === null || run.brief === null) {
     const quality = pieceQuality(state, run).quality;
     return (

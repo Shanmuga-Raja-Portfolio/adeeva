@@ -18,11 +18,11 @@ import {
   dayParser,
   gigBoardParser,
   knownIdParser,
-  profileParser,
   rngParser,
   storyStateParser,
   trendStateParserOf,
 } from "../../../engine/stateParsers";
+import { CAREER_IDS } from "../content/career";
 import { DECOR_IDS } from "../content/decor";
 import { EXTRA_IDS } from "../content/extra";
 import { THEME_IDS } from "../content/marketTheme";
@@ -32,8 +32,11 @@ import { STONE_IDS } from "../content/stone";
 import { UPGRADE_IDS } from "../content/upgrade";
 import { sameBrief } from "./brief";
 import { briefParser, clientIdParser, jewelTagParser } from "./briefParser";
-import { dayLength, STOOL_HOURS } from "./calendar";
+import { dayLength, STOOL_HOURS } from "./calendarHours";
 import { storyBeatById } from "./catalog";
+import { collectionParser } from "./collectionParsers";
+import { jewelleryProfileParser } from "./jewelleryProfile";
+import { launchParser } from "./launchParsers";
 import { SCHEMA_VERSION, type GameState } from "./gameState";
 import { KEEPSAKE_CASE_SIZE } from "./keepsakeCase";
 import { pieceRunParser } from "./pieceRunParser";
@@ -55,7 +58,8 @@ const stockParser = objectOf<Stock>({
 
 const gameStateShapeParser = objectOf<GameState>({
   schemaVersion: oneOf([SCHEMA_VERSION]),
-  profile: profileParser,
+  profile: jewelleryProfileParser,
+  career: oneOf(CAREER_IDS),
   calendar: calendarParser,
   coins: integerParser,
   reputation: countParser,
@@ -83,6 +87,8 @@ const gameStateShapeParser = objectOf<GameState>({
   log: arrayOf(logEntryParser),
   ordersDelivered: countParser,
   nextRunNumber: dayParser,
+  collection: nullable(collectionParser),
+  launch: nullable(launchParser),
   rng: rngParser,
 });
 
@@ -104,8 +110,41 @@ function hoursFitDay(state: GameState): boolean {
   return state.calendar.hoursLeft <= dayLength(state);
 }
 
+function careerFits(state: GameState): boolean {
+  const loft = state.career === "collection";
+  if (loft !== (state.collection !== null) || loft !== (state.launch !== null)) return false;
+  if (state.profile.startedAs === "collection" && !loft) return false;
+  const run = state.activeRun;
+  return loft || run === null || run.purpose.kind !== "collection";
+}
+
+function lineFits(state: GameState): boolean {
+  const collection = state.collection;
+  if (collection === null) return true;
+  const brief = collection.brief;
+  const slots = brief?.products.length ?? 0;
+  const run = state.activeRun;
+  const runSlot =
+    run !== null && run.purpose.kind === "collection" && run.stage !== "done" ? run.purpose.slot : null;
+  if (runSlot !== null && brief !== null && brief.products[runSlot] !== run?.design.productId) return false;
+  if (collection.pieces.some((piece) => piece.slot >= slots)) return false;
+  if (new Set(collection.pieces.map((piece) => piece.slot)).size !== collection.pieces.length) return false;
+  if (
+    run !== null &&
+    run.purpose.kind === "collection" &&
+    run.potStones.some((index) => collection.stonePot[index] === undefined)
+  )
+    return false;
+  return collection.pieces.every((piece) => brief?.products[piece.slot] === piece.look.productId);
+}
+
 export const gameStateParser = refined(
   gameStateShapeParser,
-  (state) => runNumbersBelowNext(state) && hoursFitDay(state) && orderRunMatchesGig(state),
+  (state) =>
+    runNumbersBelowNext(state) &&
+    hoursFitDay(state) &&
+    orderRunMatchesGig(state) &&
+    careerFits(state) &&
+    lineFits(state),
   "a bench whose counters and hours fit together",
 );

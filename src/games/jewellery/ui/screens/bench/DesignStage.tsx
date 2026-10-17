@@ -6,12 +6,17 @@ import { METALS, type MetalId } from "../../../content/metal";
 import type { OptionId, OptionSlot } from "../../../content/partOption";
 import { STONES, type StoneId } from "../../../content/stone";
 import {
+  designLocked,
+  lockedSlots,
+  metalById,
   metalLocked,
+  optionById,
   pieceTags,
   productById,
   runSource,
   slotOptions,
   stockPrice,
+  stoneById,
   stoneLocked,
 } from "../../../core";
 import { metalLook } from "../../art/metalLook";
@@ -28,6 +33,28 @@ const SLOT_TITLES: Readonly<Record<OptionSlot, string>> = {
   band: "Band",
   accent: "Accent",
 };
+
+function LockedPick({
+  title,
+  name,
+  note,
+}: {
+  readonly title: string;
+  readonly name: string;
+  readonly note: string;
+}) {
+  return (
+    <section className="jb-design__group">
+      <h3>{title}</h3>
+      <p className="jb-line-lock" data-testid={`locked-${title.toLowerCase()}`}>
+        <Icon name="lock" size={16} />
+        <span>
+          <strong>{name}</strong> · {note}
+        </span>
+      </p>
+    </section>
+  );
+}
 
 function Glints({ count }: { readonly count: number }) {
   return (
@@ -61,6 +88,10 @@ export function DesignStage(props: StageProps) {
   const tags = pieceTags(source);
   const avoided = run.brief?.avoidMetals ?? [];
   const metalId = run.design.metalId;
+  const locked = lockedSlots(run);
+  const fixed = designLocked(run);
+  const lockNote =
+    run.purpose.kind === "collection" ? "from your Collection Board" : "just like the piece they loved";
   return (
     <div className="jb-design">
       <div className="jb-design__layout">
@@ -78,74 +109,97 @@ export function DesignStage(props: StageProps) {
           </figcaption>
         </figure>
         <div className="jb-design__controls">
-          {product.slots.map((slot) => (
-            <section key={slot} className="jb-design__group">
-              <h3>{SLOT_TITLES[slot]}</h3>
-              <ChoiceGrid<OptionId>
-                label={SLOT_TITLES[slot]}
-                value={run.design.options[slot] ?? null}
-                onChange={(optionId) => dispatch({ type: "chooseOption", slot, optionId })}
-                choices={slotOptions(slot).map((option) => ({
-                  value: option.id,
-                  label: option.name,
-                  note: option.cutting,
-                  content: (
-                    <>
-                      <ShapeThumb optionId={option.id} />
-                      <span className="jb-choice__name">{option.name}</span>
-                      <span className="jb-choice__sub">{option.tags.join(", ")}</span>
-                    </>
-                  ),
-                }))}
-              />
-            </section>
-          ))}
-          <section className="jb-design__group">
-            <h3>Metal</h3>
-            <ChoiceGrid<MetalId>
-              label="Metal"
-              className="jb-choices--metals"
-              value={metalId}
-              onChange={(id) => dispatch({ type: "chooseMetal", metalId: id })}
-              choices={METALS.map((metal) => {
-                const locked = metalLocked(state, metal.id);
-                const look = metalLook(metal.id, "high-shine");
-                return {
-                  value: metal.id,
-                  label: `${metal.name}, ${stockPrice(metal.id, "sheet")} coins a sheet${locked ? `, unlocks at reputation ${metal.minReputation}` : ""}`,
-                  disabled: locked,
-                  content: (
-                    <>
-                      <span
-                        className="jb-metal-swatch"
-                        style={{
-                          background: `linear-gradient(135deg, ${look.light}, ${look.mid} 55%, ${look.dark})`,
-                        }}
-                      />
-                      <span className="jb-choice__name">{metal.name}</span>
-                      {locked ? (
-                        <span className="jb-choice__sub">
-                          <Icon name="lock" size={12} /> Rep {metal.minReputation}
-                        </span>
-                      ) : (
-                        <span className="jb-choice__sub">
-                          <Icon name="coin" size={12} /> {stockPrice(metal.id, "sheet")} ·{" "}
-                          <Hammers count={metal.hammers} /> <Glints count={metal.sparkle} />
-                        </span>
-                      )}
-                    </>
-                  ),
-                };
-              })}
-            />
-            {metalId !== null && avoided.includes(metalId) ? (
-              <p className="jb-design__warn">{HINTS.avoidMetal}</p>
-            ) : null}
-            <p className="jb-hint">
-              Hammers mean tough metal: harder to cut. Glints mean extra sparkle and a bonus.
+          {run.purpose.kind === "collection" ? (
+            <p className="jb-hint" data-testid="design-ready">
+              Your board already chose the motif, metal and stones. Pick what's left, then carry on!
             </p>
-          </section>
-          {product.seats.length > 0 ? (
+          ) : null}
+          {product.slots.map((slot) => {
+            const optionId = run.design.options[slot];
+            if (locked.includes(slot) && optionId !== undefined)
+              return (
+                <LockedPick
+                  key={slot}
+                  title={SLOT_TITLES[slot]}
+                  name={optionById(optionId).name}
+                  note={lockNote}
+                />
+              );
+            return (
+              <section key={slot} className="jb-design__group">
+                <h3>{SLOT_TITLES[slot]}</h3>
+                <ChoiceGrid<OptionId>
+                  label={SLOT_TITLES[slot]}
+                  value={run.design.options[slot] ?? null}
+                  onChange={(optionId) => dispatch({ type: "chooseOption", slot, optionId })}
+                  choices={slotOptions(slot).map((option) => ({
+                    value: option.id,
+                    label: option.name,
+                    note: option.cutting,
+                    content: (
+                      <>
+                        <ShapeThumb optionId={option.id} />
+                        <span className="jb-choice__name">{option.name}</span>
+                        <span className="jb-choice__sub">{option.tags.join(", ")}</span>
+                      </>
+                    ),
+                  }))}
+                />
+              </section>
+            );
+          })}
+          {fixed && metalId !== null ? (
+            <LockedPick title="Metal" name={metalById(metalId).name} note={lockNote} />
+          ) : (
+            <section className="jb-design__group">
+              <h3>Metal</h3>
+              <ChoiceGrid<MetalId>
+                label="Metal"
+                className="jb-choices--metals"
+                value={metalId}
+                onChange={(id) => dispatch({ type: "chooseMetal", metalId: id })}
+                choices={METALS.map((metal) => {
+                  const locked = metalLocked(state, metal.id);
+                  const look = metalLook(metal.id, "high-shine");
+                  return {
+                    value: metal.id,
+                    label: `${metal.name}, ${stockPrice(metal.id, "sheet")} coins a sheet${locked ? `, unlocks at reputation ${metal.minReputation}` : ""}`,
+                    disabled: locked,
+                    content: (
+                      <>
+                        <span
+                          className="jb-metal-swatch"
+                          style={{
+                            background: `linear-gradient(135deg, ${look.light}, ${look.mid} 55%, ${look.dark})`,
+                          }}
+                        />
+                        <span className="jb-choice__name">{metal.name}</span>
+                        {locked ? (
+                          <span className="jb-choice__sub">
+                            <Icon name="lock" size={12} /> Rep {metal.minReputation}
+                          </span>
+                        ) : (
+                          <span className="jb-choice__sub">
+                            <Icon name="coin" size={12} /> {stockPrice(metal.id, "sheet")} ·{" "}
+                            <Hammers count={metal.hammers} /> <Glints count={metal.sparkle} />
+                          </span>
+                        )}
+                      </>
+                    ),
+                  };
+                })}
+              />
+              {metalId !== null && avoided.includes(metalId) ? (
+                <p className="jb-design__warn">{HINTS.avoidMetal}</p>
+              ) : null}
+              <p className="jb-hint">
+                Hammers mean tough metal: harder to cut. Glints mean extra sparkle and a bonus.
+              </p>
+            </section>
+          )}
+          {product.seats.length > 0 && fixed && run.design.stoneId !== null ? (
+            <LockedPick title="Stone" name={stoneById(run.design.stoneId).name} note={lockNote} />
+          ) : product.seats.length > 0 ? (
             <section className="jb-design__group">
               <h3>Stone</h3>
               <ChoiceGrid<StoneId>

@@ -25,6 +25,41 @@ export function ChainArt({ chain, d, metal, cordHex, scale = 1 }: ChainArtProps)
         />
       </g>
     );
+  if (chain === "beaded-cord")
+    return (
+      <g fill="none" strokeLinecap="round">
+        <path d={d} stroke={darken(cordHex, 0.3)} strokeWidth={1.6 * scale} />
+        <path
+          d={d}
+          stroke={darken(cordHex, 0.35)}
+          strokeWidth={5.6 * scale}
+          strokeDasharray={`0 ${7 * scale}`}
+        />
+        <path d={d} stroke={cordHex} strokeWidth={4.4 * scale} strokeDasharray={`0 ${7 * scale}`} />
+        <path
+          d={d}
+          stroke={lighten(cordHex, 0.6)}
+          strokeWidth={1.4 * scale}
+          strokeDasharray={`0 ${7 * scale}`}
+          transform="translate(-0.8 -0.8)"
+        />
+      </g>
+    );
+  if (chain === "velvet-ribbon")
+    return (
+      <g fill="none" strokeLinecap="butt">
+        <path d={d} stroke={darken(cordHex, 0.4)} strokeWidth={7 * scale} />
+        <path d={d} stroke={cordHex} strokeWidth={5.6 * scale} />
+        <path d={d} stroke={lighten(cordHex, 0.35)} strokeWidth={1.2 * scale} strokeOpacity={0.7} />
+      </g>
+    );
+  if (chain === "bag-clip")
+    return (
+      <g fill="none" strokeLinecap="round">
+        <path d={d} stroke="#2d2a30" strokeWidth={5 * scale} />
+        <path d={d} stroke="#5a5560" strokeWidth={3 * scale} />
+      </g>
+    );
   if (chain === "rope-chain")
     return (
       <g fill="none" strokeLinecap="round">

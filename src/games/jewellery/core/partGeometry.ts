@@ -1,13 +1,21 @@
 import type { Point } from "../../../engine/geometry/point";
-import type { AccentId, BandId, ShapeId } from "../content/partOption";
+import {
+  ACCENT_IDS,
+  BAND_IDS,
+  SHAPE_IDS,
+  type AccentId,
+  type BandId,
+  type ShapeId,
+} from "../content/partOption";
 import type { PartDef } from "../content/product";
 import type { StoneCut } from "../content/stone";
+import { accentOutlines, bandAccentOutlines } from "./accentOutline";
+import { bandOutline, barOutline } from "./bandOutline";
 import { productById, stoneById } from "./catalog";
 import type { DesignOptions } from "./pieceLook";
 import type { PieceDesign } from "./pieceRun";
 import {
-  accentOutlines,
-  bandOutline,
+  halfOutline,
   loopOutline,
   mirroredShape,
   seatOutline,
@@ -34,29 +42,26 @@ const DEFAULT_SHAPE: ShapeId = "circle";
 const DEFAULT_BAND: BandId = "smooth-band";
 const DEFAULT_ACCENT: AccentId = "plain";
 
+const isShape = (value: string | undefined): value is ShapeId => SHAPE_IDS.some((id) => id === value);
+const isBand = (value: string | undefined): value is BandId => BAND_IDS.some((id) => id === value);
+const isAccent = (value: string | undefined): value is AccentId => ACCENT_IDS.some((id) => id === value);
+
 export function shapeOption(options: DesignOptions): ShapeId {
   const value = options.shape;
-  return value === "circle" ||
-    value === "heart" ||
-    value === "leaf" ||
-    value === "raindrop" ||
-    value === "crescent" ||
-    value === "star"
-    ? value
-    : DEFAULT_SHAPE;
+  return isShape(value) ? value : DEFAULT_SHAPE;
 }
 
 export function bandOption(options: DesignOptions): BandId {
   const value = options.band;
-  return value === "smooth-band" || value === "wavy-band" || value === "hammered-band" ? value : DEFAULT_BAND;
+  return isBand(value) ? value : DEFAULT_BAND;
 }
 
 function accentOption(options: DesignOptions): AccentId {
   const value = options.accent;
-  return value === "plain" || value === "star-window" || value === "dot-row" ? value : DEFAULT_ACCENT;
+  return isAccent(value) ? value : DEFAULT_ACCENT;
 }
 
-export function seatCut(design: PieceDesign): StoneCut {
+export function seatCut(design: Pick<PieceDesign, "stoneId">): StoneCut {
   return design.stoneId === null ? "round" : stoneById(design.stoneId).cut;
 }
 
@@ -66,10 +71,14 @@ function unitPart(part: PartDef, input: PartShapeInput): UnitShape {
       return bandOutline(bandOption(input.options));
     case "shape":
       return shapeOutline(shapeOption(input.options));
+    case "half":
+      return halfOutline(shapeOption(input.options));
     case "seat":
       return seatOutline(input.cut);
     case "loop":
       return loopOutline();
+    case "bar":
+      return barOutline();
   }
 }
 
@@ -92,12 +101,24 @@ export function partOutline(part: PartDef, input: PartShapeInput): readonly Poin
   return scaled(oriented(part, unitPart(part, input)), part.width, part.height);
 }
 
-export function partAccents(part: PartDef, input: PartShapeInput): readonly (readonly Point[])[] {
+function unitAccents(part: PartDef, input: PartShapeInput): UnitShape[] {
   if (!part.accent) return [];
-  return accentOutlines(accentOption(input.options), shapeOption(input.options)).map((shape) =>
-    scaled(oriented(part, shape), part.width, part.height),
-  );
+  const accent = accentOption(input.options);
+  if (part.outline === "band") return bandAccentOutlines(accent, part.width / part.height);
+  return accentOutlines(accent, shapeOption(input.options));
 }
+
+export function partAccents(part: PartDef, input: PartShapeInput): readonly (readonly Point[])[] {
+  return unitAccents(part, input).map((shape) => scaled(oriented(part, shape), part.width, part.height));
+}
+
+const ACCENT_NAMES: Readonly<Record<AccentId, string>> = {
+  plain: "Window",
+  "star-window": "Star window",
+  "dot-row": "Dot",
+  "moon-window": "Moon window",
+  "heart-window": "Heart window",
+};
 
 function pathsForPart(part: PartDef, input: PartShapeInput): CutPath[] {
   const outer = oriented(part, unitPart(part, input));
@@ -113,15 +134,15 @@ function pathsForPart(part: PartDef, input: PartShapeInput): CutPath[] {
       height: part.height,
     },
   ];
-  if (!part.accent) return paths;
-  const accents = accentOutlines(accentOption(input.options), shapeOption(input.options));
+  const accents = unitAccents(part, input);
+  const name = ACCENT_NAMES[accentOption(input.options)];
   accents.forEach((accent, index) => {
     const shape = oriented(part, accent);
     const points = scaled(shape, part.width, part.height);
     paths.push({
       id: `${part.key}-accent-${index + 1}`,
       partKey: part.key,
-      name: accents.length === 1 ? "Star window" : `Dot ${index + 1}`,
+      name: accents.length === 1 ? name : `${name} ${index + 1}`,
       points,
       dots: dotsOf(shape, points),
       width: part.width,

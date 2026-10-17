@@ -36,6 +36,8 @@ test("home opens Jewellery Bench with the studio avatar pre-filled, and Back to 
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Dreamer" }).click();
   await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("radio", { name: "Lantern Bench" })).toHaveAttribute("aria-checked", "true");
+  await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("radio", { name: "Relaxed" }).click();
   await page.getByRole("button", { name: "Open the bench" }).click();
   await finishJewelleryStories(page);

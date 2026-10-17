@@ -1,4 +1,5 @@
 import { productById } from "./catalog";
+import { designLocked } from "./designLocks";
 import type { PieceRun } from "./pieceRun";
 import { stageIndex, type RunStage } from "./runStage";
 
@@ -18,6 +19,8 @@ const STAGE_HOURS: Readonly<Record<RunStage, number>> = {
 
 function stageCompletionHours(run: PieceRun, stage: RunStage): number {
   if (stage === "set") return productById(run.design.productId).seats.length;
+  if (stage === "design" && designLocked(run)) return 0;
+  if (stage === "join" && run.twinGlow) return 0;
   if (stage === "cut" && run.purpose.kind === "stall") return 1;
   return STAGE_HOURS[stage];
 }

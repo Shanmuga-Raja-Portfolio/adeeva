@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useRovingRadio } from "../../../../../ui/kit/useRovingRadio";
+import "./choiceGrid.css";
 
 interface Choice<T extends string> {
   readonly value: T;

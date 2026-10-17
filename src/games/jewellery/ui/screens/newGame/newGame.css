@@ -87,3 +87,14 @@
     justify-self: center;
   }
 }
+
+.jb-new-game__career {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.jb-career-window {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

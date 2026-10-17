@@ -5,7 +5,9 @@ import { Button } from "../../../../../ui/kit/Button";
 import { Dialog } from "../../../../../ui/kit/Dialog";
 import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
 import type { SaveSlotId, SlotRead } from "../../jewellerySlots";
+import type { DifficultyId } from "../../../../../engine/difficulty";
 import { useAssistChoices, type AssistStep } from "../../useAssist";
+import { useTintLabels } from "../../useTintLabels";
 import "./settings.css";
 
 export interface SettingsDialogProps {
@@ -13,6 +15,7 @@ export interface SettingsDialogProps {
   readonly onClose: () => void;
   readonly slots: readonly SlotRead[];
   readonly activeSlot: SaveSlotId | null;
+  readonly difficulty: DifficultyId | null;
   readonly onDeleteSlot: (slot: SaveSlotId) => void;
 }
 
@@ -31,9 +34,17 @@ const HELPERS: readonly {
   { step: "polish", label: "Buffing wheel", description: "The wheel polishes the whole piece." },
 ];
 
-export function SettingsDialog({ open, onClose, slots, activeSlot, onDeleteSlot }: SettingsDialogProps) {
+export function SettingsDialog({
+  open,
+  onClose,
+  slots,
+  activeSlot,
+  difficulty,
+  onDeleteSlot,
+}: SettingsDialogProps) {
   const { settings, updateSettings } = useSettings();
   const assist = useAssistChoices();
+  const [tintLabels, setTintLabels] = useTintLabels(difficulty);
   const [confirming, setConfirming] = useState<SaveSlotId | null>(null);
   const close = () => {
     setConfirming(null);
@@ -69,6 +80,12 @@ export function SettingsDialog({ open, onClose, slots, activeSlot, onDeleteSlot 
           onChange={(on) => assist.set(helper.step, on)}
         />
       ))}
+      <ToggleSwitch
+        label="Tint labels"
+        description="Show each stone's tint word and pattern on Pebble & Prism's tray."
+        checked={tintLabels}
+        onChange={setTintLabels}
+      />
       <h3 className="jb-settings__heading">Saved benches</h3>
       <ul className="jb-settings__slots">
         {slots.map((read) => (

@@ -47,11 +47,13 @@ describe("catalogs", () => {
     expect(stockPrice("brass", "wide")).toBe(9);
   });
 
-  it("keep 8 clients with exactly two trait-gated ones", () => {
-    expect(CLIENTS).toHaveLength(8);
+  it("keep 16 clients with exactly four trait-gated ones", () => {
+    expect(CLIENTS).toHaveLength(16);
     expect(CLIENTS.filter((client) => client.traitGate !== undefined).map((client) => client.id)).toEqual([
       "juniper",
       "mr-farouk",
+      "mr-abebe",
+      "zara",
     ]);
   });
 

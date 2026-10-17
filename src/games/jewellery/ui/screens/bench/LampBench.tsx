@@ -74,6 +74,7 @@ export function LampBench({
       insideTicks: current.insideTicks,
       overTicks: current.overTicks,
       assisted: wasAssisted,
+      twin: false,
     });
   });
 
@@ -153,7 +154,7 @@ export function LampBench({
   const band = warmthBand(lamp.warmth, zone);
   const accuracy =
     lamp.insideTicks + lamp.overTicks > 0
-      ? joinAccuracy({ ...lamp, assisted: assisted || (stored?.assisted ?? false) })
+      ? joinAccuracy({ ...lamp, assisted: assisted || (stored?.assisted ?? false), twin: false })
       : null;
   const seamStart = 96;
   const seamEnd = 204;
@@ -270,7 +271,7 @@ export function LampBench({
         aria-live="polite"
       >
         {done
-          ? "Joined! Hear that little chime?"
+          ? "Joined! See that little chime?"
           : tired
             ? HINTS.seamTired
             : (hint ??

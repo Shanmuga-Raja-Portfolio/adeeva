@@ -73,7 +73,8 @@ export function isJoinRecordShape(record: JoinRecord): boolean {
     isCount(record.overTicks) &&
     record.insideTicks + record.overTicks <= record.ticks &&
     record.ticks <= MAX_JOIN_TICKS &&
-    typeof record.assisted === "boolean"
+    typeof record.assisted === "boolean" &&
+    typeof record.twin === "boolean"
   );
 }
 

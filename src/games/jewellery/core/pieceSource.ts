@@ -4,6 +4,7 @@ import type { GlazeColour } from "../content/jewelColour";
 import type { MetalId } from "../content/metal";
 import type { ProductId } from "../content/product";
 import type { StoneId } from "../content/stone";
+import type { StoneTint } from "../content/stoneTint";
 import type { DesignOptions, PieceLook, PlacedCharm } from "./pieceLook";
 import type { PieceRun } from "./pieceRun";
 
@@ -12,6 +13,7 @@ export interface PieceSource {
   readonly options: DesignOptions;
   readonly metalId: MetalId | null;
   readonly stoneId: StoneId | null;
+  readonly stoneTint?: StoneTint | null | undefined;
   readonly finish: FinishId;
   readonly glaze: GlazeColour | null;
   readonly chain: ChainId | null;
@@ -41,6 +43,7 @@ export function runLook(run: PieceRun): PieceLook | null {
     options: run.design.options,
     metalId,
     stoneId: run.design.stoneId,
+    stoneTint: null,
     finish: run.display.finish,
     glaze: run.display.glaze,
     chain: run.display.chain,

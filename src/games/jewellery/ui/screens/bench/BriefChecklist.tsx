@@ -1,28 +1,62 @@
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Icon } from "../../../../../ui/kit/IconSet";
-import { checklist, clientById, type GameState, type PieceRun } from "../../../core";
+import { MENTOR_LOOK } from "../../../content/mentor";
+import {
+  checklist,
+  clientById,
+  launchThemeById,
+  lineNameById,
+  type GameState,
+  type PieceRun,
+} from "../../../core";
 
 export interface BriefChecklistProps {
   readonly state: GameState;
   readonly run: PieceRun;
 }
 
-export function BriefChecklist({ state, run }: BriefChecklistProps) {
+function Heading({ state, run }: BriefChecklistProps) {
   const brief = run.brief;
-  if (brief === null) return null;
+  const collection = state.collection;
+  if (run.purpose.kind === "collection" && collection !== null) {
+    const theme = collection.themeId === null ? null : launchThemeById(collection.themeId);
+    return (
+      <>
+        <Avatar look={MENTOR_LOOK} size={44} title="Mr. Osei" frameColour="#d9e9ea" />
+        <div>
+          <span className="ad-eyebrow">For your line</span>
+          <strong>{theme === null ? lineNameById(collection.lineNameId).name : theme.name}</strong>
+        </div>
+      </>
+    );
+  }
+  const client = brief === null ? undefined : clientById(brief.clientId);
+  const visitor = brief?.preset !== null && brief?.preset !== undefined;
+  return (
+    <>
+      {client !== undefined ? (
+        <Avatar look={client.look} size={44} title={client.name} frameColour="#fbe9c8" />
+      ) : null}
+      <div>
+        <span className="ad-eyebrow">{visitor ? "Copy request" : "Order tag"}</span>
+        <strong>{client?.name ?? "A neighbour"}</strong>
+      </div>
+    </>
+  );
+}
+
+export function BriefChecklist({ state, run }: BriefChecklistProps) {
+  if (run.brief === null && run.purpose.kind !== "collection") return null;
   const items = checklist(state, run);
-  const client = clientById(brief.clientId);
+  if (items.length === 0) return null;
   const met = items.filter((item) => item.status === "met").length;
   return (
-    <aside className="jb-checklist jb-measure" aria-label="Order checklist">
+    <aside
+      className="jb-checklist jb-measure"
+      aria-label={run.purpose.kind === "collection" ? "Line checklist" : "Order checklist"}
+    >
       <header className="jb-checklist__head">
-        {client !== undefined ? (
-          <Avatar look={client.look} size={44} title={client.name} frameColour="#fbe9c8" />
-        ) : null}
-        <div>
-          <span className="ad-eyebrow">Order tag</span>
-          <strong>{client?.name ?? "A neighbour"}</strong>
-        </div>
+        <Heading state={state} run={run} />
         <span className="jb-checklist__count">
           {met}/{items.length}
         </span>

@@ -5,9 +5,10 @@ export interface SetAsideDialogProps {
   readonly open: boolean;
   readonly onConfirm: () => void;
   readonly onClose: () => void;
+  readonly linePiece?: boolean;
 }
 
-export function SetAsideDialog({ open, onConfirm, onClose }: SetAsideDialogProps) {
+export function SetAsideDialog({ open, onConfirm, onClose, linePiece = false }: SetAsideDialogProps) {
   return (
     <Dialog
       open={open}
@@ -27,7 +28,10 @@ export function SetAsideDialog({ open, onConfirm, onClose }: SetAsideDialogProps
       <p>Your bench will be cleared so you can start something new.</p>
       <p className="jb-muted">
         Metal you already cut and stones you already set stay used, and the hours you spent are not given
-        back. The order stays on your list, so you can start it again before it is due.
+        back.{" "}
+        {linePiece
+          ? "This line piece won't join your next Collection Board."
+          : "The order stays on your list, so you can start it again before it is due."}
       </p>
     </Dialog>
   );

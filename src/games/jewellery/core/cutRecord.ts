@@ -10,6 +10,8 @@ import { metalById } from "./catalog";
 import type { GameState } from "./gameState";
 import { designCutPaths, type CutPath } from "./partGeometry";
 import type { PieceRun } from "./pieceRun";
+import { claimLineSheet, plansOnLineSheet } from "./lineSheet";
+import { withMotifMaster } from "./motifMaster";
 import { plannedSizes } from "./sheetPlan";
 import { skillMultiplier, type SkillState } from "./skillTolerance";
 import { withMetal } from "./stock";
@@ -142,9 +144,12 @@ function consumeSheets(state: GameState, run: PieceRun): GameState | null {
   const metalId = run.design.metalId;
   if (metalId === null) return null;
   const sizes = plannedSizes(run);
-  if (sizes.length === 0 || sizes.some((size) => state.stock.metal[metalId][size] < 1)) return null;
-  const stock = sizes.reduce((current, size) => withMetal(current, metalId, size, -1), state.stock);
-  return { ...state, stock, activeRun: { ...run, consumed: sizes } };
+  const reused = plansOnLineSheet(state, run);
+  const taken = reused ? sizes.filter((size) => size !== "wide") : sizes;
+  if (sizes.length === 0 || taken.some((size) => state.stock.metal[metalId][size] < 1)) return null;
+  const stock = taken.reduce((current, size) => withMetal(current, metalId, size, -1), state.stock);
+  const consumed: PieceRun = { ...run, consumed: sizes, lineSheet: reused };
+  return claimLineSheet({ ...state, stock, activeRun: consumed }, consumed, reused);
 }
 
 export function cutPath(
@@ -166,13 +171,12 @@ export function cutPath(
   if (!isCutComplete(samples, path, tolerance)) return state;
   const consumed = consumeSheets(state, run);
   if (consumed === null) return state;
-  return updateActiveRun(consumed, "cut", (current) => ({
+  const accuracy = cutAccuracy(samples, path, tolerance, assisted);
+  const cut = updateActiveRun(consumed, "cut", (current) => ({
     ...current,
-    cuts: {
-      ...current.cuts,
-      [pathId]: { accuracy: cutAccuracy(samples, path, tolerance, assisted), assisted },
-    },
+    cuts: { ...current.cuts, [pathId]: { accuracy, assisted } },
   }));
+  return withMotifMaster(cut, run, pathId, accuracy);
 }
 
 export function cutIssues(run: PieceRun): string[] {

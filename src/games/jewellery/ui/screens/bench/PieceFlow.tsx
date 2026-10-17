@@ -77,7 +77,13 @@ export function PieceFlow({ state, dispatch, onExit }: PieceFlowProps) {
       {coach !== undefined ? (
         <CoachBubble show={coachOn(state) && run.purpose.kind === "order"} text={coach} />
       ) : null}
-      <div className={run.brief === null ? "jb-bench__body jb-bench__body--solo" : "jb-bench__body"}>
+      <div
+        className={
+          run.brief === null && run.purpose.kind !== "collection"
+            ? "jb-bench__body jb-bench__body--solo"
+            : "jb-bench__body"
+        }
+      >
         <section className="jb-bench__stage" key={run.stage} aria-label={`${run.stage} step`}>
           <StageView state={state} run={run} dispatch={dispatch} onExit={onExit} />
         </section>

@@ -13,6 +13,7 @@ const LOOK: PieceLook = {
   options: { shape: "leaf", accent: "plain" },
   metalId: "copper",
   stoneId: null,
+  stoneTint: null,
   finish: "glaze",
   glaze: "sage",
   chain: "silk-cord",

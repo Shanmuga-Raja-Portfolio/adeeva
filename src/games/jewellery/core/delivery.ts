@@ -3,7 +3,7 @@ import { latestEntryFor } from "../../../engine/runLog";
 import { applyStanding } from "../../../engine/standing";
 import { CHARM_IDS } from "../content/extra";
 import { clientById, extraById, finishById, productById } from "./catalog";
-import { finishCostIssues, placedCharms } from "./displayChoice";
+import { finishCostIssues, holderCount, placedCharms } from "./displayChoice";
 import type { GameState, LogEntry } from "./gameState";
 import { addKeepsakes } from "./keepsakeCase";
 import { evaluatePiece } from "./pieceEvaluate";
@@ -18,20 +18,21 @@ import { stageCompletionIssues } from "./stageReadiness";
 import { withExtra, type Stock } from "./stock";
 import { queueStoryTrigger } from "./storyQueue";
 
-function materialIssues(state: GameState, run: PieceRun): string[] {
+export function materialIssues(state: GameState, run: PieceRun): string[] {
   const reasons = CHARM_IDS.filter((id) => placedCharms(run, id) > state.stock.extras[id]).map(
     (id) => `Not enough ${extraById(id).name} in your drawers.`,
   );
   const chain = run.display.chain;
-  if (chain !== null && state.stock.extras[chain] < 1) reasons.push(`You need a ${extraById(chain).name}.`);
+  if (chain !== null && state.stock.extras[chain] < holderCount(run))
+    reasons.push(`You need a ${extraById(chain).name}.`);
   if (state.stock.clips < productById(run.design.productId).clipSets) reasons.push("You need clips & rings.");
   return reasons;
 }
 
-function usedUp(stock: Stock, run: PieceRun): Stock {
+export function usedUp(stock: Stock, run: PieceRun): Stock {
   let next = stock;
   for (const id of CHARM_IDS) next = withExtra(next, id, -placedCharms(run, id));
-  if (run.display.chain !== null) next = withExtra(next, run.display.chain, -1);
+  if (run.display.chain !== null) next = withExtra(next, run.display.chain, -holderCount(run));
   return { ...next, clips: next.clips - productById(run.design.productId).clipSets };
 }
 

@@ -10,8 +10,6 @@ import { drawItem } from "../../../engine/rngDraw";
 import { roundShare } from "../../../engine/roundShare";
 import { starsForScore } from "../../../engine/score";
 import { applyStanding } from "../../../engine/standing";
-import { trendMatches } from "../../../engine/trendMarket";
-import type { TraitId } from "../../../engine/trait";
 import { isWeekEnd } from "../../../engine/week";
 import type { JewelColour } from "../content/jewelColour";
 import type { JewelTag } from "../content/jewelTag";
@@ -20,6 +18,9 @@ import { isTrayClothId, TRAY_SIGNS, TRAY_SLOTS, type TrayClothId } from "../cont
 import { productById, themeById } from "./catalog";
 import type { GameState } from "./gameState";
 import { addKeepsakes, type KeepsakeEntry } from "./keepsakeCase";
+import { marketReputationBonus } from "./marketReputationBonus";
+import { saleTraitLines } from "./saleTraitLines";
+import { isPopupDay } from "./seasonCalendar";
 import type { StallPiece } from "./stallBox";
 
 export const MARKET_HOURS = 3;
@@ -30,10 +31,6 @@ const SALES_STEPS: readonly (readonly [number, number])[] = [
   [35, 1],
 ];
 const REPUTATION_SCORE = 75;
-const DREAMER_SHARE = 0.15;
-const TRENDSETTER_SHARE = 0.1;
-const CHARMER_SHARE = 0.1;
-const DREAMER_COLOURS = 3;
 
 interface TrayChoice {
   readonly slots: readonly (string | null)[];
@@ -75,8 +72,8 @@ interface ShopperScore {
   readonly score: number;
 }
 
-export function isMarketDay(day: number): boolean {
-  return isWeekEnd(day);
+export function isMarketDay(state: Pick<GameState, "career" | "collection">, day: number): boolean {
+  return isWeekEnd(day) && !isPopupDay(state, day);
 }
 
 export function rollNextTheme(current: ThemeId, rng: RngState): [ThemeId, RngState] {
@@ -86,7 +83,12 @@ export function rollNextTheme(current: ThemeId, rng: RngState): [ThemeId, RngSta
   );
 }
 
-export function fitsTheme(piece: StallPiece, theme: MarketThemeDef): boolean {
+export interface ThemeFit {
+  readonly tags: readonly JewelTag[];
+  readonly palette: readonly JewelColour[];
+}
+
+export function fitsTheme(piece: Pick<StallPiece, "tags" | "colours">, theme: ThemeFit): boolean {
   return (
     piece.tags.some((tag) => theme.tags.includes(tag)) &&
     piece.colours.some((colour) => theme.palette.includes(colour))
@@ -115,22 +117,17 @@ export function salePrice(piece: StallPiece, score: number): number {
   return Math.round(productById(piece.look.productId).stallBase * (0.6 + (0.6 * score) / 100));
 }
 
-function traitLines(
-  trait: TraitId,
-  total: number,
-  colours: readonly JewelColour[],
-  tags: readonly JewelTag[],
-  hotTags: readonly JewelTag[],
-): RewardLine[] {
-  if (total === 0) return [];
-  const lines: RewardLine[] = [];
-  if (trait === "dreamer" && colours.length >= DREAMER_COLOURS)
-    lines.push({ label: "Starry ideas", amount: Math.round(total * DREAMER_SHARE) });
-  const matches = trendMatches(tags, hotTags).length;
-  if (trait === "trendsetter" && matches > 0)
-    lines.push({ label: "Trendsetter eye", amount: Math.round(total * TRENDSETTER_SHARE * matches) });
-  if (trait === "charmer") lines.push({ label: "Charmer tip", amount: Math.round(total * CHARMER_SHARE) });
-  return lines;
+export function marketPieces(state: Pick<GameState, "stallBox" | "collection">): StallPiece[] {
+  return [...state.stallBox, ...(state.collection?.drawer ?? [])];
+}
+
+export function withoutDrawerPieces(state: GameState, ids: ReadonlySet<string>): GameState {
+  const collection = state.collection;
+  if (collection === null || !collection.drawer.some((piece) => ids.has(piece.id))) return state;
+  return {
+    ...state,
+    collection: { ...collection, drawer: collection.drawer.filter((piece) => !ids.has(piece.id)) },
+  };
 }
 
 function trayPieces(state: GameState, choice: TrayChoice): (StallPiece | null)[] | null {
@@ -138,16 +135,17 @@ function trayPieces(state: GameState, choice: TrayChoice): (StallPiece | null)[]
   const ids = choice.slots.filter((id): id is string => id !== null);
   if (ids.length === 0 || new Set(ids).size !== ids.length) return null;
   const pieces = choice.slots.map((id) =>
-    id === null ? null : (state.stallBox.find((piece) => piece.id === id) ?? undefined),
+    id === null ? null : (marketPieces(state).find((piece) => piece.id === id) ?? undefined),
   );
   return pieces.every((piece) => piece !== undefined) ? (pieces as (StallPiece | null)[]) : null;
 }
 
 export function canOpenMarket(state: GameState): ActionCheck {
   const day = state.calendar.day;
-  if (!isMarketDay(day)) return actionCheck(["Market Day is the seventh day of each week."]);
+  if (isPopupDay(state, day)) return actionCheck(["Today is Pop-up Day! Your window opens instead."]);
+  if (!isMarketDay(state, day)) return actionCheck(["Market Day is the seventh day of each week."]);
   if (state.market.shownDay === day) return actionCheck(["Your tray has already been out today."]);
-  if (state.stallBox.length === 0) return actionCheck(["Make a stall piece first."]);
+  if (marketPieces(state).length === 0) return actionCheck(["Make a stall piece first."]);
   const hours = hoursShortfallReason(state.calendar, MARKET_HOURS);
   return actionCheck(hours === null ? [] : [hours]);
 }
@@ -189,11 +187,15 @@ export function showTray(state: GameState, choice: TrayChoice): GameState {
   const { score } = shopperScore(slots, theme);
   const count = salesCount(score, state.profile.difficulty, shown.length);
   const selling = [...shown].sort((a, b) => b.quality - a.quality).slice(0, count);
-  const sold: SoldPiece[] = selling.map((piece) => ({ pieceId: piece.id, coins: salePrice(piece, score) }));
+  const bonus = marketReputationBonus(state.reputation);
+  const sold: SoldPiece[] = selling.map((piece) => ({
+    pieceId: piece.id,
+    coins: Math.round(salePrice(piece, score) * bonus),
+  }));
   const total = sold.reduce((sum, sale) => sum + sale.coins, 0);
   const colours = [...new Set(shown.flatMap((piece) => piece.colours))];
   const tags = [...new Set(shown.flatMap((piece) => piece.tags))];
-  const lines = traitLines(state.profile.trait, total, colours, tags, state.trends.current);
+  const lines = saleTraitLines(state.profile.trait, total, colours, tags, state.trends.current);
   const coins = total + lines.reduce((sum, line) => sum + line.amount, 0);
   const reputation = score >= REPUTATION_SCORE ? 1 : 0;
   const buzz = Math.round(score / 10);
@@ -212,7 +214,7 @@ export function showTray(state: GameState, choice: TrayChoice): GameState {
     buzz,
   };
   const next: GameState = {
-    ...spent,
+    ...withoutDrawerPieces(spent, soldIds),
     stallBox: spent.stallBox.filter((piece) => !soldIds.has(piece.id)),
     market: { shownDay: day, last: summary },
     keepsakes: addKeepsakes(
