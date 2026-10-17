@@ -1,4 +1,4 @@
-import { lazy, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { GameScreenProps } from "../../../studio/gameModule";
 import { lookAllowed } from "../../../studio/perks";
 import { useToast } from "../../../studio/ToastContext";
@@ -19,25 +19,24 @@ import { BakeryHub } from "./screens/hub/BakeryHub";
 import { NewGameFlow } from "./screens/newGame/NewGameFlow";
 import { SettingsDialog } from "./screens/settings/SettingsDialog";
 import { TitleScreen } from "./screens/title/TitleScreen";
+import { lazyScreen } from "./lazyScreen";
 import { AssistProvider } from "./useAssist";
+import { useIdlePreload } from "./useIdlePreload";
 import "./theme.css";
 import "./ambient.css";
 
-const BakeFlow = lazy(() =>
-  import("./screens/bake/BakeFlow").then((module) => ({ default: module.BakeFlow })),
-);
-const CounterDay = lazy(() =>
-  import("./screens/counter/CounterDay").then((module) => ({ default: module.CounterDay })),
-);
-const BakeBook = lazy(() =>
-  import("./screens/book/BakeBook").then((module) => ({ default: module.BakeBook })),
-);
-const TableService = lazy(() =>
-  import("./screens/salon/TableService").then((module) => ({ default: module.TableService })),
-);
-const FairFlow = lazy(() =>
-  import("./screens/fair/FairFlow").then((module) => ({ default: module.FairFlow })),
-);
+const bake = lazyScreen(() => import("./screens/bake/BakeFlow").then((module) => module.BakeFlow));
+const counter = lazyScreen(() => import("./screens/counter/CounterDay").then((module) => module.CounterDay));
+const book = lazyScreen(() => import("./screens/book/BakeBook").then((module) => module.BakeBook));
+const salon = lazyScreen(() => import("./screens/salon/TableService").then((module) => module.TableService));
+const fair = lazyScreen(() => import("./screens/fair/FairFlow").then((module) => module.FairFlow));
+const BakeFlow = bake.Screen;
+const CounterDay = counter.Screen;
+const BakeBook = book.Screen;
+const TableService = salon.Screen;
+const FairFlow = fair.Screen;
+const PRELOADS = [bake.preload, salon.preload, fair.preload, counter.preload, book.preload];
+const NO_PRELOADS: readonly (() => Promise<unknown>)[] = [];
 
 export function PatisserieGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
@@ -73,11 +72,15 @@ export function PatisserieGame({ player, lookOptions, onPlayerChange, onExit }: 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [leaveBlocked, setLeaveBlocked] = useState(false);
   const screen = resolveScreen(route, session.game);
+  useIdlePreload(screen.name === "hub" ? PRELOADS : NO_PRELOADS);
 
   const refreshSlots = useCallback(() => setSlots(readAllSlots()), []);
   const open = useCallback(
     (view: PlayView) => {
-      if (view !== "hub") flush();
+      if (view !== "hub") {
+        flush();
+        window.scrollTo({ top: 0 });
+      }
       setRoute({ name: "play", view });
     },
     [flush],

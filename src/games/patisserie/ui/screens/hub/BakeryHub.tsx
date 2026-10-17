@@ -21,6 +21,7 @@ import {
 } from "../../../core";
 import { MAX_ACTIVE_GIGS } from "../../../../../engine/gigBoard";
 import type { PlayView } from "../../patisserieRoute";
+import { useAfterFirstPaint } from "../../useAfterFirstPaint";
 import { GuideBubble } from "../GuideBubble";
 import { StoryOverlay } from "../story/StoryOverlay";
 import { SeasonPanel } from "../season/SeasonPanel";
@@ -64,6 +65,8 @@ export function BakeryHub({ state, dispatch, onOpen, onOpenSettings, onExitToTit
   const onBench = run !== null && run.stage !== "done" ? run : null;
   const beat = ending === null ? currentBeat(state) : null;
   const overlayOpen = ending !== null || beat !== null;
+  const painted = useAfterFirstPaint();
+  const showPlans = state.career !== "salon" || painted;
 
   const accept = (event: ClickLike, offerId: string, clientId: string) => {
     if (once(event, { type: "acceptOffer", offerId }))
@@ -132,100 +135,104 @@ export function BakeryHub({ state, dispatch, onOpen, onOpenSettings, onExitToTit
           )}
           <GuideBubble show={coachOn(state) && onBench === null} text={guideLine(state)} />
           <div className="pa-hub__plans" id={PLANS_ID}>
-            {state.career === "salon" ? (
-              <SeasonPanel state={state} dispatch={dispatch} once={once} onOpen={onOpen} />
-            ) : null}
-            <div className="pa-hub__grid">
-              <div className="pa-hub__column">
-                <section className="pa-board" aria-labelledby="pa-board-title">
-                  <header className="pa-board__header">
-                    <h2 id="pa-board-title">Order board</h2>
-                    <span className="pa-muted">
-                      {offers.length === 0 ? "All caught up" : `${offers.length} pinned up`}
-                    </span>
-                  </header>
-                  {offers.length === 0 ? (
-                    <p className="pa-board__empty">
-                      New orders get pinned up overnight. Buzz brings more of them.
-                    </p>
-                  ) : (
-                    <div className="pa-board__cards">
-                      {offers.map((view) => (
-                        <OfferCard
-                          key={view.offer.id}
-                          state={state}
-                          view={view}
-                          onAccept={(event) => accept(event, view.offer.id, view.client.id)}
-                          onDecline={(event) => decline(event, view.offer.id)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </section>
-              </div>
-              <div className="pa-hub__column">
-                {onBench !== null ? (
-                  <Card
-                    tone="gold"
-                    eyebrow={benchEyebrow(onBench.purpose.kind)}
-                    title={productName(onBench.design.productId)}
-                    className="pa-hub-card"
-                  >
-                    <div className="pa-hub__bench">
-                      <Button onClick={() => onOpen("bake")} icon="sparkle">
-                        Back to the bench
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => setSettingAside(true)}>
-                        Set aside
-                      </Button>
-                    </div>
-                  </Card>
+            {showPlans ? (
+              <>
+                {state.career === "salon" ? (
+                  <SeasonPanel state={state} dispatch={dispatch} once={once} onOpen={onOpen} />
                 ) : null}
-                <Card
-                  title="Your orders"
-                  eyebrow={`${state.gigs.active.length} of ${MAX_ACTIVE_GIGS} on the go`}
-                  className="pa-hub-card"
-                >
-                  {state.gigs.active.length === 0 ? (
-                    <p className="pa-muted">Accept an order from the board to start baking.</p>
-                  ) : (
-                    <div className="pa-hub__stack">
-                      {state.gigs.active.map((gig) => (
-                        <GigCard
-                          key={gig.id}
-                          state={state}
-                          gig={gig}
-                          onStart={(event) => startOrder(event, gig.id)}
-                          onContinue={() => onOpen("bake")}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </Card>
-                <CounterPanel state={state} onStartTray={startTray} onOpenCounter={openCounter} />
-              </div>
-              <div className="pa-hub__column">
-                <CometRoomCard state={state} onOpenSalon={openSalon} />
-                <TrendsBoard state={state} />
-                <Card
-                  title="Bake Book"
-                  eyebrow={`${state.bakeBook.length} bakes kept`}
-                  className="pa-hub-card"
-                >
-                  <Button variant="secondary" block icon="heart" onClick={() => onOpen("book")}>
-                    Open the Bake Book
-                  </Button>
-                  <ToggleSwitch
-                    label="First order guide"
-                    description="Little hint bubbles from Otti."
-                    checked={state.guide}
-                    onChange={(on) => dispatch({ type: "setGuide", on })}
-                  />
-                </Card>
-                <PantryPeek state={state} />
-                <UpgradesPanel state={state} onBuy={buy} />
-              </div>
-            </div>
+                <div className="pa-hub__grid">
+                  <div className="pa-hub__column">
+                    <section className="pa-board" aria-labelledby="pa-board-title">
+                      <header className="pa-board__header">
+                        <h2 id="pa-board-title">Order board</h2>
+                        <span className="pa-muted">
+                          {offers.length === 0 ? "All caught up" : `${offers.length} pinned up`}
+                        </span>
+                      </header>
+                      {offers.length === 0 ? (
+                        <p className="pa-board__empty">
+                          New orders get pinned up overnight. Buzz brings more of them.
+                        </p>
+                      ) : (
+                        <div className="pa-board__cards">
+                          {offers.map((view) => (
+                            <OfferCard
+                              key={view.offer.id}
+                              state={state}
+                              view={view}
+                              onAccept={(event) => accept(event, view.offer.id, view.client.id)}
+                              onDecline={(event) => decline(event, view.offer.id)}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                  </div>
+                  <div className="pa-hub__column">
+                    {onBench !== null ? (
+                      <Card
+                        tone="gold"
+                        eyebrow={benchEyebrow(onBench.purpose.kind)}
+                        title={productName(onBench.design.productId)}
+                        className="pa-hub-card"
+                      >
+                        <div className="pa-hub__bench">
+                          <Button onClick={() => onOpen("bake")} icon="sparkle">
+                            Back to the bench
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => setSettingAside(true)}>
+                            Set aside
+                          </Button>
+                        </div>
+                      </Card>
+                    ) : null}
+                    <Card
+                      title="Your orders"
+                      eyebrow={`${state.gigs.active.length} of ${MAX_ACTIVE_GIGS} on the go`}
+                      className="pa-hub-card"
+                    >
+                      {state.gigs.active.length === 0 ? (
+                        <p className="pa-muted">Accept an order from the board to start baking.</p>
+                      ) : (
+                        <div className="pa-hub__stack">
+                          {state.gigs.active.map((gig) => (
+                            <GigCard
+                              key={gig.id}
+                              state={state}
+                              gig={gig}
+                              onStart={(event) => startOrder(event, gig.id)}
+                              onContinue={() => onOpen("bake")}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </Card>
+                    <CounterPanel state={state} onStartTray={startTray} onOpenCounter={openCounter} />
+                  </div>
+                  <div className="pa-hub__column">
+                    <CometRoomCard state={state} onOpenSalon={openSalon} />
+                    <TrendsBoard state={state} />
+                    <Card
+                      title="Bake Book"
+                      eyebrow={`${state.bakeBook.length} bakes kept`}
+                      className="pa-hub-card"
+                    >
+                      <Button variant="secondary" block icon="heart" onClick={() => onOpen("book")}>
+                        Open the Bake Book
+                      </Button>
+                      <ToggleSwitch
+                        label="First order guide"
+                        description="Little hint bubbles from Otti."
+                        checked={state.guide}
+                        onChange={(on) => dispatch({ type: "setGuide", on })}
+                      />
+                    </Card>
+                    <PantryPeek state={state} />
+                    <UpgradesPanel state={state} onBuy={buy} />
+                  </div>
+                </div>
+              </>
+            ) : null}
           </div>
           <p className="pa-safety pa-hub__safety">
             <Icon name="shield" size={14} /> Amounts and oven dots are game numbers. Real ovens, mixers and

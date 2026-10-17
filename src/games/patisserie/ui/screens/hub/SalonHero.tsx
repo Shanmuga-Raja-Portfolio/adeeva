@@ -17,7 +17,7 @@ import {
   type GameState,
 } from "../../../core";
 import { BakerFigure } from "../../art/BakerFigure";
-import { CometRoomBackdrop } from "../../art/CometRoomBackdrop";
+import { CometRoomScene } from "../../art/CometRoomScene";
 import { daysAway } from "../season/daysAway";
 import { SeasonCountdown } from "../season/SeasonCountdown";
 import { BookingBoard } from "./BookingBoard";
@@ -70,12 +70,11 @@ export function SalonHero({ state, plansId, onWorkShift, onEndDay, onBakeTray, o
     <section className="pa-salon-hero" aria-label="Your day in the Comet Room">
       <div className="pa-salon-hero__view">
         <div className="pa-salon-hero__stage">
-          <CometRoomBackdrop
+          <CometRoomScene
             className="pa-salon-hero__backdrop"
             glow={evening ? 1 : 0.6}
             daylight={!evening}
             guests={parlourGuests(state)}
-            layout="hub"
           />
           <div className="pa-salon-hero__light" aria-hidden="true" />
           <div className="pa-salon-hero__baker" aria-hidden="true">

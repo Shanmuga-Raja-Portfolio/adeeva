@@ -88,6 +88,20 @@
   }
 }
 
+.pa-guest-layer {
+  animation: pa-guest-layer-bob 3.2s ease-in-out infinite alternate;
+}
+
+.pa-guest-layer--late {
+  animation-delay: -1.6s;
+}
+
+@keyframes pa-guest-layer-bob {
+  to {
+    transform: translateY(-0.46875%) rotate(0.8deg);
+  }
+}
+
 .pa-chatter {
   transform-box: fill-box;
   transform-origin: 50% 100%;
@@ -104,6 +118,7 @@
 :root[data-motion="reduced"] .pa-root .pa-steam,
 :root[data-motion="reduced"] .pa-root .pa-mote,
 :root[data-motion="reduced"] .pa-root .pa-guest-bob,
+:root[data-motion="reduced"] .pa-root .pa-guest-layer,
 :root[data-motion="reduced"] .pa-root .pa-parlour-cat__body,
 :root[data-motion="reduced"] .pa-root .pa-parlour-cat__zzz {
   animation: none;
