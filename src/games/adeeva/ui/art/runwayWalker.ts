@@ -14,7 +14,7 @@ const FEET_RATIO = 772 / 800;
 export function walkerFrame(progress: number, lateral = 0, stride = true): WalkerFrame {
   const depth = runwayDepth(progress);
   const eased = depth * depth * (3 - 2 * depth);
-  const height = 170 + eased * 330;
+  const height = 190 + eased * 370;
   const width = height / 2;
   const feet = RUNWAY_VIEW.farFeet + eased * (RUNWAY_VIEW.nearFeet - RUNWAY_VIEW.farFeet);
   const bob = stride ? Math.abs(Math.sin(progress * Math.PI * 18)) * height * 0.008 : 0;

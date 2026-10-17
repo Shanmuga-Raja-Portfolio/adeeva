@@ -83,11 +83,17 @@
 .ad-stage-rail__step + .ad-stage-rail__step::before {
   content: "";
   position: absolute;
-  left: -6px;
+  left: -14px;
   top: 50%;
-  width: 8px;
-  height: 2px;
-  background: var(--line-strong);
+  width: 18px;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+  background: rgba(43, 34, 48, 0.16);
+}
+
+.ad-stage-rail__step--done + .ad-stage-rail__step::before {
+  background: var(--sage);
 }
 
 .ad-stage-rail__button {
@@ -100,15 +106,15 @@
   border-radius: var(--radius-pill);
   border: 1.5px solid transparent;
   background: transparent;
-  color: var(--ink-faint);
+  color: var(--ink);
   font-weight: 600;
-  font-size: var(--text-sm);
+  font-size: 1rem;
   white-space: nowrap;
 }
 
 button.ad-stage-rail__button {
   cursor: pointer;
-  color: var(--ink-soft);
+  color: var(--ink);
   transition: background-color var(--duration-base) var(--ease-out);
 }
 
@@ -123,9 +129,10 @@ button.ad-stage-rail__button:hover {
   height: 32px;
   flex: none;
   border-radius: 50%;
-  background: var(--paper-deep);
-  border: 1.5px solid var(--line-strong);
-  font-size: var(--text-sm);
+  background: var(--card);
+  border: 2px solid rgba(43, 34, 48, 0.22);
+  font-size: var(--ad-text-small);
+  font-weight: 700;
 }
 
 .ad-stage-rail__step--done .ad-stage-rail__dot {
@@ -135,14 +142,17 @@ button.ad-stage-rail__button:hover {
 }
 
 .ad-stage-rail__step--done .ad-stage-rail__button {
-  color: var(--ink-soft);
+  color: var(--sage-deep);
 }
 
 .ad-stage-rail__step--current .ad-stage-rail__button {
-  background: var(--card);
-  border-color: rgba(208, 88, 126, 0.35);
-  color: var(--ink);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(180deg, #fff, #fdf0f4);
+  border-color: rgba(208, 88, 126, 0.55);
+  color: var(--rose-deep);
+  font-weight: 700;
+  box-shadow:
+    0 0 0 3px rgba(208, 88, 126, 0.12),
+    var(--shadow-sm);
 }
 
 .ad-stage-rail__step--current .ad-stage-rail__dot {
@@ -159,6 +169,10 @@ button.ad-stage-rail__button:hover {
   padding: var(--space-4) var(--craft-gutter) var(--space-6);
   align-items: start;
   align-content: start;
+}
+
+.ad-craft__body.ad-craft__body--wide {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .ad-craft__stage {
@@ -204,13 +218,19 @@ button.ad-stage-rail__button:hover {
 
 .ad-brief-checklist__who {
   font-family: var(--font-display);
-  font-size: var(--text-md);
+  font-size: 1.125rem;
   line-height: 1.25;
 }
 
 .ad-brief-checklist__count {
-  font-size: var(--text-xs);
-  color: var(--ink-soft);
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--sage-soft);
+  color: var(--sage-deep);
+  font-size: var(--ad-text-note);
+  font-weight: 700;
 }
 
 .ad-brief-checklist__list {
@@ -227,7 +247,7 @@ button.ad-stage-rail__button:hover {
   align-items: center;
   gap: var(--space-2);
   min-height: 32px;
-  font-size: var(--text-sm);
+  font-size: var(--ad-text-small);
   line-height: 1.25;
 }
 
@@ -264,7 +284,110 @@ button.ad-stage-rail__button:hover {
 }
 
 .ad-brief-checklist__item--pending .ad-brief-checklist__label {
+  color: var(--ink);
+}
+
+.ad-brief-checklist__item--pending .ad-brief-checklist__mark {
+  background: var(--gold-soft);
+  border-color: rgba(154, 122, 20, 0.6);
+  color: var(--gold-deep);
+}
+
+.ad-brief-checklist__group {
+  margin: var(--space-2) 0 4px;
+  font-family: var(--font-body);
+  font-size: var(--ad-text-note);
+  font-weight: 700;
   color: var(--ink-soft);
+}
+
+.ad-brief-checklist__list--done {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ad-brief-checklist__list--done .ad-brief-checklist__item {
+  min-height: 30px;
+  padding: 0 10px 0 4px;
+  border-radius: var(--radius-pill);
+  background: var(--sage-soft);
+  color: var(--sage-deep);
+  font-size: var(--ad-text-note);
+  font-weight: 600;
+}
+
+.ad-brief-checklist__list--done .ad-brief-checklist__mark {
+  width: 20px;
+  height: 20px;
+}
+
+.ad-brief-checklist__all {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+  font-weight: 700;
+  color: var(--sage-deep);
+}
+
+.ad-brief-checklist--strip {
+  position: static;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px var(--space-4);
+  padding: 10px 16px;
+  background-image: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.ad-brief-checklist--strip .ad-brief-checklist__header {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0 var(--space-4) 0 0;
+  border-bottom: 0;
+  border-right: 1px dashed var(--line-strong);
+}
+
+.ad-brief-checklist--strip .ad-brief-checklist__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: center;
+  margin-top: 0;
+  padding: 3px 12px 3px 8px;
+}
+
+.ad-brief-checklist--strip .ad-brief-checklist__list {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ad-brief-checklist--strip .ad-brief-checklist__item {
+  min-height: 34px;
+  padding: 0 14px 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  font-weight: 600;
+}
+
+.ad-brief-checklist--strip .ad-brief-checklist__item--pending {
+  background: #fff8e6;
+  border-color: rgba(201, 162, 39, 0.55);
+}
+
+.ad-brief-checklist--strip .ad-brief-checklist__all {
+  margin: 0;
+}
+
+.ad-craft__body > .ad-brief-checklist--strip {
+  margin-bottom: calc(var(--space-2) * -1);
 }
 
 .ad-stage-footer {
@@ -288,8 +411,8 @@ button.ad-stage-rail__button:hover {
 
 .ad-stage-footer__status {
   min-width: 0;
-  font-size: var(--text-sm);
-  color: var(--ink-soft);
+  font-size: var(--ad-text-small);
+  color: var(--ink);
 }
 
 .ad-stage-footer__reasons {

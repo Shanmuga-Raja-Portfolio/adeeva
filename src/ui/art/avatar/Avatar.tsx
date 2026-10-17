@@ -1,17 +1,20 @@
 import type { ReactNode } from "react";
 import { type AccessoryId, type AvatarLook, HAIR_COLOURS, SKIN_TONES } from "../../../engine/avatar";
 import { AvatarAccessory } from "./AvatarAccessory";
+import { PosedArms, type AvatarPose } from "./ArmPose";
 import { AvatarFace, type AvatarMood } from "./AvatarFace";
 import { AvatarHairBack, AvatarHairFront } from "./AvatarHair";
 import { AvatarOutfitBody, AvatarOutfitDefs, AvatarOutfitSleeves } from "./AvatarOutfit";
 import { darken, lighten } from "../colourMix";
-import { CroquisArms, CroquisBody, DOLL_VIEWBOX } from "./Croquis";
+import { CroquisArms, CroquisBody, DOLL_VIEWBOX, type CroquisShoes } from "./Croquis";
 import { useSvgId } from "../useSvgId";
 
 export interface AvatarGarment {
   defs: (idBase: string) => ReactNode;
   body: (idBase: string) => ReactNode;
   sleeves: (idBase: string) => ReactNode;
+  overlay?: ((idBase: string) => ReactNode) | undefined;
+  shoes?: CroquisShoes | undefined;
 }
 
 export interface AvatarFigureProps {
@@ -19,6 +22,7 @@ export interface AvatarFigureProps {
   mood?: AvatarMood | undefined;
   garment?: AvatarGarment | undefined;
   accessory?: AccessoryId | null | undefined;
+  pose?: AvatarPose | undefined;
 }
 
 const headTransform = "translate(200 81) scale(1.08)";
@@ -31,7 +35,7 @@ function hairHex(look: AvatarLook): string {
   return HAIR_COLOURS.find((colour) => colour.id === look.hairColour)?.hex ?? "#3d2516";
 }
 
-export function AvatarFigure({ look, mood = "happy", garment, accessory }: AvatarFigureProps) {
+export function AvatarFigure({ look, mood = "happy", garment, accessory, pose = "rest" }: AvatarFigureProps) {
   const idBase = useSvgId("avatar");
   const skin = skinHex(look);
   const hair = hairHex(look);
@@ -49,10 +53,13 @@ export function AvatarFigure({ look, mood = "happy", garment, accessory }: Avata
       <g transform={headTransform}>
         <AvatarHairBack style={look.hairStyle} colour={hair} />
       </g>
-      <CroquisBody skinTone={skin} head="none" />
+      <CroquisBody skinTone={skin} head="none" shoes={garment?.shoes} />
       {garment ? garment.body(idBase) : <AvatarOutfitBody outfit={look.outfit} idBase={idBase} />}
-      <CroquisArms skinTone={skin} />
-      {garment ? garment.sleeves(idBase) : <AvatarOutfitSleeves outfit={look.outfit} idBase={idBase} />}
+      <PosedArms pose={pose}>
+        <CroquisArms skinTone={skin} />
+        {garment ? garment.sleeves(idBase) : <AvatarOutfitSleeves outfit={look.outfit} idBase={idBase} />}
+      </PosedArms>
+      {garment?.overlay ? garment.overlay(idBase) : null}
       <g transform={headTransform}>
         <AvatarFace skin={skin} hair={hair} mood={mood} gradientId={faceGradient} />
         <AvatarHairFront style={look.hairStyle} colour={hair} />
@@ -63,7 +70,7 @@ export function AvatarFigure({ look, mood = "happy", garment, accessory }: Avata
 }
 
 export interface AvatarProps extends AvatarFigureProps {
-  variant?: "portrait" | "full" | undefined;
+  variant?: "portrait" | "full" | "three-quarter" | undefined;
   title?: string | undefined;
   framed?: boolean | undefined;
   frameColour?: string | undefined;
@@ -73,11 +80,14 @@ export interface AvatarProps extends AvatarFigureProps {
 
 const portraitBox = { x: 118, y: 20, size: 164 };
 
+const THREE_QUARTER_VIEWBOX = "6 4 388 576";
+
 export function Avatar({
   look,
   mood,
   garment,
   accessory,
+  pose,
   variant = "portrait",
   title,
   framed = true,
@@ -87,17 +97,17 @@ export function Avatar({
 }: AvatarProps) {
   const frameId = useSvgId("avatar-frame");
   const label = title ?? "Character portrait";
-  if (variant === "full") {
+  if (variant === "full" || variant === "three-quarter") {
     return (
       <svg
         className={className}
-        viewBox={DOLL_VIEWBOX}
+        viewBox={variant === "full" ? DOLL_VIEWBOX : THREE_QUARTER_VIEWBOX}
         width={size !== undefined ? size / 2 : undefined}
         height={size}
         role="img"
         aria-label={label}
       >
-        <AvatarFigure look={look} mood={mood} garment={garment} accessory={accessory} />
+        <AvatarFigure look={look} mood={mood} garment={garment} accessory={accessory} pose={pose} />
       </svg>
     );
   }
@@ -128,7 +138,7 @@ export function Avatar({
       </defs>
       {framed ? <circle cx={cx} cy={cy} r={box / 2 - 2} fill={`url(#${frameId}-bg)`} /> : null}
       <g clipPath={`url(#${frameId}-clip)`}>
-        <AvatarFigure look={look} mood={mood} garment={garment} accessory={accessory} />
+        <AvatarFigure look={look} mood={mood} garment={garment} accessory={accessory} pose={pose} />
       </g>
       {framed ? (
         <circle

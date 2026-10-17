@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type PointerEvent } from "react";
+import { useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import type { PieceOutline } from "../../../content/garmentPart";
 import type { Cloth } from "../../../../../ui/art/cloth/Cloth";
 import type { Point } from "../../../../../engine/geometry/point";
@@ -10,8 +10,8 @@ import { fabricLook } from "../../../../../ui/art/cloth/fabricLook";
 import { seedFromText } from "../../../../../ui/art/seedFromText";
 import { useSvgId } from "../../../../../ui/art/useSvgId";
 import { Button } from "../../../../../ui/kit/Button";
+import { Icon } from "../../../../../ui/kit/IconSet";
 import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
-import { PlacedPieceArt } from "./PlacedPieceArt";
 import { ScissorsCursor, ScissorsDefs } from "./ScissorsCursor";
 import { SnipParticles } from "./SnipParticles";
 import { projectOnTrack, traceTrack } from "../../../../../engine/geometry/traceTrack";
@@ -145,26 +145,33 @@ export function TraceMat({ piece, fabric, placement, toleranceCm, reducedMotion,
     .map(([x, y], index) => `${index === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`)
     .join(" ");
   const percent = Math.round(accuracy * 100);
+  const outlinePoints = outline.map(([x, y]) => `${x},${y}`).join(" ");
+  const outlinePath = outline.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x} ${y}`).join(" ") + " Z";
   return (
     <div className="ad-trace">
       <div className="ad-trace__stats" aria-live="polite">
+        <span className="ad-trace__piece-name">
+          <Icon name="scissors" size={20} />
+          {piece.name}
+        </span>
         <span className="ad-trace__stat">
-          <span className="ad-eyebrow">Traced</span>
+          <span className="ad-trace__stat-label">Cut so far</span>
           <strong>{Math.round(Math.min(1, coverage / TRACE_COMPLETE_SHARE) * 100)}%</strong>
         </span>
-        <span className="ad-trace__stat">
-          <span className="ad-eyebrow">On the line</span>
+        <span className={`ad-trace__stat ad-trace__stat--${tone}`}>
+          <span className="ad-trace__stat-label">Neat cutting</span>
           <strong>{samples.length > 0 ? `${percent}%` : "—"}</strong>
-        </span>
-        <span className="ad-trace__stat ad-trace__stat--wide">
-          <span className="ad-eyebrow">Tolerance</span>
-          <strong>± {toleranceCm.toFixed(1)} cm</strong>
         </span>
       </div>
       <div
         ref={wrapRef}
         className={finished ? "ad-trace__mat ad-trace__mat--finished" : "ad-trace__mat"}
-        style={{ aspectRatio: `${view.width} / ${view.height}` }}
+        style={
+          {
+            aspectRatio: `${view.width} / ${view.height}`,
+            "--mat-ratio": view.width / view.height,
+          } as CSSProperties
+        }
       >
         <svg
           ref={svgRef}
@@ -193,25 +200,22 @@ export function TraceMat({ piece, fabric, placement, toleranceCm, reducedMotion,
             height={view.height}
             fill={fabric !== undefined ? fabricFill(`${id}-fabric`) : "#efe6d4"}
           />
-          <rect x={view.x} y={view.y} width={view.width} height={view.height} fill="#fffaf3" opacity={0.28} />
-          <PlacedPieceArt
-            piece={piece}
-            fabric={fabric}
-            x={placement.x}
-            y={placement.y}
-            rotation={placement.rotation}
-            state={finished ? "cut" : "idle"}
-            className={finished ? "ad-trace__piece ad-trace__piece--lifted" : "ad-trace__piece"}
+          <path
+            className="ad-trace__wash"
+            d={`M${view.x} ${view.y} h${view.width} v${view.height} h${-view.width} Z ${outlinePath}`}
+            fillRule="evenodd"
           />
           <polygon
-            className="ad-trace__band"
-            points={outline.map(([x, y]) => `${x},${y}`).join(" ")}
-            strokeWidth={toleranceCm * 2}
+            className={finished ? "ad-trace__paper ad-trace__paper--lifted" : "ad-trace__paper"}
+            points={outlinePoints}
+            fill={finished && fabric !== undefined ? fabricFill(`${id}-fabric`) : undefined}
           />
+          <polygon className="ad-trace__band" points={outlinePoints} strokeWidth={toleranceCm * 2} />
+          <polygon className="ad-trace__halo" points={outlinePoints} strokeWidth={unit * 6} />
           <polygon
             className={reducedMotion ? "ad-trace__guide" : "ad-trace__guide ad-trace__guide--march"}
-            points={outline.map(([x, y]) => `${x},${y}`).join(" ")}
-            strokeWidth={unit * 2.4}
+            points={outlinePoints}
+            strokeWidth={unit * 3}
             strokeDasharray={`${unit * 9} ${unit * 6}`}
           />
           <path className="ad-trace__trail" d={trail} strokeWidth={unit * 1.6} />
@@ -291,9 +295,9 @@ export function TraceMat({ piece, fabric, placement, toleranceCm, reducedMotion,
         {held
           ? onLine
             ? "Lovely, keep following the line."
-            : "Ease back onto the dashed line."
+            : "Ease back into the pink band."
           : samples.length === 0
-            ? "Press at the rose dot and follow the dashed line all the way round."
+            ? "Press at the rose dot and cut along the dashed line, inside the pink band."
             : "Lift whenever you like, then carry on from where you stopped."}
       </p>
     </div>

@@ -1,0 +1,70 @@
+.ad-root {
+  --ad-text-small: 0.9375rem;
+  --ad-text-note: 0.875rem;
+}
+
+.ad-root .ad-button--sm {
+  min-height: var(--tap);
+  font-size: var(--ad-text-small);
+}
+
+.ad-root .ad-button--ghost {
+  background: rgba(255, 253, 249, 0.82);
+  border-color: rgba(43, 34, 48, 0.2);
+  color: var(--ink);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 1px 3px rgba(60, 36, 50, 0.08);
+}
+
+.ad-root .ad-button--ghost:hover:not(:disabled) {
+  background: #fff6f8;
+  border-color: rgba(208, 88, 126, 0.55);
+  color: var(--rose-deep);
+}
+
+.ad-root .ad-button:disabled {
+  background: linear-gradient(180deg, #f4eef1, #e9e0e5);
+  border: 1.5px solid rgba(94, 76, 88, 0.32);
+  color: #5a4a56;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  opacity: 1;
+}
+
+.ad-root .ad-button-reason {
+  font-size: var(--ad-text-note);
+  color: var(--ink);
+}
+
+.ad-root .ad-eyebrow {
+  font-weight: 700;
+}
+
+.ad-root .ad-pill-tag {
+  min-height: 28px;
+  font-size: var(--ad-text-note);
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+
+.ad-root .ad-pill-tag--danger {
+  background: var(--danger);
+  color: #fff;
+  font-weight: 700;
+}
+
+.ad-root .ad-pill-tag--hot {
+  color: var(--rose-deep);
+}
+
+.ad-root .ad-pill-tag--gold {
+  color: var(--gold-deep);
+}
+
+.ad-root .ad-pill-tag--sage {
+  color: var(--sage-deep);
+}
+
+.ad-root .ad-pill-tag--next {
+  color: #5b3f94;
+}

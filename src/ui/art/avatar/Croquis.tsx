@@ -15,16 +15,27 @@ const leftLegPath =
 const leftShoePath =
   "M171 707 C177 711 185 711 190 707 C191 722 192 736 193 748 C194 761 190 769 182 769 L173 769 C165 769 161 761 163 750 C166 738 169 722 171 707 Z";
 
+const leftAnklePath =
+  "M171 707 C177 711 185 711 190 707 C191 722 192 734 193 746 L163 748 C166 736 169 722 171 707 Z";
+
+const leftFlatPath =
+  "M163 742 C170 738 186 738 193 742 C196 754 193 769 182 769 L173 769 C164 769 159 756 163 742 Z";
+
 const leftSolePath =
   "M162 752 C160 764 165 773 173 773 L182 773 C191 773 196 764 194 752 C194 762 190 769 182 769 L173 769 C165 769 161 762 162 752 Z";
 
 const leftArmPath =
-  "M141 165 C128 171 124 190 124 210 C123 240 120 266 118 290 C116 322 110 358 107 390 C105 400 102 412 104 423 C105 432 110 438 114 436 C118 434 120 425 120 415 C121 406 121 398 121 392 C124 360 130 326 133 294 C135 266 140 240 142 214 Z";
+  "M146 163 C132 164 124 176 123.5 194 C123 216 121.5 238 120.5 258 C119.5 272 118.5 284 118 293 C117.5 304 116 316 114.5 328 C112.5 348 110 368 108.5 388 C107.5 398 105.5 410 106 421 C106.5 431 109 439 113.5 441.5 C117 443 120.5 440.5 121.5 435 C122.5 428 122.5 420 122 412 C121.5 404 121 397 120.5 391 C122 372 126 350 130 330 C132.5 316 134 304 132.5 293 C133.5 276 137 254 141.5 234 C143.5 224 146 214 147 206 C148.5 190 150 172 146 163 Z";
+
+const leftThumbPath =
+  "M120.5 398 C124.5 401 126.5 409 125 417 C124.5 421 121.5 422.5 120 420 C120.5 413 120 406 118.5 401 Z";
 
 const headPath =
   "M200 44 C220 44 231 60 231 80 C231 101 220 118 200 123 C180 118 169 101 169 80 C169 60 180 44 200 44 Z";
 
 const mirror = "matrix(-1 0 0 1 400 0)";
+
+export type CroquisShoes = "boots" | "flats";
 
 export interface CroquisLayerProps {
   skinTone?: string | undefined;
@@ -33,6 +44,44 @@ export interface CroquisLayerProps {
 export interface CroquisBodyProps extends CroquisLayerProps {
   head?: "croquis" | "none" | undefined;
   baseLayer?: boolean | undefined;
+  shoes?: CroquisShoes | undefined;
+}
+
+function CroquisEye({ x, iris }: { x: number; iris: string }) {
+  return (
+    <g>
+      <ellipse cx={x} cy={85} rx={6} ry={4.3} fill="#fffaf5" />
+      <circle cx={x + 0.4} cy={85.4} r={3.3} fill={iris} />
+      <circle cx={x + 0.4} cy={85.5} r={1.7} fill="#1c1220" />
+      <circle cx={x + 1.5} cy={84.2} r={1.1} fill="#ffffff" />
+      <path
+        d={`M${x - 6.6} 84.6 Q${x} 79.4 ${x + 6.6} 84.6`}
+        fill="none"
+        stroke="#2b1d27"
+        strokeWidth={1.8}
+        strokeLinecap="round"
+      />
+    </g>
+  );
+}
+
+function FlatShoe({ id }: { id: string }) {
+  return (
+    <g>
+      <path d={leftFlatPath} fill={`url(#${id}-flat)`} />
+      <path d={leftSolePath} fill="#4a2a36" />
+      <path d="M164 750 C172 747 184 747 192 749" stroke="#6a3448" strokeWidth={3} fill="none" />
+      <circle cx={186} cy={748.4} r={1.8} fill="#f3d9a0" />
+      <path
+        d="M167 757 C168 751 171 747 176 746"
+        stroke="#ffffff"
+        strokeOpacity={0.35}
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        fill="none"
+      />
+    </g>
+  );
 }
 
 function SkinGradient({ id, skin }: { id: string; skin: string }) {
@@ -49,6 +98,7 @@ export function CroquisBody({
   skinTone = DEFAULT_SKIN,
   head = "croquis",
   baseLayer = true,
+  shoes = "boots",
 }: CroquisBodyProps) {
   const id = useSvgId("croquis");
   const line = darken(skinTone, 0.42);
@@ -68,6 +118,10 @@ export function CroquisBody({
           <stop offset="0" stopColor="#8a5f74" />
           <stop offset="1" stopColor="#4b3141" />
         </linearGradient>
+        <linearGradient id={`${id}-flat`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#c47b8d" />
+          <stop offset="1" stopColor="#8a4760" />
+        </linearGradient>
       </defs>
       <ellipse cx={200} cy={774} rx={70} ry={9} fill="#2b2230" opacity={0.1} />
       {[false, true].map((mirrored) => (
@@ -86,23 +140,32 @@ export function CroquisBody({
             strokeWidth={1.2}
             opacity={0.5}
           />
-          <path d={leftShoePath} fill={`url(#${id}-shoe)`} />
-          <path d={leftSolePath} fill="#3a2531" />
-          <path
-            d="M172 709 C177 713 185 713 189 709"
-            stroke="#2e1d28"
-            strokeOpacity={0.55}
-            strokeWidth={1.6}
-            fill="none"
-          />
-          <path
-            d="M168 754 C169 746 173 742 178 741"
-            stroke="#ffffff"
-            strokeOpacity={0.3}
-            strokeWidth={1.6}
-            strokeLinecap="round"
-            fill="none"
-          />
+          {shoes === "flats" ? (
+            <g>
+              <path d={leftAnklePath} fill={`url(#${id}-skin)`} />
+              <FlatShoe id={id} />
+            </g>
+          ) : (
+            <g>
+              <path d={leftShoePath} fill={`url(#${id}-shoe)`} />
+              <path d={leftSolePath} fill="#3a2531" />
+              <path
+                d="M172 709 C177 713 185 713 189 709"
+                stroke="#2e1d28"
+                strokeOpacity={0.55}
+                strokeWidth={1.6}
+                fill="none"
+              />
+              <path
+                d="M168 754 C169 746 173 742 178 741"
+                stroke="#ffffff"
+                strokeOpacity={0.3}
+                strokeWidth={1.6}
+                strokeLinecap="round"
+                fill="none"
+              />
+            </g>
+          )}
         </g>
       ))}
       <path d={torsoPath} fill={`url(#${id}-skin)`} stroke={line} strokeWidth={1.1} strokeOpacity={0.5} />
@@ -155,13 +218,8 @@ export function CroquisBody({
             strokeOpacity={0.16}
             strokeWidth={2.4}
           />
-          <path
-            d="M181 85 Q187 89 194 85 M206 85 Q213 89 219 85"
-            fill="none"
-            stroke="#3a2730"
-            strokeWidth={1.6}
-            strokeLinecap="round"
-          />
+          <CroquisEye x={187.5} iris={darken(skinTone, 0.62)} />
+          <CroquisEye x={212.5} iris={darken(skinTone, 0.62)} />
           <path
             d="M180 77 Q187 73 194 76 M206 76 Q213 73 220 77"
             fill="none"
@@ -205,18 +263,59 @@ export function CroquisArms({ skinTone = DEFAULT_SKIN }: CroquisLayerProps) {
             strokeOpacity={0.5}
           />
           <path
-            d="M120 290 C122 294 126 296 130 295"
+            d="M128 186 C127 214 125 244 123.5 270 M121 312 C119 336 116 360 114 382"
             fill="none"
-            stroke={shade}
-            strokeWidth={1.1}
-            opacity={0.5}
+            stroke="#ffffff"
+            strokeWidth={2.4}
+            strokeLinecap="round"
+            opacity={0.16}
           />
           <path
-            d="M118 410 C116 418 116 424 118 428"
+            d="M138 236 C135 256 133 274 132 290 M130 302 C127 326 124 352 121 378"
+            fill="none"
+            stroke={shade}
+            strokeWidth={2.2}
+            strokeLinecap="round"
+            opacity={0.22}
+          />
+          <path
+            d="M119.5 291 C122.5 295.5 127 297 131 295"
+            fill="none"
+            stroke={shade}
+            strokeWidth={1.2}
+            strokeLinecap="round"
+            opacity={0.55}
+          />
+          <path
+            d="M109 391 C112 393.5 116.5 394 120 392"
             fill="none"
             stroke={shade}
             strokeWidth={1}
-            opacity={0.6}
+            strokeLinecap="round"
+            opacity={0.45}
+          />
+          <path
+            d={leftThumbPath}
+            fill={`url(#${id}-skin)`}
+            stroke={line}
+            strokeWidth={0.9}
+            strokeOpacity={0.5}
+          />
+          <path
+            d="M110.5 424 C111.5 430 112.5 435 114 439.5 M115.5 425 C116 431 117 435.5 118 439"
+            fill="none"
+            stroke={shade}
+            strokeWidth={0.9}
+            strokeLinecap="round"
+            opacity={0.55}
+          />
+          <path
+            d="M108.5 404 C108 412 108.5 420 110 427"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth={1.4}
+            strokeLinecap="round"
+            opacity={0.2}
           />
         </g>
       ))}

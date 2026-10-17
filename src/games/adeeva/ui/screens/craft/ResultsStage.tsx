@@ -4,6 +4,7 @@ import { latestEntryFor } from "../../../../../engine/runLog";
 import { useSettings } from "../../../../../studio/SettingsContext";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { DressPreview } from "../../art/DressPreview";
+import { FittingStage } from "../../art/FittingStage";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { Meter } from "../../../../../ui/kit/Meter";
@@ -61,11 +62,12 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
     >
       <section className="ad-craft-results__hero">
         <div className="ad-craft-results__figure">
-          <div className="ad-craft-results__glow" aria-hidden="true" />
+          <FittingStage className="ad-craft-results__stage" />
           {client !== undefined ? (
             <Avatar
               look={client.look}
               mood={happy ? "delighted" : "thinking"}
+              pose={happy ? "wave" : "graceful"}
               garment={dressGarment(dress)}
               variant="full"
               title={`${client.name} wearing the dress`}
@@ -105,13 +107,13 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
               </ul>
               <div className="ad-craft-results__totals">
                 <span className="ad-craft-results__total ad-craft-results__total--coins">
-                  <Icon name="coin" size={18} /> {signed(reward.coins)}
+                  <Icon name="coin" size={24} /> {signed(reward.coins)}
                 </span>
                 <span className="ad-craft-results__total ad-craft-results__total--rep">
-                  <Icon name="star" size={18} /> {signed(reward.reputation)} rep
+                  <Icon name="star" size={24} /> {signed(reward.reputation)} rep
                 </span>
                 <span className="ad-craft-results__total ad-craft-results__total--buzz">
-                  <Icon name="megaphone" size={18} /> {signed(reward.buzz)} buzz
+                  <Icon name="megaphone" size={24} /> {signed(reward.buzz)} buzz
                 </span>
               </div>
               {reward.trendMatches.length > 0 ? (

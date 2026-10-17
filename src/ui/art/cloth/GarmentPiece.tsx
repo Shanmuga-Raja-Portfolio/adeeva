@@ -57,21 +57,27 @@ export function GarmentPiece({
         <clipPath id={clipId}>
           <path d={shape.d} />
         </clipPath>
+        <linearGradient id={`${clipId}-fall`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity={0.1} />
+          <stop offset="0.5" stopColor="#ffffff" stopOpacity={0} />
+          <stop offset="1" stopColor="#1c1220" stopOpacity={0.16} />
+        </linearGradient>
       </defs>
       <path d={shape.d} fill={fabricFill(patternId)} />
       <g clipPath={`url(#${clipId})`}>
         <path d={shape.d} fill={fabricSheenFill(patternId)} />
         <path d={shape.d} fill={`url(#${shadeId})`} />
+        <path d={shape.d} fill={`url(#${clipId}-fall)`} />
         {shape.shadows ? (
-          <path d={shape.shadows} fill="#1c1220" opacity={0.2} filter={`url(#${softId})`} />
+          <path d={shape.shadows} fill="#1c1220" opacity={0.28} filter={`url(#${softId})`} />
         ) : null}
         {shape.folds ? (
           <path
             d={shape.folds}
             fill="none"
             stroke="#1c1220"
-            strokeOpacity={0.28}
-            strokeWidth={1.4}
+            strokeOpacity={0.32}
+            strokeWidth={1.5}
             strokeLinecap="round"
           />
         ) : null}
@@ -80,8 +86,8 @@ export function GarmentPiece({
             d={shape.highlights}
             fill="none"
             stroke="#ffffff"
-            strokeOpacity={0.32}
-            strokeWidth={5}
+            strokeOpacity={0.42}
+            strokeWidth={6}
             strokeLinecap="round"
             filter={`url(#${softId})`}
           />

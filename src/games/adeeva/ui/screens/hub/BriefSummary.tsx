@@ -22,6 +22,9 @@ export function BriefSummary({ brief, hotTags }: BriefSummaryProps) {
         ))}
         {brief.favouredColours.length > 0 ? (
           <span className="ad-brief__colours" aria-label="Favourite colours">
+            <span className="ad-brief__loves" aria-hidden="true">
+              Loves
+            </span>
             {brief.favouredColours.map((id) => {
               const colour = colourById(id);
               return (

@@ -1,4 +1,5 @@
-import { SEAM_VIEW, SeamStrip, type SeamStripProps } from "./SeamStrip";
+import { SEAM_VIEW, SeamStrip, seamThread, type SeamStripProps } from "./SeamStrip";
+import { MACHINE_SIDE, MachineArm, MachineBase, MachineDefs } from "./SewingMachineBody";
 import { SewingNeedle } from "./SewingNeedle";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 
@@ -16,63 +17,62 @@ export function SewingStage({
 }: SewingStageProps) {
   const id = useSvgId("sewing");
   const { width, height, centreX, needleY } = SEAM_VIEW;
-  const guides = [40, 56, 72, 88];
+  const left = -MACHINE_SIDE;
+  const full = width + MACHINE_SIDE * 2;
+  const layer = { id, width, height, centreX, needleY };
+  const thread = seamThread(strip.fabric, strip.threadColour);
   return (
-    <svg className={className} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={title}>
+    <svg className={className} viewBox={`${left} 0 ${full} ${height}`} role="img" aria-label={title}>
+      <MachineDefs id={id} />
       <defs>
-        <linearGradient id={`${id}-plate`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#e9e7ee" />
-          <stop offset="0.5" stopColor="#cfccd6" />
-          <stop offset="1" stopColor="#b4b0bd" />
+        <linearGradient id={`${id}-enamel`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#e6f5ef" />
+          <stop offset="0.6" stopColor="#b2dccd" />
+          <stop offset="1" stopColor="#7fb7a4" />
+        </linearGradient>
+        <linearGradient id={`${id}-head-shade`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#1c1220" stopOpacity={0.3} />
+          <stop offset="1" stopColor="#1c1220" stopOpacity={0} />
         </linearGradient>
         <radialGradient id={`${id}-vignette`} cx="0.5" cy="0.6" r="0.75">
-          <stop offset="0.6" stopColor="#1c1220" stopOpacity={0} />
-          <stop offset="1" stopColor="#1c1220" stopOpacity={0.28} />
+          <stop offset="0.62" stopColor="#1c1220" stopOpacity={0} />
+          <stop offset="1" stopColor="#1c1220" stopOpacity={0.3} />
         </radialGradient>
         <clipPath id={`${id}-clip`}>
-          <rect width={width} height={height} rx={18} />
+          <rect x={left} width={full} height={height} rx={18} />
         </clipPath>
       </defs>
       <g clipPath={`url(#${id}-clip)`}>
-        <rect width={width} height={height} fill="#f3eadf" />
-        <rect
-          x={20}
-          y={needleY - 70}
-          width={width - 40}
-          height={140}
-          rx={14}
-          fill={`url(#${id}-plate)`}
-          stroke="#9a96a3"
-          strokeWidth={1}
-        />
-        {[-18, -6, 6, 18].map((dx) => (
-          <rect
-            key={dx}
-            x={centreX + dx - 2}
-            y={needleY - 22}
-            width={4}
-            height={30}
-            rx={2}
-            fill="#6f6b78"
-            opacity={0.7}
-          />
-        ))}
-        <g stroke="#8d8a94" strokeWidth={1}>
-          {guides.map((offset) => (
-            <line
-              key={offset}
-              x1={centreX + offset}
-              y1={needleY - 64}
-              x2={centreX + offset}
-              y2={needleY + 64}
-            />
-          ))}
-        </g>
-        <circle cx={44} cy={needleY - 50} r={4} fill="#9a96a3" stroke="#6f6b78" />
-        <circle cx={width - 44} cy={needleY + 50} r={4} fill="#9a96a3" stroke="#6f6b78" />
+        <MachineBase {...layer} threadColour={thread} />
         <SeamStrip {...strip} />
-        <SewingNeedle x={centreX} y={needleY} running={running} threadColour={strip.threadColour} />
-        <rect width={width} height={height} fill={`url(#${id}-vignette)`} pointerEvents="none" />
+        <rect x={left} width={full} height={70} fill={`url(#${id}-head-shade)`} pointerEvents="none" />
+        <MachineArm {...layer} running={running} />
+        <SewingNeedle x={centreX} y={needleY} running={running} threadColour={thread} />
+        <g pointerEvents="none">
+          <path
+            d={`M${centreX - 58} 0 L${centreX + 58} 0 L${centreX + 50} 38 C${centreX + 48} 46 ${centreX + 40} 50 ${centreX + 30} 50 L${centreX - 30} 50 C${centreX - 40} 50 ${centreX - 48} 46 ${centreX - 50} 38 Z`}
+            fill={`url(#${id}-enamel)`}
+            stroke="#5f9a87"
+            strokeWidth={1.2}
+          />
+          <path
+            d={`M${centreX - 44} 10 C${centreX - 26} 28 ${centreX + 26} 28 ${centreX + 44} 10`}
+            fill="none"
+            stroke="#c9a227"
+            strokeWidth={1.6}
+          />
+          <circle cx={centreX} cy={24} r={3.4} fill="#c9a227" />
+          <circle cx={centreX - 30} cy={18} r={2} fill="#c9a227" />
+          <circle cx={centreX + 30} cy={18} r={2} fill="#c9a227" />
+          <path
+            d={`M${centreX - 22} 45 L${centreX + 22} 45`}
+            stroke="#fff6dc"
+            strokeWidth={3}
+            strokeLinecap="round"
+            opacity={0.95}
+          />
+        </g>
+        <rect x={left} width={full} height={height} fill={`url(#${id}-vignette)`} pointerEvents="none" />
       </g>
     </svg>
   );

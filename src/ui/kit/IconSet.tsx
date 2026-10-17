@@ -18,7 +18,8 @@ export type IconName =
   | "lock"
   | "home"
   | "shield"
-  | "back";
+  | "back"
+  | "gear";
 
 export interface IconProps {
   name: IconName;
@@ -165,6 +166,14 @@ const glyphs: Record<IconName, ReactNode> = {
     </>
   ),
   back: <path d="M14.6 5.6L8.2 12l6.4 6.4" />,
+  gear: (
+    <>
+      <circle cx="12" cy="12" r="3" fill="currentColor" fillOpacity="0.18" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M5.5 18.5l1.9-1.9M16.6 7.4l1.9-1.9" />
+      <circle cx="12" cy="12" r="6.6" />
+    </>
+  ),
 };
 
 export function Icon({ name, size = 20, title, className }: IconProps) {

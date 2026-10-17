@@ -22,6 +22,19 @@ export interface SewingMachineProps {
 
 const KEY_STEER = 0.12;
 
+function stitchTone(accuracy: number): "on" | "mid" | "off" {
+  if (accuracy >= 80) return "on";
+  if (accuracy >= 45) return "mid";
+  return "off";
+}
+
+function stitchNote(accuracy: number | null): string {
+  if (accuracy === null) return "on the dashed line";
+  if (accuracy >= 80) return "Lovely and neat!";
+  if (accuracy >= 45) return "Getting there, steady now";
+  return "Steer back onto the line";
+}
+
 interface Press {
   readonly pointerId: number;
   readonly x: number;
@@ -187,12 +200,23 @@ export function SewingMachine({
       <div className="ad-machine__hud">
         <span className={`ad-machine__lamp ad-machine__lamp--${lamp}`} aria-hidden="true" />
         <span className="ad-machine__seam">{seamName}</span>
-        <span className="ad-machine__stat">
-          <span className="ad-eyebrow">On the line</span>
-          <strong>{sim.ticks > 0 ? `${accuracy}%` : "—"}</strong>
+        <span className="ad-machine__gauge">
+          <span className="ad-machine__label">Speed</span>
+          <span className="ad-machine__speed" aria-label="Machine speed">
+            <span className="ad-machine__speed-fill" style={{ width: `${Math.round(speed * 100)}%` }} />
+            <span className="ad-machine__speed-ticks" aria-hidden="true" />
+          </span>
+          <span className="ad-machine__speed-scale" aria-hidden="true">
+            <span>Slow</span>
+            <span>Fast</span>
+          </span>
         </span>
-        <span className="ad-machine__speed" aria-label="Machine speed">
-          <span style={{ width: `${Math.round(speed * 100)}%` }} />
+        <span
+          className={`ad-machine__stat ad-machine__stat--${sim.ticks > 0 ? stitchTone(accuracy) : "idle"}`}
+        >
+          <span className="ad-machine__label">Neat stitches</span>
+          <strong>{sim.ticks > 0 ? `${accuracy}%` : "—"}</strong>
+          <span className="ad-machine__hint">{stitchNote(sim.ticks > 0 ? accuracy : null)}</span>
         </span>
       </div>
       <div
@@ -235,13 +259,22 @@ export function SewingMachine({
           </div>
         ) : null}
       </div>
-      <div className="ad-machine__progress" aria-label={`Seam progress ${Math.round(sim.progress * 100)}%`}>
-        <span style={{ width: `${sim.progress * 100}%` }} />
-      </div>
       <div className="ad-machine__actions">
-        <Button variant="ghost" onClick={restart} disabled={sim.progress === 0 || held}>
+        <Button variant="secondary" onClick={restart} disabled={sim.progress === 0 || held}>
           {done ? "Unpick and resew" : "Restart seam"}
         </Button>
+        <div className="ad-machine__meter">
+          <div className="ad-machine__progress-label" aria-hidden="true">
+            <span>How much of the seam is sewn</span>
+            <strong>{Math.round(sim.progress * 100)}%</strong>
+          </div>
+          <div
+            className="ad-machine__progress"
+            aria-label={`Seam progress ${Math.round(sim.progress * 100)}%`}
+          >
+            <span style={{ width: `${sim.progress * 100}%` }} />
+          </div>
+        </div>
         {done && onNext !== null ? (
           <Button onClick={onNext} data-testid="next-seam">
             Next seam

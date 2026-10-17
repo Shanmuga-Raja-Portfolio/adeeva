@@ -15,6 +15,8 @@ import { StageRail } from "./StageRail";
 import "./craftControls.css";
 import "./craftLayout.css";
 
+const STRIP_BRIEF_STAGES: readonly DressRun["stage"][] = ["cut", "sew"];
+
 export interface CraftFlowProps {
   readonly state: GameState;
   readonly dispatch: (action: Action) => boolean;
@@ -69,15 +71,19 @@ export function CraftFlow({ state, dispatch, onExit }: CraftFlowProps) {
       </main>
     );
   }
+  const sideBrief = run.stage !== "sketch" && !STRIP_BRIEF_STAGES.includes(run.stage);
   return (
     <main className="ad-craft ad-screen" data-stage={run.stage}>
       <CraftHeader state={state} run={run} dispatch={dispatch} onExit={onExit} />
       <StageRail state={state} run={run} dispatch={dispatch} />
-      <div className="ad-craft__body">
+      <div className={sideBrief ? "ad-craft__body" : "ad-craft__body ad-craft__body--wide"}>
+        {STRIP_BRIEF_STAGES.includes(run.stage) ? (
+          <BriefChecklist state={state} run={run} variant="strip" />
+        ) : null}
         <section className="ad-craft__stage" key={run.stage} aria-label={`${run.stage} step`}>
           <StageView state={state} run={run} dispatch={dispatch} onExit={onExit} />
         </section>
-        <BriefChecklist state={state} run={run} />
+        {sideBrief ? <BriefChecklist state={state} run={run} /> : null}
       </div>
     </main>
   );

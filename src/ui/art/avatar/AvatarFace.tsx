@@ -14,25 +14,24 @@ const FACE_PATH =
 
 function Eye({ x, iris, mood, flip }: { x: number; iris: string; mood: AvatarMood; flip: boolean }) {
   const side = flip ? -1 : 1;
-  if (mood === "delighted") {
-    return (
-      <path
-        d={`M${x - 5.5} 2 Q${x} -4.5 ${x + 5.5} 2`}
-        fill="none"
-        stroke="#2b2230"
-        strokeWidth={2}
-        strokeLinecap="round"
-      />
-    );
-  }
   const lookX = mood === "thinking" ? 1.6 : 0;
-  const lookY = mood === "thinking" ? -1.4 : 0;
+  const lookY = mood === "thinking" ? -1.4 : mood === "delighted" ? -0.6 : 0;
   return (
     <g>
+      {mood === "delighted" ? (
+        <path
+          d={`M${x - 5} 5.6 Q${x} 8.4 ${x + 5} 5.6`}
+          fill="none"
+          stroke="#2b2230"
+          strokeWidth={1.1}
+          strokeLinecap="round"
+          opacity={0.45}
+        />
+      ) : null}
       <ellipse cx={x} cy={0.6} rx={5.2} ry={4.6} fill="#fffaf5" />
       <ellipse cx={x + lookX} cy={0.8 + lookY} rx={3.5} ry={4.1} fill={iris} />
       <circle cx={x + lookX} cy={0.9 + lookY} r={1.9} fill="#1c1220" />
-      <circle cx={x + lookX - 1.2} cy={-0.6 + lookY} r={1.1} fill="#ffffff" />
+      <circle cx={x + lookX - 1.2} cy={-0.6 + lookY} r={mood === "delighted" ? 1.5 : 1.1} fill="#ffffff" />
       <circle cx={x + lookX + 1.3} cy={2.2 + lookY} r={0.5} fill="#ffffff" opacity={0.8} />
       <path
         d={`M${x - 5.8 * side} -0.6 Q${x} -6 ${x + 5.8 * side} -0.6 L${x + 7.6 * side} -2.6`}

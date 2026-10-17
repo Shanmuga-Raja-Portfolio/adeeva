@@ -7,6 +7,7 @@ import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { Meter } from "../../../../../ui/kit/Meter";
 import { daysUntilWeekEnd, weekdayName, weekNumber } from "../../../../../engine/weekday";
+import "./hubHero.css";
 
 export interface HubHeroProps {
   state: GameState;
@@ -31,10 +32,14 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
   const billDue = daysUntilWeekEnd(calendar.day) === 0 && weeklyBill(state).rent + weeklyBill(state).wage > 0;
   return (
     <section className="ad-hub-hero" aria-label="Your day">
-      <StudioBackdrop kind={profile.career === "student" ? "bedroom" : "atelier"} wash={0.08} />
+      {profile.career === "student" ? (
+        <StudioBackdrop kind="bedroom" wash={0.04} />
+      ) : (
+        <StudioBackdrop kind="atelier" wash={0.04} className="ad-hub-hero__atelier" />
+      )}
       <div className="ad-hub-hero__shade" aria-hidden="true" />
       <div className="ad-hub-hero__figure" aria-hidden="true">
-        <Avatar variant="full" look={profile.look} mood="happy" title={profile.name} />
+        <Avatar variant="three-quarter" look={profile.look} mood="happy" pose="wave" title={profile.name} />
       </div>
       <div className="ad-hub-hero__greeting">
         <span className="ad-eyebrow">
@@ -65,14 +70,12 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
           >
             Work a shift · +{career.shiftPay}
           </Button>
-          <Button size="lg" icon="calendar" onClick={onEndDay}>
+          <Button variant="secondary" icon="calendar" onClick={onEndDay}>
             End day
           </Button>
         </div>
         {shift.ok ? (
-          <p className="ad-hub-hero__shift-note">
-            {career.shiftName} pays {career.shiftPay} coins and takes the whole day.
-          </p>
+          <p className="ad-hub-hero__shift-note">A {career.shiftName.toLowerCase()} takes the whole day.</p>
         ) : (
           <p className="ad-reason ad-hub-hero__reason">{shift.reasons.join(" ")}</p>
         )}

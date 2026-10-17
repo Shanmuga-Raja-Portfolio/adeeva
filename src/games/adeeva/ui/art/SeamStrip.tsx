@@ -44,6 +44,11 @@ function seamPath(profile: readonly number[], from: number, to: number): string 
   return points.join(" ");
 }
 
+export function seamThread(fabric: Cloth | undefined, threadColour?: string): string {
+  if (threadColour !== undefined) return threadColour;
+  return fabric ? darken(fabricLook(fabric).base, 0.5) : "#a93d63";
+}
+
 export function SeamStrip({
   profile,
   scroll,
@@ -58,7 +63,7 @@ export function SeamStrip({
   const look = fabric ? fabricLook(fabric) : undefined;
   const base = look ? look.base : "#f1e7d6";
   const chalk = look && look.dark ? "#fff6e6" : "#3a6fb0";
-  const thread = threadColour ?? (look ? darken(look.base, 0.5) : "#a93d63");
+  const thread = seamThread(fabric, threadColour);
   const sewn = Math.min(1, Math.max(0, sewnUntil ?? scroll));
   const top = SEAM_VIEW.needleY - length - SEAM_VIEW.height;
   const bottom = SEAM_VIEW.needleY + SEAM_VIEW.height;
@@ -94,6 +99,14 @@ export function SeamStrip({
             opacity={0.6}
           />
         ) : null}
+        <rect
+          x={left}
+          y={top}
+          width={SEAM_VIEW.stripHalfWidth * 2}
+          height={bottom - top}
+          fill="#fffaf3"
+          opacity={0.32}
+        />
         <path
           d={`M${left + 3} ${top} V${bottom} M${right - 3} ${top} V${bottom}`}
           stroke={darken(base, 0.35)}
@@ -121,19 +134,27 @@ export function SeamStrip({
           strokeDasharray="1 7"
         />
         <path
+          d={seamPath(profile, 0, 1)}
+          fill="none"
+          stroke={look && look.dark ? "#1c1220" : "#ffffff"}
+          strokeOpacity={0.85}
+          strokeWidth={8}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
           d={seamPath(profile, sewn, 1)}
           fill="none"
           stroke={chalk}
-          strokeOpacity={0.75}
-          strokeWidth={2}
-          strokeDasharray="7 5"
+          strokeWidth={3}
+          strokeDasharray="8 5"
           strokeLinecap="round"
         />
         <path
           d={seamPath(profile, 0, sewn)}
           fill="none"
           stroke={thread}
-          strokeWidth={2.6}
+          strokeWidth={3.2}
           strokeDasharray="6 3"
           strokeLinecap="round"
         />

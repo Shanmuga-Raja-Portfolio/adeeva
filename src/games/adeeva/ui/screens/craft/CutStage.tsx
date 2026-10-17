@@ -83,7 +83,7 @@ export function CutStage(props: StageProps) {
         ) : null}
         <AssistSwitch
           label="Assist cut"
-          detail="Skip the tracing: every piece is cut at a steady 80%."
+          detail="Skip tracing: every piece is cut at 80%."
           checked={settings.assistCut}
           onChange={(assistCut) => updateSettings({ assistCut })}
         />

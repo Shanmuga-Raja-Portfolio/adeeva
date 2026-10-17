@@ -3,16 +3,22 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: var(--text-sm);
-  letter-spacing: 0.08em;
-  color: rgba(255, 248, 240, 0.8);
+  min-height: 40px;
+  padding: 0 16px 0 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #fff8f0;
 }
 
 .ad-music-chip__bars {
   display: flex;
   align-items: flex-end;
   gap: 2px;
-  height: 16px;
+  height: 18px;
 }
 
 .ad-music-chip__bars i {

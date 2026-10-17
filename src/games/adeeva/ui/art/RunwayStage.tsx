@@ -47,17 +47,32 @@ const palettes: Record<RunwayLightId, LightPalette> = {
     curtain: "#2b3c7a",
   },
   spotlight: {
-    wallTop: "#08070c",
-    wallBottom: "#1a1622",
-    floor: "#09080d",
+    wallTop: "#120d1a",
+    wallBottom: "#33233f",
+    floor: "#130e19",
     beam: "#fff4dc",
-    rim: "#f3e6ff",
-    runway: "#26222e",
-    curtain: "#3a2a44",
+    rim: "#f6e2ff",
+    runway: "#3a3046",
+    curtain: "#6a3c6e",
   },
 };
 
 const lampXs = [260, 430, 600, 740, 860, 1000, 1170, 1340];
+
+function archBulbs(horizon: number): [number, number][] {
+  const points: [number, number][] = [];
+  for (let y = horizon - 20; y > 214; y -= 34) {
+    points.push([600, y], [1000, y]);
+  }
+  for (let step = 0; step <= 12; step += 1) {
+    const t = step / 12;
+    const u = 1 - t;
+    const x = u * u * u * 600 + 3 * u * u * t * 600 + 3 * u * t * t * 1000 + t * t * t * 1000;
+    const y = u * u * u * 210 + 3 * u * u * t * 120 + 3 * u * t * t * 120 + t * t * t * 210;
+    points.push([x, y]);
+  }
+  return points;
+}
 
 function Flashes({ rim, glowId }: { rim: string; glowId: string }) {
   const bursts = Array.from({ length: 14 }, (_, index) => {
@@ -152,13 +167,33 @@ export function RunwayStage({
           <stop offset="1" stopColor={palette.curtain} />
         </linearGradient>
         <radialGradient id={`${id}-vignette`} cx="0.5" cy="0.45" r="0.75">
-          <stop offset="0.55" stopColor="#000000" stopOpacity={0} />
-          <stop offset="1" stopColor="#000000" stopOpacity={spotlight ? 0.7 : 0.45} />
+          <stop offset="0.6" stopColor="#000000" stopOpacity={0} />
+          <stop offset="1" stopColor="#000000" stopOpacity={spotlight ? 0.5 : 0.38} />
         </radialGradient>
+        <radialGradient id={`${id}-bulb`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#fff8e0" />
+          <stop offset="0.35" stopColor={palette.beam} stopOpacity={0.8} />
+          <stop offset="1" stopColor={palette.beam} stopOpacity={0} />
+        </radialGradient>
+        <radialGradient id={`${id}-halo`} cx="0.5" cy="0.35" r="0.6">
+          <stop offset="0" stopColor={palette.beam} stopOpacity={0.28} />
+          <stop offset="1" stopColor={palette.beam} stopOpacity={0} />
+        </radialGradient>
+        <pattern id={`${id}-damask`} patternUnits="userSpaceOnUse" width={64} height={80}>
+          <path
+            d="M32 8 C40 20 44 30 32 40 C20 30 24 20 32 8 Z M32 40 C44 50 40 62 32 72 C24 62 20 50 32 40 Z M0 40 C8 46 8 52 0 58 M64 40 C56 46 56 52 64 58"
+            fill="none"
+            stroke={palette.rim}
+            strokeOpacity={0.09}
+            strokeWidth={2}
+          />
+        </pattern>
       </defs>
       <rect width={width} height={horizon + 20} fill={`url(#${id}-wall)`} />
+      <rect width={width} height={horizon + 20} fill={`url(#${id}-damask)`} />
+      <rect width={width} height={horizon + 20} fill={`url(#${id}-halo)`} />
       <rect y={horizon} width={width} height={height - horizon} fill={`url(#${id}-floor)`} />
-      <g opacity={spotlight ? 0.45 : 0.85}>
+      <g opacity={spotlight ? 0.7 : 0.85}>
         {Array.from({ length: 13 }, (_, index) => {
           const x = 120 + index * 112;
           return (
@@ -168,6 +203,19 @@ export function RunwayStage({
               stroke={palette.curtain}
               strokeOpacity={0.45}
               strokeWidth={30}
+              fill="none"
+            />
+          );
+        })}
+        {Array.from({ length: 13 }, (_, index) => {
+          const x = 112 + index * 112;
+          return (
+            <path
+              key={index}
+              d={`M${x} 90 C${x + 18} 200 ${x - 14} 300 ${x + 6} ${horizon}`}
+              stroke={palette.rim}
+              strokeOpacity={0.16}
+              strokeWidth={4}
               fill="none"
             />
           );
@@ -189,19 +237,51 @@ export function RunwayStage({
         d={`M630 ${horizon} L630 220 C640 160 700 150 720 150 C700 220 690 320 700 ${horizon} Z M970 ${horizon} L970 220 C960 160 900 150 880 150 C900 220 910 320 900 ${horizon} Z`}
         fill={`url(#${id}-curtain)`}
       />
+      {archBulbs(horizon).map(([x, y], index) => (
+        <g key={`bulb-${index}`} transform={`translate(${x.toFixed(1)} ${y.toFixed(1)})`}>
+          <circle r={14} fill={`url(#${id}-bulb)`} />
+          <circle r={4} fill="#fff8e0" />
+        </g>
+      ))}
       {venue ? (
-        <text
-          x={800}
-          y={112}
-          textAnchor="middle"
-          fontFamily='"Playfair Display", Georgia, serif'
-          fontSize={34}
-          letterSpacing={6}
-          fill={palette.rim}
-          opacity={0.9}
-        >
-          {venue.toUpperCase()}
-        </text>
+        <g>
+          <rect
+            x={800 - (venue.length * 26 + 70) / 2}
+            y={72}
+            width={venue.length * 26 + 70}
+            height={56}
+            rx={28}
+            fill="#140c1a"
+            fillOpacity={0.82}
+            stroke="#e6c86e"
+            strokeWidth={2.5}
+          />
+          <text
+            x={800}
+            y={112}
+            textAnchor="middle"
+            fontFamily='"Playfair Display", Georgia, serif'
+            fontSize={32}
+            letterSpacing={6}
+            fill="none"
+            stroke={palette.rim}
+            strokeWidth={6}
+            strokeOpacity={0.35}
+          >
+            {venue.toUpperCase()}
+          </text>
+          <text
+            x={800}
+            y={112}
+            textAnchor="middle"
+            fontFamily='"Playfair Display", Georgia, serif'
+            fontSize={32}
+            letterSpacing={6}
+            fill="#fff3d6"
+          >
+            {venue.toUpperCase()}
+          </text>
+        </g>
       ) : null}
       <rect x={160} y={30} width={1280} height={18} rx={4} fill="#2a2630" stroke="#55505e" strokeWidth={2} />
       <path d="M170 34 L1430 34 M170 44 L1430 44" stroke="#6b6575" strokeWidth={1} strokeDasharray="14 10" />

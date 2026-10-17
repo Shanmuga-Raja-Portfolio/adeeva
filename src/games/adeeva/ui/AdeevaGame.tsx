@@ -13,6 +13,7 @@ import { useToast } from "../../../studio/ToastContext";
 import { lookAllowed } from "../../../studio/perks";
 import { useGameSession, type SaveMoment } from "../../../studio/useGameSession";
 import { ViewLoadBoundary } from "../../../studio/ViewLoadBoundary";
+import "./theme.css";
 
 const CraftFlow = lazy(() =>
   import("./screens/craft/CraftFlow").then((module) => ({ default: module.CraftFlow })),
@@ -90,7 +91,7 @@ export function AdeevaGame({ player, lookOptions, onPlayerChange, onExit }: Game
   };
 
   return (
-    <>
+    <div className="ad-root">
       {screen.name === "title" ? (
         <TitleScreen
           key="title"
@@ -161,6 +162,6 @@ export function AdeevaGame({ player, lookOptions, onPlayerChange, onExit }: Game
           save will be lost. Stay to keep playing, and we will try again as you go.
         </p>
       </Dialog>
-    </>
+    </div>
   );
 }

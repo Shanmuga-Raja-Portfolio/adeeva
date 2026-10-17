@@ -13,11 +13,8 @@ export function dressGarment(dress: AvatarDress): AvatarGarment {
   return {
     defs: (idBase) => <DressFabricDefs idBase={idBase} fabrics={dress.fabrics} />,
     body: (idBase) => <DressBodyLayer idBase={idBase} parts={dress.parts} fabrics={dress.fabrics} />,
-    sleeves: (idBase) => (
-      <>
-        <DressSleeveLayer idBase={idBase} parts={dress.parts} fabrics={dress.fabrics} />
-        <TrimLayer trims={dress.trims ?? []} />
-      </>
-    ),
+    sleeves: (idBase) => <DressSleeveLayer idBase={idBase} parts={dress.parts} fabrics={dress.fabrics} />,
+    overlay: () => <TrimLayer trims={dress.trims ?? []} />,
+    shoes: "flats",
   };
 }

@@ -68,14 +68,7 @@ export function GigCard({ state, gig, onStart, onContinue, onSetAside }: GigCard
                 Set aside the current dress
               </Button>
             ) : null}
-            <Button
-              size="sm"
-              variant="secondary"
-              icon="scissors"
-              onClick={onStart}
-              disabledReason={startIssue ?? undefined}
-              showReason
-            >
+            <Button icon="scissors" onClick={onStart} disabledReason={startIssue ?? undefined} showReason>
               Start sewing
             </Button>
           </>

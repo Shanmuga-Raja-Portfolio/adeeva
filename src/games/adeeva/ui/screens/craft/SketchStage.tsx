@@ -3,6 +3,7 @@ import { dressTags } from "../../../core";
 import { DressPreview } from "../../art/DressPreview";
 import { Card } from "../../../../../ui/kit/Card";
 import { designFabrics, designParts } from "../../art/designLook";
+import { BriefChecklist } from "./BriefChecklist";
 import { FabricPalette } from "./FabricPalette";
 import { PartCard } from "./PartCard";
 import { StageFooter } from "./StageFooter";
@@ -25,6 +26,7 @@ export function SketchStage(props: StageProps) {
   return (
     <div className="ad-sketch-stage">
       <div className="ad-sketch-stage__work">
+        <BriefChecklist state={props.state} run={run} variant="strip" />
         {PART_CATEGORIES.map((category) => (
           <section
             key={category}
@@ -52,7 +54,14 @@ export function SketchStage(props: StageProps) {
       </div>
       <div className="ad-sketch-stage__preview">
         <div className="ad-sketch-stage__doll">
-          <DressPreview parts={parts} fabrics={fabrics} title="Your sketch on the croquis" />
+          <div className="ad-sketch-stage__figure" key={JSON.stringify(run.design)}>
+            <DressPreview
+              parts={parts}
+              fabrics={fabrics}
+              pose="graceful"
+              title="Your sketch on the croquis"
+            />
+          </div>
         </div>
         <div className="ad-sketch-stage__tags" aria-label="How the dress feels">
           <span className="ad-eyebrow">It feels</span>

@@ -17,17 +17,20 @@ export function settleStories(state: GameState): GameState {
   return next;
 }
 
-export async function openPreparedGame(page: Page, state: GameState): Promise<void> {
+export async function openPreparedGame(page: Page, state: GameState, reducedMotion = true): Promise<void> {
   await openAdeeva(page);
-  await page.evaluate((json) => {
-    window.localStorage.clear();
-    window.localStorage.setItem("adeeva.save.1", json);
-    window.localStorage.setItem("adeeva.lastSlot", "1");
-    window.localStorage.setItem(
-      "adeeva.settings",
-      JSON.stringify({ reducedMotion: true, assistCut: false, assistSew: false }),
-    );
-  }, serialize(state));
+  await page.evaluate(
+    ({ json, still }) => {
+      window.localStorage.clear();
+      window.localStorage.setItem("adeeva.save.1", json);
+      window.localStorage.setItem("adeeva.lastSlot", "1");
+      window.localStorage.setItem(
+        "adeeva.settings",
+        JSON.stringify({ reducedMotion: still, assistCut: false, assistSew: false }),
+      );
+    },
+    { json: serialize(state), still: reducedMotion },
+  );
   await page.reload();
   await page.getByRole("button", { name: /^Continue/ }).click();
   await finishStories(page);

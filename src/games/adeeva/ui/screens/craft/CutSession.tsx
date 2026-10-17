@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type CSSProperties, useState } from "react";
 import type { FabricDef } from "../../../content/fabric";
 import {
   ASSIST_CUT_ACCURACY,
@@ -54,6 +54,8 @@ export function CutSession({
   const check = canCommitCut(state, fabricId);
   const tolerance = cutTolerance(state);
   const assisted = entries.filter((entry) => traced[entry.piece.id] === undefined).length;
+  const ready = entries.filter((entry) => accuracies[entry.piece.id] !== undefined).length;
+  const left = entries.length - ready;
 
   return (
     <div className="ad-cut-session">
@@ -119,6 +121,21 @@ export function CutSession({
           })}
         </ul>
         {check.ok ? null : <p className="ad-layout-issues">{check.reasons[0]}</p>}
+        {complete ? null : (
+          <p className="ad-cut-progress">
+            <span
+              className="ad-cut-progress__count"
+              style={{ "--done": ready / Math.max(1, entries.length) } as CSSProperties}
+            >
+              <span>
+                {ready}/{entries.length}
+              </span>
+            </span>
+            {left === 1
+              ? "One more piece to trace, then you can cut."
+              : `Trace ${left} more pieces, or turn on Assist cut.`}
+          </p>
+        )}
         <Button
           size="lg"
           block
@@ -131,11 +148,12 @@ export function CutSession({
                 ? undefined
                 : check.reasons[0]
           }
+          showReason={complete}
           data-testid="commit-cut"
         >
           Cut the fabric
         </Button>
-        <Button variant="ghost" block onClick={onBackToLayout}>
+        <Button variant="secondary" icon="back" block onClick={onBackToLayout}>
           Back to the layout
         </Button>
       </div>

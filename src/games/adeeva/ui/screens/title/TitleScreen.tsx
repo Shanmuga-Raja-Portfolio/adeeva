@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { DEFAULT_LOOK } from "../../../../../engine/avatar";
 import { continueSlot, type SaveSlotId, type SlotRead } from "../../adeevaSlots";
 import type { GameState } from "../../../core";
 import { StudioBackdrop } from "../../art/StudioBackdrop";
@@ -8,6 +9,7 @@ import { Icon } from "../../../../../ui/kit/IconSet";
 import { weekdayName } from "../../../../../engine/weekday";
 import { SaveSlotCard } from "./SaveSlotCard";
 import { slotSummary } from "../../../../../studio/slotSummary";
+import { TitleCast } from "./TitleCast";
 import { Wordmark } from "./Wordmark";
 import "./title.css";
 
@@ -38,6 +40,7 @@ export function TitleScreen({
 }: TitleScreenProps) {
   const [pending, setPending] = useState<Pending>({ kind: "none" });
   const resume = continueSlot(slots);
+  const star = resume !== null && resume.kind === "ready" ? resume.state.profile : null;
   const closePending = () => setPending({ kind: "none" });
 
   const requestNewGame = (read: SlotRead) => {
@@ -53,76 +56,81 @@ export function TitleScreen({
 
   return (
     <main className="ad-title ad-screen">
-      <StudioBackdrop kind="atelier" wash={0.62} className="ad-title__backdrop" />
+      <StudioBackdrop kind="atelier" wash={0} className="ad-title__backdrop" />
       <div className="ad-title__veil" aria-hidden="true" />
+      <nav className="ad-title__nav">
+        <Button variant="ghost" size="sm" icon="back" className="ad-title__studio" onClick={onExitToStudio}>
+          Back to studio
+        </Button>
+      </nav>
       <div className="ad-title__content">
-        <nav className="ad-title__nav">
-          <Button variant="ghost" icon="back" className="ad-title__studio" onClick={onExitToStudio}>
-            Back to studio
-          </Button>
-        </nav>
-        <section className="ad-title__hero">
-          <Wordmark tagline="A fashion design story, stitched by you." />
-          <div className="ad-title__menu">
-            {resume !== null && resume.kind === "ready" ? (
-              <Button
-                size="lg"
-                className="ad-title__continue"
-                onClick={() => onLoad(resume.slot, resume.state)}
-              >
-                <span className="ad-title__continue-label">Continue</span>
-                <span className="ad-title__continue-meta">
-                  {resume.state.profile.name} · Day {resume.state.calendar.day},{" "}
-                  {weekdayName(resume.state.calendar.day)}
-                </span>
-              </Button>
-            ) : null}
-            <div className="ad-title__menu-row">
-              <Button
-                size="lg"
-                variant={resume === null ? "primary" : "secondary"}
-                icon="sparkle"
-                onClick={startNew}
-              >
-                New Game
-              </Button>
-              <Button size="lg" variant="ghost" onClick={onOpenSettings}>
-                Settings
-              </Button>
-            </div>
-          </div>
-        </section>
-        {canSave ? null : (
-          <section className="ad-title__offline" role="status" data-testid="saving-off">
-            <Icon name="lock" size={20} />
-            <div>
-              <strong>Saving is turned off in this browser.</strong>
-              <p>
-                You can still play, but your progress will not be kept after you close this page. Allowing
-                site storage for this page turns saving back on.
-              </p>
+        <div className="ad-title__stage">
+          <TitleCast look={star?.look ?? DEFAULT_LOOK} name={star?.name ?? null} />
+        </div>
+        <div className="ad-title__panel">
+          <section className="ad-title__hero">
+            <Wordmark tagline="A fashion design story, stitched by you." />
+            <div className="ad-title__menu">
+              {resume !== null && resume.kind === "ready" ? (
+                <Button
+                  size="lg"
+                  className="ad-title__continue"
+                  onClick={() => onLoad(resume.slot, resume.state)}
+                >
+                  <span className="ad-title__continue-label">Continue</span>
+                  <span className="ad-title__continue-meta">
+                    {resume.state.profile.name} · Day {resume.state.calendar.day},{" "}
+                    {weekdayName(resume.state.calendar.day)}
+                  </span>
+                </Button>
+              ) : null}
+              <div className="ad-title__menu-row">
+                <Button
+                  size="lg"
+                  variant={resume === null ? "primary" : "secondary"}
+                  icon="sparkle"
+                  onClick={startNew}
+                >
+                  New Game
+                </Button>
+                <Button size="lg" variant="secondary" icon="gear" onClick={onOpenSettings}>
+                  Settings
+                </Button>
+              </div>
             </div>
           </section>
-        )}
-        <section className="ad-title__slots" aria-labelledby="ad-title-slots" hidden={!canSave}>
-          <h2 id="ad-title-slots" className="ad-title__slots-heading">
-            <Icon name="hanger" size={20} />
-            Your saves
-          </h2>
-          <div className="ad-title__slot-row">
-            {slots.map((read) => (
-              <SaveSlotCard
-                key={read.slot}
-                read={read}
-                onLoad={() => {
-                  if (read.kind === "ready") onLoad(read.slot, read.state);
-                }}
-                onNewGame={() => requestNewGame(read)}
-                onDelete={() => setPending({ kind: "delete", read })}
-              />
-            ))}
-          </div>
-        </section>
+          {canSave ? null : (
+            <section className="ad-title__offline" role="status" data-testid="saving-off">
+              <Icon name="lock" size={20} />
+              <div>
+                <strong>Saving is turned off in this browser.</strong>
+                <p>
+                  You can still play, but your progress will not be kept after you close this page. Allowing
+                  site storage for this page turns saving back on.
+                </p>
+              </div>
+            </section>
+          )}
+          <section className="ad-title__slots" aria-labelledby="ad-title-slots" hidden={!canSave}>
+            <h2 id="ad-title-slots" className="ad-title__slots-heading">
+              <Icon name="hanger" size={20} />
+              Your saves
+            </h2>
+            <div className="ad-title__slot-row">
+              {slots.map((read) => (
+                <SaveSlotCard
+                  key={read.slot}
+                  read={read}
+                  onLoad={() => {
+                    if (read.kind === "ready") onLoad(read.slot, read.state);
+                  }}
+                  onNewGame={() => requestNewGame(read)}
+                  onDelete={() => setPending({ kind: "delete", read })}
+                />
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
 
       <Dialog open={pending.kind === "pick-slot"} title="Choose a save slot" onClose={closePending}>

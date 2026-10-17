@@ -42,7 +42,7 @@ export function SewStage(props: StageProps) {
           </span>
         </header>
         <ul className="ad-seam-list">
-          {seams.map((entry) => {
+          {seams.map((entry, index) => {
             const progress = run.seams[entry.seam.id];
             const value = progress?.progress ?? 0;
             const seamFabric = entry.fabricId ? fabricById(entry.fabricId) : undefined;
@@ -73,8 +73,15 @@ export function SewStage(props: StageProps) {
                       </>
                     ) : value > 0 ? (
                       `${Math.round(value * 100)}% sewn`
+                    ) : entry.seam.id === activeId ? (
+                      "Sewing now"
                     ) : (
-                      "Not started"
+                      <>
+                        <span className="ad-seam-item__ring" aria-hidden="true">
+                          {index + 1}
+                        </span>
+                        <span className="ad-visually-hidden">Not started</span>
+                      </>
                     )}
                   </span>
                 </button>
@@ -84,7 +91,7 @@ export function SewStage(props: StageProps) {
         </ul>
         <AssistSwitch
           label="Assist sew"
-          detail={`Assist sewing widens the guide so it is easier to stay on the line. Assisted seams count up to ${Math.round(ASSIST_SEW_ACCURACY_CAP * 100)}%.`}
+          detail={`Widens the guide. Assisted seams count up to ${Math.round(ASSIST_SEW_ACCURACY_CAP * 100)}%.`}
           checked={settings.assistSew}
           onChange={(assistSew) => updateSettings({ assistSew })}
         />

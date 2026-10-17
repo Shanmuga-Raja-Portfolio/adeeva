@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { dressGarment } from "../../art/avatarDress";
 import type { AvatarLook } from "../../../../../engine/avatar";
 import { AvatarFigure } from "../../../../../ui/art/avatar/Avatar";
+import type { AvatarPose } from "../../../../../ui/art/avatar/ArmPose";
 import { DOLL_VIEWBOX } from "../../../../../ui/art/avatar/Croquis";
 import { RUNWAY_VIEW, runwayDepth } from "../../art/runwayGeometry";
 import { AudienceCheer } from "./AudienceCheer";
@@ -9,6 +10,8 @@ import { PetalFall } from "../../../../../ui/art/PetalFall";
 import type { ShowWalker } from "./showCast";
 import type { StageFigure, StageShot } from "./stageShot";
 import { walkerFrame } from "../../art/runwayWalker";
+
+const WALK_POSES: readonly AvatarPose[] = ["graceful", "poised-right", "graceful-right", "poised"];
 
 export interface CarriedWalker {
   readonly look: AvatarLook;
@@ -36,13 +39,18 @@ interface PlacedPerson {
 }
 
 function dressedPeople(shot: StageShot, designer: AvatarLook): PlacedPerson[] {
-  return shot.figures.map((entry: StageFigure<ShowWalker>) => ({
+  return shot.figures.map((entry: StageFigure<ShowWalker>, index) => ({
     figure: entry,
     body:
       entry.walker === null ? (
-        <AvatarFigure look={designer} mood="delighted" />
+        <AvatarFigure look={designer} mood="delighted" pose="cheer" />
       ) : (
-        <AvatarFigure look={entry.walker.model} garment={dressGarment(entry.walker.dress)} mood="neutral" />
+        <AvatarFigure
+          look={entry.walker.model}
+          garment={dressGarment(entry.walker.dress)}
+          mood="happy"
+          pose={WALK_POSES[index % WALK_POSES.length] ?? "graceful"}
+        />
       ),
     carried: null,
   }));

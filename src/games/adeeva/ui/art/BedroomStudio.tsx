@@ -1,4 +1,5 @@
 import { DressFormArt } from "./DressFormArt";
+import { GarmentRack } from "./GarmentRack";
 
 export interface StudioSceneProps {
   idBase: string;
@@ -157,6 +158,7 @@ export function BedroomStudio({ idBase }: StudioSceneProps) {
           />
         ))}
       </g>
+      <GarmentRack x={700} y={418} />
       <DressFormArt x={545} y={430} scale={1.0} drape="#efb7c6" gown="half" />
       <g transform="translate(1060 520)">
         <rect x={0} y={60} width={500} height={22} rx={6} fill="#caa47c" />

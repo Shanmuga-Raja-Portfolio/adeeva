@@ -32,7 +32,7 @@ export function ShowCaption({ kind, t, walker, walks, designer, themeName, still
         </span>
         <span className="ad-show-caption__title">{walker.title}</span>
         <span className="ad-show-caption__detail">{walker.silhouette}</span>
-        <StarRating stars={walker.look.evaluation.stars} size={14} />
+        <StarRating stars={walker.look.evaluation.stars} size={22} />
       </div>
     );
   }

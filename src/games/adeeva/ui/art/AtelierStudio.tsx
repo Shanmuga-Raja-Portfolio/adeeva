@@ -28,6 +28,37 @@ export function AtelierStudio({ idBase }: AtelierStudioProps) {
           <stop offset="0" stopColor="#d9c3a8" />
           <stop offset="1" stopColor="#c8ad8e" />
         </linearGradient>
+        <pattern id={`${idBase}-paper`} patternUnits="userSpaceOnUse" width={80} height={96}>
+          <rect width={80} height={96} fill="#f4e6dc" />
+          <rect width={40} height={96} fill="#f8ede4" />
+          <g fill="#d99aa9" opacity={0.42}>
+            <path d="M20 22 C24 14 30 14 30 20 C30 26 22 28 20 22 Z" />
+            <path d="M20 22 C16 14 10 14 10 20 C10 26 18 28 20 22 Z" />
+            <path d="M20 22 C26 26 26 32 20 32 C14 32 14 26 20 22 Z" />
+            <circle cx={60} cy={70} r={3} />
+          </g>
+          <path d="M20 30 L20 44" stroke="#9fb89f" strokeWidth={1.6} opacity={0.5} />
+          <path d="M20 38 C24 36 26 38 26 40" stroke="#9fb89f" strokeWidth={1.4} fill="none" opacity={0.5} />
+          <path d="M40 0 L40 96" stroke="#e4cfc0" strokeWidth={1.2} />
+        </pattern>
+        <linearGradient id={`${idBase}-cubby`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#d9c2a3" />
+          <stop offset="1" stopColor="#ecdcc6" />
+        </linearGradient>
+        <radialGradient id={`${idBase}-glow`} cx="0.5" cy="0.1" r="0.7">
+          <stop offset="0" stopColor="#ffe9c4" stopOpacity={0.7} />
+          <stop offset="1" stopColor="#ffe9c4" stopOpacity={0} />
+        </radialGradient>
+        <linearGradient id={`${idBase}-drape`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#c45b7c" />
+          <stop offset="0.5" stopColor="#e08aa3" />
+          <stop offset="1" stopColor="#b44d6e" />
+        </linearGradient>
+        <radialGradient id={`${idBase}-rug`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#e6b3bf" />
+          <stop offset="0.7" stopColor="#d28fa0" />
+          <stop offset="1" stopColor="#b8768a" />
+        </radialGradient>
         <pattern id={`${idBase}-herringbone`} patternUnits="userSpaceOnUse" width={60} height={30}>
           <path
             d="M0 30 L30 0 M30 30 L60 0 M0 0 L30 30 M30 0 L60 30"
@@ -38,6 +69,12 @@ export function AtelierStudio({ idBase }: AtelierStudioProps) {
         </pattern>
       </defs>
       <rect width={1600} height={720} fill={`url(#${idBase}-wall)`} />
+      <rect width={1600} height={520} fill={`url(#${idBase}-paper)`} />
+      <rect width={1600} height={720} fill={`url(#${idBase}-glow)`} />
+      <rect y={0} width={1600} height={22} fill="#efe2d3" />
+      <rect y={22} width={1600} height={6} fill="#dcc6ae" />
+      <rect y={512} width={1600} height={14} fill="#e9d7c4" />
+      <rect x={0} y={526} width={1600} height={176} fill="#efe4d6" />
       <g fill="none" stroke="#dccfbd" strokeWidth={3}>
         {[40, 440, 840, 1240].map((x) => (
           <rect key={x} x={x} y={540} width={320} height={140} rx={6} />
@@ -55,40 +92,72 @@ export function AtelierStudio({ idBase }: AtelierStudioProps) {
             fill={`url(#${idBase}-window)`}
           />
           <path d="M125 16 L125 426 M14 170 L236 170 M14 300 L236 300" stroke="#fbf7f0" strokeWidth={7} />
+          <path d="M-36 -20 L286 -20" stroke="#b08a5e" strokeWidth={8} strokeLinecap="round" />
+          <path
+            d="M-30 -18 C-20 120 -40 300 -24 470 L28 470 C18 320 40 160 30 -18 Z"
+            fill={`url(#${idBase}-drape)`}
+          />
+          <path
+            d="M220 -18 C210 160 232 320 222 470 L274 470 C290 300 270 120 280 -18 Z"
+            fill={`url(#${idBase}-drape)`}
+          />
+          <path
+            d="M-28 250 Q2 262 32 248 M218 248 Q248 262 278 250"
+            stroke="#c9a227"
+            strokeWidth={6}
+            fill="none"
+          />
         </g>
       ))}
       <path d="M100 520 L340 520 L620 900 L260 900 Z" fill={`url(#${idBase}-beam)`} opacity={0.6} />
       <path d="M1270 520 L1510 520 L1360 900 L980 900 Z" fill={`url(#${idBase}-beam)`} opacity={0.5} />
       <g transform="translate(420 110)">
-        <rect x={-10} y={-10} width={380} height={380} rx={8} fill="#e6d8c4" />
+        <rect x={-18} y={-18} width={396} height={398} rx={10} fill="#c9ab88" />
+        <rect x={-10} y={-10} width={380} height={380} rx={8} fill={`url(#${idBase}-cubby)`} />
         {shelfRows.map((row) => (
           <g key={row} transform={`translate(0 ${row * 120})`}>
-            <rect x={-14} y={100} width={388} height={12} rx={3} fill="#bf9d76" />
+            <rect x={-10} y={-10} width={380} height={30} fill="#5a3b2a" opacity={0.1} />
             {COLOURS.slice(row * 5, row * 5 + 5).map((colour, index) => (
-              <g key={colour.id} transform={`translate(${12 + index * 70} 20)`}>
-                <rect width={58} height={80} rx={10} fill={colour.hex} />
-                <rect
-                  width={58}
-                  height={80}
-                  rx={10}
-                  fill="none"
-                  stroke={darken(colour.hex, 0.25)}
-                  strokeWidth={2}
-                />
-                <ellipse cx={29} cy={80} rx={29} ry={8} fill={darken(colour.hex, 0.2)} />
-                <path
-                  d="M10 10 L10 70"
-                  stroke={lighten(colour.hex, 0.4)}
-                  strokeWidth={5}
-                  strokeLinecap="round"
-                  opacity={0.6}
-                />
+              <g key={colour.id} transform={`translate(${10 + index * 70} ${22 + (index % 2) * 6})`}>
+                <ellipse cx={30} cy={74 - (index % 2) * 6} rx={32} ry={6} fill="#3d2618" opacity={0.22} />
+                {[0, 1, 2, 3].map((layer) => (
+                  <g
+                    key={layer}
+                    transform={`translate(${layer % 2 === 0 ? 0 : 2} ${layer * (18 - (index % 2) * 1.5)})`}
+                  >
+                    <rect
+                      width={60}
+                      height={17}
+                      rx={7}
+                      fill={layer % 2 === 0 ? colour.hex : darken(colour.hex, 0.08)}
+                      stroke={darken(colour.hex, 0.3)}
+                      strokeWidth={1.4}
+                    />
+                    <path
+                      d="M6 4 C20 2.5 40 2.5 54 4"
+                      stroke={lighten(colour.hex, 0.45)}
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      fill="none"
+                      opacity={0.75}
+                    />
+                    <path
+                      d="M3 13 L57 13"
+                      stroke={darken(colour.hex, 0.22)}
+                      strokeWidth={1.4}
+                      opacity={0.6}
+                    />
+                  </g>
+                ))}
               </g>
             ))}
+            <rect x={-14} y={100} width={388} height={14} rx={3} fill="#bf9d76" />
+            <rect x={-14} y={100} width={388} height={4} rx={2} fill="#e2c7a4" />
+            <rect x={-10} y={114} width={380} height={8} fill="#5a3b2a" opacity={0.16} />
           </g>
         ))}
       </g>
-      <g transform="translate(860 150)" opacity={0.9}>
+      <g transform="translate(990 150) scale(0.9)" opacity={0.9}>
         <rect width={150} height={190} rx={4} fill="#c9a227" />
         <rect x={10} y={10} width={130} height={170} fill="#fffdf8" />
         <path
@@ -124,6 +193,33 @@ export function AtelierStudio({ idBase }: AtelierStudioProps) {
           />
         ))}
         <circle cx={0} cy={70} r={90} fill="#fff4d6" opacity={0.18} />
+      </g>
+      <ellipse cx={800} cy={820} rx={560} ry={60} fill={`url(#${idBase}-rug)`} opacity={0.75} />
+      <ellipse
+        cx={800}
+        cy={820}
+        rx={530}
+        ry={50}
+        fill="none"
+        stroke="#fff3f0"
+        strokeWidth={3}
+        opacity={0.6}
+        strokeDasharray="10 8"
+      />
+      <g transform="translate(1470 560)">
+        <path d="M-34 140 L-26 70 L26 70 L34 140 Z" fill="#c98c6a" />
+        <rect x={-30} y={62} width={60} height={14} rx={4} fill="#b0745a" />
+        {[-60, -30, 0, 30, 60].map((angle) => (
+          <ellipse
+            key={angle}
+            cx={0}
+            cy={-10}
+            rx={14}
+            ry={58}
+            fill={angle === 0 ? "#6f9a78" : "#7fa58a"}
+            transform={`rotate(${angle} 0 64)`}
+          />
+        ))}
       </g>
       <DressFormArt x={1080} y={360} scale={1.05} drape="#5e2a5a" gown="gown" />
       <DressFormArt x={1220} y={380} scale={0.95} drape="#9fd0ee" gown="half" />
