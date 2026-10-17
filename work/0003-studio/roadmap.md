@@ -6,15 +6,15 @@ This is the single place for status, open tasks and the order of work. Game desi
 
 ## Status
 
-| Game               | Playable slice        | Depth (second career or showcase)                    | Quality loop |
-| ------------------ | --------------------- | ---------------------------------------------------- | ------------ |
-| ADEEVA             | ✅                    | ✅ Student → Label, runway                           | ⬜           |
-| Patisserie Atelier | ✅                    | ✅ Salon Pâtissier: Tea Salon and Patisserie Fair    | ⬜           |
-| Thrift-Flip Studio | ✅                    | ✅ Resale Boutique and Upcycle Showcase              | ⬜           |
-| Interior Studio    | ✅                    | ✅ Show-Home Development and Open House              | ⬜           |
-| Workshop & Wood    | ✅                    | ✅ Furniture Showroom and Larkspur Craft Fair        | ⬜           |
-| Jewellery Bench    | ✅                    | 🔄 Collection Launch and Lantern Night: in progress  | ⬜           |
-| Six Kitchens       | ✅ school → head chef | ✅ Crossroads: Restaurant, Food Truck, TV & Cookbook | ⬜           |
+| Game               | Playable slice        | Depth (second career or showcase)                    | Quality loop                    |
+| ------------------ | --------------------- | ---------------------------------------------------- | ------------------------------- |
+| ADEEVA             | ✅                    | ✅ Student → Label, runway                           | 🔄 75% (needs 85%)              |
+| Patisserie Atelier | ✅                    | ✅ Salon Pâtissier: Tea Salon and Patisserie Fair    | 🔄 75%, salon hub clearly worse |
+| Thrift-Flip Studio | ✅                    | ✅ Resale Boutique and Upcycle Showcase              | 🔄 63% (needs 85%)              |
+| Interior Studio    | ✅                    | ✅ Show-Home Development and Open House              | 🔄 first pass running           |
+| Workshop & Wood    | ✅                    | ✅ Furniture Showroom and Larkspur Craft Fair        | ⬜                              |
+| Jewellery Bench    | ✅                    | ✅ Collection Launch and Lantern Night               | ⬜                              |
+| Six Kitchens       | ✅ school → head chef | ✅ Crossroads: Restaurant, Food Truck, TV & Cookbook | 🔄 first pass running           |
 
 Research done (reference only): `work/0013-research/references.md` and `work/0013-research/competition-gtm.md`.
 
@@ -27,10 +27,16 @@ Research done (reference only): `work/0013-research/references.md` and `work/001
 5. ✅ **Interior depth**, merged, plus the show kit lifted into `src/ui/show` so Interior doesn't import ADEEVA. Thrift-Flip → ADEEVA is the only cross-game import.
 6. ✅ **Browser-close hang**, merged. Trace screencast frames are off; their write backlog to the USB drive blocked context close under load.
 7. ✅ **Avatar feet**, merged. Shan reported the feet; they were redrawn as grounded ankle boots.
-8. 🔄 **Jewellery depth:** worktree `Y:\ADEEVA-wt\jewellery-depth`, branch `task/0025-jewellery-depth`, workflow run `wf_c0ae0f72-e33`.
-9. ⬜ **Kit dialog focus:** shared dialogs don't move keyboard focus into themselves when they open (seen in Thrift-Flip's leave-draft dialog and ADEEVA's set-aside dialog). Fix it once in `ui/kit`, with a test.
-10. ⬜ **Phase C quality loop** for all seven games (below). Also recheck the Interior Challenging economy: on seed 2 the home earns 0.79× the loft, and the bot scores Gold where about 76 was the target.
-11. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, and a closing report.
+8. ✅ **Jewellery depth**, merged. All seven games now have their second career and showcase.
+9. ✅ **Kit dialog focus**, merged. Dialogs focus their marked safe choice after the modal opens.
+10. 🔄 **Phase C first pass** for every game (bar 85%, below). Merged so far: ADEEVA 75%, Patisserie 75% with the salon hub clearly worse, Thrift-Flip 63%. These count as progress, not passes. Six Kitchens and Interior are running; Workshop and Jewellery are next.
+11. ⬜ **Phase C gap rounds:** every game below 85% gets more rounds aimed at its losing screens. Known gaps:
+    - Patisserie: redesign the salon hub so the tiers and bookings sit inside the parlour scene, and make Scoop & Weigh livelier.
+    - Thrift-Flip: both hubs and the snip step.
+    - ADEEVA: the title and sketch screens.
+12. ⬜ **Shared art pass:** lighting, texture and depth in `src/ui/art` and the kit, because art is the criterion we lose most often. Every game is then re-judged blind against the 85% bar.
+13. ⬜ **Interior Challenging economy:** on seed 2 the home earns 0.79× the loft, and the bot scores Gold where about 76 was the target.
+14. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, and a closing report.
 
 ## Waiting for Shan (do together, one by one)
 
@@ -55,7 +61,7 @@ For each game:
 1. **External references:** use the references listed in `work/0013-research/references.md`. Official Steam and itch.io screenshots are fetched into the session scratchpad, used for internal comparison only, and never copied, traced or committed.
 2. **Matched pairs:** each of our screenshots is paired with a reference showing the same kind of screen (hub with hub, crafting step with crafting step, results with results) at the same size.
 3. **Blind judging:** a script randomly assigns each pair the labels A and B and strips filenames and logos. A fresh critic that has never seen our code picks the better image on fixed criteria (art, typography, feedback and juice, readability for ages 8–15+, touch comfort), explains each verdict and names concrete defects. The labels are revealed only after judging.
-4. **Pass bar:** a game passes when our screen wins or ties at least 60% of pairs and no pair is judged "clearly worse".
-5. **Improver loop:** otherwise an improver fixes the named defects and every check runs again. New screenshots, new random labels and a fresh critic follow, for up to 4 rounds. Any gap left after that is reported plainly.
+4. **Pass bar (Shan, 2026-10-17):** a game passes when our screen wins or ties at least **85%** of pairs and no pair is judged "clearly worse". 60% was the first bar; Shan raised it.
+5. **Improver loop:** otherwise an improver fixes the named defects and every check runs again. New screenshots, new random labels and a fresh critic follow, for up to 4 rounds per pass. A game below the bar gets further gap passes aimed at its losing screens; any gap still left is reported plainly.
 
 Out of scope: 3D or ThreeJS rewrites and comparisons with AAA shooters. These games are 2D SVG cozy sims by design.
