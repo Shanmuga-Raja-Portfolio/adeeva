@@ -6,29 +6,31 @@ This is the single place for status, open tasks and the order of work. Game desi
 
 ## Status
 
-| Game               | Playable slice        | Depth (second career or showcase)                                                    | Quality loop |
-| ------------------ | --------------------- | ------------------------------------------------------------------------------------ | ------------ |
-| ADEEVA             | ✅                    | ✅ Student → Label, runway                                                           | ⬜           |
-| Patisserie Atelier | ✅                    | ✅ Salon Pâtissier: Tea Salon and Patisserie Fair                                    | ⬜           |
-| Thrift-Flip Studio | ✅                    | 🔄 Resale Boutique and Upcycle Showcase: built and reviewed, integrating onto `main` | ⬜           |
-| Interior Studio    | ✅                    | ⬜ room makeovers → show-home development                                            | ⬜           |
-| Workshop & Wood    | ✅                    | ⬜ commissions → furniture showroom and fair                                         | ⬜           |
-| Jewellery Bench    | ✅                    | ⬜ stall → collection launch                                                         | ⬜           |
-| Six Kitchens       | ✅ school → head chef | ✅ Crossroads: Restaurant, Food Truck, TV & Cookbook                                 | ⬜           |
+| Game               | Playable slice        | Depth (second career or showcase)                    | Quality loop |
+| ------------------ | --------------------- | ---------------------------------------------------- | ------------ |
+| ADEEVA             | ✅                    | ✅ Student → Label, runway                           | ⬜           |
+| Patisserie Atelier | ✅                    | ✅ Salon Pâtissier: Tea Salon and Patisserie Fair    | ⬜           |
+| Thrift-Flip Studio | ✅                    | ✅ Resale Boutique and Upcycle Showcase              | ⬜           |
+| Interior Studio    | ✅                    | ✅ Show-Home Development and Open House              | ⬜           |
+| Workshop & Wood    | ✅                    | ✅ Furniture Showroom and Larkspur Craft Fair        | ⬜           |
+| Jewellery Bench    | ✅                    | 🔄 Collection Launch and Lantern Night: in progress  | ⬜           |
+| Six Kitchens       | ✅ school → head chef | ✅ Crossroads: Restaurant, Food Truck, TV & Cookbook | ⬜           |
 
 Research done (reference only): `work/0013-research/references.md` and `work/0013-research/competition-gtm.md`.
 
 ## Task queue (in order; two lines at a time)
 
-1. ✅ **Thrift-Flip depth**, merged into `main`. The career and runway pieces are shared with ADEEVA and Patisserie.
-2. ✅ **Browser-test stability**, merged into `main`. Browser tests run against a production build, wait on real state instead of fixed sleeps, and use 127.0.0.1. The flaky unit test (a Patisserie economy simulation) is fixed by making the shared geometry code about 4× faster.
-3. ⏸️ **Interior depth** (paused in its fix step): worktree `Y:\ADEEVA-wt\interior-depth`, branch `task/0018-interior-depth`. Design, build and both reviews are done; the half-done fixes are uncommitted in the worktree. Resume the depth workflow with run id `wf_2f76d1b1-da7`.
-4. ⏸️ **Workshop depth** (paused in its fix step): worktree `Y:\ADEEVA-wt\workshop-depth`, branch `task/0019-workshop-depth`. Design, build and both reviews are done; the half-done fixes are uncommitted. Resume with run id `wf_c4e97608-934`.
-5. ⬜ **Jewellery depth:** collection launch.
-6. ⬜ **Kit dialog focus:** shared dialogs don't move keyboard focus into themselves when they open (seen in Thrift-Flip's leave-draft dialog and ADEEVA's set-aside dialog). Fix it once in `ui/kit`, with a test.
-7. ⬜ **Unnamed browser-test failure:** 1 failure in 8 full runs on `main` (99dc333) under parallel load. It wasn't captured, and it hasn't come back in the 7 runs since. Checks now keep failure output, so if it recurs it gets named and fixed.
-8. ⬜ **Phase C quality loop** for all seven games (below).
-9. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, and a closing report.
+1. ✅ **Thrift-Flip depth**, merged.
+2. ✅ **Browser-test stability**, merged. Tests run against a production build on 127.0.0.1 and wait on real state.
+3. ✅ **Browser-test load races**, merged. Chef waits follow the live board and pan; timed show scenes are stepped with Playwright's clock. A real Patisserie Fair bug is fixed: a tap and the timer in the same frame skipped the child's reveal.
+4. ✅ **Workshop depth**, merged.
+5. ✅ **Interior depth**, merged, plus the show kit lifted into `src/ui/show` so Interior doesn't import ADEEVA. Thrift-Flip → ADEEVA is the only cross-game import.
+6. ✅ **Browser-close hang**, merged. Trace screencast frames are off; their write backlog to the USB drive blocked context close under load.
+7. ✅ **Avatar feet**, merged. Shan reported the feet; they were redrawn as grounded ankle boots.
+8. 🔄 **Jewellery depth:** worktree `Y:\ADEEVA-wt\jewellery-depth`, branch `task/0025-jewellery-depth`, workflow run `wf_c0ae0f72-e33`.
+9. ⬜ **Kit dialog focus:** shared dialogs don't move keyboard focus into themselves when they open (seen in Thrift-Flip's leave-draft dialog and ADEEVA's set-aside dialog). Fix it once in `ui/kit`, with a test.
+10. ⬜ **Phase C quality loop** for all seven games (below). Also recheck the Interior Challenging economy: on seed 2 the home earns 0.79× the loft, and the bot scores Gold where about 76 was the target.
+11. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, and a closing report.
 
 ## Waiting for Shan (do together, one by one)
 
