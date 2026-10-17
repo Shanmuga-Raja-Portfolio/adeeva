@@ -37,7 +37,7 @@ export const MENTORS: readonly MentorDef[] = [
     firstLine: "Listen to the cumin. When it crackles, it's ready.",
     passLine: "Layer on layer. I can taste that you listened.",
     nearMissLine: "Good start. Let each layer settle before the next one.",
-    look: { skinTone: "chestnut", hairStyle: "short-bob", hairColour: "black", outfit: "studio-apron" },
+    look: { skinTone: "chestnut", hairStyle: "pixie", hairColour: "black", outfit: "studio-apron" },
   },
   {
     id: "haruka-moriyama",

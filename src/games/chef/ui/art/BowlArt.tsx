@@ -1,6 +1,7 @@
 import { darken, lighten } from "../../../../ui/art/colourMix";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 import { blobPath } from "./blobPath";
+import { FoodGrain } from "./FoodGrain";
 import type { PieceArtProps } from "./heroArt";
 import { scatterInEllipse } from "./scatter";
 
@@ -29,6 +30,12 @@ export function BowlArt({ w, h, c1, c2, seed }: PieceArtProps) {
           <stop offset="0.86" stopColor={c1} />
           <stop offset="1" stopColor={darken(c1, 0.34)} />
         </radialGradient>
+        <linearGradient id={`${id}-shade`} x1="0.2" y1="0.1" x2="0.8" y2="0.9">
+          <stop offset="0" stopColor={darken(c1, 0.55)} stopOpacity={0.42} />
+          <stop offset="0.38" stopColor={darken(c1, 0.4)} stopOpacity={0} />
+          <stop offset="0.7" stopColor="#fff6dc" stopOpacity={0} />
+          <stop offset="1" stopColor="#fff6dc" stopOpacity={0.28} />
+        </linearGradient>
         <radialGradient id={`${id}-bead`} cx="0.35" cy="0.35" r="0.65">
           <stop offset="0" stopColor="#fff6d0" />
           <stop offset="0.5" stopColor={lighten(c1, 0.2)} stopOpacity={0.8} />
@@ -57,6 +64,13 @@ export function BowlArt({ w, h, c1, c2, seed }: PieceArtProps) {
         opacity={0.6}
       />
       <ellipse cx={cx} cy={cy + 1} rx={soupRx} ry={soupRy} fill={`url(#${id}-soup)`} />
+      <FoodGrain
+        d={`M${cx - soupRx} ${cy + 1} a${soupRx} ${soupRy} 0 1 0 ${soupRx * 2} 0 a${soupRx} ${soupRy} 0 1 0 ${-soupRx * 2} 0 Z`}
+        seed={seed}
+        dark={darken(c1, 0.45)}
+        light={lighten(c1, 0.55)}
+      />
+      <ellipse cx={cx} cy={cy + 1} rx={soupRx} ry={soupRy} fill={`url(#${id}-shade)`} />
       {scatterInEllipse(seed + 11, 9, w, h, 0.56).map((patch, index) => (
         <path
           key={`patch-${index}`}

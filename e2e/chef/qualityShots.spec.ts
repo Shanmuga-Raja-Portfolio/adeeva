@@ -89,7 +89,7 @@ async function snap(page: Page, name: string, options: ShotOptions = SETTLED): P
 }
 
 async function restPointer(page: Page): Promise<void> {
-  await page.mouse.move(1279, 799);
+  await page.mouse.move(1279, 719);
 }
 
 async function dragTo(page: Page, from: Locator, to: readonly [number, number]): Promise<void> {
@@ -120,7 +120,7 @@ async function openDish(page: Page, state: GameState): Promise<void> {
 
 test.describe("quality screenshots", () => {
   test.skip(!process.env["QUALITY_SHOTS_DIR"], "Set QUALITY_SHOTS_DIR to capture quality screenshots");
-  test.use({ viewport: { width: 1280, height: 800 } });
+  test.use({ viewport: { width: 1280, height: 720 } });
 
   test("title", async ({ page }) => {
     await page.goto("/");
@@ -185,7 +185,7 @@ test.describe("quality screenshots", () => {
     await playUntil(page, "a second golden side", async () => ((await cooks())[1] ?? 0) >= 0.97);
     await tapPiece(page, pan.locator("[data-testid='piece-1'] > circle"));
     await page.clock.runFor(1200);
-    await pan.evaluate((element) => window.scrollBy(0, element.getBoundingClientRect().bottom - 790));
+    await pan.evaluate((element) => window.scrollBy(0, element.getBoundingClientRect().bottom - 710));
     await restPointer(page);
     await snap(page, "craft-2.png", LIVE);
     await releaseShowTime(page);

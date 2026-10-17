@@ -1,6 +1,7 @@
 import { darken, lighten, mixHex } from "../../../../ui/art/colourMix";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 import { blobPath } from "./blobPath";
+import { FoodGrain } from "./FoodGrain";
 import type { PieceArtProps } from "./heroArt";
 import { scatterInEllipse } from "./scatter";
 
@@ -8,6 +9,11 @@ const POOLS: readonly (readonly [number, number, number, number])[] = [
   [0.7, 0.32, 0.15, 0.1],
   [0.27, 0.66, 0.13, 0.085],
   [0.62, 0.74, 0.1, 0.07],
+];
+
+const LEAVES: readonly (readonly [number, number, number])[] = [
+  [0.2, 0.3, -30],
+  [0.74, 0.62, 150],
 ];
 
 export function SwirlArt({ w, h, c1, c2, seed }: PieceArtProps) {
@@ -33,11 +39,18 @@ export function SwirlArt({ w, h, c1, c2, seed }: PieceArtProps) {
         </radialGradient>
       </defs>
       <path
-        d={blobPath(cx + 2, cy + 5, w / 2 - 1, h / 2 - 1, seed, 0.05)}
-        fill={darken(warm, 0.5)}
-        opacity={0.32}
+        d={blobPath(cx + 3, cy + 7, w / 2 - 1, h / 2 - 1, seed, 0.05)}
+        fill={darken(warm, 0.6)}
+        opacity={0.5}
       />
       <path d={blobPath(cx, cy, w / 2 - 2, h / 2 - 2, seed, 0.05)} fill={`url(#${id}-body)`} />
+      <FoodGrain
+        d={blobPath(cx, cy, w / 2 - 4, h / 2 - 4, seed, 0.05)}
+        seed={seed + 7}
+        frequency={0.14}
+        dark={darken(warm, 0.4)}
+        light={lighten(c1, 0.6)}
+      />
       {scatterInEllipse(seed + 5, 10, w, h, 0.6).map((lump, index) => (
         <path
           key={`lump-${index}`}
@@ -67,7 +80,7 @@ export function SwirlArt({ w, h, c1, c2, seed }: PieceArtProps) {
         opacity={0.3}
         transform="translate(1 2)"
       />
-      <path d={swirl} fill="none" stroke={cream} strokeWidth={6} strokeLinecap="round" opacity={0.95} />
+      <path d={swirl} fill="none" stroke={cream} strokeWidth={8} strokeLinecap="round" opacity={0.95} />
       <path
         d={swirl}
         fill="none"
@@ -82,7 +95,7 @@ export function SwirlArt({ w, h, c1, c2, seed }: PieceArtProps) {
           <path
             d={blobPath(w * px, h * py, w * rx * 1.2, h * ry * 1.2, seed + 70 + index, 0.3, 10)}
             fill={`url(#${id}-oil)`}
-            opacity={0.42}
+            opacity={0.72}
           />
           {scatterInEllipse(seed + 90 + index, 6, w * rx * 2, h * ry * 2, 0.9).map((drop, dropIndex) => (
             <g key={dropIndex} transform={`translate(${w * (px - rx) + drop.x} ${h * (py - ry) + drop.y})`}>
@@ -134,6 +147,18 @@ export function SwirlArt({ w, h, c1, c2, seed }: PieceArtProps) {
           stroke="#b9862a"
           strokeWidth={0.8}
         />
+      ))}
+      {LEAVES.map(([lx, ly, turn]) => (
+        <g key={`leaf-${lx}`} transform={`translate(${w * lx} ${h * ly}) rotate(${turn})`}>
+          <path
+            d="M0 0 C4 -6 12 -8 18 -6 C14 0 7 4 0 0 Z"
+            fill="#1f3a14"
+            opacity={0.35}
+            transform="translate(1 2)"
+          />
+          <path d="M0 0 C4 -6 12 -8 18 -6 C14 0 7 4 0 0 Z" fill="#3f6e24" />
+          <path d="M1 -1 C6 -4 12 -5 17 -6" stroke="#7fae4a" strokeWidth={0.9} fill="none" />
+        </g>
       ))}
       <path
         d={`M${w * 0.18} ${h * 0.38} Q${w * 0.26} ${h * 0.14} ${w * 0.5} ${h * 0.1}`}

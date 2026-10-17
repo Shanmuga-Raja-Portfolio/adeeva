@@ -28,6 +28,7 @@ import { OnBoardCard } from "./OnBoardCard";
 import { OrdersPanel } from "./OrdersPanel";
 import { PracticeCard } from "./PracticeCard";
 import { ShiftDialog } from "./ShiftDialog";
+import { SchoolStage } from "./SchoolStage";
 import { ShopPanel } from "./ShopPanel";
 
 interface KitchenHubProps {
@@ -47,7 +48,7 @@ type Picking =
 
 function coachLine(state: GameState): string {
   if (state.rung === "student")
-    return "Your first lesson is pinned to the class board. Tap Start the lesson!";
+    return "Your first lesson is today. Tap Start the lesson! The class board has all the details.";
   return "Pick a shift on the board. Tickets will start to arrive!";
 }
 
@@ -127,102 +128,136 @@ export function KitchenHub(props: KitchenHubProps) {
         </>
       )}
     >
-      {(tools) => (
-        <>
-          <div className="ck-hub__top">
-            <HubHero
-              state={state}
-              onPotWash={(event) => tools.endDay(event, "potwash")}
-              onEndDay={(event) => tools.endDay(event, "rest")}
-            />
-            <BoardPanel
-              state={state}
-              onStartLesson={(event) => {
-                if (tools.once(event, { type: "startLesson" })) onOpen("dish");
-              }}
-              onDeclineLesson={(event) => {
-                if (tools.once(event, { type: "declineLesson" }))
-                  tools.toast("You can practise instead. A new lesson comes tomorrow.", "info");
-              }}
-              onPickShift={(offer) =>
-                state.rung === "line"
-                  ? startShift(offer.id, { special: null, helpers: [] })
-                  : setPicking({ kind: "shift", offer })
-              }
-              onTakeTest={() => setPicking({ kind: testFor(state.rung) === "station" ? "station" : "test" })}
-              onNextTestDish={(event) => {
-                if (tools.once(event, { type: "startNextTestDish" })) onOpen("dish");
-              }}
-              onOpenService={() => onOpen("service")}
-            />
-          </div>
+      {(tools) => {
+        const board = (inDrawer: boolean) => (
+          <BoardPanel
+            state={state}
+            inDrawer={inDrawer}
+            onStartLesson={(event) => {
+              if (tools.once(event, { type: "startLesson" })) onOpen("dish");
+            }}
+            onDeclineLesson={(event) => {
+              if (tools.once(event, { type: "declineLesson" }))
+                tools.toast("You can practise instead. A new lesson comes tomorrow.", "info");
+            }}
+            onPickShift={(offer) =>
+              state.rung === "line"
+                ? startShift(offer.id, { special: null, helpers: [] })
+                : setPicking({ kind: "shift", offer })
+            }
+            onTakeTest={() => setPicking({ kind: testFor(state.rung) === "station" ? "station" : "test" })}
+            onNextTestDish={(event) => {
+              if (tools.once(event, { type: "startNextTestDish" })) onOpen("dish");
+            }}
+            onOpenService={() => onOpen("service")}
+          />
+        );
+        const coach = (
           <CoachBubble show={state.guide && state.diary.length === 0 && !onBoard} text={coachLine(state)} />
-          <div className="ck-hub__grid">
-            <div className="ck-hub__column">
-              <OnBoardCard state={state} onBack={() => onOpen("dish")} onSetAside={tools.setAside} />
-              <PracticeCard
-                onPick={tools.pickPractice}
-                lead="Cook any dish you've unlocked, just for the joy of it. Great on Family Meal days."
+        );
+        const school = state.rung === "student";
+        return (
+          <>
+            {school ? (
+              <SchoolStage
+                state={state}
+                board={board(true)}
+                coach={coach}
+                onStartLesson={(event) => {
+                  if (tools.once(event, { type: "startLesson" })) onOpen("dish");
+                }}
+                onTakeTest={() => setPicking({ kind: "test" })}
+                onNextTestDish={(event) => {
+                  if (tools.once(event, { type: "startNextTestDish" })) onOpen("dish");
+                }}
+                onPractice={tools.pickPractice}
+                onBackToDish={() => onOpen("dish")}
+                onPotWash={(event) => tools.endDay(event, "potwash")}
+                onEndDay={(event) => tools.endDay(event, "rest")}
               />
-              {state.rung === "head" ? (
-                <>
-                  <CrossroadsCard state={state} onVisit={() => onOpen("crossroads")} />
-                  <Card
-                    title="Your menu"
-                    eyebrow={`${state.menu.length} of ${CAREER.menuSize} dishes`}
-                    className="ck-panel"
-                  >
-                    {state.menu.length === 0 ? (
-                      <p className="ck-muted">
-                        Write a {CAREER.menuSize}-dish menu before tonight's service.
-                      </p>
-                    ) : (
-                      <ul className="ck-menu-list">
-                        {state.menu.map((id) => (
-                          <li key={id} className="ck-chalk">
-                            {dishById(id).name}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <Button
-                      variant="secondary"
-                      block
-                      icon="palette"
-                      onClick={() => setPicking({ kind: "menu" })}
-                      data-testid="write-menu"
-                    >
-                      Write the menu
-                    </Button>
-                  </Card>
-                  <OrdersPanel
+            ) : (
+              <>
+                <div className="ck-hub__top">
+                  <HubHero
                     state={state}
-                    onAccept={(event, offerId) => {
-                      if (tools.once(event, { type: "acceptOffer", offerId })) tools.toast("Order accepted!");
-                    }}
-                    onDecline={(event, offerId) => {
-                      if (tools.once(event, { type: "declineOffer", offerId }))
-                        tools.toast("You kindly passed on that order.", "info");
-                    }}
-                    onCook={tools.pickOrder}
+                    onPotWash={(event) => tools.endDay(event, "potwash")}
+                    onEndDay={(event) => tools.endDay(event, "rest")}
                   />
-                </>
-              ) : null}
+                  {board(false)}
+                </div>
+                {coach}
+              </>
+            )}
+            <div className="ck-hub__grid">
+              <div className="ck-hub__column">
+                {school ? null : (
+                  <OnBoardCard state={state} onBack={() => onOpen("dish")} onSetAside={tools.setAside} />
+                )}
+                <PracticeCard
+                  onPick={tools.pickPractice}
+                  lead="Cook any dish you've unlocked, just for the joy of it. Great on Family Meal days."
+                />
+                {state.rung === "head" ? (
+                  <>
+                    <CrossroadsCard state={state} onVisit={() => onOpen("crossroads")} />
+                    <Card
+                      title="Your menu"
+                      eyebrow={`${state.menu.length} of ${CAREER.menuSize} dishes`}
+                      className="ck-panel"
+                    >
+                      {state.menu.length === 0 ? (
+                        <p className="ck-muted">
+                          Write a {CAREER.menuSize}-dish menu before tonight's service.
+                        </p>
+                      ) : (
+                        <ul className="ck-menu-list">
+                          {state.menu.map((id) => (
+                            <li key={id} className="ck-chalk">
+                              {dishById(id).name}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <Button
+                        variant="secondary"
+                        block
+                        icon="palette"
+                        onClick={() => setPicking({ kind: "menu" })}
+                        data-testid="write-menu"
+                      >
+                        Write the menu
+                      </Button>
+                    </Card>
+                    <OrdersPanel
+                      state={state}
+                      onAccept={(event, offerId) => {
+                        if (tools.once(event, { type: "acceptOffer", offerId }))
+                          tools.toast("Order accepted!");
+                      }}
+                      onDecline={(event, offerId) => {
+                        if (tools.once(event, { type: "declineOffer", offerId }))
+                          tools.toast("You kindly passed on that order.", "info");
+                      }}
+                      onCook={tools.pickOrder}
+                    />
+                  </>
+                ) : null}
+              </div>
+              <div className="ck-hub__column">
+                <MasteryPanel state={state} />
+              </div>
+              <div className="ck-hub__column">
+                <DiaryCard state={state} dispatch={dispatch} onOpen={() => onOpen("diary")} />
+                <ShopPanel state={state} onBuy={tools.buy} />
+              </div>
             </div>
-            <div className="ck-hub__column">
-              <MasteryPanel state={state} />
-            </div>
-            <div className="ck-hub__column">
-              <DiaryCard state={state} dispatch={dispatch} onOpen={() => onOpen("diary")} />
-              <ShopPanel state={state} onBuy={tools.buy} />
-            </div>
-          </div>
-          <p className="ck-safety ck-hub__safety">
-            <Icon name="shield" size={14} /> Chef uses game numbers and pictures, not real recipes,
-            temperatures or knife skills. Real cooking needs an adult.
-          </p>
-        </>
-      )}
+            <p className="ck-safety ck-hub__safety">
+              <Icon name="shield" size={14} /> Chef uses game numbers and pictures, not real recipes,
+              temperatures or knife skills. Real cooking needs an adult.
+            </p>
+          </>
+        );
+      }}
     </HubFrame>
   );
 }

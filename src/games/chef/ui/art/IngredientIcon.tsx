@@ -323,69 +323,87 @@ const SPECIAL: Partial<Record<IngredientId, ShapeArt>> = {
   plantain: (colour, accent, id) => (
     <>
       <defs>
-        <linearGradient id={`${id}-flesh`} x1="0.2" y1="0" x2="0.55" y2="1">
-          <stop offset="0" stopColor={lighten(colour, 0.5)} />
-          <stop offset="0.4" stopColor={lighten(colour, 0.12)} />
-          <stop offset="1" stopColor={darken(colour, 0.12)} />
+        <linearGradient id={`${id}-peel`} x1="0.15" y1="0" x2="0.6" y2="1">
+          <stop offset="0" stopColor={lighten(colour, 0.42)} />
+          <stop offset="0.35" stopColor={colour} />
+          <stop offset="0.8" stopColor={darken(colour, 0.14)} />
+          <stop offset="1" stopColor={darken(colour, 0.3)} />
         </linearGradient>
+        <radialGradient id={`${id}-flesh`} cx="0.45" cy="0.4" r="0.6">
+          <stop offset="0" stopColor="#fff4d2" />
+          <stop offset="0.7" stopColor="#f6d58a" />
+          <stop offset="1" stopColor="#e3b25a" />
+        </radialGradient>
       </defs>
       <path
-        d="M7 45 C15 30 31 16 52 9 Q60 8 60 16 C43 25 29 39 18 57 Q5 58 7 45 Z"
+        d="M6 46 C12 30 30 15 52 8 C56 7 59 9 59 13 C59 16 57 18 54 19 C36 26 23 38 15 54 C13 58 8 58 6 55 C5 52 5 49 6 46 Z"
         fill="#3b2410"
-        opacity={0.18}
+        opacity={0.2}
         transform="translate(2 3)"
       />
       <path
-        d="M7 45 C15 30 31 16 52 9 Q60 8 60 16 C43 25 29 39 18 57 Q5 58 7 45 Z"
-        fill={`url(#${id}-flesh)`}
-        stroke={darken(colour, 0.32)}
-        strokeWidth={1.5}
+        d="M6 46 C12 30 30 15 52 8 C56 7 59 9 59 13 C59 16 57 18 54 19 C36 26 23 38 15 54 C13 58 8 58 6 55 C5 52 5 49 6 46 Z"
+        fill={`url(#${id}-peel)`}
+        stroke={darken(colour, 0.38)}
+        strokeWidth={1.3}
         strokeLinejoin="round"
       />
       <path
-        d="M12 50 C21 36 36 24 56 13"
-        stroke={darken(colour, 0.16)}
-        strokeWidth={1.2}
+        d="M9 49 C17 34 33 20 55 12"
+        stroke={darken(colour, 0.22)}
+        strokeWidth={1}
         fill="none"
-        opacity={0.7}
-        strokeLinecap="round"
+        opacity={0.75}
       />
       <path
-        d="M12 42 C20 30 33 20 50 13"
+        d="M8 44 C15 31 30 18 50 10"
         stroke="#ffffff"
-        strokeWidth={2.4}
+        strokeWidth={2}
         fill="none"
-        opacity={0.55}
+        opacity={0.5}
         strokeLinecap="round"
       />
-      <ellipse
-        cx={11.6}
-        cy={51.4}
-        rx={4.6}
-        ry={6.6}
-        transform="rotate(38 11.6 51.4)"
-        fill={lighten(colour, 0.55)}
-        stroke={darken(colour, 0.28)}
-        strokeWidth={1}
-      />
-      <circle cx={11.6} cy={51.4} r={1.6} fill={lighten(accent, 0.55)} opacity={0.9} />
-      <ellipse
-        cx={56.6}
-        cy={12.6}
-        rx={3.4}
-        ry={4.4}
-        transform="rotate(38 56.6 12.6)"
-        fill={lighten(colour, 0.5)}
-        stroke={darken(colour, 0.28)}
-        strokeWidth={1}
-      />
       {[
-        [26, 38],
-        [37, 29],
-        [46, 22],
-      ].map(([x = 0, y = 0]) => (
-        <circle key={`${x}-${y}`} cx={x} cy={y} r={0.9} fill={darken(colour, 0.25)} opacity={0.45} />
+        [31, 27, 3.2, 1.8, -36],
+        [42, 19, 2.4, 1.4, -30],
+        [20, 41, 2.6, 1.6, -45],
+      ].map(([x = 0, y = 0, rx = 0, ry = 0, turn = 0]) => (
+        <ellipse
+          key={`${x}-${y}`}
+          cx={x}
+          cy={y}
+          rx={rx}
+          ry={ry}
+          transform={`rotate(${turn} ${x} ${y})`}
+          fill="#7a4a1a"
+          opacity={0.45}
+        />
       ))}
+      {[
+        [24, 37],
+        [27, 33],
+        [35, 26],
+        [38, 24],
+        [45, 18],
+        [48, 15],
+        [17, 46],
+        [29, 31],
+        [40, 22],
+        [21, 43],
+      ].map(([x = 0, y = 0], index) => (
+        <circle
+          key={`${x}-${y}`}
+          cx={x}
+          cy={y}
+          r={index % 3 === 0 ? 0.9 : 0.6}
+          fill="#2a1a0a"
+          opacity={0.7}
+        />
+      ))}
+      <path d="M54 9 L60 4 L62 6 L57 12 Z" fill="#5a3a1a" stroke="#3a240e" strokeWidth={0.8} />
+      <ellipse cx={9.5} cy={52} rx={4.4} ry={6.2} transform="rotate(40 9.5 52)" fill={darken(colour, 0.2)} />
+      <ellipse cx={9.5} cy={52} rx={3.4} ry={5} transform="rotate(40 9.5 52)" fill={`url(#${id}-flesh)`} />
+      <circle cx={9.5} cy={52} r={1.2} fill={lighten(accent, 0.3)} opacity={0.8} />
     </>
   ),
 };

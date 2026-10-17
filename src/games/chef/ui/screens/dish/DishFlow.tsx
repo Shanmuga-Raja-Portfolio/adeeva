@@ -62,8 +62,13 @@ export function DishFlow({ state, dispatch, onExit }: DishFlowProps) {
   }
   return (
     <main className="ck-dish ad-screen" data-stage={run.stage}>
-      <DishHeader state={state} run={run} onExit={onExit} onSetAside={() => setSettingAside(true)} />
-      <StageRail state={state} run={run} dispatch={dispatch} />
+      <DishHeader
+        state={state}
+        run={run}
+        onExit={onExit}
+        onSetAside={() => setSettingAside(true)}
+        rail={<StageRail state={state} run={run} dispatch={dispatch} />}
+      />
       <SegmentCueStrip run={run} />
       <CoachBubble
         show={state.guide && state.diary.length < 2 && run.stage === "ticket"}
@@ -73,7 +78,7 @@ export function DishFlow({ state, dispatch, onExit }: DishFlowProps) {
         <section className="ck-dish__stage" key={run.stage} aria-label={`${run.stage} step`}>
           <StageView state={state} run={run} dispatch={dispatch} onExit={onExit} />
         </section>
-        {run.stage === "pass" ? null : <DishSide run={run} />}
+        {run.stage === "pass" || run.stage === "plate" ? null : <DishSide run={run} />}
       </div>
       <SetAsideDialog
         open={settingAside}

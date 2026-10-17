@@ -21,6 +21,7 @@ export function SchoolCorridor({ today }: SchoolCorridorProps) {
     leafShade: `${id}-leaf`,
     sign: `${id}-sign`,
     spill: `${id}-spill`,
+    soft: `${id}-soft`,
     inside: `${id}-inside`,
     halo: `${id}-halo`,
   };
@@ -28,6 +29,7 @@ export function SchoolCorridor({ today }: SchoolCorridorProps) {
   const floor = `${id}-floor`;
   const pool = `${id}-pool`;
   const rug = `${id}-rug`;
+  const weave = `${id}-weave`;
   return (
     <g>
       <defs>
@@ -37,7 +39,8 @@ export function SchoolCorridor({ today }: SchoolCorridorProps) {
         </linearGradient>
         <linearGradient id={floor} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#a8743f" />
-          <stop offset="1" stopColor="#c99a62" />
+          <stop offset="0.5" stopColor="#c99a62" />
+          <stop offset="1" stopColor="#9a6a3a" />
         </linearGradient>
         <radialGradient id={pool} cx="0.5" cy="0.25" r="0.75">
           <stop offset="0" stopColor="#fff1c4" stopOpacity={0.95} />
@@ -48,6 +51,16 @@ export function SchoolCorridor({ today }: SchoolCorridorProps) {
           <stop offset="0" stopColor="#9a3524" />
           <stop offset="1" stopColor="#c4502e" />
         </linearGradient>
+        <pattern id={weave} width="44" height="22" patternUnits="userSpaceOnUse">
+          <path
+            d="M0 11 L22 0 L44 11 L22 22 Z"
+            fill="none"
+            stroke="#f2c46b"
+            strokeWidth={1.2}
+            opacity={0.35}
+          />
+          <circle cx={22} cy={11} r={2} fill="#f6d9a0" opacity={0.4} />
+        </pattern>
         <linearGradient id={ids.leafShade} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#ffffff" stopOpacity={0.28} />
           <stop offset="0.45" stopColor="#ffffff" stopOpacity={0} />
@@ -57,6 +70,9 @@ export function SchoolCorridor({ today }: SchoolCorridorProps) {
           <stop offset="0" stopColor="#fffdf6" />
           <stop offset="1" stopColor="#f1e4c8" />
         </linearGradient>
+        <filter id={ids.soft} x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="10" />
+        </filter>
         <linearGradient id={ids.spill} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#ffe6a6" stopOpacity={0.85} />
           <stop offset="1" stopColor="#ffe6a6" stopOpacity={0} />
@@ -145,25 +161,38 @@ export function SchoolCorridor({ today }: SchoolCorridorProps) {
           <ellipse cx={x + 13} cy={210} rx={16} ry={4} fill="#fff4cc" />
         </g>
       ))}
-      <rect y={450} width={1200} height={150} fill={`url(#${floor})`} />
-      {Array.from({ length: 17 }, (_, index) => {
-        const x = -600 + index * 150;
+      <rect y={450} width={1200} height={300} fill={`url(#${floor})`} />
+      {Array.from({ length: 21 }, (_, index) => {
+        const x = -900 + index * 150;
         return (
           <path
             key={index}
-            d={`M${x} 600 L${plankAt(x, 452)} 452`}
+            d={`M${plankAt(x, 750)} 750 L${plankAt(x, 452)} 452`}
             stroke="#8a5a2e"
             strokeWidth={2.5}
             opacity={0.55}
           />
         );
       })}
-      {[466, 488, 518, 556].map((y) => (
+      {[466, 488, 518, 556, 604, 664, 736].map((y) => (
         <path key={y} d={`M0 ${y} H1200`} stroke="#8a5a2e" strokeWidth={2} opacity={0.35} />
       ))}
-      <path d="M90 496 H1110 L1170 572 H30 Z" fill={`url(#${rug})`} opacity={0.92} />
+      <ellipse cx={600} cy={640} rx={620} ry={110} fill={`url(#${pool})`} opacity={0.35} />
+      <path d="M90 496 H1110 L1210 640 H-10 Z" fill={`url(#${rug})`} opacity={0.92} />
+      <path d="M118 512 H1082 L1160 620 H40 Z" fill={`url(#${weave})`} />
+      <ellipse
+        cx={600}
+        cy={566}
+        rx={150}
+        ry={34}
+        fill="none"
+        stroke="#f2c46b"
+        strokeWidth={3}
+        opacity={0.5}
+      />
+      <ellipse cx={600} cy={566} rx={110} ry={22} fill="#7a2a1a" opacity={0.35} />
       <path
-        d="M104 504 H1096 L1146 564 H54 Z"
+        d="M104 506 H1096 L1180 628 H20 Z"
         fill="none"
         stroke="#f2c46b"
         strokeWidth={3}

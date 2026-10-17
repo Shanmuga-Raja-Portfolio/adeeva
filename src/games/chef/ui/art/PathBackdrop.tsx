@@ -1,14 +1,12 @@
 import { dishById, festivalById, festivalToday, type GameState } from "../../core";
-import { restaurantName } from "../screens/path/restaurantName";
+import { diningCast } from "./diningCast";
 import { FestivalScene } from "./FestivalScene";
-import { HEADROOM_VIEWBOX } from "./KitchenBackdrop";
 import { SceneDefs, useSceneIds } from "./kitchenFixtures";
 import { QuaysideScene } from "./QuaysideScene";
 import { StudioScene } from "./StudioScene";
 
 export interface PathBackdropProps {
   readonly state: GameState;
-  readonly headroom?: boolean | undefined;
   readonly className?: string | undefined;
 }
 
@@ -17,16 +15,7 @@ function Scene({ state }: { readonly state: GameState }) {
   const path = state.path;
   if (path === null) return null;
   if (path.kind === "restaurant")
-    return (
-      <>
-        <SceneDefs ids={ids} />
-        <QuaysideScene
-          ids={ids}
-          sign={restaurantName(state)}
-          menu={path.menu.map((entry) => dishById(entry.dishId).name)}
-        />
-      </>
-    );
+    return <QuaysideScene mood="open" {...diningCast(state, path)} note={null} />;
   if (path.kind === "truck") {
     const slot = festivalToday(path, state.calendar.day) ?? path.board[0] ?? null;
     const festival =
@@ -50,11 +39,11 @@ function Scene({ state }: { readonly state: GameState }) {
   );
 }
 
-export function PathBackdrop({ state, headroom = false, className }: PathBackdropProps) {
+export function PathBackdrop({ state, className }: PathBackdropProps) {
   return (
     <svg
-      viewBox={headroom ? HEADROOM_VIEWBOX : "0 0 1200 600"}
-      preserveAspectRatio={headroom ? "xMidYMax slice" : "xMidYMid slice"}
+      viewBox="0 0 1200 600"
+      preserveAspectRatio="xMidYMid slice"
       className={className}
       aria-hidden="true"
       focusable="false"

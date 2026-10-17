@@ -22,57 +22,53 @@ export function pieceColour(kind: PieceKind, cook: number): string {
   return mixHex(GOLDEN, DEEP, Math.min(1, (cook - 1.1) / 0.5));
 }
 
-const SPICE: readonly (readonly [number, number, number])[] = [
-  [-9, -6, 1.4],
-  [7, -8, 1.1],
-  [10, 4, 1.5],
-  [-4, 7, 1.2],
-  [2, -1, 0.9],
-  [-12, 3, 1],
+const FLAKES: readonly (readonly [number, number, number])[] = [
+  [-11, -5, 20],
+  [9, 6, -30],
+  [12, -6, 60],
 ];
 
 function PlantainChunk({ fill }: { readonly fill: string }) {
   const id = useSvgId("ck-chunk");
-  const crust = darken(fill, 0.28);
+  const crust = mixHex(darken(fill, 0.32), "#8a3a12", 0.35);
   return (
-    <g>
+    <g transform="rotate(-18)">
       <defs>
-        <radialGradient id={`${id}-face`} cx="0.4" cy="0.36" r="0.7">
-          <stop offset="0" stopColor={lighten(fill, 0.32)} />
-          <stop offset="0.55" stopColor={fill} />
-          <stop offset="1" stopColor={mixHex(fill, "#b8601e", 0.35)} />
+        <radialGradient id={`${id}-face`} cx="0.42" cy="0.38" r="0.65">
+          <stop offset="0" stopColor={lighten(fill, 0.38)} />
+          <stop offset="0.6" stopColor={fill} />
+          <stop offset="1" stopColor={mixHex(fill, "#c0601e", 0.45)} />
         </radialGradient>
       </defs>
+      <ellipse cx={1.5} cy={3} rx={21} ry={16} fill={darken(crust, 0.25)} />
+      <ellipse rx={21} ry={16} fill={crust} />
+      <ellipse rx={17.5} ry={13} fill={`url(#${id}-face)`} />
+      <ellipse rx={8} ry={6} fill={lighten(fill, 0.2)} opacity={0.6} />
+      {[0, 120, 240].map((turn) => (
+        <g key={turn} transform={`rotate(${turn})`}>
+          <path d="M0 0 L0 -6" stroke={darken(fill, 0.25)} strokeWidth={1} opacity={0.55} />
+          <circle cy={-3.5} r={1.1} fill="#5a3010" opacity={0.75} />
+        </g>
+      ))}
       <path
-        d="M-19 -9 Q-20 -16 -12 -16 L11 -17 Q20 -16 20 -8 L19 9 Q18 16 10 16 L-11 16 Q-19 15 -19 8 Z"
-        fill={crust}
-        transform="translate(1.5 2.5)"
-      />
-      <path
-        d="M-19 -9 Q-20 -16 -12 -16 L11 -17 Q20 -16 20 -8 L19 9 Q18 16 10 16 L-11 16 Q-19 15 -19 8 Z"
-        fill={`url(#${id}-face)`}
-        stroke={crust}
-        strokeWidth={2}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M-15 -12 Q-4 -15 14 -13"
-        stroke={lighten(fill, 0.5)}
-        strokeWidth={2}
+        d="M-14 -6 Q-6 -13 8 -12"
+        stroke="#ffffff"
+        strokeWidth={2.4}
         fill="none"
-        opacity={0.7}
+        opacity={0.55}
         strokeLinecap="round"
       />
-      <path
-        d="M17 -5 L16 9 Q15 13 9 13"
-        stroke={darken(fill, 0.35)}
-        strokeWidth={2.2}
-        fill="none"
-        opacity={0.6}
-        strokeLinecap="round"
-      />
-      {SPICE.map(([x, y, r]) => (
-        <circle key={`${x}-${y}`} cx={x} cy={y} r={r} fill={x > 0 ? "#9a2a14" : "#6a3a12"} opacity={0.75} />
+      {FLAKES.map(([x, y, turn]) => (
+        <rect
+          key={`${x}-${y}`}
+          x={x - 2}
+          y={y - 1}
+          width={4}
+          height={2}
+          rx={1}
+          fill="#b8261a"
+          transform={`rotate(${turn} ${x} ${y})`}
+        />
       ))}
     </g>
   );

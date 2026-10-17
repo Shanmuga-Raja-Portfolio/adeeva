@@ -8,6 +8,7 @@ export interface CorridorIds {
   readonly leafShade: string;
   readonly sign: string;
   readonly spill: string;
+  readonly soft: string;
   readonly inside: string;
   readonly halo: string;
 }
@@ -200,6 +201,7 @@ export function MentorDoor({ cuisine, cx, today, ids }: MentorDoorProps) {
           <path
             d={`M${left} ${BOTTOM} H${cx + HALF} L${cx + HALF + 90} 600 H${left - 90} Z`}
             fill={`url(#${ids.spill})`}
+            filter={`url(#${ids.soft})`}
           />
         </>
       ) : null}
@@ -243,15 +245,17 @@ export function MentorDoor({ cuisine, cx, today, ids }: MentorDoorProps) {
           <>
             <rect x={left} y={TOP - 10} width={HALF * 2} height={BOTTOM - TOP + 10} fill={cuisine.wall} />
             <LeafPattern cuisine={cuisine} cx={cx} />
-            <circle cx={cx} cy={272} r={37} fill={darken(cuisine.wall, 0.35)} />
-            <circle cx={cx} cy={272} r={31} fill={`url(#${ids.inside})`} />
+            <circle cx={cx + 2} cy={276} r={49} fill="#1c1220" opacity={0.3} />
+            <circle cx={cx} cy={272} r={49} fill="#d8a94a" />
+            <circle cx={cx} cy={272} r={49} fill="none" stroke="#9a6a1f" strokeWidth={2.5} />
+            <circle cx={cx} cy={272} r={43} fill={darken(cuisine.wallDeep, 0.25)} />
             <PlateGroup
               colour="white"
               components={ghostLayout(lessonDish(cuisine.id))}
-              transform={`translate(${cx - 26} 246) scale(0.13)`}
+              transform={`translate(${cx - 38} 234) scale(0.19)`}
             />
             <path
-              d={`M${cx - 20} 254 A26 26 0 0 1 ${cx + 8} 246`}
+              d={`M${cx - 34} 252 A44 44 0 0 1 ${cx + 4} 230`}
               stroke="#ffffff"
               strokeWidth={4}
               strokeLinecap="round"

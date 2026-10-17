@@ -52,10 +52,19 @@ export function TitleSpread({ className }: { readonly className?: string | undef
         </pattern>
       </defs>
       <g transform="translate(400 330) rotate(18)">
-        <rect x={8} y={10} width={200} height={170} rx={8} fill="#2a1c10" opacity={0.25} />
+        <rect
+          x={10}
+          y={14}
+          width={200}
+          height={170}
+          rx={8}
+          fill="#2a1c10"
+          opacity={0.35}
+          filter={`url(#${id}-soft)`}
+        />
         <rect width={200} height={170} rx={8} fill={`url(#${id}-linen)`} />
       </g>
-      <ellipse cx={312} cy={300} rx={268} ry={212} fill="#2a1c10" opacity={0.3} />
+      <ellipse cx={316} cy={306} rx={272} ry={214} fill="#2a1c10" opacity={0.4} filter={`url(#${id}-soft)`} />
       <ellipse
         cx={300}
         cy={286}

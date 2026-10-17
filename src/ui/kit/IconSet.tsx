@@ -19,7 +19,11 @@ export type IconName =
   | "home"
   | "shield"
   | "back"
-  | "gear";
+  | "gear"
+  | "board"
+  | "turn"
+  | "plus"
+  | "minus";
 
 export interface IconProps {
   name: IconName;
@@ -174,6 +178,22 @@ const glyphs: Record<IconName, ReactNode> = {
       <circle cx="12" cy="12" r="6.6" />
     </>
   ),
+  board: (
+    <>
+      <rect x="3.6" y="4.6" width="16.8" height="12" rx="1.6" fill="currentColor" fillOpacity="0.14" />
+      <rect x="3.6" y="4.6" width="16.8" height="12" rx="1.6" />
+      <path d="M7 8.6h6.4M7 12h4.2M8.4 16.6l-1.8 3.8M15.6 16.6l1.8 3.8" />
+      <circle cx="16.4" cy="9.4" r="1.2" fill="currentColor" />
+    </>
+  ),
+  turn: (
+    <>
+      <path d="M18.6 12a6.6 6.6 0 1 1-2-4.7" />
+      <path d="M17.4 3.6v4.2h-4.2" />
+    </>
+  ),
+  plus: <path d="M12 5.4v13.2M5.4 12h13.2" />,
+  minus: <path d="M5.4 12h13.2" />,
 };
 
 export function Icon({ name, size = 20, title, className }: IconProps) {

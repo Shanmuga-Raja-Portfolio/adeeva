@@ -29,7 +29,7 @@ function judgeQuality(quality: number, minimum: number, feedback: string): Judge
     "quality",
     "Cooked well",
     quality >= minimum,
-    `Quality ${quality}, hoping for ${minimum}.`,
+    `Quality ${quality} out of 100. The goal was ${minimum}.`,
     feedback,
   );
 }

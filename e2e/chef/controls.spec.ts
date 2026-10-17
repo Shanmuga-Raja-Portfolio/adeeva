@@ -55,7 +55,9 @@ test("keyboard and touch players get fair, steady controls through a whole lesso
   await chopClockAtLeast(page, held, stretch[1] - 15);
   await page.keyboard.up(" ");
   await expect(page.getByRole("button", { name: "Resume" })).toHaveCount(0);
-  await expect(page.locator(".ck-step-scores")).toContainText(/Chop [1-9]\d*%/, { timeout: 10_000 });
+  await expect(page.locator(".ck-checklist__row--ok", { hasText: "Chop" })).toContainText(/[1-9]\d*%/, {
+    timeout: 10_000,
+  });
 
   const pot = page.getByTestId("simmer-pot");
   const target = Number(await pot.getAttribute("data-target"));
@@ -69,7 +71,7 @@ test("keyboard and touch players get fair, steady controls through a whole lesso
   );
   await page.keyboard.up(" ");
   await page.getByTestId("off-the-heat").click();
-  const simmer = await page.locator(".ck-step-scores li", { hasText: "Simmer" }).innerText();
+  const simmer = await page.locator(".ck-checklist__row--ok", { hasText: "Simmer" }).innerText();
   expect(Number(simmer.replace(/[^0-9]/g, ""))).toBeGreaterThan(80);
 
   await sizzleByHand(page);

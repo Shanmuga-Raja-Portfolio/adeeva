@@ -57,29 +57,36 @@ export function StageRail({ state, run, dispatch }: StageRailProps) {
     <ol className="ck-rail" aria-label="Steps for this dish">
       {stops(run).map((stop, index) => {
         const back = canGoBack(state, stop.stage).ok && stop.stage !== run.stage;
+        const dot = (
+          <span className="ck-rail__dot">
+            {stop.state === "done" ? <Icon name="check" size={14} /> : index + 1}
+          </span>
+        );
+        const label = (
+          <span className={stop.state === "current" ? "ck-rail__name" : "ad-visually-hidden"}>
+            {stop.label}
+          </span>
+        );
         return (
           <li
             key={stop.key}
             className={`ck-rail__stop ck-rail__stop--${stop.state}`}
             aria-current={stop.state === "current" ? "step" : undefined}
+            title={stop.label}
           >
             {back ? (
               <button
                 type="button"
-                className="ck-rail__back"
+                className="ck-rail__mark ck-rail__back"
                 onClick={() => dispatch({ type: "goToStage", stage: stop.stage })}
               >
-                <span className="ck-rail__dot">
-                  {stop.state === "done" ? <Icon name="check" size={12} /> : index + 1}
-                </span>
-                {stop.label}
+                {dot}
+                {label}
               </button>
             ) : (
-              <span className="ck-rail__label">
-                <span className="ck-rail__dot">
-                  {stop.state === "done" ? <Icon name="check" size={12} /> : index + 1}
-                </span>
-                {stop.label}
+              <span className="ck-rail__mark">
+                {dot}
+                {label}
               </span>
             )}
           </li>

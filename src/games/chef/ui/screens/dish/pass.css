@@ -4,10 +4,9 @@
 }
 
 .ck-pass__head {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
 }
 
@@ -15,27 +14,22 @@
   margin: 0;
 }
 
-.ck-pass__head .ck-pass__hint {
-  flex: 0 1 auto;
-  padding: 6px 0 6px var(--space-3);
-  border-left: 5px solid var(--ck-amber);
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
-  color: #26323a;
-  font-family: inherit;
-  font-size: 1.125rem;
-  font-weight: 700;
-  text-align: left;
+.ck-pass__head .ck-chop__hint {
+  border-left-color: #d9472b;
+  background: linear-gradient(180deg, #fff6e0, #ffe2a8);
+  color: #4a240c;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 6px 14px rgba(0, 0, 0, 0.16);
 }
 
 .ck-pass__scene {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: end;
-  min-height: 540px;
-  padding: var(--space-5) 56px var(--space-4) 200px;
+  height: clamp(420px, calc(100dvh - 186px), 660px);
+  padding: var(--space-4) var(--space-5) 26px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
@@ -52,8 +46,9 @@
 .ck-pass__shelf {
   position: relative;
   isolation: isolate;
+  grid-column: 2;
   justify-self: center;
-  width: min(380px, 100%);
+  width: min(500px, 44vw, calc((100dvh - 250px) * 1.2));
   margin-bottom: -4px;
   transition: transform 600ms var(--ease-out);
 }
@@ -103,37 +98,66 @@
 
 .ck-bell-button {
   position: relative;
+  grid-column: 3;
   display: grid;
   justify-items: center;
   gap: 4px;
-  align-self: center;
-  min-width: 170px;
-  min-height: 150px;
-  margin-top: 60px;
-  padding: var(--space-3) var(--space-5) var(--space-4);
-  border: 3px solid #fff3c8;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, #fff3d6 0%, var(--ck-amber-soft) 100%);
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
+  align-self: end;
+  justify-self: center;
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border: 2px solid rgba(255, 222, 160, 0.55);
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255, 220, 150, 0.35), transparent 70%),
+    linear-gradient(180deg, rgba(58, 36, 20, 0.82), rgba(36, 22, 12, 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 200, 0.25),
+    0 18px 36px rgba(0, 0, 0, 0.45);
   color: var(--ink);
   cursor: pointer;
+}
+
+.ck-bell-button .ck-bell {
+  filter: drop-shadow(0 0 22px rgba(255, 213, 138, 0.75)) drop-shadow(0 10px 12px rgba(0, 0, 0, 0.4));
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.ck-bell-button span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 60px;
+  padding: 0 32px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, #ffd387 0%, var(--ck-amber) 55%, #e08f22 100%);
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  color: #1f262a;
   box-shadow:
-    0 6px 0 #c4a24a,
-    0 0 36px rgba(255, 213, 138, 0.55),
-    0 18px 30px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 4px 0 var(--ck-amber-deep),
+    0 12px 24px rgba(0, 0, 0, 0.4);
   animation: ck-bell-call 1.8s ease-in-out infinite;
 }
 
-.ck-bell-button:active:not(:disabled) {
-  transform: translateY(4px);
+.ck-bell-button:hover:not(:disabled) .ck-bell {
+  transform: translateY(-4px) rotate(-4deg);
+}
+
+.ck-bell-button:active:not(:disabled) span {
+  transform: translateY(3px);
   box-shadow:
-    0 2px 0 #c4a24a,
-    0 0 24px rgba(255, 213, 138, 0.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 1px 0 var(--ck-amber-deep);
+}
+
+.ck-bell-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .ck-bell {
-  width: 120px;
+  width: 132px;
 }
 
 .ck-bell__waves {
@@ -150,15 +174,15 @@
 }
 
 .ck-pass__ticket-head {
-  fill: #1f262a;
-  font-size: 18px;
+  fill: #ffffff;
+  font-size: 20px;
   font-weight: 800;
 }
 
 .ck-pass__ticket-line {
   fill: #141b1f;
   font-family: "Segoe Print", "Comic Sans MS", cursive;
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 700;
 }
 
@@ -166,15 +190,15 @@
   0%,
   100% {
     box-shadow:
-      0 6px 0 #c4a24a,
-      0 0 26px rgba(255, 213, 138, 0.4),
-      0 18px 30px rgba(0, 0, 0, 0.35);
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      0 4px 0 var(--ck-amber-deep),
+      0 0 18px rgba(255, 213, 138, 0.35);
   }
   50% {
     box-shadow:
-      0 6px 0 #c4a24a,
-      0 0 48px rgba(255, 213, 138, 0.85),
-      0 18px 30px rgba(0, 0, 0, 0.35);
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      0 4px 0 var(--ck-amber-deep),
+      0 0 40px rgba(255, 213, 138, 0.9);
   }
 }
 
@@ -207,11 +231,17 @@
   .ck-pass__scene {
     grid-template-columns: 1fr;
     justify-items: center;
+    height: auto;
     min-height: 0;
     padding: var(--space-4);
   }
 
+  .ck-pass__shelf,
   .ck-bell-button {
-    margin-top: var(--space-3);
+    grid-column: 1;
+  }
+
+  .ck-pass__shelf {
+    width: min(420px, 100%);
   }
 }

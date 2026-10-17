@@ -62,7 +62,7 @@ export function TitleScreen({
             Back to studio
           </Button>
         </nav>
-        <section className="ck-title__hero ck-card">
+        <section className="ck-title__hero">
           <div className="ck-title__brand">
             <Wordmark tagline="Six mentors, six kitchens, one Market Hall. Cook your way to head chef." />
             <div className="ck-title__menu">

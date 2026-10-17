@@ -4,7 +4,7 @@ import { useTickLoop } from "../../../../../ui/kit/useTickLoop";
 import type { SizzleDef } from "../../../content/dish";
 import type { SizzleRecord } from "../../../core";
 import { sizzleInstruction } from "../../instructions/sizzleInstruction";
-import { HobFlame } from "../../art/HobFlame";
+
 import { useKitchenSound } from "../../sound/SoundContext";
 import { HeatDial } from "./HeatDial";
 import {
@@ -85,19 +85,8 @@ export function SizzleStation({ def, assisted, reducedMotion, onDone }: SizzleSt
             locked={sim !== null || assisted}
             onChange={setHeat}
           />
-          <p className="ck-sizzle__tip">
-            <span className="ck-sizzle__tip-ring" aria-hidden="true" />
-            The rim cooks slower. Slide pieces there.
-          </p>
-          <HobFlame level={assisted ? def.idealDots : heat} max={5} />
           {sim === null ? null : (
             <div className="ck-sizzle__status">
-              <span className="ck-sizzle__count">
-                <strong>
-                  {sim.pieces.filter((piece) => piece.off).length} of {sim.pieces.length}
-                </strong>{" "}
-                on Done
-              </span>
               <button
                 type="button"
                 className="ck-pause"

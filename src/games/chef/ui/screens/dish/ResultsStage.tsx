@@ -179,12 +179,13 @@ export function ResultsStage({ state, run, dispatch, onExit }: StageProps) {
               look={mentor.look}
               garment={chefWhites(cuisine.accent)}
               mood={lessonPassed ? "delighted" : "happy"}
-              size={104}
+              size={124}
               title={mentor.name}
               frameColour={cuisine.wall}
             />
             <blockquote className="ck-results__quote">
-              “{lessonPassed ? mentor.passLine : mentor.nearMissLine}”
+              <p>“{lessonPassed ? mentor.passLine : mentor.nearMissLine}”</p>
+              <cite>{mentor.name}</cite>
             </blockquote>
           </div>
         ) : null}

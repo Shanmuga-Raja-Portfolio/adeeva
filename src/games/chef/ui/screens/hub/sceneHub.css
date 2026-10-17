@@ -1,0 +1,299 @@
+.ck-scene-hub {
+  position: relative;
+  isolation: isolate;
+  height: clamp(520px, calc(100dvh - 96px), 900px);
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #4a3020;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 236, 200, 0.12),
+    0 22px 50px rgba(0, 0, 0, 0.45);
+}
+
+.ck-scene-hub__stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  container-type: size;
+}
+
+.ck-scene-hub__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.ck-scene-hub__spots {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: max(100cqw, calc(100cqh * var(--scene-ratio)));
+  aspect-ratio: var(--scene-ratio);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.ck-spot {
+  position: absolute;
+  padding: 0;
+  border: none;
+  border-radius: 18px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.ck-spot::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  box-shadow: 0 0 0 3px rgba(255, 211, 135, 0);
+  transition:
+    box-shadow var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.ck-spot:hover::before,
+.ck-spot:focus-visible::before {
+  background-color: rgba(255, 226, 160, 0.12);
+  box-shadow:
+    0 0 0 3px #ffd387,
+    0 0 32px rgba(255, 200, 110, 0.6);
+}
+
+.ck-spot:focus-visible {
+  outline: none;
+}
+
+.ck-spot__tag {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  display: inline-flex;
+  align-items: center;
+  min-width: 52px;
+  height: 52px;
+  padding: 0 14px;
+  border: 3px solid #fff1cf;
+  border-radius: 26px;
+  background: radial-gradient(circle at 35% 30%, #ffe3a0 0%, #f2a93b 55%, #b8701c 100%);
+  color: #3a1d0c;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  white-space: nowrap;
+  box-shadow:
+    inset 0 -3px 0 rgba(120, 60, 10, 0.4),
+    0 0 0 2px rgba(58, 29, 12, 0.35),
+    0 8px 16px rgba(20, 10, 4, 0.5);
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    padding var(--duration-fast) var(--ease-out);
+}
+
+.ck-spot__tag svg {
+  flex: none;
+  color: #4a240c;
+}
+
+.ck-spot__label {
+  max-width: 0;
+  overflow: hidden;
+  transition:
+    max-width var(--duration-base) var(--ease-out),
+    margin var(--duration-base) var(--ease-out);
+}
+
+.ck-spot:hover .ck-spot__tag,
+.ck-spot:focus-visible .ck-spot__tag {
+  transform: scale(1.06);
+}
+
+.ck-spot:hover .ck-spot__label,
+.ck-spot:focus-visible .ck-spot__label {
+  max-width: 240px;
+  margin-left: 8px;
+}
+
+.ck-spot__tag::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 rgba(255, 211, 135, 0.7);
+  animation: ck-spot-ping 2.8s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ck-spot-ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 211, 135, 0.7);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 14px rgba(255, 211, 135, 0);
+  }
+}
+
+.ck-scene-hub__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: 6px;
+}
+
+.ck-scene-hub__links .ad-button {
+  min-height: 44px;
+  font-size: 1rem;
+}
+
+.ck-scene-hub__links .ad-button--secondary:not(:disabled) {
+  border: 2px solid rgba(255, 226, 168, 0.45);
+  background: rgba(255, 250, 240, 0.08);
+  color: #fff3dc;
+  box-shadow: none;
+}
+
+.ck-scene-hub__links .ad-button--secondary:hover:not(:disabled) {
+  border-color: #ffd387;
+  background: rgba(255, 250, 240, 0.18);
+}
+
+.ck-scene-hub__links .ad-button svg {
+  color: #ffc35a;
+}
+
+.ck-scene-hub > .ck-coach {
+  position: absolute;
+  left: var(--space-4);
+  bottom: 190px;
+  max-width: min(520px, calc(100% - 32px));
+  box-shadow: 0 10px 24px rgba(29, 18, 8, 0.35);
+}
+
+.ck-scene-hub__hud {
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5);
+  border-radius: 26px;
+  background: linear-gradient(180deg, rgba(42, 30, 20, 0.88), rgba(29, 20, 13, 0.94));
+  border: 1px solid rgba(255, 222, 160, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 200, 0.18),
+    0 16px 34px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+.ck-scene-hub__today {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ck-scene-hub__today .ad-eyebrow {
+  color: var(--ck-amber);
+  font-size: 0.9375rem;
+}
+
+.ck-scene-hub__headline {
+  margin: 0;
+  color: #fffaf0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.3vw, 2rem);
+  line-height: 1.15;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.ck-scene-hub__choices {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ck-scene-hub__choices .ad-button--lg {
+  min-height: 64px;
+  padding-inline: 28px;
+  font-size: 1.25rem;
+}
+
+.ck-scene-hub__choices .ad-button--secondary:not(:disabled) {
+  border: 2px solid rgba(255, 250, 240, 0.7);
+  background: rgba(255, 250, 240, 0.1);
+  color: #fffaf0;
+  box-shadow: none;
+}
+
+.ck-scene-hub__choices .ad-button--secondary:hover:not(:disabled) {
+  background: rgba(255, 250, 240, 0.2);
+}
+
+.ck-scene-hub__choices .ad-button-reason {
+  color: #ffe2a8;
+}
+
+@keyframes ck-breathe {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.012) translateY(-1px);
+  }
+}
+
+@media (max-width: 900px) {
+  .ck-scene-hub {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    background: #2a1c12;
+  }
+
+  .ck-scene-hub__stage {
+    position: relative;
+    inset: auto;
+    flex: none;
+    aspect-ratio: var(--scene-ratio);
+  }
+
+  .ck-scene-hub__hud {
+    position: static;
+    flex-direction: column;
+    align-items: stretch;
+    margin: var(--space-3);
+  }
+
+  .ck-scene-hub__choices {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ck-scene-hub > .ck-coach {
+    position: static;
+    max-width: none;
+    margin: var(--space-3) var(--space-3) 0;
+  }
+}
+
+.ck-scene-hub__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ck-scene-hub__meta .ck-dining__facts,
+.ck-scene-hub__meta .ck-scene-hub__links {
+  margin-top: 4px;
+}

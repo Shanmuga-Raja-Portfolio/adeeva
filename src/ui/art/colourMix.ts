@@ -1,4 +1,4 @@
-function channels(hex: string): [number, number, number] {
+export function channels(hex: string): [number, number, number] {
   const clean = hex.replace("#", "");
   const full =
     clean.length === 3

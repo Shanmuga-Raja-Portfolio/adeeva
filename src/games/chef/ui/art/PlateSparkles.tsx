@@ -20,10 +20,9 @@ const MOTES = [
 
 const STEAM = [150, 200, 250] as const;
 
-function glint(r: number): string {
-  const waist = r * 0.1;
-  const tall = r * 1.45;
-  return `M0 ${-tall} Q${waist} ${-waist} ${r} 0 Q${waist} ${waist} 0 ${tall} Q${-waist} ${waist} ${-r} 0 Q${-waist} ${-waist} 0 ${-tall} Z`;
+function starPath(r: number): string {
+  const k = r * 0.07;
+  return `M0 ${-r} Q${k} ${-k} ${r} 0 Q${k} ${k} 0 ${r} Q${-k} ${k} ${-r} 0 Q${-k} ${-k} 0 ${-r} Z`;
 }
 
 export function PlateSparkles({ className }: { readonly className?: string | undefined }) {
@@ -50,16 +49,23 @@ export function PlateSparkles({ className }: { readonly className?: string | und
           style={{ animationDelay: `${index * 0.5}s` }}
         />
       ))}
-      {MOTES.map((mote) => (
-        <circle key={`${mote.x}-${mote.y}`} cx={mote.x} cy={mote.y} r={mote.r} fill="#fff1c4" opacity={0.7} />
+      {MOTES.map((mote, index) => (
+        <circle
+          key={`${mote.x}-${mote.y}`}
+          cx={mote.x}
+          cy={mote.y}
+          r={mote.r}
+          fill={index % 2 === 0 ? "#ffe39a" : "#fff6dc"}
+          opacity={0.55 + (index % 3) * 0.12}
+        />
       ))}
       {GLINTS.map((spark) => (
         <g key={`${spark.x}-${spark.y}`} transform={`translate(${spark.x} ${spark.y})`}>
           <g className="ck-glory__spark" style={{ animationDelay: `${spark.delay}s` }}>
-            <circle r={spark.r * 1.1} fill={`url(#${id}-halo)`} />
-            <path d={glint(spark.r)} fill="#fffbe8" />
-            <path d={glint(spark.r * 0.55)} fill="#ffffff" transform="rotate(45)" opacity={0.8} />
-            <circle r={spark.r * 0.14} fill="#ffffff" />
+            <circle r={spark.r * 1.3} fill={`url(#${id}-halo)`} />
+            <path d={starPath(spark.r * 1.5)} fill="#fff4cc" />
+            <path d={starPath(spark.r * 0.55)} fill="#ffffff" transform="rotate(45)" opacity={0.7} />
+            <circle r={spark.r * 0.24} fill="#ffffff" />
           </g>
         </g>
       ))}

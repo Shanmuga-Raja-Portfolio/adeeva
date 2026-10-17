@@ -212,6 +212,16 @@ export function ChopBoard({
                 <stop offset="0.55" stopColor="#d6a462" />
                 <stop offset="1" stopColor="#b47a3c" />
               </linearGradient>
+              <filter id={`${woodId}-grain`} x="0" y="0" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.3" numOctaves={3} seed={11} />
+                <feColorMatrix values="0 0 0 0 0.4  0 0 0 0 0.24  0 0 0 0 0.1  0 0 0 0.5 0" />
+                <feComposite in2="SourceGraphic" operator="in" />
+              </filter>
+              <radialGradient id={`${woodId}-light`} cx="0.55" cy="0.25" r="0.8">
+                <stop offset="0" stopColor="#fff3d6" stopOpacity={0.45} />
+                <stop offset="0.6" stopColor="#fff3d6" stopOpacity={0} />
+                <stop offset="1" stopColor="#5a3412" stopOpacity={0.25} />
+              </radialGradient>
             </defs>
             <rect x={20} y={38} width={568} height={256} rx={30} fill="#7a4a22" opacity={0.9} />
             <rect
@@ -224,6 +234,18 @@ export function ChopBoard({
               stroke="#8a5a2a"
               strokeWidth={3}
             />
+            <rect
+              x={14}
+              y={26}
+              width={572}
+              height={258}
+              rx={30}
+              fill="#000000"
+              filter={`url(#${woodId}-grain)`}
+              opacity={0.55}
+            />
+            <rect x={14} y={26} width={572} height={258} rx={30} fill={`url(#${woodId}-light)`} />
+
             {[156, 300, 444].map((x) => (
               <g key={x}>
                 <path d={`M${x} 30 V280`} stroke="#8a5a2a" strokeWidth={2.4} opacity={0.4} />
@@ -298,26 +320,34 @@ export function ChopBoard({
               />
             </g>
             <ellipse cx={KNIFE_X} cy={236} rx={78} ry={14} fill="#5a3412" opacity={0.2} />
-            <g transform={`translate(${KNIFE_X} 160) rotate(${turned ? 90 : 0})`} className="ck-chop__food">
-              <g transform="translate(-80 -80)">
-                <IngredientIcon ingredientId={item.ingredient} size={160} />
-              </g>
-            </g>
+            <rect x={KNIFE_X - 14} y={44} width={28} height={228} rx={14} fill="#ffd387" opacity={0.32} />
+            <rect x={KNIFE_X - 4} y={44} width={8} height={228} rx={4} fill="#f2a93b" opacity={0.55} />
             {timeline.marks.map((mark, index) => {
               const x = KNIFE_X + (mark - shown) * speed;
               if (offsets[index] !== null || x < 250 || x > 570) return null;
               const next = mark === nextMark;
               const tone = next ? "#d9472b" : "#8a6a4a";
               return (
-                <g key={index} opacity={next ? 1 : 0.5}>
-                  <path d={`M${x} 70 V250`} stroke="#fffaf0" strokeWidth={next ? 10 : 5} opacity={0.75} />
-                  <path
-                    d={`M${x} 70 V250`}
-                    stroke={tone}
-                    strokeWidth={next ? 5 : 3}
-                    strokeDasharray={next ? "12 7" : "4 8"}
-                    strokeLinecap="round"
-                  />
+                <g key={index} opacity={next ? 1 : 0.6}>
+                  {next ? (
+                    <>
+                      <path d={`M${x} 70 V250`} stroke="#fffaf0" strokeWidth={8} opacity={0.45} />
+                      <path
+                        d={`M${x} 70 V250`}
+                        stroke={tone}
+                        strokeWidth={4}
+                        strokeDasharray="10 9"
+                        strokeLinecap="round"
+                      />
+                    </>
+                  ) : (
+                    <path
+                      d={`M${x} 72 V88 M${x} 232 V248`}
+                      stroke={tone}
+                      strokeWidth={4}
+                      strokeLinecap="round"
+                    />
+                  )}
                   <path
                     d={`M${x - 9} 56 H${x + 9} L${x} 70 Z`}
                     fill={tone}
@@ -355,8 +385,12 @@ export function ChopBoard({
                 opacity={offsets[1] === null ? 0.9 : 0.4}
               />
             ) : null}
-            <path d={`M${KNIFE_X} 40 V276`} stroke="#ffd387" strokeWidth={9} opacity={0.35} />
-            <path d={`M${KNIFE_X} 40 V276`} stroke="#f2a93b" strokeWidth={4} strokeDasharray="6 6" />
+            <g transform={`translate(${KNIFE_X} 160) rotate(${turned ? 90 : 0})`} className="ck-chop__food">
+              <g transform="translate(-80 -80)">
+                <IngredientIcon ingredientId={item.ingredient} size={160} />
+              </g>
+            </g>
+
             <g transform={`translate(${KNIFE_X} 0)`}>
               <g
                 key={flash.id}

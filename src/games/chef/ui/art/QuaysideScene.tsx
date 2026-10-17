@@ -1,266 +1,379 @@
+import type { AvatarLook } from "../../../../engine/avatar";
 import { useSvgId } from "../../../../ui/art/useSvgId";
-import type { SceneIds } from "./kitchenFixtures";
+import type { DishId } from "../../content/dish";
+import { DiningTable, type TableMood } from "./DiningTable";
+import { HARBOUR, KITCHEN_HATCH, MENU_BOARD, ROTA_BOARD, SPEAKER_SEAT } from "./diningLayout";
+import { HarbourWindow, type HarbourSky } from "./HarbourWindow";
+import { KitchenPass } from "./KitchenPass";
+import { MenuChalkboard } from "./MenuChalkboard";
+import { RotaBoard } from "./RotaBoard";
+import { DINER_STYLES } from "./dinerWear";
+import { SceneFigure } from "./SceneFigure";
+
+export type DiningMood = "planning" | "ready" | "open" | "closed";
 
 export interface QuaysideSceneProps {
-  readonly ids: SceneIds;
-  readonly sign: string;
+  readonly mood: DiningMood;
   readonly menu: readonly string[];
+  readonly dishes: readonly DishId[];
+  readonly chef: AvatarLook;
+  readonly staff: readonly AvatarLook[];
+  readonly guests: readonly AvatarLook[];
+  readonly note: string | null;
+  readonly className?: string | undefined;
 }
 
-interface TableSpot {
-  readonly x: number;
-  readonly y: number;
-  readonly scale: number;
-}
+const FLOOR_TOP = 344;
+const WAITER = { x: 878, feet: 436, scale: 0.32 } as const;
 
-const TABLES: readonly TableSpot[] = [
-  { x: 200, y: 456, scale: 0.92 },
-  { x: 560, y: 480, scale: 1 },
-  { x: 1010, y: 452, scale: 0.86 },
-];
+const TABLES = [
+  { x: 205, y: 420, scale: 0.94 },
+  { x: 584, y: 432, scale: 1.04 },
+  { x: 1028, y: 420, scale: 0.94 },
+] as const;
 
-const VANISH_X = 600;
+const TABLE_POSES = [
+  ["talk", "cheer"],
+  ["point", "talk"],
+  ["wave", "talk"],
+] as const;
 
-const FLOOR_TOP = 384;
+const TABLE_FACES = [
+  ["happy", "delighted"],
+  ["happy", "delighted"],
+  ["delighted", "thinking"],
+] as const;
+
+const PENDANT_SHIFT = [72, 0, 0] as const;
+
+const TABLE_SIZES = [
+  [1.02, 0.8],
+  [1, 1.04],
+  [0.84, 1],
+] as const;
+
+const TABLE_MOODS: Readonly<Record<DiningMood, readonly TableMood[]>> = {
+  planning: ["set", "set", "set"],
+  ready: ["set", "set", "set"],
+  open: ["guests", "guests", "guests"],
+  closed: ["guests", "guests", "guests"],
+};
+
+const SKY: Readonly<Record<DiningMood, HarbourSky>> = {
+  planning: "day",
+  ready: "dusk",
+  open: "night",
+  closed: "night",
+};
+
+const SIGN: Readonly<Record<DiningMood, string>> = {
+  planning: "Closed today",
+  ready: "Opening soon",
+  open: "Open",
+  closed: "Thank you!",
+};
 
 function plankEnd(x: number): number {
-  return VANISH_X + (x - VANISH_X) * 0.42;
+  return 600 + (x - 600) * 0.42;
 }
 
-function menuSize(name: string): number {
-  return Math.min(25, Math.floor(196 / Math.max(1, name.length * 0.5)));
+function Plant({ x, y, size }: { readonly x: number; readonly y: number; readonly size: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${size})`}>
+      <ellipse cx={0} cy={4} rx={44} ry={10} fill="#1a0c06" opacity={0.45} />
+      {[-46, -24, -6, 12, 30, 50].map((turn, index) => (
+        <path
+          key={turn}
+          d={`M0 -40 q${turn * 0.6} -50 ${turn} -${92 + (index % 3) * 22}`}
+          stroke={index % 2 === 0 ? "#3f7a34" : "#5a9a44"}
+          strokeWidth={13}
+          strokeLinecap="round"
+          fill="none"
+        />
+      ))}
+      <path d="M-4 -110 q10 -14 22 -8" stroke="#8cc46a" strokeWidth={5} strokeLinecap="round" fill="none" />
+      <path d="M-30 -44 H30 L22 4 H-22 Z" fill="#b8562e" />
+      <path d="M-30 -44 H-8 L-10 4 H-22 Z" fill="#ffffff" opacity={0.12} />
+      <path d="M-32 -48 H32 V-38 H-32 Z" fill="#d06a3a" />
+    </g>
+  );
 }
 
-function Chair({ x, y, flip }: { readonly x: number; readonly y: number; readonly flip: boolean }) {
-  const dir = flip ? -1 : 1;
+function Pendant({
+  x,
+  y,
+  lit,
+  cone,
+  blur,
+}: {
+  readonly x: number;
+  readonly y: number;
+  readonly lit: boolean;
+  readonly cone: string;
+  readonly blur: string;
+}) {
   return (
     <g>
+      <path d={`M${x} 0 V${y - 26}`} stroke="#1d2528" strokeWidth={2.5} />
       <path
-        d={`M${x} ${y} v-74 q0 -10 ${dir * 10} -10 h${dir * 34} q${dir * 10} 0 ${dir * 10} 10 v74`}
+        d={`M${x - 22} ${y} L${x - 110} ${y + 400} H${x + 110} L${x + 22} ${y} Z`}
+        fill={`url(#${cone})`}
+        filter={`url(#${blur})`}
+        opacity={lit ? 0.26 : 0.08}
+      />
+      <path d={`M${x - 32} ${y} Q${x} ${y - 42} ${x + 32} ${y} Z`} fill="#c47f1a" />
+      <path
+        d={`M${x - 14} ${y - 26} Q${x - 26} ${y - 16} ${x - 28} ${y - 4}`}
+        stroke="#ffd387"
+        strokeWidth={3}
+        opacity={0.6}
         fill="none"
-        stroke="#4a2516"
-        strokeWidth={7}
-        strokeLinecap="round"
       />
       <path
-        d={`M${x + dir * 6} ${y - 52} h${dir * 42} M${x + dir * 6} ${y - 30} h${dir * 42}`}
-        stroke="#6a3a22"
-        strokeWidth={5}
+        d={`M${x - 32} ${y} Q${x} ${y - 42} ${x + 32} ${y}`}
+        stroke="#8a5410"
+        strokeWidth={2}
+        fill="none"
       />
+      <ellipse cx={x} cy={y + 1} rx={26} ry={5} fill={lit ? "#fff0c4" : "#c9a77a"} />
+      {lit ? <ellipse cx={x} cy={y + 6} rx={46} ry={16} fill="#ffe2a0" opacity={0.35} /> : null}
     </g>
   );
 }
 
-function Table({ spot, shadow }: { readonly spot: TableSpot; readonly shadow: string }) {
-  const { x, y, scale } = spot;
-  return (
-    <g transform={`translate(${x} ${y}) scale(${scale})`}>
-      <ellipse cx={0} cy={108} rx={150} ry={20} fill={`url(#${shadow})`} />
-      <Chair x={-112} y={70} flip={false} />
-      <Chair x={112} y={70} flip />
-      <path
-        d="M-70 40 L-74 104 M70 40 L74 104 M0 44 V102"
-        stroke="#3a1d10"
-        strokeWidth={9}
-        strokeLinecap="round"
-      />
-      <ellipse cx={-74} cy={106} rx={12} ry={3.5} fill="#1a0c06" opacity={0.6} />
-      <ellipse cx={74} cy={106} rx={12} ry={3.5} fill="#1a0c06" opacity={0.6} />
-      <path d="M-104 0 H104 L96 50 Q0 62 -96 50 Z" fill="#efe6d4" />
-      <path d="M-96 50 Q0 62 96 50" fill="none" stroke="#d9cdb4" strokeWidth={3} />
-      <path d="M-60 6 L-66 50 M-20 8 L-22 56 M20 8 L22 56 M60 6 L66 50" stroke="#e1d6c0" strokeWidth={3} />
-      <ellipse cx={0} cy={0} rx={104} ry={20} fill="#fffdf6" />
-      <ellipse cx={0} cy={-2} rx={70} ry={10} fill="#ffeec8" opacity={0.6} />
-      <ellipse cx={-52} cy={2} rx={22} ry={6} fill="#ffffff" stroke="#aeb9bf" strokeWidth={2} />
-      <ellipse cx={52} cy={2} rx={22} ry={6} fill="#ffffff" stroke="#aeb9bf" strokeWidth={2} />
-      <path d="M-24 -2 h-6 M30 -2 h6" stroke="#8a949a" strokeWidth={2.5} strokeLinecap="round" />
-      <rect x={-4} y={-30} width={8} height={24} rx={3} fill="#f3f0e8" />
-      <ellipse cx={0} cy={-36} rx={14} ry={18} fill="#ffd387" opacity={0.25} />
-      <ellipse cx={0} cy={-34} rx={5} ry={8} fill="#ffd387" className="ck-flicker" />
-    </g>
-  );
-}
-
-export function QuaysideScene({ ids, sign, menu }: QuaysideSceneProps) {
-  const base = useSvgId("ck-quay");
-  const dusk = `${base}-dusk`;
-  const wall = `${base}-wall`;
-  const floor = `${base}-floor`;
-  const pool = `${base}-pool`;
-  const shadow = `${base}-shadow`;
-  const glass = `${base}-glass`;
-  const shown = menu.slice(0, 3);
+function StringLights({ lit }: { readonly lit: boolean }) {
+  const bulbs = Array.from({ length: 25 }, (_, index) => index * 50);
+  const sag = (x: number) => 46 + Math.abs(Math.sin((x / 400) * Math.PI)) * 14;
   return (
     <g>
+      <path
+        d={bulbs.map((x, index) => `${index === 0 ? "M" : "L"}${x} ${sag(x)}`).join(" ")}
+        stroke="#2a1408"
+        strokeWidth={2}
+        fill="none"
+      />
+      {bulbs.map((x) => (
+        <g key={x}>
+          {lit ? <circle cx={x} cy={sag(x) + 8} r={13} fill="#ffd387" opacity={0.22} /> : null}
+          <ellipse cx={x} cy={sag(x) + 7} rx={4} ry={6} fill={lit ? "#ffe7a8" : "#d8c49c"} />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+function Sconce({ x, y, lit }: { readonly x: number; readonly y: number; readonly lit: boolean }) {
+  return (
+    <g>
+      {lit ? <ellipse cx={x} cy={y - 10} rx={46} ry={60} fill="#ffd387" opacity={0.16} /> : null}
+      <path d={`M${x - 10} ${y} h20 l-4 12 h-12 Z`} fill="#8a5410" />
+      <path d={`M${x - 14} ${y} Q${x} ${y - 30} ${x + 14} ${y} Z`} fill={lit ? "#ffe7b0" : "#e4cfa6"} />
+    </g>
+  );
+}
+
+export function QuaysideScene({
+  mood,
+  menu,
+  dishes,
+  chef,
+  staff,
+  guests,
+  note,
+  className,
+}: QuaysideSceneProps) {
+  const id = useSvgId("ck-quay");
+  const lit = mood !== "planning";
+  const moods = TABLE_MOODS[mood];
+  const helper =
+    staff.find((look) => look.skinTone !== chef.skinTone && look.hairStyle !== chef.hairStyle) ?? staff[0];
+  const speakerTable = TABLES[Math.floor(SPEAKER_SEAT / 2)] ?? TABLES[1];
+  const speakerX = speakerTable.x + (SPEAKER_SEAT % 2 === 1 ? 94 : -94) * speakerTable.scale;
+  return (
+    <svg
+      viewBox="0 0 1200 610"
+      preserveAspectRatio="xMidYMax slice"
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+    >
       <defs>
-        <linearGradient id={dusk} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#24345e" />
-          <stop offset="0.6" stopColor="#c86b5a" />
-          <stop offset="1" stopColor="#f2a93b" />
-        </linearGradient>
-        <linearGradient id={glass} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ffffff" stopOpacity={0.16} />
-          <stop offset="0.4" stopColor="#ffffff" stopOpacity={0} />
-        </linearGradient>
-        <radialGradient id={wall} cx="0.5" cy="0.3" r="0.8">
-          <stop offset="0" stopColor="#94573b" />
-          <stop offset="0.6" stopColor="#7b4430" />
-          <stop offset="1" stopColor="#5a2f22" />
+        <radialGradient id={`${id}-wall`} cx="0.5" cy="0.25" r="0.9">
+          <stop offset="0" stopColor="#e3a46a" />
+          <stop offset="0.5" stopColor="#b8714a" />
+          <stop offset="1" stopColor="#7a412c" />
         </radialGradient>
-        <linearGradient id={floor} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#6a3c22" />
-          <stop offset="1" stopColor="#9a6236" />
+        <linearGradient id={`${id}-floor`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#5e3420" />
+          <stop offset="0.45" stopColor="#94603a" />
+          <stop offset="1" stopColor="#bd8450" />
         </linearGradient>
-        <radialGradient id={pool} cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#ffd88a" stopOpacity={0.5} />
+        <radialGradient id={`${id}-pool`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#ffd88a" stopOpacity={0.6} />
           <stop offset="1" stopColor="#ffd88a" stopOpacity={0} />
         </radialGradient>
-        <radialGradient id={shadow} cx="0.5" cy="0.5" r="0.5">
+        <radialGradient id={`${id}-shadow`} cx="0.5" cy="0.5" r="0.5">
           <stop offset="0" stopColor="#1a0c06" stopOpacity={0.6} />
           <stop offset="0.6" stopColor="#1a0c06" stopOpacity={0.28} />
           <stop offset="1" stopColor="#1a0c06" stopOpacity={0} />
         </radialGradient>
+        <linearGradient id={`${id}-cone`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffd88a" stopOpacity={0.7} />
+          <stop offset="0.6" stopColor="#f2a93b" stopOpacity={0.12} />
+          <stop offset="1" stopColor="#f2a93b" stopOpacity={0} />
+        </linearGradient>
+        <radialGradient id={`${id}-vignette`} cx="0.5" cy="0.42" r="0.78">
+          <stop offset="0.66" stopColor="#1a0c06" stopOpacity={0} />
+          <stop offset="1" stopColor="#1a0c06" stopOpacity={0.4} />
+        </radialGradient>
+        <linearGradient id={`${id}-wainscot`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#7a4630" />
+          <stop offset="1" stopColor="#4e2a1a" />
+        </linearGradient>
+        <filter id={`${id}-soft`} x="-30%" y="-10%" width="160%" height="120%">
+          <feGaussianBlur stdDeviation="14" />
+        </filter>
+        <filter id={`${id}-grain`} x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={2} seed={3} />
+          <feColorMatrix values="0 0 0 0 0.3  0 0 0 0 0.16  0 0 0 0 0.08  0 0 0 0.35 0" />
+          <feComposite in2="SourceGraphic" operator="in" />
+        </filter>
+        <filter id={`${id}-plaster`} x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.012 0.03" numOctaves={3} seed={9} />
+          <feColorMatrix values="0 0 0 0 0.98  0 0 0 0 0.86  0 0 0 0 0.66  0 0 0 0.22 0" />
+          <feComposite in2="SourceGraphic" operator="in" />
+        </filter>
       </defs>
-      <rect y={-150} width={1200} height={150} fill="#4a2618" />
-      {[-120, -80, -40].map((y) => (
-        <path key={y} d={`M0 ${y} H1200`} stroke="#3a1d10" strokeWidth={4} opacity={0.6} />
+      <rect width={1200} height={FLOOR_TOP} fill={`url(#${id}-wall)`} />
+      <rect width={1200} height={FLOOR_TOP} fill="#ffffff" filter={`url(#${id}-plaster)`} />
+      <rect width={1200} height={FLOOR_TOP} fill="#000000" filter={`url(#${id}-grain)`} opacity={0.55} />
+      <rect width={1200} height={40} fill="#3a1d10" />
+      {[150, 450, 750, 1050].map((x) => (
+        <rect key={x} x={x - 12} y={0} width={24} height={46} fill="#2a140a" />
       ))}
-      <rect width={1200} height={FLOOR_TOP} fill={`url(#${wall})`} />
-      <rect y={-14} width={1200} height={16} fill="#3a1d10" />
+      <rect y={40} width={1200} height={6} fill="#2a140a" opacity={0.6} />
+      <rect y={262} width={1200} height={FLOOR_TOP - 262} fill={`url(#${id}-wainscot)`} />
       {Array.from({ length: 16 }, (_, index) => (
         <g key={`panel-${index}`}>
-          <rect x={index * 80 + 6} y={262} width={68} height={112} rx={4} fill="#6a3a28" />
-          <path d={`M${index * 80 + 8} 264 h64`} stroke="#a0603f" strokeWidth={2} opacity={0.6} />
+          <rect x={index * 80 + 8} y={274} width={64} height={60} rx={4} fill="#5e3220" />
+          <path d={`M${index * 80 + 10} 276 h60`} stroke="#c07a50" strokeWidth={2} opacity={0.5} />
         </g>
       ))}
-      <rect y={252} width={1200} height={10} fill="#4a2516" />
-      <rect y={374} width={1200} height={14} fill="#3a1d10" />
-      <g transform="translate(90 30) scale(0.85)">
-        <rect x={300} y={40} width={600} height={210} rx={14} fill={`url(#${dusk})`} />
-        <path d="M307 210 Q450 196 600 206 T893 202 V243 H307 Z" fill="#1d3550" />
-        {[380, 520, 700, 820].map((x, index) => (
-          <g key={`boat-${x}`}>
-            <path d={`M${x - 30} 210 h60 l-10 14 h-40 Z`} fill="#f3f0e8" />
-            <path d={`M${x} 210 V${170 - index * 6}`} stroke="#f3f0e8" strokeWidth={2} />
-            <path d={`M${x} ${172 - index * 6} L${x + 22} 204 H${x} Z`} fill="#fbe6c2" />
-            <circle cx={x + 26} cy={220} r={3} fill="#ffd387" />
-          </g>
-        ))}
-        {[340, 460, 740, 860].map((x) => (
-          <circle
-            key={`star-${x}`}
-            cx={x}
-            cy={140 + (x % 3) * 10}
-            r={2}
-            fill="#ffe2a8"
-            className="ck-twinkle"
-          />
-        ))}
-        <rect x={300} y={40} width={600} height={210} rx={14} fill={`url(#${glass})`} />
-        <path d="M600 150 V250 M300 150 H900" stroke="#3a2016" strokeWidth={10} />
-        <rect x={300} y={40} width={600} height={210} rx={14} fill="none" stroke="#3a2016" strokeWidth={16} />
-        <rect x={286} y={246} width={628} height={16} rx={4} fill="#4a2516" />
-        <text
-          x={600}
-          y={112}
-          textAnchor="middle"
-          fontSize={46}
-          fill="#ffd387"
-          stroke="#2a1a3a"
-          strokeWidth={6}
-          paintOrder="stroke"
-          className="ck-scene-label"
-        >
-          {sign}
-        </text>
-        <path d="M430 128 H770" stroke="#ffd387" strokeWidth={3} strokeLinecap="round" opacity={0.75} />
-      </g>
-      <g transform="translate(118 64)">
-        <rect x={6} y={8} width={222} height={196} rx={8} fill="#1a0c06" opacity={0.35} />
-        <rect width={222} height={196} rx={8} fill="#2e3a40" stroke="#a3651f" strokeWidth={8} />
-        <rect x={8} y={8} width={206} height={180} rx={4} fill="#ffffff" opacity={0.05} />
-        <text x={111} y={42} textAnchor="middle" fontSize={30} fill="#ffd387" className="ck-scene-label">
-          Tonight
-        </text>
-        <path d="M46 56 H176" stroke="#ffd387" strokeWidth={2.5} opacity={0.7} strokeDasharray="6 5" />
-        {shown.map((name, index) => (
-          <text
-            key={name}
-            x={111}
-            y={92 + index * 32}
-            textAnchor="middle"
-            fontSize={menuSize(name)}
-            fill="#fffaf0"
-            className="ck-scene-label"
-          >
-            {name}
-          </text>
-        ))}
-        {menu.length > shown.length ? (
-          <text x={111} y={182} textAnchor="middle" fontSize={20} fill="#ffe2a8" className="ck-scene-label">
-            + {menu.length - shown.length} more
-          </text>
-        ) : null}
-      </g>
-      <g transform="translate(872 70)">
-        <rect width={196} height={176} rx={6} fill="#3a2016" />
-        <rect x={10} y={10} width={176} height={156} rx={4} fill="#f3e6cf" />
-        {[0, 1, 2].map((row) => (
-          <path key={`shelf-${row}`} d={`M10 ${58 + row * 48} H186`} stroke="#a3651f" strokeWidth={6} />
-        ))}
-        {[30, 62, 98, 134, 164].map((x, index) => (
-          <g key={`bowl-${x}`}>
-            <path
-              d={`M${x - 13} ${44 + (index % 3) * 48} q13 14 26 0 Z`}
-              fill={["#d9472b", "#4f8a3c", "#f2a93b"][index % 3]}
-            />
-            <ellipse cx={x} cy={44 + (index % 3) * 48} rx={13} ry={3} fill="#fffaf0" opacity={0.7} />
-          </g>
-        ))}
-      </g>
-      <rect y={FLOOR_TOP} width={1200} height={600 - FLOOR_TOP} fill={`url(#${floor})`} />
-      <rect y={FLOOR_TOP} width={1200} height={600 - FLOOR_TOP} fill={`url(#${ids.floor})`} opacity={0.25} />
+      <rect y={256} width={1200} height={10} fill="#4a2516" />
+      <rect y={256} width={1200} height={3} fill="#c07a50" opacity={0.5} />
+      <Sconce x={896} y={250} lit={lit} />
+      <MenuChalkboard x={MENU_BOARD.x} y={MENU_BOARD.y} width={MENU_BOARD.width} menu={menu} lit={lit} />
+      <HarbourWindow
+        {...HARBOUR}
+        sky={SKY[mood]}
+        sign={SIGN[mood]}
+        open={mood === "open"}
+        waiting={mood === "ready" ? guests.slice(2, 5) : []}
+      />
+      <RotaBoard {...ROTA_BOARD} staff={staff} />
+      <KitchenPass {...KITCHEN_HATCH} chef={chef} dishes={dishes} bright={lit} />
+      <StringLights lit={lit} />
+      <rect y={FLOOR_TOP - 6} width={1200} height={10} fill="#3a1d10" />
+      <rect y={FLOOR_TOP} width={1200} height={610 - FLOOR_TOP} fill={`url(#${id}-floor)`} />
       {Array.from({ length: 19 }, (_, index) => {
         const x = -480 + index * 120;
         return (
           <path
             key={`plank-${index}`}
-            d={`M${x} 600 L${plankEnd(x)} ${FLOOR_TOP}`}
-            stroke="#4a2516"
+            d={`M${x} 610 L${plankEnd(x)} ${FLOOR_TOP}`}
+            stroke="#3a1d10"
             strokeWidth={2.5}
             opacity={0.45}
           />
         );
       })}
-      {[404, 432, 470, 524].map((y) => (
-        <path key={`seam-${y}`} d={`M0 ${y} H1200`} stroke="#4a2516" strokeWidth={2} opacity={0.25} />
+      {[356, 378, 408, 450, 506, 572].map((y) => (
+        <path key={`seam-${y}`} d={`M0 ${y} H1200`} stroke="#3a1d10" strokeWidth={2} opacity={0.22} />
       ))}
-      <rect y={FLOOR_TOP} width={1200} height={30} fill="#1a0c06" opacity={0.25} />
+      <rect
+        y={FLOOR_TOP}
+        width={1200}
+        height={610 - FLOOR_TOP}
+        fill="#000000"
+        filter={`url(#${id}-grain)`}
+        opacity={0.35}
+      />
+      <rect y={FLOOR_TOP} width={1200} height={26} fill="#1a0c06" opacity={0.3} />
+      {TABLES.map((table) => (
+        <ellipse
+          key={`glow-${table.x}`}
+          cx={table.x}
+          cy={table.y - 120}
+          rx={220 * table.scale}
+          ry={150 * table.scale}
+          fill={`url(#${id}-pool)`}
+          opacity={lit ? 0.55 : 0.2}
+        />
+      ))}
+      {note !== null && (mood === "closed" || mood === "open") ? (
+        <ellipse
+          cx={speakerX}
+          cy={speakerTable.y - 86}
+          rx={92}
+          ry={110}
+          fill={`url(#${id}-pool)`}
+          opacity={0.9}
+        />
+      ) : null}
+      <Plant x={372} y={350} size={0.9} />
+      <Plant x={1186} y={352} size={1} />
       {TABLES.map((table) => (
         <ellipse
           key={`pool-${table.x}`}
           cx={table.x}
-          cy={table.y + 70}
-          rx={230 * table.scale}
-          ry={60 * table.scale}
-          fill={`url(#${pool})`}
+          cy={table.y + 64}
+          rx={260 * table.scale}
+          ry={74 * table.scale}
+          fill={`url(#${id}-pool)`}
+          opacity={lit ? 1 : 0.4}
         />
       ))}
-      {TABLES.map(({ x }) => (
-        <g key={`lamp-${x}`}>
-          <path d={`M${x} -150 V28`} stroke="#1d2528" strokeWidth={3} />
-          <path d={`M${x - 28} 52 Q${x} 14 ${x + 28} 52 Z`} fill="#c47f1a" />
-          <ellipse cx={x} cy={53} rx={22} ry={6} fill="#ffe2a8" />
-          <path
-            d={`M${x - 22} 55 L${x - 140} 452 H${x + 140} L${x + 22} 55 Z`}
-            fill={`url(#${ids.lamp})`}
-            opacity={0.38}
-          />
-        </g>
+      {TABLES.map((table, index) => (
+        <Pendant
+          key={`lamp-${table.x}`}
+          x={table.x + (PENDANT_SHIFT[index] ?? 0)}
+          y={70}
+          lit={lit}
+          cone={`${id}-cone`}
+          blur={`${id}-soft`}
+        />
       ))}
-      {TABLES.map((table) => (
-        <Table key={`table-${table.x}`} spot={table} shadow={shadow} />
+      {helper === undefined ? null : (
+        <SceneFigure
+          x={WAITER.x}
+          feet={WAITER.feet}
+          scale={WAITER.scale}
+          facing={-1}
+          look={helper}
+          pose={mood === "closed" ? "wave" : "present"}
+          lean={2}
+          mood="happy"
+          className="ck-dining__staff"
+        />
+      )}
+      {TABLES.map((table, index) => (
+        <DiningTable
+          key={`table-${table.x}`}
+          x={table.x}
+          y={table.y}
+          scale={table.scale}
+          shadow={`${id}-shadow`}
+          mood={moods[index] ?? "set"}
+          guests={guests.slice(index * 2, index * 2 + 2)}
+          poses={TABLE_POSES[index] ?? ["talk", "talk"]}
+          sizes={TABLE_SIZES[index] ?? [1, 1]}
+          faces={TABLE_FACES[index] ?? ["happy", "happy"]}
+          styles={[0, 1].flatMap((seat) => DINER_STYLES[(index * 2 + seat) % DINER_STYLES.length] ?? [])}
+          dishes={[0, 1].flatMap((seat) => dishes[(index * 2 + seat + 1) % Math.max(1, dishes.length)] ?? [])}
+          lit={lit && moods[index] !== "stacked"}
+        />
       ))}
-    </g>
+      <rect width={1200} height={610} fill={`url(#${id}-vignette)`} />
+    </svg>
   );
 }

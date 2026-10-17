@@ -30,9 +30,15 @@ export interface BoardPanelProps {
   readonly onTakeTest: () => void;
   readonly onNextTestDish: (event: ClickLike) => void;
   readonly onOpenService: () => void;
+  readonly inDrawer?: boolean;
 }
 
-function LessonCard({ state, onStartLesson, onDeclineLesson }: BoardPanelProps) {
+function testId(props: BoardPanelProps, id: string): string | undefined {
+  return props.inDrawer === true ? undefined : id;
+}
+
+function LessonCard(props: BoardPanelProps) {
+  const { state, onStartLesson, onDeclineLesson } = props;
   const lesson = state.board.lesson;
   if (lesson === null) return null;
   const mentor = mentorFor(lesson.cuisine);
@@ -85,7 +91,7 @@ function LessonCard({ state, onStartLesson, onDeclineLesson }: BoardPanelProps) 
           onClick={onStartLesson}
           disabledReason={issue ?? undefined}
           showReason
-          data-testid="start-lesson"
+          data-testid={testId(props, "start-lesson")}
         >
           Start the lesson
         </Button>
@@ -140,7 +146,8 @@ function ShiftCards({ state, onPickShift }: BoardPanelProps) {
   );
 }
 
-function TestCard({ state, onTakeTest }: BoardPanelProps) {
+function TestCard(props: BoardPanelProps) {
+  const { state, onTakeTest } = props;
   const test = testFor(state.rung);
   if (test === null) return null;
   const def = testById(test);
@@ -163,7 +170,13 @@ function TestCard({ state, onTakeTest }: BoardPanelProps) {
         </ul>
       )}
       {goals.length === 0 ? (
-        <Button icon="star" onClick={onTakeTest} disabledReason={issue} showReason data-testid="take-test">
+        <Button
+          icon="star"
+          onClick={onTakeTest}
+          disabledReason={issue}
+          showReason
+          data-testid={testId(props, "take-test")}
+        >
           Take the {def.name}
         </Button>
       ) : null}
@@ -171,7 +184,8 @@ function TestCard({ state, onTakeTest }: BoardPanelProps) {
   );
 }
 
-function TestDayCard({ state, onNextTestDish }: BoardPanelProps) {
+function TestDayCard(props: BoardPanelProps) {
+  const { state, onNextTestDish } = props;
   const day = state.testDay;
   if (day === null) return null;
   const issue = nextTestDishIssue(state);
@@ -195,7 +209,7 @@ function TestDayCard({ state, onNextTestDish }: BoardPanelProps) {
           icon="sparkle"
           onClick={onNextTestDish}
           disabledReason={issue ?? undefined}
-          data-testid="next-test-dish"
+          data-testid={testId(props, "next-test-dish")}
         >
           Cook the {dishById(next).name}
         </Button>
@@ -211,7 +225,7 @@ export function BoardPanel(props: BoardPanelProps) {
   return (
     <section className="ck-board" aria-labelledby="ck-board-title">
       <header className="ck-board__header">
-        <h2 id="ck-board-title" className="ck-chalk">
+        <h2 id="ck-board-title" className={props.inDrawer === true ? "ad-visually-hidden" : "ck-chalk"}>
           {title}
         </h2>
         <span className="ck-board__note">

@@ -1,0 +1,122 @@
+.ck-school__mentor,
+.ck-school__player,
+.ck-school__classmate {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.ck-school__mentor {
+  animation: ck-breathe 3.6s ease-in-out infinite;
+}
+
+.ck-school__player {
+  animation: ck-breathe 3.2s ease-in-out 0.8s infinite;
+}
+
+.ck-school__classmate {
+  animation: ck-breathe 4s ease-in-out 1.4s infinite;
+}
+
+.ck-drawer {
+  width: min(480px, calc(100vw - 24px));
+  margin: 12px 12px 12px auto;
+  max-height: calc(100dvh - 24px);
+  background: #2f3438;
+  color: var(--ck-chalk);
+}
+
+.ck-drawer .ad-dialog__surface {
+  max-height: calc(100dvh - 24px);
+}
+
+.ck-drawer .ad-dialog__header {
+  border-bottom: 1px solid rgba(243, 240, 232, 0.16);
+}
+
+.ck-drawer .ad-dialog__title {
+  color: #fffaf0;
+}
+
+.ck-drawer .ad-dialog__close {
+  color: var(--ck-chalk);
+}
+
+.ck-drawer .ad-dialog__body {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.ck-drawer .ck-ticket-card,
+.ck-drawer .ck-ticket-card .ck-muted {
+  color: var(--ink);
+}
+
+.ck-drawer .ck-board {
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+}
+
+.ck-drawer__week {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(243, 240, 232, 0.08);
+}
+
+.ck-drawer__rent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #f7f1e4;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+}
+
+.ck-drawer__rent svg {
+  flex: none;
+  color: var(--ck-amber);
+}
+
+.ck-school {
+  --scene-ratio: 1120 / 580;
+}
+
+.ck-school__today {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ck-school__today > svg {
+  flex: none;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+}
+
+.ck-school__words {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ck-school__quote {
+  margin: 2px 0 0;
+  color: #ffe9c2;
+  font-size: 1.1875rem;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.ck-school__minor {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.ck-school__minor .ad-button {
+  justify-content: flex-start;
+}

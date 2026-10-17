@@ -25,7 +25,7 @@ export function PassStage({ state, run, dispatch }: StageProps) {
     <div className="ck-pass">
       <header className="ck-pass__head">
         <h2 className="ck-stage-title">The pass</h2>
-        <p className="ck-chop__hint ck-pass__hint" data-testid="station-instruction">
+        <p className="ck-chop__hint" data-testid="station-instruction">
           {STAGE_LINES.pass}
         </p>
       </header>

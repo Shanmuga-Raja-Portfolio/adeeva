@@ -2,7 +2,6 @@ export const HINTS = {
   service: "Start the slow pan first. Chop while it cooks.",
   menu: "Pick six dishes guests will love. Variety helps.",
   special: "Price minus ingredients is what's left over per plate.",
-  assist: "Stuck? Switch it on.",
   safety: "Real knives, hobs and pots: ask an adult first.",
 } as const;
 

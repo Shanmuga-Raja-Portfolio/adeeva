@@ -132,29 +132,6 @@
   color: #fffaf0;
 }
 
-.ck-path-awards--board {
-  position: static;
-  justify-items: start;
-  gap: var(--space-2);
-  margin-top: auto;
-  padding-top: var(--space-3);
-  border-top: 2px dashed rgba(243, 240, 232, 0.22);
-}
-
-.ck-path-awards--board .ck-path-awards__label {
-  padding: 0;
-  background: none;
-  color: var(--ck-amber);
-}
-
-.ck-path-awards--board ul {
-  justify-content: flex-start;
-}
-
-.ck-path-awards--board .ck-path-award {
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
-}
-
 @media (max-width: 860px) {
   .ck-path-awards {
     position: static;
@@ -176,53 +153,6 @@
 .ck-tonight__desks .ad-button {
   flex: 1 1 150px;
   white-space: nowrap;
-}
-
-.ck-tonight__closed {
-  display: grid;
-  justify-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-4) var(--space-4);
-  border-radius: var(--radius-md);
-  text-align: center;
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 216, 138, 0.16), transparent 70%);
-}
-
-.ck-closed-sign {
-  width: min(220px, 70%);
-  height: auto;
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.3));
-}
-
-.ck-tonight__closed .ck-board__empty {
-  font-size: var(--text-lg);
-  line-height: 1.4;
-}
-
-.ck-tonight__next {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  background: rgba(242, 169, 59, 0.16);
-  color: #ffe2a8;
-  font-weight: 700;
-  text-align: left;
-}
-
-.ck-tonight__next svg {
-  flex: none;
-}
-
-.ck-tonight__critic {
-  margin: 0;
-  padding: var(--space-2) var(--space-3);
-  border-radius: 6px;
-  background: #2e3a40;
-  color: var(--ck-chalk);
-  font-style: italic;
 }
 
 .ck-money-card__columns {
@@ -452,4 +382,40 @@
   .ck-flicker {
     animation: none;
   }
+}
+
+.ck-path-awards--card {
+  position: static;
+  justify-items: start;
+  gap: var(--space-2);
+  padding: var(--space-3) 0 0;
+  border-top: 2px dashed rgba(46, 58, 64, 0.16);
+}
+
+.ck-path-awards--card .ck-path-awards__label {
+  padding: 0;
+  background: none;
+  color: var(--ck-amber-deep);
+}
+
+.ck-path-awards--card ul {
+  justify-content: flex-start;
+}
+
+.ck-week-card__rent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+}
+
+.ck-week-card__rent svg {
+  flex: none;
+  color: var(--ck-amber-deep);
+}
+
+.ck-week-card .ck-hero__label {
+  color: var(--ink-soft);
 }

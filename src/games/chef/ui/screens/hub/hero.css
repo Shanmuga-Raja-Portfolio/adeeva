@@ -115,11 +115,6 @@
   filter: drop-shadow(0 2px 0 rgba(255, 236, 200, 0.35)) drop-shadow(6px 10px 10px rgba(20, 10, 4, 0.35));
 }
 
-.ck-hero--stacked .ck-hero__chef--right {
-  left: auto;
-  right: 2%;
-}
-
 .ck-hero__copy .ad-eyebrow {
   color: var(--ck-amber);
   font-size: var(--text-xs);

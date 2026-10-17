@@ -5,8 +5,12 @@ function Hand({ skin }: { readonly skin: string }) {
   const edge = darken(skin, 0.32);
   return (
     <g>
-      <path d="M-17 -40 L17 -40 L15 0 L-15 0 Z" fill="#f7f4ee" stroke="#c9c2b4" strokeWidth={1.5} />
-      <path d="M-15 -6 H15" stroke="#d9d2c4" strokeWidth={3} />
+      <path d="M-34 -260 L32 -260 L21 -38 L-21 -38 Z" fill="#f7f4ee" stroke="#7d776b" strokeWidth={2.5} />
+      <path d="M-28 -260 L-10 -260 L-12 -40 L-19 -40 Z" fill="#ffffff" opacity={0.7} />
+      <path d="M12 -260 L30 -260 L21 -38 L12 -38 Z" fill="#9c958a" opacity={0.45} />
+      <path d="M-4 -250 Q2 -150 -2 -50" stroke="#b9b2a4" strokeWidth={2} fill="none" opacity={0.7} />
+      <path d="M-19 -42 L19 -42 L17 0 L-17 0 Z" fill="#d9472b" stroke="#8a2a14" strokeWidth={2} />
+      <path d="M-17 -34 H17" stroke="#ffffff" strokeWidth={2.5} opacity={0.55} />
       <path
         d="M-15 2 Q-18 18 -14 34 Q0 41 14 34 Q18 18 15 2 Q0 -3 -15 2 Z"
         fill={skin}

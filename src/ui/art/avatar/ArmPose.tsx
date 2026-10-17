@@ -12,7 +12,8 @@ export type AvatarPose =
   | "graceful-right"
   | "present"
   | "point"
-  | "chat";
+  | "chat"
+  | "talk";
 
 interface ArmBend {
   readonly shoulder: number;
@@ -49,6 +50,7 @@ const POSES: Readonly<Record<Exclude<AvatarPose, "rest">, PoseAngles>> = {
   present: { left: HAND_ON_HIP, right: OFFER },
   point: { left: SWAY, right: REACH },
   chat: { left: HAND_ON_HIP, right: TALK },
+  talk: { left: SWAY, right: TALK },
 };
 
 interface SideProps {

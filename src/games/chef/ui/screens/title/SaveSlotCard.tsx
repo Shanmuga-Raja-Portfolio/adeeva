@@ -2,12 +2,17 @@ import { weekdayName } from "../../../../../engine/weekday";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
-import { StatChip } from "../../../../../ui/kit/StatChip";
 import { difficultyById, rungById } from "../../../core";
 import type { SlotRead } from "../../chefSlots";
 import { ApronHook } from "../../art/ApronHook";
 
 const APRONS = ["#4f8a3c", "#3d4f9a", "#d9472b"] as const;
+
+const EMPTY_LINES = [
+  "A clean apron on a hook, waiting for a new cook.",
+  "A fresh notebook and a sharp pencil. Who will fill it?",
+  "An empty stool by the stove. Pull it up and start cooking!",
+] as const;
 
 export interface SaveSlotCardProps {
   readonly read: SlotRead;
@@ -24,7 +29,7 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
         <ApronHook colour={APRONS[(read.slot - 1) % APRONS.length] ?? "#4f8a3c"} />
         <div className="ck-slot__empty-copy">
           <span className="ad-eyebrow">{label}</span>
-          <p className="ck-slot__empty">A clean apron on a hook, waiting for a new cook.</p>
+          <p className="ck-slot__empty">{EMPTY_LINES[(read.slot - 1) % EMPTY_LINES.length]}</p>
           <Button variant="secondary" icon="sparkle" onClick={onNewGame}>
             Start here
           </Button>
@@ -65,26 +70,28 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
           frameColour="#f2d9a8"
         />
         <div>
-          <span className="ad-eyebrow">{label}</span>
-          <h3 className="ck-slot__name">{state.profile.name}</h3>
-          <span className="ck-muted">
-            {rungById(state.rung).name} · {difficultyById(state.profile.difficulty).name}
+          <span className="ad-eyebrow">
+            {label} · {difficultyById(state.profile.difficulty).name}
           </span>
-          <span className="ck-slot__day">
+          <h3 className="ck-slot__name">{state.profile.name}</h3>
+          <span className="ck-slot__day">{rungById(state.rung).name}</span>
+          <span className="ck-muted">
             Day {state.calendar.day}, {weekdayName(state.calendar.day)}
           </span>
         </div>
       </div>
-      <div className="ck-slot__stats">
-        <StatChip kind="coins" value={state.coins} />
-        <StatChip kind="reputation" value={state.reputation} />
-      </div>
       <div className="ck-slot__actions">
-        <Button variant="secondary" onClick={onNewGame} aria-label={`Start a new game in slot ${read.slot}`}>
-          New game
-        </Button>
         <Button onClick={onLoad} aria-label={`Load slot ${read.slot}`}>
           Load
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="ck-slot__restart"
+          onClick={onNewGame}
+          aria-label={`Start over in slot ${read.slot}`}
+        >
+          Start over
         </Button>
       </div>
     </article>

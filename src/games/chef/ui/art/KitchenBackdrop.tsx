@@ -24,7 +24,6 @@ export interface KitchenBackdropProps {
   readonly scene: BackdropScene;
   readonly cuisine?: CuisineId | undefined;
   readonly named?: boolean | undefined;
-  readonly today?: CuisineId | undefined;
   readonly headroom?: boolean | undefined;
   readonly className?: string | undefined;
 }
@@ -216,7 +215,6 @@ export function KitchenBackdrop({
   scene,
   cuisine = "italian",
   named = true,
-  today,
   headroom = false,
   className,
 }: KitchenBackdropProps) {
@@ -230,7 +228,7 @@ export function KitchenBackdrop({
       focusable="false"
     >
       <SceneDefs ids={ids} />
-      {scene === "school" ? <SchoolCorridor today={today} /> : null}
+      {scene === "school" ? <SchoolCorridor /> : null}
       {scene === "hall" ? <HallScene ids={ids} named={named} /> : null}
       {scene === "kitchen" ? <MainKitchenScene ids={ids} /> : null}
       {scene === "counter" ? <CounterScene ids={ids} cuisine={cuisine} /> : null}

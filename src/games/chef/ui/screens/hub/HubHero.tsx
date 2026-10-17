@@ -1,6 +1,5 @@
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
-import { CUISINE_IDS } from "../../../content/cuisine";
 import { isFamilyMeal, rungById, type GameState } from "../../../core";
 import { KitchenBackdrop } from "../../art/KitchenBackdrop";
 import { HeroCravings } from "./HeroCravings";
@@ -15,9 +14,7 @@ export interface HubHeroProps {
 
 export function HubHero({ state, onPotWash, onEndDay }: HubHeroProps) {
   const rung = rungById(state.rung);
-  const scene = state.rung === "student" ? "school" : state.rung === "line" ? "hall" : "kitchen";
-  const today = state.rung === "student" ? state.board.lesson?.cuisine : undefined;
-  const chefRight = today !== undefined && CUISINE_IDS.indexOf(today) < CUISINE_IDS.length / 2;
+  const scene = state.rung === "line" ? "hall" : "kitchen";
   return (
     <section className="ck-hero ck-hero--stacked" aria-labelledby="ck-hero-title">
       <div className="ck-hero__copy">
@@ -38,9 +35,9 @@ export function HubHero({ state, onPotWash, onEndDay }: HubHeroProps) {
         </div>
       </div>
       <div className="ck-hero__stage">
-        <KitchenBackdrop scene={scene} today={today} headroom className="ck-hero__backdrop" />
+        <KitchenBackdrop scene={scene} headroom className="ck-hero__backdrop" />
         <div className="ck-hero__shade" aria-hidden="true" />
-        <div className={chefRight ? "ck-hero__chef ck-hero__chef--right" : "ck-hero__chef"}>
+        <div className="ck-hero__chef">
           <Avatar
             look={state.profile.look}
             variant="full"

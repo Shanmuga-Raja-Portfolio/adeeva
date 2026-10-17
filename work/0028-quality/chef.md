@@ -182,3 +182,173 @@ The title won all five rounds and the chop step won the last four. The results s
 - **Art.** Ours won art only on the title and, once, on results. Against Venba's grainy, lit, textured food and Good Pizza, Great Pizza's hand-drawn bins, our smooth vector plates, pans and boards lose every time. The craft steps and the pass win when the critic weighs clarity and lose when it weighs looks, which is why round 5 fell from 6/8 to 2/8. The next step is a shared art pass: texture and grain, warmer lighting, hand-drawn line and bigger food in frame.
 - **Plating (won once in five).** It is clear but busy: garnish cards, a tool bar, a checklist, plate colours, a ticket and a helper all share one screen. It needs fewer zones and bigger drag sources.
 - **Critic variance.** Round 5's verdict on the results screen contradicts the critic's own reasoning (see above). Even so, the bar was not met in any round.
+
+## Pass of 2026-10-17 (gap round)
+
+### Method
+
+- **Blind A/B against real games.** Each round compared eight of our screens with official store screenshots of the titles in `work/0013-research/references.md`, section "7. Six Kitchens - chef career, six cuisines, restaurant / food truck / TV": Venba, Cook, Serve, Delicious! 3?! and Good Pizza, Great Pizza.
+- **Random labels.** Each pair was shown as A and B, with the sides picked at random, so the critic did not know which screen was ours.
+- **Fresh critic each round.** A new critic judged every round with no memory of earlier rounds. It scored art, typography, feedback, readability and touch, gave an outcome, and flagged any pair where ours was clearly worse.
+- **The bar (raised for this pass):** at least 85% of pairs won or tied, and no pair clearly worse.
+- **Our screenshots** came from `e2e/chef/qualityShots.spec.ts`. Round 1 used 1280 x 800. From round 2 the spec shoots at 1280 x 720, the same 16:9 shape as the store screenshots. The spec only runs when `QUALITY_SHOTS_DIR` is set.
+- **What stays out of the repo:** reference screenshots belong to their owners. They were kept outside the repo, and nothing was traced or copied from them. Every change came from general craft: composition, hierarchy, colour, lighting, depth, texture, typography, feedback and spacing.
+
+### Pairs
+
+| Pair | Screen kind | Our screen                            | Reference title             |
+| ---- | ----------- | ------------------------------------- | --------------------------- |
+| 1    | title       | Title                                 | Good Pizza, Great Pizza     |
+| 2    | hub         | Cookery Student hub (Larkspur school) | Cook, Serve, Delicious! 3?! |
+| 3    | hub         | The Harbour Table restaurant hub      | Good Pizza, Great Pizza     |
+| 4    | craft-step  | The Board: chop the kelewele plantain | Venba                       |
+| 5    | craft-step  | The Hob: sizzle the kelewele          | Venba                       |
+| 6    | craft-step  | Plate It: dal tadka                   | Good Pizza, Great Pizza     |
+| 7    | showcase    | The pass: dal tadka under the lamps   | Venba                       |
+| 8    | results     | Results: "Chef Arjun Mehra is proud!" | Cook, Serve, Delicious! 3?! |
+
+### Round 1 — 6/8 won or tied (75%), 2 clearly worse — fail
+
+| Pair | Kind       | Reference                   | Outcome | Clearly worse | Criteria ours won                             |
+| ---- | ---------- | --------------------------- | ------- | ------------- | --------------------------------------------- |
+| 1    | title      | Good Pizza, Great Pizza     | win     | no            | typography, feedback, readability, touch      |
+| 2    | hub        | Cook, Serve, Delicious! 3?! | win     | no            | art, typography, feedback, readability, touch |
+| 3    | hub        | Good Pizza, Great Pizza     | loss    | yes           | none                                          |
+| 4    | craft-step | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 5    | craft-step | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 6    | craft-step | Good Pizza, Great Pizza     | loss    | yes           | none (typography tied)                        |
+| 7    | showcase   | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 8    | results    | Cook, Serve, Delicious! 3?! | win     | no            | art, typography, feedback, readability, touch |
+
+The critics' main points:
+
+- The restaurant hub was "a quiet dashboard": a mostly empty dining room, a Closed sign, three columns of small buttons and the same "End the day" note in two places.
+- The plating step piled garnish cards, edit buttons, a checklist, a ticket, a toggle and an eight-step tracker around a cropped plate.
+- The sizzle step won, but it was called "clear but cluttered", with two instruction texts and many side panels.
+
+### Round 2 — 6/8 won or tied (75%), 1 clearly worse — fail
+
+| Pair | Kind       | Reference                   | Outcome | Clearly worse | Criteria ours won                             |
+| ---- | ---------- | --------------------------- | ------- | ------------- | --------------------------------------------- |
+| 1    | title      | Good Pizza, Great Pizza     | win     | no            | typography, feedback, readability, touch      |
+| 2    | hub        | Cook, Serve, Delicious! 3?! | win     | no            | art, typography, feedback, readability, touch |
+| 3    | hub        | Good Pizza, Great Pizza     | loss    | yes           | none                                          |
+| 4    | craft-step | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 5    | craft-step | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 6    | craft-step | Good Pizza, Great Pizza     | loss    | no            | none (typography tied)                        |
+| 7    | showcase   | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 8    | results    | Cook, Serve, Delicious! 3?! | win     | no            | art, typography, feedback, readability, touch |
+
+Plating was no longer clearly worse. The restaurant hub was now one room, but the critics found it busy, with "stiff and faceless" figures, an empty table and many competing buttons. One critic noted that the sauce smears on the plating table "look like mistakes".
+
+### Round 3 — 6/8 won or tied (75%), 0 clearly worse — fail
+
+| Pair | Kind       | Reference                   | Outcome | Clearly worse | Criteria ours won                             |
+| ---- | ---------- | --------------------------- | ------- | ------------- | --------------------------------------------- |
+| 1    | title      | Good Pizza, Great Pizza     | win     | no            | typography, feedback, readability, touch      |
+| 2    | hub        | Cook, Serve, Delicious! 3?! | win     | no            | art, typography, feedback, readability, touch |
+| 3    | hub        | Good Pizza, Great Pizza     | loss    | no            | feedback                                      |
+| 4    | craft-step | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 5    | craft-step | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 6    | craft-step | Good Pizza, Great Pizza     | loss    | no            | typography, feedback, readability             |
+| 7    | showcase   | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 8    | results    | Cook, Serve, Delicious! 3?! | win     | no            | art, typography, feedback, readability, touch |
+
+For the first time nothing was clearly worse. The restaurant hub now had "more life" (candles, waving guests, a lighthouse), but the critics found it crowded, with floating labels and look-alike guests. Plating won typography, feedback and readability, but still "reads like a form" with small Turn, minus and plus controls.
+
+### Round 4 — 6/8 won or tied (75%), 0 clearly worse — fail
+
+| Pair | Kind       | Reference                   | Outcome | Clearly worse | Criteria ours won                             |
+| ---- | ---------- | --------------------------- | ------- | ------------- | --------------------------------------------- |
+| 1    | title      | Good Pizza, Great Pizza     | win     | no            | typography, feedback, readability, touch      |
+| 2    | hub        | Cook, Serve, Delicious! 3?! | win     | no            | art, typography, feedback, readability, touch |
+| 3    | hub        | Good Pizza, Great Pizza     | loss    | no            | feedback                                      |
+| 4    | craft-step | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 5    | craft-step | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 6    | craft-step | Good Pizza, Great Pizza     | loss    | no            | typography (feedback tied)                    |
+| 7    | showcase   | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 8    | results    | Cook, Serve, Delicious! 3?! | win     | no            | art, typography, feedback, readability, touch |
+
+The critics said the plating dish was "a small flat swirl inside a big empty plate" in a "dense three-panel dashboard". The restaurant hub was "warm and well lit", but its diners were "near-identical mannequin figures" and its label chips competed with each other.
+
+### Round 5 — 7/8 won or tied (88%), 0 clearly worse — pass
+
+| Pair | Kind       | Reference                   | Outcome | Clearly worse | Criteria ours won                             |
+| ---- | ---------- | --------------------------- | ------- | ------------- | --------------------------------------------- |
+| 1    | title      | Good Pizza, Great Pizza     | win     | no            | typography, feedback, readability, touch      |
+| 2    | hub        | Cook, Serve, Delicious! 3?! | win     | no            | art, typography, feedback, readability, touch |
+| 3    | hub        | Good Pizza, Great Pizza     | loss    | no            | feedback                                      |
+| 4    | craft-step | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 5    | craft-step | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 6    | craft-step | Good Pizza, Great Pizza     | win     | no            | typography, feedback, readability             |
+| 7    | showcase   | Venba                       | win     | no            | typography, feedback, readability, touch      |
+| 8    | results    | Cook, Serve, Delicious! 3?! | win     | no            | art, typography, feedback, readability, touch |
+
+Plating turned into a win. The critics pointed to the "Add 1 more garnish" banner, the live "A good plate" checklist, the labelled garnish bowls and the strong "Plate it" button. The reference still won touch on plating, for its huge ingredient bins.
+
+### What changed between rounds
+
+#### Round 1 to round 2
+
+- **Screenshot size:** the quality spec moved from 1280 x 800 to 1280 x 720, the same shape as the store screenshots.
+- **Title:** the white card was removed. The logo, a gold "SIX" with a rule, the "Kitchens" wordmark, Continue, New Game and Settings sit straight on the lit market hall, with its stalls, string lights and steaming pots.
+- **Student hub:** the hub became one full-width scene. The hallway of six mentor doors fills the frame, Chef Lucia stands in the open "Today" door with her line in a big speech bubble, and two students wait in the hall. One bottom bar holds the day's lesson, the pot-wash job and "Start the lesson". The class board moved behind a "Class board" button, in a drawer.
+- **Restaurant hub:** the three-column dashboard became one dining room: a chalkboard menu, the harbour window, the kitchen pass with the chef and two plates, diners at laid tables, a waiter, and a guest's comment in a speech bubble. One bottom bar holds the night's line, "Tonight's report" and "End the day". Menu, Get ready and Team became chips over the scene, and the separate Closed sign panel was removed.
+- **Dish screens:** the step rail shrank into numbered dots in the header, and the step title sits beside the instruction bar, so the stage gets more room.
+- **Chop:** the plantain gained a stalk and ripe spots.
+- **Sizzle:** the pan sits on a hob grate with flame tips. The pieces became round golden slices with a flip arrow on each timer ring. Pause moved under the heat ladder, and the duplicate count, the rim note and the "Nice work so far" card were removed.
+- **Plating:** the whole stage became one wooden table. Garnish cards sit at the top left, the "A good plate" checklist and "Plate it" at the right, plate colours in a column, and Turn, minus, plus and Remove in one bar under the plate. The ticket side panel was removed.
+- **Pass:** the ticket wall shrank to one "Order up!" slip, and the plate grew larger under three lamps.
+- **Results:** the plate fills more of its card, the mentor's quote carries his name, and "Back to the kitchen" became a full-width button.
+
+#### Round 2 to round 3
+
+- **Title:** each empty save slot got its own line ("A fresh notebook and a sharp pencil", "An empty stool by the stove"), and slot 1 shows Load with a quieter "Start over".
+- **Student hub:** Class board and End the day moved into a small tray above the bottom bar.
+- **Restaurant hub:** the room gained string lights, a moonlit harbour with a lighthouse beam, a "Thank you!" sign, a team board with staff photos, potted plants and a third full table. The diners wave, and the chalkboard lists every dish.
+- **Sizzle:** the flame tips glow orange around the pan.
+- **Plating:** the plate colours moved into the checklist card, the tool bar became a small card under it, the sauce smears became neat oil drops, and "Plate it" became a pale button.
+- **Pass:** the bell sits in its own dark card with a big "Service!" button, and the line reads "Tap the bell to call Service!"
+- **Results:** the reward chips became solid bordered tiles, and the second reason reads "Quality 100 out of 100. The goal was 55."
+
+#### Round 3 to round 4
+
+- **Student hub:** Class board and End the day moved into the bottom bar, under the day's lesson.
+- **Restaurant hub:** the chips over the scene became dark wooden labels, and the menu became a bulleted list in chalk handwriting.
+- **Sizzle:** the heat panel and the hob moved to warmer browns, and the Done rack lost its numbers.
+- **Plating:** the garnish cards became round bowls on a dark wooden tray, the tools moved under the tray with a big "Take off" button, and Ghost plate moved into the checklist card. The dish gained a fine food grain.
+- **Pass:** the dal gained the same grain texture and shading.
+
+#### Round 4 to round 5
+
+- **Title:** "Start over" on slot 1 became a plain link, so Load is the one clear action.
+- **Student hub:** the bottom bar shows Chef Lucia's portrait, "Today's class with Chef Lucia", the dish name in large type and her line, so the scene no longer needs a speech bubble.
+- **Restaurant hub:** the labels over the scene became round icon buttons, the guests wear varied colours, and the guest's comment moved into the bottom bar beside the guest's portrait.
+- **Plating:** the garnish bowls are larger and deeper, Wipe rim moved next to "Plate it", which is now orange, and the plate fills more of the table.
+- **Pass:** the instruction bar turned warm cream to match the scene.
+
+#### Across the rounds
+
+- **New art, each in its own file:** the dining table, harbour window, kitchen pass, menu chalkboard, rota board, scene figures and diner clothing, the school scene and a food-grain texture.
+- **New UI pieces:** a scene stage for the school and one for the restaurant, a scene hotspot button, a class-board drawer, a week card, and the plating checklist, colour swatches, tools, tray and wipe-rim button as separate files. The old closed sign, hob flame, step scores and tonight card were removed.
+- **Shared code:** the shared avatar in `src/ui/art/avatar` gained a "talk" arm pose for the diners.
+
+### Final result
+
+**Passed in round 5: 7/8 won or tied (88%), nothing clearly worse.**
+
+| Round | Won or tied | Clearly worse | Pass |
+| ----- | ----------- | ------------- | ---- |
+| 1     | 6/8 (75%)   | 2             | no   |
+| 2     | 6/8 (75%)   | 1             | no   |
+| 3     | 6/8 (75%)   | 0             | no   |
+| 4     | 6/8 (75%)   | 0             | no   |
+| 5     | 7/8 (88%)   | 0             | yes  |
+
+The title, the student hub, the chop step, the sizzle step, the pass and the results screen won all five rounds. The student hub, which was clearly worse in four rounds of the first pass, won art in every round of this one.
+
+### Remaining gap
+
+- **Restaurant hub (lost all five rounds).** It is no longer clearly worse, but the critics still prefer the reference's one character, one big line and two huge answer buttons. Ours shows a whole lively room, and its figures look stiff and alike. The next step is fewer, more expressive people and a single focus.
+- **Art on the craft steps and the pass.** These win on clarity, but the critics gave art to the references in every round. Venba's grainy, lit food is richer than our smooth vector food. The food grain helped, but the shared art pass on texture, lighting and hand-drawn line is still needed.
+- **Plating touch.** Plating won on clarity in round 5, but the reference's big ingredient bins still win on touch. Larger drag sources would close this.

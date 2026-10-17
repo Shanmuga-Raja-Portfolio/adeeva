@@ -23,10 +23,11 @@ import { MenuDialog } from "./MenuDialog";
 import { PathHero } from "./PathHero";
 import { ReadyDialog } from "./ReadyDialog";
 import { RecipeCardDialog } from "./RecipeCardDialog";
+import { RestaurantStage } from "./RestaurantStage";
 import { ReviewsWall } from "./ReviewsWall";
 import { SegmentDesk } from "./SegmentDesk";
 import { TeamDialog } from "./TeamDialog";
-import { TonightCard } from "./TonightCard";
+import { WeekCard } from "./WeekCard";
 import { WeekMoneyCard } from "./WeekMoneyCard";
 import "./path.css";
 import "./pathDialogs.css";
@@ -196,29 +197,24 @@ export function PathHub(props: PathHubProps) {
         <>
           {path.kind === "restaurant" ? (
             <>
-              <div className="ck-hub__top">
-                <PathHero
-                  state={state}
-                  path={path}
-                  onPotWash={(event) => tools.endDay(event, "potwash")}
-                  onEndDay={(event) => tools.endDay(event, "rest")}
-                />
-                <TonightCard
-                  state={state}
-                  restaurant={path}
-                  onMenu={() => setDesk("menu")}
-                  onReady={() => setDesk("ready")}
-                  onTeam={() => setDesk("team")}
-                  onService={() => onOpen("service")}
-                  onLastNight={() => onOpen("service")}
-                  onOpenNight={(event) => {
-                    if (tools.once(event, { type: "openNight" })) onOpen("service");
-                  }}
-                />
-              </div>
+              <RestaurantStage
+                state={state}
+                restaurant={path}
+                onMenu={() => setDesk("menu")}
+                onReady={() => setDesk("ready")}
+                onTeam={() => setDesk("team")}
+                onService={() => onOpen("service")}
+                onReport={() => onOpen("service")}
+                onOpenNight={(event) => {
+                  if (tools.once(event, { type: "openNight" })) onOpen("service");
+                }}
+                onEndDay={(event) => tools.endDay(event, "rest")}
+                onPotWash={(event) => tools.endDay(event, "potwash")}
+              />
               <div className="ck-hub__grid">
                 <div className="ck-hub__column">
                   {onBoard(tools)}
+                  <WeekCard state={state} path={path} />
                   {money}
                 </div>
                 <div className="ck-hub__column">

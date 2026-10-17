@@ -2,6 +2,7 @@ import { useSettings } from "../../../../../studio/SettingsContext";
 import { dishById, toleranceFor } from "../../../core";
 import { useAssist } from "../../useAssist";
 import { PlateBuilder } from "../cook/PlateBuilder";
+import { HelperCard } from "./HelperCard";
 import { StageFooter } from "./StageFooter";
 import type { StageProps } from "./stageProps";
 
@@ -32,12 +33,21 @@ export function PlateStage(props: StageProps) {
               }
         }
         onPlate={(draft) => dispatch({ type: "plateDish", record: draft })}
+        helper={
+          <HelperCard
+            step="plate"
+            compact
+            note={<span className="ck-helper-card__note">Shows where each part goes.</span>}
+          />
+        }
+        footer={
+          plated === null ? null : (
+            <StageFooter {...props}>
+              <span className="ck-plate__score">Plating {Math.round(plated.result.accuracy * 100)}%</span>
+            </StageFooter>
+          )
+        }
       />
-      <StageFooter {...props}>
-        {plated === null
-          ? "Plate it to see how it looks."
-          : `Plating ${Math.round(plated.result.accuracy * 100)}%. Re-plate any time, or send it to the pass.`}
-      </StageFooter>
     </div>
   );
 }

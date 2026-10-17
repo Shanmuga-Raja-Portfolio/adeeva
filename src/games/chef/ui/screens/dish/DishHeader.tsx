@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Button } from "../../../../../ui/kit/Button";
 import { StatChip } from "../../../../../ui/kit/StatChip";
 import { StatUnit } from "../../StatUnit";
@@ -9,9 +10,10 @@ export interface DishHeaderProps {
   readonly run: DishRun;
   readonly onExit: () => void;
   readonly onSetAside: () => void;
+  readonly rail: ReactNode;
 }
 
-export function DishHeader({ state, run, onExit, onSetAside }: DishHeaderProps) {
+export function DishHeader({ state, run, onExit, onSetAside, rail }: DishHeaderProps) {
   const dish = dishById(run.dishId);
   const cuisine = cuisineById(dish.cuisine);
   return (
@@ -25,12 +27,13 @@ export function DishHeader({ state, run, onExit, onSetAside }: DishHeaderProps) 
         </span>
         <h1 className="ck-dish-bar__name">{dish.name}</h1>
       </div>
+      {rail}
       <div className="ck-dish-bar__stats">
         <span data-testid="dish-coins">
           <StatChip kind="coins" value={<StatUnit value={state.coins} unit="coins" />} />
         </span>
         <StatChip kind="hours" value={<StatUnit value={state.calendar.hoursLeft} unit="h left" />} />
-        <Button variant="ghost" size="sm" onClick={onSetAside}>
+        <Button variant="ghost" size="sm" className="ck-dish-bar__aside" onClick={onSetAside}>
           Set aside
         </Button>
       </div>
