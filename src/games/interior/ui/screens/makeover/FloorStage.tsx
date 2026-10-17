@@ -15,12 +15,16 @@ import {
   isPastGate,
   isRightPiece,
   laidCount,
+  paintById,
   runPattern,
   type FloorCandidate,
   type PieceSource,
   type PieceTone,
 } from "../../../core";
-import { roomHex } from "../../art/roomHex";
+import { useSvgId } from "../../../../../ui/art/useSvgId";
+import { BARE_WALL, roomHex } from "../../art/roomHex";
+import { FloorPieceArt, pieceFinish } from "./FloorPieceArt";
+import { FLOOR_VIEW, FloorRoomBack, FreshSparkles } from "./FloorRoom";
 import { useAssist } from "../../useAssist";
 import { usePointerDrag } from "../../usePointerDrag";
 import { StageFooter } from "./StageFooter";
@@ -45,45 +49,6 @@ function toneFill(tone: PieceTone, base: string): string {
   return base;
 }
 
-function PieceShape({
-  width,
-  height,
-  fill,
-  boards,
-}: {
-  width: number;
-  height: number;
-  fill: string;
-  boards: boolean;
-}) {
-  return (
-    <g>
-      <rect width={width} height={height} rx={1.2} fill={fill} stroke="#3b2a33" strokeWidth={0.5} />
-      {boards ? (
-        <path
-          d={`M${width * 0.15} ${height * 0.45} q${width * 0.15} ${-height * 0.25} ${width * 0.32} 0 M${width * 0.55} ${height * 0.7} q${width * 0.12} ${-height * 0.2} ${width * 0.28} 0`}
-          fill="none"
-          stroke="#000000"
-          strokeOpacity={0.15}
-          strokeWidth={0.5}
-        />
-      ) : (
-        <rect
-          x={1.2}
-          y={1.2}
-          width={width - 2.4}
-          height={height - 2.4}
-          rx={1}
-          fill="none"
-          stroke="#ffffff"
-          strokeOpacity={0.25}
-          strokeWidth={0.6}
-        />
-      )}
-    </g>
-  );
-}
-
 export function FloorStage(props: StageProps) {
   const { state, run, dispatch } = props;
   const { reducedMotion } = useSettings();
@@ -105,6 +70,16 @@ export function FloorStage(props: StageProps) {
   const fillFor = (source: PieceSource, tone: PieceTone) =>
     toneFill(tone, source === "hall" ? hallBase : base);
   const boards = pattern === "boards";
+  const finish = pieceFinish(run.plan.floor, boards);
+  const sceneId = useSvgId("is-floor");
+  const wallPaint = run.plan.featurePaint ?? run.plan.wallPaint;
+  const wall = wallPaint === null ? BARE_WALL : roomHex(paintById(wallPaint).colour);
+  const view = {
+    x: -MARGIN - FLOOR_VIEW.side,
+    y: -MARGIN - FLOOR_VIEW.top,
+    width: canvas.width + (MARGIN + FLOOR_VIEW.side) * 2,
+    height: canvas.height + MARGIN * 2 + FLOOR_VIEW.top + FLOOR_VIEW.bottom,
+  };
   const tolerance = floorTolerance(state);
   const candidates = next === undefined ? [] : floorCandidates(run, next);
 
@@ -143,7 +118,7 @@ export function FloorStage(props: StageProps) {
     const placed = pendingAt(candidate, spot);
     if (placed === null) return;
     setPending(placed);
-    setHint("Now tap Press to set it down.");
+    setHint("Now tap Press it down.");
   };
 
   const onTap = (drag: FloorDrag) => {
@@ -157,7 +132,7 @@ export function FloorStage(props: StageProps) {
         ? { candidate: drag.candidate, x: next.x, y: next.y }
         : { candidate: drag.candidate, x: next.x + TAP_OFFSET.x, y: next.y + TAP_OFFSET.y },
     );
-    setHint("Nudge it onto the shadow, then tap Press.");
+    setHint("Nudge it onto the shadow, then tap Press it down.");
   };
 
   const { active, handlers } = usePointerDrag<FloorDrag>(svgRef, onDrop, onTap);
@@ -219,128 +194,147 @@ export function FloorStage(props: StageProps) {
           Lay the show strip by the door.{" "}
           <span className="is-muted">Your helper copies your pattern for the rest.</span>
         </p>
-        <svg
-          ref={svgRef}
-          className="is-floor__area"
-          viewBox={`${-MARGIN} ${-MARGIN} ${canvas.width + MARGIN * 2} ${canvas.height + MARGIN * 2}`}
-          width={(canvas.width + MARGIN * 2) * FLOOR_PX_PER_CM}
-          height={(canvas.height + MARGIN * 2) * FLOOR_PX_PER_CM}
-          data-testid="floor-area"
-          data-target={next === undefined ? "" : `${next.x},${next.y}`}
-          role="img"
-          aria-label={`Floor strip, ${laid} of ${FLOOR_PIECES} pieces laid`}
-        >
-          <rect
-            x={-MARGIN}
-            y={-MARGIN}
-            width={canvas.width + MARGIN * 2}
-            height={canvas.height + MARGIN * 2}
-            rx={4}
-            fill="#b9b1aa"
-          />
-          {pieces.map((piece) => {
-            const done = Object.hasOwn(run.floorLaid, String(piece.index));
-            return done ? (
-              <g key={piece.index} transform={`translate(${piece.x} ${piece.y})`}>
-                <g className="is-floor__laid">
-                  <PieceShape
-                    width={piece.width}
-                    height={piece.height}
-                    fill={fillFor(piece.source, piece.tone)}
-                    boards={boards}
-                  />
-                </g>
-              </g>
-            ) : (
-              <rect
-                key={piece.index}
-                x={piece.x + 0.4}
-                y={piece.y + 0.4}
-                width={piece.width - 0.8}
-                height={piece.height - 0.8}
-                rx={1}
-                fill={piece.index === laid ? "rgba(255,255,255,0.28)" : "none"}
-                stroke="#ffffff"
-                strokeOpacity={piece.index === laid ? 0.95 : 0.45}
-                strokeWidth={piece.index === laid ? 0.8 : 0.5}
-                strokeDasharray="2 1.4"
-                className={piece.index === laid ? "is-floor__ghost" : ""}
-              />
-            );
-          })}
-          {shown !== null ? (
-            <g
-              transform={`translate(${shown.x} ${shown.y})`}
-              tabIndex={0}
-              role="button"
-              aria-label="The piece you are placing. Arrow keys nudge it, Enter presses it down."
-              className="is-floor__pending"
-              onKeyDown={nudge}
-              data-testid="floor-pending"
-              {...(pending !== null ? handlers({ kind: "pending" }) : {})}
-            >
-              <PieceShape
-                width={shown.candidate.width}
-                height={shown.candidate.height}
-                fill={fillFor(shown.candidate.source, shown.candidate.tone)}
-                boards={boards}
-              />
-            </g>
-          ) : null}
-        </svg>
-        <p className="is-floor__hint" role="status" aria-live="polite">
-          {hint ??
-            (next === undefined
-              ? "Every piece is down. Lovely and snug!"
-              : threshold
-                ? HOME_HINTS.threshold
-                : "Pick the piece that fits the pattern.")}
-        </p>
-        <div className="is-floor__controls">
-          <div className="is-floor__tray" aria-label="Floor pieces to pick from">
-            {next === undefined
-              ? null
-              : candidates.map((candidate) => (
-                  <button
-                    key={candidate.key}
-                    type="button"
-                    className={[
-                      "is-floor__candidate",
-                      wobble === candidate.key ? "is-wobble" : "",
-                      magnet && isRightPiece(run, laid, candidate.key) ? "is-floor__candidate--glow" : "",
-                    ].join(" ")}
-                    data-testid={`floor-candidate-${candidate.key}`}
-                    data-right={isRightPiece(run, laid, candidate.key) ? "true" : undefined}
-                    aria-label={`Floor piece ${candidate.width} by ${candidate.height}${candidate.tone === "plain" ? "" : `, ${candidate.tone}`}`}
-                    {...handlers({ kind: "tray", candidate })}
-                  >
-                    <svg
-                      viewBox={`-1 -1 ${candidate.width + 2} ${candidate.height + 2}`}
-                      width={(candidate.width + 2) * 2.4}
-                      height={(candidate.height + 2) * 2.4}
-                      aria-hidden="true"
-                    >
-                      <PieceShape
-                        width={candidate.width}
-                        height={candidate.height}
-                        fill={fillFor(candidate.source, candidate.tone)}
-                        boards={boards}
-                      />
-                    </svg>
-                  </button>
-                ))}
-          </div>
-          <Button
-            size="lg"
-            className="is-floor__press"
-            onClick={press}
-            disabled={pending === null}
-            data-testid="press-floor"
+        <div className="is-floor__bench">
+          <svg
+            ref={svgRef}
+            className="is-floor__area"
+            viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`}
+            width={view.width * FLOOR_PX_PER_CM}
+            height={view.height * FLOOR_PX_PER_CM}
+            data-testid="floor-area"
+            data-target={next === undefined ? "" : `${next.x},${next.y}`}
+            role="img"
+            aria-label={`Floor strip, ${laid} of ${FLOOR_PIECES} pieces laid`}
           >
-            Press
-          </Button>
+            <FloorRoomBack
+              width={canvas.width}
+              height={canvas.height}
+              margin={MARGIN}
+              wall={wall}
+              fill={base}
+              finish={finish}
+              id={sceneId}
+            />
+            {pieces.map((piece) => {
+              const done = Object.hasOwn(run.floorLaid, String(piece.index));
+              return done ? (
+                <g key={piece.index} transform={`translate(${piece.x} ${piece.y})`}>
+                  <g className="is-floor__laid">
+                    <FloorPieceArt
+                      width={piece.width}
+                      height={piece.height}
+                      fill={fillFor(piece.source, piece.tone)}
+                      finish={finish}
+                      seed={piece.index + 1}
+                    />
+                  </g>
+                  {piece.index === laid - 1 && next !== undefined ? (
+                    <FreshSparkles width={piece.width} height={piece.height} />
+                  ) : null}
+                </g>
+              ) : (
+                <rect
+                  key={piece.index}
+                  x={piece.x + 0.4}
+                  y={piece.y + 0.4}
+                  width={piece.width - 0.8}
+                  height={piece.height - 0.8}
+                  rx={1}
+                  fill={piece.index === laid ? "rgba(255,255,255,0.28)" : "none"}
+                  stroke="#ffffff"
+                  strokeOpacity={piece.index === laid ? 0.95 : 0.45}
+                  strokeWidth={piece.index === laid ? 0.8 : 0.5}
+                  strokeDasharray="2 1.4"
+                  className={piece.index === laid ? "is-floor__ghost" : ""}
+                />
+              );
+            })}
+            {shown !== null ? (
+              <g
+                transform={`translate(${shown.x} ${shown.y})`}
+                tabIndex={0}
+                role="button"
+                aria-label="The piece you are placing. Arrow keys nudge it, Enter presses it down."
+                className="is-floor__pending"
+                onKeyDown={nudge}
+                data-testid="floor-pending"
+                {...(pending !== null ? handlers({ kind: "pending" }) : {})}
+              >
+                <FloorPieceArt
+                  width={shown.candidate.width}
+                  height={shown.candidate.height}
+                  fill={fillFor(shown.candidate.source, shown.candidate.tone)}
+                  finish={finish}
+                  seed={laid + 1}
+                />
+              </g>
+            ) : null}
+          </svg>
+          <div className="is-floor__side">
+            <p className="is-floor__hint" role="status" aria-live="polite">
+              {hint ??
+                (next === undefined
+                  ? "Every piece is down. Lovely and snug!"
+                  : threshold
+                    ? HOME_HINTS.threshold
+                    : "Pick the piece that fits the pattern.")}
+            </p>
+            <div className="is-floor__controls">
+              <span className="is-floor__tray-label" aria-hidden="true">
+                Pick the next piece
+              </span>
+              <div className="is-floor__tray" aria-label="Floor pieces to pick from">
+                {next === undefined
+                  ? null
+                  : candidates.map((candidate) => (
+                      <button
+                        key={candidate.key}
+                        type="button"
+                        className={[
+                          "is-floor__candidate",
+                          wobble === candidate.key ? "is-wobble" : "",
+                          magnet && isRightPiece(run, laid, candidate.key) ? "is-floor__candidate--glow" : "",
+                        ].join(" ")}
+                        data-testid={`floor-candidate-${candidate.key}`}
+                        data-right={isRightPiece(run, laid, candidate.key) ? "true" : undefined}
+                        aria-label={`Floor piece ${candidate.width} by ${candidate.height}${candidate.tone === "plain" ? "" : `, ${candidate.tone}`}`}
+                        {...handlers({ kind: "tray", candidate })}
+                      >
+                        <svg
+                          viewBox={`-1 -1 ${candidate.width + 2} ${candidate.height + 2}`}
+                          width={(candidate.width + 2) * 2.8}
+                          height={(candidate.height + 2) * 2.8}
+                          aria-hidden="true"
+                        >
+                          <FloorPieceArt
+                            width={candidate.width}
+                            height={candidate.height}
+                            fill={fillFor(candidate.source, candidate.tone)}
+                            finish={finish}
+                            seed={laid + 1}
+                          />
+                        </svg>
+                        <span className="is-floor__size" aria-hidden="true">
+                          {candidate.width} × {candidate.height}
+                        </span>
+                      </button>
+                    ))}
+              </div>
+              <Button
+                size="lg"
+                icon="check"
+                className="is-floor__press"
+                onClick={press}
+                disabledReason={pending === null ? "First drop a piece on the glowing spot." : undefined}
+                showReason
+                data-testid="press-floor"
+              >
+                Press it down
+              </Button>
+            </div>
+            {magnet ? null : <p className="is-hint is-floor__assist">{assistHint("Floor magnet", state)}</p>}
+          </div>
         </div>
-        {magnet ? null : <p className="is-hint">{assistHint("Floor magnet", state)}</p>}
       </div>
       <StageFooter {...props} ready="The floor is down. Time for lights!" />
     </div>

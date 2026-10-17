@@ -50,6 +50,8 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
       </div>
     );
   const { evaluation, reward } = entry;
+  const metCount = evaluation.criteria.filter((criterion) => criterion.passed).length;
+  const allMet = metCount === evaluation.criteria.length;
   const happy = reward.outcome === "pass";
   const mood = evaluation.stars >= 4 ? "delighted" : happy ? "happy" : "thinking";
   const exit = (
@@ -78,9 +80,13 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
       <section className="is-results__card is-tape-card">
         <span className="ad-eyebrow">{happy ? "Revealed with a gasp" : "A kind note"}</span>
         <h1>{happy ? `${name} loves it!` : `${name} says thank you`}</h1>
-        <div className="is-results__stars">
-          <StarRating stars={evaluation.stars} size={28} />
-          <strong>{evaluation.score} / 100</strong>
+        <div
+          className={
+            evaluation.stars >= 4 ? "is-results__stars is-results__stars--burst" : "is-results__stars"
+          }
+        >
+          <StarRating stars={evaluation.stars} size={30} />
+          <strong className="is-results__score">{evaluation.score} / 100</strong>
         </div>
         <ul className="is-results__summary">
           {kidSummary(run, evaluation).map((line) => (
@@ -96,24 +102,30 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
             </li>
           ))}
         </ul>
-        <ul className="is-results__criteria">
-          {evaluation.criteria.map((criterion) => (
-            <li
-              key={criterion.id}
-              className={
-                criterion.passed
-                  ? "is-results__criterion is-results__criterion--pass"
-                  : "is-results__criterion"
-              }
-            >
-              <span className="is-results__mark" aria-hidden="true">
-                {criterion.passed ? <Icon name="check" size={12} /> : "·"}
-              </span>
-              <strong>{criterion.label}</strong>
-              <span className="is-muted">{criterion.detail}</span>
-            </li>
-          ))}
-        </ul>
+        <details className="is-results__details" open={!allMet}>
+          <summary>
+            <Icon name={allMet ? "check" : "heart"} size={18} />
+            Client checklist · {metCount} of {evaluation.criteria.length} met
+          </summary>
+          <ul className="is-results__criteria">
+            {evaluation.criteria.map((criterion) => (
+              <li
+                key={criterion.id}
+                className={
+                  criterion.passed
+                    ? "is-results__criterion is-results__criterion--pass"
+                    : "is-results__criterion"
+                }
+              >
+                <span className="is-results__mark" aria-hidden="true">
+                  {criterion.passed ? <Icon name="check" size={12} /> : "·"}
+                </span>
+                <strong>{criterion.label}</strong>
+                <span className="is-muted">{criterion.detail}</span>
+              </li>
+            ))}
+          </ul>
+        </details>
         {evaluation.feedback.length > 0 ? (
           <div className="is-results__feedback">
             {evaluation.feedback.map((line) => (

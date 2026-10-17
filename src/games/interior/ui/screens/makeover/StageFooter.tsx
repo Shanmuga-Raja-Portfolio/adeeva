@@ -20,6 +20,8 @@ export function StageFooter({ state, run, dispatch, onExit, ready, extra }: Stag
   const hours = leaveHours(run);
   const hoursReason = hoursShortfallReason(state.calendar, hours);
   const others = check.reasons.filter((reason) => reason !== hoursReason);
+  const label =
+    run.stage === "style" && isHomeRoom(run) ? "Make it ready for visitors" : ADVANCE_LABELS[run.stage];
   return (
     <footer className="is-footer">
       {hoursReason !== null && others.length === 0 ? (
@@ -36,6 +38,11 @@ export function StageFooter({ state, run, dispatch, onExit, ready, extra }: Stag
       <div className="is-footer__row">
         <div className="is-footer__status" aria-live="polite">
           {others.length > 0 ? (
+            <p className="is-footer__lock">
+              <Icon name="lock" size={16} /> To unlock “{label}”:
+            </p>
+          ) : null}
+          {others.length > 0 ? (
             <ul>
               {others.slice(0, 3).map((reason) => (
                 <li key={reason}>{reason}</li>
@@ -48,13 +55,12 @@ export function StageFooter({ state, run, dispatch, onExit, ready, extra }: Stag
         {extra}
         <Button
           size="lg"
+          icon={check.ok ? undefined : "lock"}
           onClick={(event) => once(event, { type: "goToStage", stage: next })}
           disabledReason={check.ok ? undefined : check.reasons[0]}
           data-testid="advance-stage"
         >
-          {run.stage === "style" && isHomeRoom(run)
-            ? "Make it ready for visitors"
-            : ADVANCE_LABELS[run.stage]}
+          {label}
           {hours > 0 ? <span className="is-footer__hours">{hours} h</span> : null}
         </Button>
       </div>

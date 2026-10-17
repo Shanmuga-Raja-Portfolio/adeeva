@@ -46,19 +46,70 @@
 }
 
 .is-oh-stage {
-  background: #1c1830;
+  background: #2a2238;
 }
 
 .is-oh-stage__street {
-  opacity: 0.55;
-  filter: saturate(1.1);
+  opacity: 0.9;
+  filter: saturate(1.15) blur(1px);
+}
+
+.is-oh-stage::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 60% 55% at 50% 48%,
+      color-mix(in srgb, var(--show-glow) 34%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, rgba(20, 14, 30, 0.45));
+}
+
+.is-oh-stage > .is-oh-bow,
+.is-oh-stage > .ad-show__figures {
+  z-index: 1;
+}
+
+.is-oh-show .ad-show-caption:not(.ad-show-caption--centre) {
+  left: 50%;
+  bottom: 14px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  column-gap: var(--space-4);
+  row-gap: 2px;
+  max-width: min(92vw, 980px);
+  padding: 10px var(--space-6);
+  border-left: 0;
+  border-radius: var(--radius-pill);
+  background: rgba(20, 14, 26, 0.82);
+  translate: -50% 0;
+}
+
+.is-oh-show .ad-show-caption:not(.ad-show-caption--centre) .ad-show-caption__title {
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+}
+
+.is-oh-show .ad-show__screen::before {
+  height: 64px;
+  background: linear-gradient(180deg, #050407 70%, transparent);
+}
+
+.is-oh-show .ad-show__screen::after {
+  height: 0;
 }
 
 .is-strip {
-  --strip-width: min(74vw, 1040px, calc((78vh - 56px) * 640 / 420));
+  --strip-width: min(90vw, 1180px, calc((100vh - 196px) * 640 / 420));
   --strip-gap: 28px;
   position: absolute;
-  inset: 9vh 0 13vh;
+  z-index: 1;
+  inset: 64px 0 108px;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -81,7 +132,7 @@
   align-items: center;
   gap: var(--space-2);
   margin: 0;
-  opacity: 0.45;
+  opacity: 0;
   transform: scale(0.88);
   transition:
     opacity 900ms ease,
@@ -98,7 +149,9 @@
   width: 100%;
   border-radius: 22px;
   overflow: hidden;
-  background: #fbf5ee;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(255, 232, 170, 0.75), transparent 70%),
+    linear-gradient(180deg, #fbf3e8, #ecd8c8);
   box-shadow:
     0 0 0 6px #fffaf2,
     0 24px 60px rgba(0, 0, 0, 0.45);
@@ -116,6 +169,14 @@
   background: #fbf5ee;
 }
 
+.is-strip:not(.is-strip--finale) .is-strip__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
 .is-strip__label {
   max-width: calc(100% - 16px);
   padding: 4px 16px;
@@ -126,6 +187,10 @@
   color: var(--ink);
   font-family: var(--font-display);
   font-weight: 800;
+}
+
+.is-strip__easel {
+  font-family: var(--font-display);
 }
 
 .is-strip__bubble-text {

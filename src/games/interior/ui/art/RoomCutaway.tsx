@@ -11,6 +11,7 @@ import {
   type PlacedPiece,
 } from "../../core";
 import { CutawayFloor } from "./CutawayFloor";
+import { Cornice, FloorShading, ShellDefs, WallCaps, WallShading, WallSocket } from "./CutawayShell";
 import {
   CUTAWAY_HEIGHT,
   CUTAWAY_WIDTH,
@@ -23,9 +24,13 @@ import {
 } from "./cutawayFrame";
 import { DecorArt } from "./DecorArt";
 import { FurnitureSprite } from "./FurnitureSprite";
+import { lampHead } from "./lampHead";
+import { BloomDefs, LightBloom } from "./LightBloom";
 import { LightFixture } from "./LightFixture";
 import { BARE_WALL, roomHex } from "./roomHex";
 import type { RoomLook } from "./roomLook";
+import { DressingDefs, RoomDressing } from "./RoomDressing";
+import { WindowDrapes } from "./WindowDrapes";
 
 interface RoomCutawayProps {
   readonly look: RoomLook;
@@ -262,15 +267,18 @@ export function RoomCutaway({
           <stop offset="1" stopColor="#000000" stopOpacity={0.06} />
         </linearGradient>
         <radialGradient id={`${id}-warm`}>
-          <stop offset="0" stopColor="#ffe08a" stopOpacity={0.75} />
-          <stop offset="0.55" stopColor="#ffd36a" stopOpacity={0.3} />
-          <stop offset="1" stopColor="#ffd36a" stopOpacity={0} />
+          <stop offset="0" stopColor="#ffd98a" stopOpacity={0.55} />
+          <stop offset="0.5" stopColor="#f7c25e" stopOpacity={0.22} />
+          <stop offset="1" stopColor="#f7c25e" stopOpacity={0} />
         </radialGradient>
         <radialGradient id={`${id}-cool`}>
-          <stop offset="0" stopColor="#e3f6ff" stopOpacity={0.8} />
-          <stop offset="0.55" stopColor="#bfe6ff" stopOpacity={0.32} />
+          <stop offset="0" stopColor="#e3f6ff" stopOpacity={0.5} />
+          <stop offset="0.5" stopColor="#bfe6ff" stopOpacity={0.2} />
           <stop offset="1" stopColor="#bfe6ff" stopOpacity={0} />
         </radialGradient>
+        <ShellDefs id={id} />
+        <BloomDefs id={id} />
+        <DressingDefs id={id} back={back} />
       </defs>
       <ellipse
         cx={CUTAWAY_WIDTH / 2}
@@ -307,12 +315,21 @@ export function RoomCutaway({
           />
         </g>
       )}
+      <WallShading frame={frame} id={id} />
       <polygon points={pointsAttr(sideQuad)} fill={darken(side, 0.1)} />
       <polygon
         points={pointsAttr(sideQuad)}
         fill={`url(#${id}-wall)`}
         stroke={darken(side, 0.45)}
         strokeWidth={1.5}
+      />
+      <RoomDressing
+        frame={frame}
+        room={room}
+        back={back}
+        side={side}
+        panelled={look.backWall !== null && look.backLower === null}
+        id={id}
       />
       {room.windows.map((window) =>
         window.wall === "back" ? (
@@ -321,6 +338,22 @@ export function RoomCutaway({
           <SideWindow key={`s${window.from}`} frame={frame} from={window.from} to={window.to} id={id} />
         ),
       )}
+      {look.pieces.length > 0
+        ? room.windows
+            .filter((window) => window.wall === "back")
+            .map((window) => (
+              <WindowDrapes
+                key={`drape${window.from}`}
+                frame={frame}
+                from={window.from}
+                to={window.to}
+                top={frame.oy - frame.wall * WINDOW_TOP}
+                bottom={frame.oy - frame.wall * WINDOW_BOTTOM}
+                fabric={look.soft}
+              />
+            ))
+        : null}
+      <Cornice frame={frame} back={back} side={side} id={id} />
       {room.roofWindow ? <RoofWindow frame={frame} id={id} /> : null}
       <polygon
         points={pointsAttr([
@@ -344,7 +377,9 @@ export function RoomCutaway({
         stroke={darken(side, 0.35)}
         strokeWidth={1}
       />
+      <WallSocket frame={frame} />
       <CutawayFloor frame={frame} floorId={look.floor} />
+      <FloorShading frame={frame} id={id} />
       {room.windows
         .filter((window) => window.wall === "back")
         .map((window) => (
@@ -366,6 +401,7 @@ export function RoomCutaway({
         stroke="#3b2a33"
         strokeWidth={1.5}
       />
+      <WallCaps frame={frame} back={back} side={side} id={id} />
       {evening ? (
         <polygon
           points={pointsAttr([
@@ -384,21 +420,30 @@ export function RoomCutaway({
       ))}
       {pieces.map((piece) => {
         const box = bounds(piece);
+        const [cx, cy] = floorPoint(frame, (box.left + box.right) / 2, (box.back + box.front) / 2);
         return (
-          <polygon
-            key={`shadow-${piece.id}`}
-            points={pointsAttr(
-              floorQuad(
-                frame,
-                box.left + 0.05,
-                box.back + 0.05,
-                box.right - box.left - 0.1,
-                box.front - box.back - 0.1,
-              ),
-            )}
-            fill="#2b2230"
-            opacity={0.1}
-          />
+          <g key={`shadow-${piece.id}`}>
+            <polygon
+              points={pointsAttr(
+                floorQuad(
+                  frame,
+                  box.left + 0.05,
+                  box.back + 0.05,
+                  box.right - box.left - 0.1,
+                  box.front - box.back - 0.1,
+                ),
+              )}
+              fill="#2b2230"
+              opacity={0.12}
+            />
+            <ellipse
+              cx={cx}
+              cy={cy}
+              rx={(box.right - box.left) * frame.cell * 0.62}
+              ry={(box.front - box.back) * frame.depth * 0.75}
+              fill={`url(#${id}-contact)`}
+            />
+          </g>
         );
       })}
       {props.map((entry) => {
@@ -444,6 +489,20 @@ export function RoomCutaway({
           />
         );
       })}
+      <LightBloom
+        id={id}
+        unit={frame.cell}
+        spots={look.lights.map((light) => {
+          const def = lightById(light.lightId);
+          const spot = fixtureSpot(frame, room, light);
+          return {
+            point: lampHead(light.lightId, spot.point[0], spot.point[1], frame.cell),
+            warm: def.warmth === "warm",
+            wall: def.mount === "wall",
+            strength: def.strength,
+          };
+        })}
+      />
       {decorLayer ??
         [...look.decor]
           .sort((a, b) => a.layer - b.layer)

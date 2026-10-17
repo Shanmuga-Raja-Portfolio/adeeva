@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  padding-bottom: var(--space-6);
 }
 
 .is-paint__top {
@@ -100,15 +101,17 @@
 }
 
 .is-roll__wall {
-  max-width: 100%;
+  flex: 1 1 560px;
+  width: 100%;
+  max-width: 660px;
   height: auto;
-  border-radius: 10px;
+  border-radius: 16px;
   touch-action: none;
   cursor: grab;
   box-shadow:
-    0 0 0 8px #fffaf2,
-    0 0 0 10px #e6d4c4,
-    var(--shadow-md);
+    0 0 0 6px #fffaf2,
+    0 0 0 8px #e6d4c4,
+    0 18px 36px rgba(43, 34, 48, 0.22);
 }
 
 .is-roll__coat {
@@ -116,8 +119,9 @@
 }
 
 .is-roll__side {
-  flex: 1;
+  flex: 1 1 240px;
   min-width: 220px;
+  max-width: 320px;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -148,13 +152,80 @@
 }
 
 .is-roll__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
   margin: 0;
-  font-size: var(--text-sm);
-  color: var(--ink-soft);
+}
+
+.is-roll__stat {
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--paper-deep);
+  color: var(--ink);
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.is-roller__drip {
+  animation: is-drip 1.4s ease-in infinite;
+}
+
+@keyframes is-drip {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(9px);
+    opacity: 0;
+  }
+}
+
+.is-coat-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 2px dashed var(--paper-edge);
+}
+
+.is-coat-legend__title {
+  font-weight: 800;
+  color: var(--is-blue-deep);
+}
+
+.is-coat-legend ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.is-coat-legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 1rem;
+}
+
+.is-coat-legend svg {
+  flex: none;
 }
 
 .is-roll__hint {
   margin: 0;
+  font-size: var(--text-md);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
   background: var(--is-sun-soft);
@@ -192,4 +263,10 @@
   paint-order: stroke;
   stroke: #ffffff;
   stroke-width: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-roller__drip {
+    animation: none;
+  }
 }

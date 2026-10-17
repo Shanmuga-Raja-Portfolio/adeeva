@@ -4,8 +4,10 @@ import { Icon } from "../../../../../ui/kit/IconSet";
 import { useDispatchOnce } from "../../../../../ui/kit/useDispatchOnce";
 import { isRoomReady, purseLeft, TOP_UP_STEP, topUpIssue } from "../../../core";
 import { CrewBoard } from "./CrewBoard";
+import { HomeFrontCard } from "./HomeFrontCard";
 import type { HomeStageProps } from "./HomeScreen";
 import { RoomCard } from "./RoomCard";
+import "./rooms.css";
 
 export function HomeRooms({ state, project, dispatch, onOpenRoom, onEndDay }: HomeStageProps) {
   const toast = useToast();
@@ -14,32 +16,33 @@ export function HomeRooms({ state, project, dispatch, onOpenRoom, onEndDay }: Ho
   const ready = project.rooms.filter((room) => isRoomReady(room)).length;
   return (
     <div className="is-rooms">
-      <p className="is-home__hint" role="status">
-        <Icon name="home" size={16} /> {ready} of {project.rooms.length} rooms ready. Make the hero room
-        yourself, and let the crew help with the rest.
-      </p>
       <div className="is-rooms__layout">
-        <div className="is-rooms__cards">
-          {project.rooms.map((_, index) => (
-            <RoomCard
-              key={index}
-              state={state}
-              project={project}
-              index={index}
-              dispatch={dispatch}
-              onOpen={onOpenRoom}
-            />
-          ))}
+        <div className="is-rooms__main">
+          <div className="is-rooms__cards">
+            {project.rooms.map((_, index) => (
+              <RoomCard
+                key={index}
+                state={state}
+                project={project}
+                index={index}
+                dispatch={dispatch}
+                onOpen={onOpenRoom}
+              />
+            ))}
+          </div>
+          <HomeFrontCard project={project} ready={ready} />
         </div>
         <aside className="is-rooms__side">
           <section className="is-purse is-tape-card" aria-labelledby="is-purse-title">
+            <span className="is-purse__coin" aria-hidden="true">
+              <Icon name="coin" size={30} />
+            </span>
             <span className="ad-eyebrow">Bellwind's project purse</span>
             <h2 id="is-purse-title">
-              <Icon name="coin" size={20} /> <span data-testid="purse-left">{purseLeft(project)}</span> left
+              <span data-testid="purse-left">{purseLeft(project)}</span> coins left
             </h2>
-            <p className="is-muted">
-              Shopping at the Larkspur Supply Yard and crew wages come from here, never from your coins. What
-              you save comes back as a thank-you.
+            <p className="is-purse__note">
+              Bellwind pays for shopping and crew from here, not your coins. Savings come back to you.
             </p>
             <Button
               size="sm"

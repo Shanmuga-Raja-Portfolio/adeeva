@@ -7,8 +7,15 @@ interface PaintDotsProps {
 
 export function PaintDots({ left, total }: PaintDotsProps) {
   return (
-    <div className="is-dots" role="img" aria-label={`${left} of ${total} hours left today`}>
-      <svg viewBox={`0 0 ${total * 24 + 8} 28`} aria-hidden="true">
+    <div className="is-dots">
+      <span className="is-dots__label" aria-hidden="true">
+        Today's paint pots: {left} of {total} hours left
+      </span>
+      <svg
+        viewBox={`0 0 ${total * 24 + 8} 28`}
+        role="img"
+        aria-label={`${left} of ${total} hours left today`}
+      >
         {Array.from({ length: total }, (_, index) => {
           const x = 16 + index * 24;
           const lit = index < left;

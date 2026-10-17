@@ -1,16 +1,19 @@
 .is-results {
   display: grid;
+  align-content: center;
   grid-template-columns: minmax(0, 1.2fr) minmax(320px, 1fr);
   gap: var(--space-4);
   width: min(1320px, 100%);
+  min-height: 100dvh;
   margin: 0 auto;
-  padding: var(--space-4) var(--space-5) var(--space-6);
+  padding: var(--space-4) var(--space-5) var(--space-5);
 }
 
 .is-results__scene {
   position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: var(--space-3);
   padding: var(--space-4);
   border-radius: var(--radius-lg);
@@ -21,9 +24,33 @@
   box-shadow: var(--shadow-md);
 }
 
+.is-results__scene::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10% 20%;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 45%,
+    rgba(255, 236, 170, 0.5) 0deg 7deg,
+    transparent 7deg 20deg
+  );
+  -webkit-mask-image: radial-gradient(circle at 50% 45%, #000000 10%, transparent 62%);
+  mask-image: radial-gradient(circle at 50% 45%, #000000 10%, transparent 62%);
+  pointer-events: none;
+}
+
+.is-results__scene > * {
+  position: relative;
+}
+
+.is-results__scene > .is-confetti {
+  position: absolute;
+  z-index: 2;
+}
+
 .is-results__room {
   width: 100%;
   height: auto;
+  filter: drop-shadow(0 16px 24px rgba(43, 34, 48, 0.18));
 }
 
 .is-results__client {
@@ -58,7 +85,90 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
+}
+
+.is-results__stars svg {
+  filter: drop-shadow(0 0 6px rgba(246, 205, 90, 0.85));
+  animation: is-pop 600ms var(--ease-out) both;
+}
+
+.is-results__score {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  color: var(--is-blue-deep);
+}
+
+.is-results__stars--burst {
+  position: relative;
+  isolation: isolate;
+  align-self: flex-start;
+  padding: 6px 18px 6px 10px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, #fff4c2, #fffaf0);
+  box-shadow:
+    0 0 0 2px rgba(246, 215, 122, 0.8),
+    0 8px 24px rgba(217, 169, 58, 0.35);
+  animation: is-score-burst 900ms var(--ease-out) 300ms both;
+}
+
+.is-results__stars--burst::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -22px -30px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 8deg, rgba(246, 205, 90, 0.42) 0deg 9deg, transparent 9deg 24deg);
+  -webkit-mask-image: radial-gradient(closest-side, #000000 45%, transparent);
+  mask-image: radial-gradient(closest-side, #000000 45%, transparent);
+}
+
+@keyframes is-score-burst {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.is-results__details {
+  border-radius: var(--radius-md);
+  background: var(--is-paper);
+}
+
+.is-results__details summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  color: #3d4520;
+  cursor: pointer;
+}
+
+.is-results__details summary:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.is-results__details[open] summary {
+  border-bottom: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.is-results__details .is-results__criteria {
+  padding: var(--space-3);
 }
 
 .is-results__summary {
@@ -95,7 +205,11 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
+}
+
+.is-results__criterion .is-muted {
+  font-size: 0.9375rem;
 }
 
 .is-results__criterion {
@@ -134,6 +248,10 @@
   margin: 0;
 }
 
+.is-results__card > .ad-button:last-child {
+  margin-top: var(--space-2);
+}
+
 .is-results__lines {
   display: grid;
   gap: 4px;
@@ -145,8 +263,14 @@
 .is-results__lines li {
   display: flex;
   justify-content: space-between;
-  padding-bottom: 4px;
-  border-bottom: 1px dashed var(--line-strong);
+  padding: 6px 2px;
+  border-bottom: 2px dashed var(--paper-edge);
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.is-results__lines strong {
+  color: var(--is-olive);
 }
 
 .is-results__totals {
@@ -176,10 +300,13 @@
 .is-confetti__piece {
   position: absolute;
   top: -12px;
-  width: 9px;
-  height: 14px;
   border-radius: 2px;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.12);
   animation: is-fall 2.4s ease-in 1 both;
+}
+
+.is-confetti__piece--round {
+  border-radius: 50%;
 }
 
 @keyframes is-fall {
@@ -188,8 +315,8 @@
     opacity: 1;
   }
   100% {
-    transform: translateY(520px) rotate(540deg);
-    opacity: 0;
+    transform: translateY(var(--drop, 300px)) rotate(var(--spin, 360deg));
+    opacity: 0.9;
   }
 }
 
@@ -282,13 +409,22 @@
 
 @media (prefers-reduced-motion: reduce) {
   .is-confetti__piece {
+    transform: translateY(var(--drop, 300px));
     animation: ad-fade-in 600ms ease-out 1 both;
-    top: auto;
+  }
+
+  .is-results__stars--burst {
+    animation: none;
   }
 }
 
 :root[data-motion="reduced"] .is-confetti__piece {
+  transform: translateY(var(--drop, 300px));
   animation: ad-fade-in 600ms ease-out 1 both;
+}
+
+:root[data-motion="reduced"] .is-results__stars--burst {
+  animation: none;
 }
 
 .is-results__exit {

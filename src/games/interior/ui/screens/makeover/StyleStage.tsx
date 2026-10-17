@@ -1,20 +1,11 @@
 import { useRef, useState, type KeyboardEvent } from "react";
-import { Button } from "../../../../../ui/kit/Button";
 import type { SvgPoint } from "../../../../../ui/kit/clientToSvg";
 import { DECOR, type DecorId } from "../../../content/decor";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { HINTS, HOME_HINTS } from "../../../content/hints";
 import { roomColourById } from "../../../content/roomColour";
 import { SOFT_COLOURS } from "../../../content/softColour";
-import {
-  checklist,
-  decorById,
-  DECOR_ROTATION_STEP,
-  spareDecor,
-  STYLE_CANVAS,
-  tellsStory,
-  type PlacedDecor,
-} from "../../../core";
+import { checklist, decorById, spareDecor, STYLE_CANVAS, tellsStory, type PlacedDecor } from "../../../core";
 import { DecorArt } from "../../art/DecorArt";
 import { RoomCutaway } from "../../art/RoomCutaway";
 import { roomHex } from "../../art/roomHex";
@@ -23,6 +14,7 @@ import { usePointerDrag } from "../../usePointerDrag";
 import { DecorBin } from "./DecorBin";
 import { homeRoomContext } from "./homeRoomContext";
 import { StageFooter } from "./StageFooter";
+import { StyleTools } from "./StyleTools";
 import type { StageProps } from "./stageProps";
 import "./style.css";
 
@@ -31,7 +23,6 @@ type DecorDrag =
   | { readonly kind: "placed"; readonly item: PlacedDecor };
 
 const ROOM_PARTS = { walls: true, floor: true, furniture: true, lights: true, decor: false } as const;
-const SCALE_STEP = 0.25;
 const NUDGE = 8;
 const NUDGES: Readonly<Record<string, readonly [number, number]>> = {
   ArrowLeft: [-NUDGE, 0],
@@ -180,56 +171,12 @@ export function StyleStage(props: StageProps) {
             className="is-style__room"
             decorLayer={decorLayer}
           />
-          <div className="is-style__tools" aria-label="Chosen decor">
-            {selectedItem !== null ? (
-              <>
-                <strong>{decorById(selectedItem.decorId).name}</strong>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() =>
-                    adjust(selectedItem, { rotation: (selectedItem.rotation + DECOR_ROTATION_STEP) % 360 })
-                  }
-                >
-                  Turn
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() =>
-                    adjust(selectedItem, { scale: Math.max(0.5, selectedItem.scale - SCALE_STEP) })
-                  }
-                >
-                  Smaller
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() =>
-                    adjust(selectedItem, { scale: Math.min(2, selectedItem.scale + SCALE_STEP) })
-                  }
-                >
-                  Bigger
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() =>
-                    adjust(selectedItem, { layer: Math.max(...run.decor.map((item) => item.layer)) + 1 })
-                  }
-                >
-                  To front
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => putBack(selectedItem)}>
-                  Back to the box
-                </Button>
-              </>
-            ) : (
-              <span className="is-muted">
-                Drag decor into the room. Tap a piece to turn, resize or put it back.
-              </span>
-            )}
-          </div>
+          <StyleTools
+            item={selectedItem}
+            topLayer={Math.max(...run.decor.map((item) => item.layer))}
+            onAdjust={adjust}
+            onPutBack={putBack}
+          />
           {missing ? <p className="is-style__warn">{HINTS.mustHavesMissing}</p> : null}
           {home !== null ? (
             <p
@@ -246,6 +193,26 @@ export function StyleStage(props: StageProps) {
           <div className="is-style__box">
             {DECOR.map((item) => {
               const spare = spareDecor(state, run, item.id);
+              const placed = run.decor.find((entry) => entry.decorId === item.id);
+              if (spare <= 0 && placed !== undefined)
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="is-style__stock is-style__stock--placed"
+                    data-testid={`in-room-${item.id}`}
+                    aria-label={`${item.name} is in the room. Tap to choose it.`}
+                    onClick={() => setSelected(placed.id)}
+                  >
+                    <svg viewBox="-40 -40 80 80" aria-hidden="true">
+                      <DecorArt decorId={item.id} soft={soft} />
+                    </svg>
+                    <span>{item.name}</span>
+                    <span className="is-style__in-room">
+                      <Icon name="check" size={12} /> Placed
+                    </span>
+                  </button>
+                );
               if (spare <= 0) return null;
               return (
                 <button
@@ -269,6 +236,7 @@ export function StyleStage(props: StageProps) {
             ) : null}
           </div>
           <h3 className="is-tray__heading">Soft fabrics</h3>
+          <p className="is-style__fabric-note">Colours the cushions, sofas and curtains.</p>
           <div className="is-style__fabrics" role="radiogroup" aria-label="Soft fabric colour">
             {SOFT_COLOURS.map((colour) => (
               <button
@@ -278,9 +246,13 @@ export function StyleStage(props: StageProps) {
                 aria-checked={run.softColour === colour}
                 aria-label={roomColourById(colour).name}
                 className="is-style__fabric"
-                style={{ background: roomHex(colour) }}
                 onClick={() => dispatch({ type: "setSoftColour", colour })}
-              />
+              >
+                <span className="is-style__swatch" style={{ background: roomHex(colour) }}>
+                  {run.softColour === colour ? <Icon name="check" size={20} /> : null}
+                </span>
+                <span className="is-style__fabric-name">{roomColourById(colour).name}</span>
+              </button>
             ))}
           </div>
         </aside>

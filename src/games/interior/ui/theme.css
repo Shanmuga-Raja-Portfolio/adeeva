@@ -28,6 +28,8 @@
   --card: #fffcf7;
   --font-display: "Futura", "Century Gothic", "Trebuchet MS", sans-serif;
   --focus-ring: 0 0 0 3px var(--paper), 0 0 0 6px rgba(60, 106, 168, 0.75);
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
   min-height: 100dvh;
   color: var(--ink);
   background-color: var(--paper);
@@ -76,6 +78,9 @@
 }
 
 .is-root .ad-eyebrow {
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   color: var(--is-blue-deep);
 }
 
@@ -92,7 +97,7 @@
   align-items: center;
   gap: var(--space-2);
   margin: 0;
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   color: var(--ink-soft);
 }
 
@@ -101,7 +106,7 @@
   align-items: center;
   gap: var(--space-2);
   margin: 0;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--ink-faint);
 }
 
@@ -195,4 +200,8 @@
 :root[data-motion="reduced"] .is-glow,
 :root[data-motion="reduced"] .is-wobble {
   animation: none;
+}
+
+.is-root :is(button, [role="button"], figure) {
+  scroll-margin-top: 96px;
 }

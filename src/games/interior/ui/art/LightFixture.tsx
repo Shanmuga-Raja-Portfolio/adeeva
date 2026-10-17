@@ -20,7 +20,7 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
       return (
         <g transform={`translate(${x} ${y})`}>
           <path d={`M0 ${-drop} L0 0`} stroke={INK} strokeWidth={line * 0.7} />
-          <circle cx={0} cy={u * 0.22} r={u * 0.42} fill={paper ? "#fff3c4" : "#d6f0ff"} opacity={0.5} />
+          <circle cx={0} cy={u * 0.22} r={u * 0.42} fill={paper ? "#fff3c4" : "#d6f0ff"} opacity={0.16} />
           {paper ? (
             <g>
               <circle cx={0} cy={u * 0.2} r={u * 0.22} fill="#fffaf0" stroke={INK} strokeWidth={line} />
@@ -56,7 +56,7 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
             strokeWidth={line * 1.6}
             strokeLinecap="round"
           />
-          <circle cx={u * 0.48} cy={-u * 1.45} r={u * 0.4} fill="#fff1b8" opacity={0.45} />
+          <circle cx={u * 0.48} cy={-u * 1.45} r={u * 0.4} fill="#fff1b8" opacity={0.16} />
           <path
             d={`M${u * 0.26} ${-u * 1.52} Q${u * 0.48} ${-u * 1.82} ${u * 0.7} ${-u * 1.52} Z`}
             fill="#c9a227"
@@ -85,7 +85,7 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
             strokeWidth={line * 1.4}
             strokeLinecap="round"
           />
-          <circle cx={u * 0.18} cy={-u * 0.46} r={u * 0.26} fill="#e6f7ff" opacity={0.5} />
+          <circle cx={u * 0.18} cy={-u * 0.46} r={u * 0.26} fill="#e6f7ff" opacity={0.16} />
           <path
             d={`M${u * 0.02} ${-u * 0.64} L${u * 0.26} ${-u * 0.56} L${u * 0.16} ${-u * 0.4} Z`}
             fill="#2a8c91"
@@ -97,7 +97,7 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
     case "brass-sconce":
       return (
         <g transform={`translate(${x} ${y})`}>
-          <circle cx={0} cy={-u * 0.1} r={u * 0.38} fill="#fff1b8" opacity={0.45} />
+          <circle cx={0} cy={-u * 0.1} r={u * 0.38} fill="#fff1b8" opacity={0.16} />
           <rect
             x={-u * 0.05}
             y={-u * 0.04}
@@ -148,7 +148,7 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
       return (
         <g transform={`translate(${x} ${y})`}>
           <path d={`M0 ${-drop} L0 0`} stroke={INK} strokeWidth={line * 0.7} />
-          <circle cx={0} cy={u * 0.26} r={u * 0.46} fill="#ffe7b0" opacity={0.5} />
+          <circle cx={0} cy={u * 0.26} r={u * 0.46} fill="#ffe7b0" opacity={0.16} />
           <ellipse
             cx={0}
             cy={u * 0.26}
@@ -186,7 +186,7 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
           />
           {[-0.24, 0, 0.24].map((share) => (
             <g key={share} transform={`translate(${share * u} ${u * 0.04}) rotate(${share * 60})`}>
-              <circle cx={0} cy={u * 0.3} r={u * 0.2} fill="#e6f7ff" opacity={0.45} />
+              <circle cx={0} cy={u * 0.3} r={u * 0.2} fill="#e6f7ff" opacity={0.16} />
               <path
                 d={`M${-u * 0.06} 0 L${u * 0.06} 0 L${u * 0.09} ${u * 0.16} L${-u * 0.09} ${u * 0.16} Z`}
                 fill="#3a3a40"
@@ -200,7 +200,7 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
     case "table-lamp":
       return (
         <g transform={`translate(${x} ${y})`}>
-          <circle cx={0} cy={-u * 0.4} r={u * 0.36} fill="#fff1b8" opacity={0.45} />
+          <circle cx={0} cy={-u * 0.4} r={u * 0.36} fill="#fff1b8" opacity={0.16} />
           <path
             d={`M${-u * 0.08} 0 L${u * 0.08} 0 L${u * 0.04} ${-u * 0.26} L${-u * 0.04} ${-u * 0.26} Z`}
             fill="#c9a227"
@@ -220,7 +220,7 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
         <g transform={`translate(${x} ${y})`}>
           <ellipse cx={0} cy={0} rx={u * 0.18} ry={u * 0.05} fill="#9fd0ee" stroke={INK} strokeWidth={line} />
           <path d={`M0 0 L0 ${-u * 1.25}`} stroke="#5b7a95" strokeWidth={line * 1.6} strokeLinecap="round" />
-          <circle cx={0} cy={-u * 1.42} r={u * 0.44} fill="#e6f7ff" opacity={0.45} />
+          <circle cx={0} cy={-u * 1.42} r={u * 0.44} fill="#e6f7ff" opacity={0.16} />
           <circle cx={0} cy={-u * 1.42} r={u * 0.2} fill="#f2fbff" stroke={INK} strokeWidth={line} />
           <circle cx={-u * 0.06} cy={-u * 1.48} r={u * 0.05} fill="#ffffff" />
         </g>
@@ -228,7 +228,7 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
     case "picture-light":
       return (
         <g transform={`translate(${x} ${y})`}>
-          <circle cx={0} cy={u * 0.1} r={u * 0.3} fill="#fff1b8" opacity={0.4} />
+          <circle cx={0} cy={u * 0.1} r={u * 0.3} fill="#fff1b8" opacity={0.16} />
           <rect
             x={-u * 0.04}
             y={-u * 0.1}
@@ -253,7 +253,7 @@ export function LightFixture({ lightId, x, y, unit, drop = 0 }: LightFixtureProp
     case "starry-nightlight":
       return (
         <g transform={`translate(${x} ${y})`}>
-          <circle cx={0} cy={-u * 0.22} r={u * 0.36} fill="#e9e1ff" opacity={0.45} />
+          <circle cx={0} cy={-u * 0.22} r={u * 0.36} fill="#e9e1ff" opacity={0.16} />
           <circle cx={0} cy={-u * 0.2} r={u * 0.17} fill="#b9a7dc" stroke={INK} strokeWidth={line} />
           {[0, 72, 144, 216, 288].map((turn) => (
             <circle

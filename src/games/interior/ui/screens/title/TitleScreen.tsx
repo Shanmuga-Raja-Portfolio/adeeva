@@ -63,74 +63,78 @@ export function TitleScreen({
             Back to studio
           </Button>
         </nav>
-        <section className="is-title__hero is-tape-card">
-          <Wordmark tagline="Turn empty rooms into places people love, up in the loft on Marigold Row." />
-          <div className="is-title__showcase" aria-hidden="true">
-            {SHOWCASE_LOOKS.map((look, index) => (
-              <RoomCutaway
-                key={look.roomId}
-                look={look}
-                title=""
-                className={`is-title__room is-title__room--${index}`}
-              />
-            ))}
-          </div>
-          <div className="is-title__menu">
-            {resume !== null && resume.kind === "ready" ? (
-              <Button
-                size="lg"
-                className="is-title__continue"
-                onClick={() => onLoad(resume.slot, resume.state)}
-              >
-                <span className="is-title__continue-label">Continue</span>
-                <span className="is-title__continue-meta">
-                  {resume.state.profile.name} · Day {resume.state.calendar.day},{" "}
-                  {weekdayName(resume.state.calendar.day)}
-                </span>
-              </Button>
-            ) : null}
-            <div className="is-title__menu-row">
-              <Button
-                size="lg"
-                variant={resume === null ? "primary" : "secondary"}
-                icon="sparkle"
-                onClick={startNew}
-              >
-                New Game
-              </Button>
-              <Button size="lg" variant="ghost" onClick={onOpenSettings}>
-                Settings
-              </Button>
+        <div className="is-title__stage">
+          <section className="is-title__hero is-tape-card">
+            <Wordmark tagline="Turn empty rooms into places people love, up in the loft on Marigold Row." />
+            <div className="is-title__showcase" aria-hidden="true">
+              {SHOWCASE_LOOKS.map((look, index) => (
+                <RoomCutaway
+                  key={look.roomId}
+                  look={look}
+                  title=""
+                  className={`is-title__room is-title__room--${index}`}
+                />
+              ))}
             </div>
-          </div>
-        </section>
-        {canSave ? null : (
-          <section className="is-title__offline" role="status" data-testid="saving-off">
-            <Icon name="lock" size={20} />
-            <div>
-              <strong>Saving is turned off in this browser.</strong>
-              <p>You can still design rooms, but your progress will not be kept after you close this page.</p>
+            <div className="is-title__menu">
+              {resume !== null && resume.kind === "ready" ? (
+                <Button
+                  size="lg"
+                  className="is-title__continue"
+                  onClick={() => onLoad(resume.slot, resume.state)}
+                >
+                  <span className="is-title__continue-label">Continue</span>
+                  <span className="is-title__continue-meta">
+                    {resume.state.profile.name} · Day {resume.state.calendar.day},{" "}
+                    {weekdayName(resume.state.calendar.day)}
+                  </span>
+                </Button>
+              ) : null}
+              <div className="is-title__menu-row">
+                <Button
+                  size="lg"
+                  variant={resume === null ? "primary" : "secondary"}
+                  icon="sparkle"
+                  onClick={startNew}
+                >
+                  New Game
+                </Button>
+                <Button size="lg" variant="secondary" icon="gear" onClick={onOpenSettings}>
+                  Settings
+                </Button>
+              </div>
             </div>
           </section>
-        )}
-        <section className="is-title__slots" aria-labelledby="is-title-slots" hidden={!canSave}>
-          <h2 id="is-title-slots" className="is-title__slots-heading">
-            Your saves
-          </h2>
-          <div className="is-title__slot-row">
-            {slots.map((read) => (
-              <SaveSlotCard
-                key={read.slot}
-                read={read}
-                onLoad={() => {
-                  if (read.kind === "ready") onLoad(read.slot, read.state);
-                }}
-                onNewGame={() => requestNewGame(read)}
-                onDelete={() => setPending({ kind: "delete", read })}
-              />
-            ))}
-          </div>
-        </section>
+          {canSave ? null : (
+            <section className="is-title__offline" role="status" data-testid="saving-off">
+              <Icon name="lock" size={20} />
+              <div>
+                <strong>Saving is turned off in this browser.</strong>
+                <p>
+                  You can still design rooms, but your progress will not be kept after you close this page.
+                </p>
+              </div>
+            </section>
+          )}
+          <section className="is-title__slots" aria-labelledby="is-title-slots" hidden={!canSave}>
+            <h2 id="is-title-slots" className="is-title__slots-heading">
+              Your saves
+            </h2>
+            <div className="is-title__slot-row">
+              {slots.map((read) => (
+                <SaveSlotCard
+                  key={read.slot}
+                  read={read}
+                  onLoad={() => {
+                    if (read.kind === "ready") onLoad(read.slot, read.state);
+                  }}
+                  onNewGame={() => requestNewGame(read)}
+                  onDelete={() => setPending({ kind: "delete", read })}
+                />
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
 
       <Dialog open={pending.kind === "pick-slot"} title="Choose a save slot" onClose={closePending}>

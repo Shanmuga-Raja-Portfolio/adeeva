@@ -134,9 +134,11 @@ export function HomeScreen({
             <span data-testid="home-coins">
               <StatChip kind="coins" value={state.coins} />
             </span>
-            <span className="is-purse-chip" data-testid="home-purse">
-              Purse {purseLeft(project)}
-            </span>
+            {project.stage === "rooms" ? null : (
+              <span className="is-purse-chip" data-testid="home-purse">
+                Purse {purseLeft(project)}
+              </span>
+            )}
             <Button variant="ghost" size="sm" onClick={onOpenSettings}>
               Settings
             </Button>

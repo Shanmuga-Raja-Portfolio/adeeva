@@ -15,7 +15,7 @@
 }
 
 .is-home__header {
-  background: linear-gradient(90deg, var(--is-olive), #5c6733);
+  background: linear-gradient(90deg, #6b773c, #4c5727);
 }
 
 .is-home__rail {
@@ -297,201 +297,6 @@
   opacity: 0.5;
 }
 
-.is-rooms__layout {
-  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
-}
-
-.is-rooms__cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-3);
-}
-
-.is-room-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  background: var(--card);
-  border: 2px solid var(--paper-edge);
-  box-shadow: var(--shadow-sm);
-}
-
-.is-room-card--ready {
-  border-color: var(--is-olive);
-  background: radial-gradient(circle at 90% 10%, rgba(246, 215, 122, 0.4), transparent 45%), var(--card);
-}
-
-.is-room-card__head h3 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-}
-
-.is-room-card__stage {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--ink-soft);
-}
-
-.is-room-card__stage--ready {
-  color: var(--is-olive);
-}
-
-.is-room-card__cutaway {
-  width: 100%;
-  height: auto;
-  border-radius: var(--radius-sm);
-  background: var(--is-paper);
-}
-
-.is-room-card__empty {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 640 / 420;
-  border-radius: var(--radius-sm);
-  background:
-    repeating-linear-gradient(45deg, rgba(60, 106, 168, 0.08) 0 10px, transparent 10px 20px), var(--is-paper);
-  color: var(--is-blue);
-}
-
-.is-room-card__crew {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin: 0;
-  padding: var(--space-2);
-  border-radius: var(--radius-sm);
-  background: var(--is-sun-soft);
-  font-weight: 700;
-}
-
-.is-room-card__assign {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.is-rooms__side {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.is-purse {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
-}
-
-.is-purse h2 {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
-  font-size: var(--text-xl);
-}
-
-.is-purse p {
-  margin: 0;
-}
-
-.is-crew {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border-radius: var(--radius-md);
-  background: var(--card);
-  border: 2px solid var(--is-blue-soft);
-}
-
-.is-crew h2 {
-  margin: 2px 0;
-}
-
-.is-crew p {
-  margin: 0;
-}
-
-.is-crew__list,
-.is-crew__hire {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.is-crew__member {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  border-radius: var(--radius-sm);
-  background: var(--is-paper);
-}
-
-.is-crew__member > .ad-button {
-  grid-column: 1 / -1;
-  justify-self: start;
-}
-
-.is-crew__body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.is-crew__busy {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--is-terracotta-deep);
-}
-
-.is-crew__hire li {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.is-crew__hire li > span {
-  display: flex;
-  flex-direction: column;
-}
-
-.is-crew__coach {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.is-crew-coach {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.is-crew-coach p {
-  margin: 0;
-}
-
-.is-crew-coach__buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
 .is-coach-floor__area {
   width: 100%;
   max-width: 560px;
@@ -656,5 +461,22 @@
 
   .is-home__rail {
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 700px) {
+  .is-front {
+    grid-template-columns: 1fr;
+  }
+
+  .is-front__street {
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 180px;
+  }
+
+  .is-front__note {
+    grid-column: 1;
+    grid-row: 2;
   }
 }

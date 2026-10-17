@@ -1,21 +1,18 @@
 import type { CSSProperties } from "react";
 import type { AvatarLook } from "../../../../../engine/avatar";
+import type { AvatarPose } from "../../../../../ui/art/avatar/ArmPose";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { clampUnit, easeInOut, easeOut, window01 } from "../../../../../ui/kit/easing";
 import type { HomeStoryDef } from "../../../content/homeStory";
 import { VISITOR_ECHOES } from "../../../content/visitor";
-import type { Cell } from "../../../content/furniture";
-import {
-  glowPath,
-  placedLights,
-  runRoom,
-  walkPath,
-  walkThrough,
-  type MakeoverRun,
-  type PlacedDecor,
-} from "../../../core";
+import { glowPath, placedLights, runRoom, type MakeoverRun, type PlacedDecor } from "../../../core";
 import { cutawayFrame, floorPoint } from "../../art/cutawayFrame";
 import { RoomCutaway } from "../../art/RoomCutaway";
+import { roomHex } from "../../art/roomHex";
+import { PartyBunting } from "./PartyBunting";
+import { OpenHouseTreats } from "./OpenHouseTreats";
+import { treatSpots } from "./treatSpots";
+import { visitorSpots } from "./visitorSpots";
 import { BARE, FINISHED, roomLook } from "../../art/roomLook";
 
 export interface StripRoom {
@@ -35,25 +32,34 @@ interface HomeStripProps {
   readonly story: HomeStoryDef;
 }
 
-function roomPath(run: MakeoverRun): readonly Cell[] {
-  const room = runRoom(run);
-  const toDoor = walkPath(room, run.plan.pieces);
-  if (toDoor !== null) return toDoor;
-  const reached = [...walkThrough(room, run.plan.pieces, 1).reached];
-  return reached.map((key): Cell => {
-    const [col, row] = key.split(",").map(Number);
-    return [col ?? 0, row ?? 0];
-  });
-}
+const POSES: readonly AvatarPose[] = ["point", "cheer", "chat", "wave", "graceful"];
+const VISITORS_IN_ROOM = 4;
+const BUILD = 1.24;
 
-function along(path: readonly Cell[], progress: number): readonly [number, number] {
-  if (path.length === 0) return [0, 0];
-  const exact = clampUnit(progress) * (path.length - 1);
-  const index = Math.floor(exact);
-  const from = path[index] ?? path[0] ?? [0, 0];
-  const to = path[Math.min(path.length - 1, index + 1)] ?? from;
-  const share = exact - index;
-  return [from[0] + (to[0] - from[0]) * share, from[1] + (to[1] - from[1]) * share];
+function Reaction({ x, y, kind, size }: { x: number; y: number; kind: number; size: number }) {
+  const scale = size / 14;
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale.toFixed(2)})`}>
+      <circle r={10} fill="#fffaf2" opacity={0.85} />
+      {kind % 2 === 0 ? (
+        <path
+          d="M0 5 C-8 -1 -7 -9 0 -4.5 C7 -9 8 -1 0 5 Z"
+          fill="#e8546a"
+          stroke="#7a2232"
+          strokeWidth={1.2}
+          strokeLinejoin="round"
+        />
+      ) : (
+        <path
+          d="M0 -8 L2.2 -2.2 L8 0 L2.2 2.2 L0 8 L-2.2 2.2 L-8 0 L-2.2 -2.2 Z"
+          fill="#ffd95a"
+          stroke="#b07f12"
+          strokeWidth={1.2}
+          strokeLinejoin="round"
+        />
+      )}
+    </g>
+  );
 }
 
 function Visitors({
@@ -61,36 +67,72 @@ function Visitors({
   t,
   still,
   visitors,
+  cloth,
 }: {
   run: MakeoverRun;
   t: number;
   still: boolean;
   visitors: readonly AvatarLook[];
+  cloth: string;
 }) {
   const room = runRoom(run);
   const frame = cutawayFrame(room);
-  const path = roomPath(run);
-  const height = frame.cell * 1.8;
+  const spots = visitorSpots(room, run.plan.pieces, Math.min(VISITORS_IN_ROOM, visitors.length));
+  const treats = treatSpots(room, run.plan.pieces, spots);
+  const door: readonly [number, number] = [room.doorCol + 1, room.rows - 0.4];
+  const height = frame.cell * 2;
+  const placed = spots
+    .map((spot, index) => {
+      const raw = clampUnit(t * 2.2 - index * 0.12);
+      const arrive = still ? 1 : easeInOut(raw);
+      const col = door[0] + (spot[0] + 0.5 - door[0]) * arrive;
+      const row = door[1] + (spot[1] + 0.55 - door[1]) * arrive;
+      return { index, col, row, arrive, raw };
+    })
+    .sort((a, b) => a.row - b.row);
   return (
     <g pointerEvents="none">
-      {visitors.map((look, index) => {
-        const raw = clampUnit(t * 1.3 - index * 0.09);
-        const stop = Math.max(0.3, 1 - index * 0.12);
-        const progress = still ? clampUnit(0.25 + index * 0.12) : stop * easeInOut(raw);
-        const [col, row] = along(path, progress);
-        const bob = still ? 0 : Math.abs(Math.sin(raw * 18 + index)) * frame.cell * 0.08;
-        const spreadCol = ((index % 3) - 1) * 0.55;
-        const spreadRow = Math.floor(index / 3) * 0.5 - 0.1;
-        const [x, y] = floorPoint(frame, col + 0.5 + spreadCol, row + 0.62 + spreadRow);
+      {placed.map(({ index, col, row, arrive, raw }) => {
+        const look = visitors[index];
+        if (look === undefined) return null;
+        const [x, y] = floorPoint(frame, col, row);
+        const bob = still || arrive >= 1 ? 0 : Math.abs(Math.sin(raw * 18 + index)) * frame.cell * 0.08;
+        const flip = index % 2 === 1 ? -1 : 1;
         return (
-          <g
-            key={index}
-            transform={`translate(${(x - height / 4).toFixed(1)} ${(y - height - bob).toFixed(1)})`}
-          >
-            <Avatar look={look} variant="full" size={height} mood="delighted" title="Visitor" />
+          <g key={index} transform={`translate(${x.toFixed(1)} ${(y - bob).toFixed(1)})`}>
+            <ellipse cx={0} cy={0} rx={height * 0.2} ry={height * 0.05} fill="#2b2230" opacity={0.22} />
+            <g
+              transform={`rotate(${((index % 3) - 1) * 3}) scale(${flip * BUILD} 1) translate(${(-height / 4).toFixed(1)} ${(-height).toFixed(1)})`}
+            >
+              <Avatar
+                look={look}
+                variant="full"
+                size={height}
+                mood={index % 3 === 0 ? "delighted" : "happy"}
+                pose={POSES[index % POSES.length]}
+                title="Visitor"
+              />
+            </g>
+            {still || raw >= 0.5 ? (
+              <g opacity={still ? 1 : window01(raw, 0.5, 0.8)}>
+                <Reaction
+                  x={height * 0.2}
+                  y={-height * 1.06 - (still ? 0 : Math.sin(t * 9 + index) * frame.cell * 0.06)}
+                  kind={index}
+                  size={frame.cell * 0.42}
+                />
+              </g>
+            ) : null}
           </g>
         );
       })}
+      <OpenHouseTreats
+        frame={frame}
+        table={treats.table}
+        easel={treats.easel}
+        cloth={cloth}
+        shown={still ? 1 : window01(t, 0.05, 0.25)}
+      />
     </g>
   );
 }
@@ -153,13 +195,22 @@ function StoryBubbles({
   };
   const width = Math.min(600, Math.max(160, first.line.length * 9 + 28));
   const x = Math.min(640 - width - 8, Math.max(8, first.item.x - width / 2));
-  const below = first.item.y + 92 <= 420;
-  const y = below ? Math.min(420 - 48, first.item.y + 44) : Math.max(10, first.item.y - 96);
-  const tail = below ? y : y + 40;
-  const tip = below ? y - 14 : y + 54;
+  const y = 6;
+  const tail = y + 40;
+  const tip = y + 54;
+  const tailX = Math.min(x + width - 24, Math.max(x + 24, first.item.x));
   return (
     <g pointerEvents="none" opacity={shown} data-testid="story-bubble">
-      <circle cx={first.item.x} cy={first.item.y} r={26} fill="#fff4c2" opacity={0.6} />
+      <circle
+        cx={first.item.x}
+        cy={first.item.y}
+        r={28}
+        fill="none"
+        stroke="#f6c94c"
+        strokeWidth={3}
+        strokeDasharray="6 5"
+        opacity={0.9}
+      />
       <path
         d={`M${first.item.x - 6} ${first.item.y - 30} l6 -6 l6 6 l-6 6 Z`}
         fill="#ffffff"
@@ -167,7 +218,7 @@ function StoryBubbles({
       />
       <rect x={x} y={y} width={width} height={40} rx={18} fill="#fffdf9" stroke="#3b2a33" strokeWidth={2} />
       <path
-        d={`M${first.item.x - 8} ${tail} L${first.item.x} ${tip} L${first.item.x + 8} ${tail} Z`}
+        d={`M${tailX - 8} ${tail - 1} L${tailX} ${tip} L${tailX + 8} ${tail - 1} Z`}
         fill="#fffdf9"
         stroke="#3b2a33"
         strokeWidth={2}
@@ -220,8 +271,19 @@ export function HomeStrip({
                           opacity={0.55 * (1 - lightsOn)}
                           pointerEvents="none"
                         />
+                        <PartyBunting
+                          frame={cutawayFrame(runRoom(entry.run))}
+                          colours={story.palette.map((colour) => roomHex(colour))}
+                          shown={lightsOn}
+                        />
                         <GlowSteps run={entry.run} t={t} still={still} />
-                        <Visitors run={entry.run} t={t} still={still} visitors={visitors} />
+                        <Visitors
+                          run={entry.run}
+                          t={t}
+                          still={still}
+                          visitors={visitors}
+                          cloth={roomHex(story.palette[1] ?? story.palette[0] ?? "ivory")}
+                        />
                         <StoryBubbles
                           run={entry.run}
                           earlier={rooms.slice(0, index).map((other) => other.run)}

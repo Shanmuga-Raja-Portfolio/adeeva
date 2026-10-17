@@ -27,6 +27,10 @@ import {
 } from "../../../core";
 import { useSvgId } from "../../../../../ui/art/useSvgId";
 import { BARE_WALL } from "../../art/roomHex";
+import { CoatLegend } from "./CoatLegend";
+import { PaintRoller } from "./PaintRoller";
+import { ROLL_ROOM, RollRoomBack, RollWindowLight } from "./RollRoom";
+import { WetDrips } from "./WetDrips";
 
 interface RollWallProps {
   readonly state: GameState;
@@ -164,6 +168,24 @@ export function RollWall({ state, run, wall, colour, lowerColour, dispatch }: Ro
   };
 
   const trail = stroke?.points ?? [];
+  const drips = Array.from({ length: ROLL_COLUMNS * (ROLL_ROWS - 1) }, (_, cell) => cell).flatMap((cell) => {
+    const below = cell + ROLL_COLUMNS;
+    if (!isPaintable(run, wall, cell) || (record.passes[cell] ?? 0) === 0) return [];
+    if (!isPaintable(run, wall, below) || (record.passes[below] ?? 0) > 0) return [];
+    return [
+      {
+        x: (cell % ROLL_COLUMNS) * ROLL_CELL_PX,
+        y: Math.floor(cell / ROLL_COLUMNS) * ROLL_CELL_PX,
+        colour: cellColour(cell),
+      },
+    ];
+  });
+  const view = [
+    -ROLL_ROOM.left,
+    -ROLL_ROOM.top,
+    ROLL_CANVAS.width + ROLL_ROOM.left * 2,
+    ROLL_CANVAS.height + ROLL_ROOM.top + ROLL_ROOM.bottom,
+  ];
   return (
     <div
       className="is-roll"
@@ -174,9 +196,9 @@ export function RollWall({ state, run, wall, colour, lowerColour, dispatch }: Ro
       <svg
         ref={svgRef}
         className="is-roll__wall"
-        viewBox={`0 0 ${ROLL_CANVAS.width} ${ROLL_CANVAS.height}`}
-        width={ROLL_CANVAS.width}
-        height={ROLL_CANVAS.height}
+        viewBox={view.join(" ")}
+        width={view[2]}
+        height={view[3]}
         onPointerDown={down}
         onPointerMove={move}
         onPointerUp={up}
@@ -186,9 +208,19 @@ export function RollWall({ state, run, wall, colour, lowerColour, dispatch }: Ro
         aria-label={`Wall to roll, ${Math.round(coated * 100)}% painted`}
       >
         <defs>
-          <pattern id={`${patternId}-streak`} width={18} height={64} patternUnits="userSpaceOnUse">
-            <rect width={18} height={64} fill={colour} opacity={0.62} />
-            <rect x={11} width={4} height={64} fill={BARE_WALL} opacity={0.55} />
+          <pattern id={`${patternId}-streak`} width={58} height={64} patternUnits="userSpaceOnUse">
+            <rect width={58} height={64} fill={colour} opacity={0.7} />
+            <rect x={9} width={5} height={64} fill={BARE_WALL} opacity={0.5} />
+            <rect x={22} width={2.5} height={64} fill={BARE_WALL} opacity={0.35} />
+            <rect x={37} width={7} height={64} fill={BARE_WALL} opacity={0.45} />
+            <rect x={50} width={3} height={64} fill={colour} opacity={0.6} />
+          </pattern>
+          <pattern id={`${patternId}-nap`} width={22} height={22} patternUnits="userSpaceOnUse">
+            <circle cx={4} cy={5} r={1.3} fill="#ffffff" opacity={0.22} />
+            <circle cx={15} cy={9} r={1} fill="#1c1220" opacity={0.08} />
+            <circle cx={9} cy={17} r={1.4} fill="#ffffff" opacity={0.16} />
+            <circle cx={19} cy={19} r={0.9} fill="#1c1220" opacity={0.1} />
+            <path d="M1 12 h5 M12 2 h4" stroke="#ffffff" strokeOpacity={0.18} strokeWidth={1} />
           </pattern>
           <linearGradient id={`${patternId}-sheen`} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stopColor="#ffffff" stopOpacity={0.32} />
@@ -201,105 +233,120 @@ export function RollWall({ state, run, wall, colour, lowerColour, dispatch }: Ro
             <circle cx={17} cy={15} r={1} fill="#cbc5c1" />
             <circle cx={11} cy={21} r={0.8} fill="#a39b97" />
           </pattern>
+          <clipPath id={`${patternId}-clip`}>
+            <rect width={ROLL_CANVAS.width} height={ROLL_CANVAS.height} />
+          </clipPath>
         </defs>
+        <RollRoomBack width={ROLL_CANVAS.width} height={ROLL_CANVAS.height} colour={colour} id={patternId} />
         <rect width={ROLL_CANVAS.width} height={ROLL_CANVAS.height} fill={`url(#${patternId}-plaster)`} />
-        {Array.from({ length: ROLL_COLUMNS * ROLL_ROWS }, (_, cell) => {
-          const x = (cell % ROLL_COLUMNS) * ROLL_CELL_PX;
-          const y = Math.floor(cell / ROLL_COLUMNS) * ROLL_CELL_PX;
-          if (!isPaintable(run, wall, cell)) return null;
-          const passes = record.passes[cell] ?? 0;
-          return passes === 0 ? null : (
+        <g clipPath={`url(#${patternId}-clip)`}>
+          {Array.from({ length: ROLL_COLUMNS * ROLL_ROWS }, (_, cell) => {
+            const x = (cell % ROLL_COLUMNS) * ROLL_CELL_PX;
+            const y = Math.floor(cell / ROLL_COLUMNS) * ROLL_CELL_PX;
+            if (!isPaintable(run, wall, cell)) return null;
+            const passes = record.passes[cell] ?? 0;
+            return passes === 0 ? null : (
+              <g key={cell} className="is-roll__coat">
+                <rect
+                  x={x - 2}
+                  y={y - 2}
+                  width={ROLL_CELL_PX + 4}
+                  height={ROLL_CELL_PX + 4}
+                  fill={passes >= 2 ? cellColour(cell) : `url(#${patternId}-streak)`}
+                />
+                <rect
+                  x={x}
+                  y={y}
+                  width={ROLL_CELL_PX}
+                  height={ROLL_CELL_PX}
+                  fill={`url(#${patternId}-nap)`}
+                />
+              </g>
+            );
+          })}
+          {coated > 0 ? (
             <rect
-              key={cell}
-              x={x - 2}
-              y={y - 2}
-              width={ROLL_CELL_PX + 4}
-              height={ROLL_CELL_PX + 4}
-              fill={passes >= 2 ? cellColour(cell) : `url(#${patternId}-streak)`}
-              className="is-roll__coat"
-            />
-          );
-        })}
-        {coated > 0 ? (
-          <rect
-            width={ROLL_CANVAS.width}
-            height={ROLL_CANVAS.height}
-            fill={`url(#${patternId}-sheen)`}
-            pointerEvents="none"
-          />
-        ) : null}
-        {hasWindow(run, wall) ? (
-          <g>
-            <rect
-              x={3 * ROLL_CELL_PX + 6}
-              y={ROLL_CELL_PX + 6}
-              width={ROLL_CELL_PX * 2 - 12}
-              height={ROLL_CELL_PX * 2 - 12}
-              fill="#bfe3f6"
-              stroke="#fffaf2"
-              strokeWidth={8}
-            />
-            <path
-              d={`M${4 * ROLL_CELL_PX} ${ROLL_CELL_PX + 6} L${4 * ROLL_CELL_PX} ${3 * ROLL_CELL_PX - 6}`}
-              stroke="#fffaf2"
-              strokeWidth={5}
-            />
-          </g>
-        ) : null}
-        <g stroke="#3b2a33" strokeOpacity={0.07}>
-          {Array.from({ length: ROLL_COLUMNS - 1 }, (_, index) => (
-            <path
-              key={`v${index}`}
-              d={`M${(index + 1) * ROLL_CELL_PX} 0 L${(index + 1) * ROLL_CELL_PX} ${ROLL_CANVAS.height}`}
-            />
-          ))}
-          {Array.from({ length: ROLL_ROWS - 1 }, (_, index) => (
-            <path
-              key={`h${index}`}
-              d={`M0 ${(index + 1) * ROLL_CELL_PX} L${ROLL_CANVAS.width} ${(index + 1) * ROLL_CELL_PX}`}
-            />
-          ))}
-        </g>
-        {zoned ? (
-          <g pointerEvents="none" data-testid="mid-tape">
-            <rect
-              x={0}
-              y={TOP_ZONE_ROWS * ROLL_CELL_PX - 5}
               width={ROLL_CANVAS.width}
-              height={10}
-              fill="#7fb1e6"
-              opacity={0.85}
+              height={ROLL_CANVAS.height}
+              fill={`url(#${patternId}-sheen)`}
+              pointerEvents="none"
             />
-            <text x={12} y={TOP_ZONE_ROWS * ROLL_CELL_PX - 10} className="is-roll__zone">
-              top half
-            </text>
-            <text x={12} y={TOP_ZONE_ROWS * ROLL_CELL_PX + 22} className="is-roll__zone">
-              bottom half
-            </text>
+          ) : null}
+          <WetDrips cells={drips} size={ROLL_CELL_PX} />
+          <RollWindowLight width={ROLL_CANVAS.width} height={ROLL_CANVAS.height} id={patternId} />
+          {hasWindow(run, wall) ? (
+            <g>
+              <rect
+                x={3 * ROLL_CELL_PX + 6}
+                y={ROLL_CELL_PX + 6}
+                width={ROLL_CELL_PX * 2 - 12}
+                height={ROLL_CELL_PX * 2 - 12}
+                fill="#bfe3f6"
+                stroke="#fffaf2"
+                strokeWidth={8}
+              />
+              <path
+                d={`M${4 * ROLL_CELL_PX} ${ROLL_CELL_PX + 6} L${4 * ROLL_CELL_PX} ${3 * ROLL_CELL_PX - 6}`}
+                stroke="#fffaf2"
+                strokeWidth={5}
+              />
+            </g>
+          ) : null}
+          <g stroke="#3b2a33" strokeOpacity={0.07}>
+            {Array.from({ length: ROLL_COLUMNS - 1 }, (_, index) => (
+              <path
+                key={`v${index}`}
+                d={`M${(index + 1) * ROLL_CELL_PX} 0 L${(index + 1) * ROLL_CELL_PX} ${ROLL_CANVAS.height}`}
+              />
+            ))}
+            {Array.from({ length: ROLL_ROWS - 1 }, (_, index) => (
+              <path
+                key={`h${index}`}
+                d={`M0 ${(index + 1) * ROLL_CELL_PX} L${ROLL_CANVAS.width} ${(index + 1) * ROLL_CELL_PX}`}
+              />
+            ))}
           </g>
-        ) : null}
-        {streak !== null ? (
-          <polyline
-            points={streak.map(([x, y]) => `${x},${y}`).join(" ")}
-            fill="none"
-            stroke="#fffaf2"
-            strokeOpacity={0.6}
-            strokeWidth={50}
-            strokeLinecap="round"
-            strokeDasharray="2 10"
-          />
-        ) : null}
-        {trail.length > 1 ? (
-          <polyline
-            points={trail.map(([x, y]) => `${x},${y}`).join(" ")}
-            fill="none"
-            stroke={rollerColour}
-            strokeOpacity={run.roller === 0 ? 0.15 : 0.45}
-            strokeWidth={64}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        ) : null}
+          {zoned ? (
+            <g pointerEvents="none" data-testid="mid-tape">
+              <rect
+                x={0}
+                y={TOP_ZONE_ROWS * ROLL_CELL_PX - 5}
+                width={ROLL_CANVAS.width}
+                height={10}
+                fill="#7fb1e6"
+                opacity={0.85}
+              />
+              <text x={12} y={TOP_ZONE_ROWS * ROLL_CELL_PX - 10} className="is-roll__zone">
+                top half
+              </text>
+              <text x={12} y={TOP_ZONE_ROWS * ROLL_CELL_PX + 22} className="is-roll__zone">
+                bottom half
+              </text>
+            </g>
+          ) : null}
+          {streak !== null ? (
+            <polyline
+              points={streak.map(([x, y]) => `${x},${y}`).join(" ")}
+              fill="none"
+              stroke="#fffaf2"
+              strokeOpacity={0.6}
+              strokeWidth={50}
+              strokeLinecap="round"
+              strokeDasharray="2 10"
+            />
+          ) : null}
+          {trail.length > 1 ? (
+            <polyline
+              points={trail.map(([x, y]) => `${x},${y}`).join(" ")}
+              fill="none"
+              stroke={rollerColour}
+              strokeOpacity={run.roller === 0 ? 0.15 : 0.45}
+              strokeWidth={64}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          ) : null}
+        </g>
         {record.splats.map(([x, y], index) => (
           <g key={index} transform={`translate(${x} ${y})`}>
             <g className={reducedMotion ? "" : "is-splat"}>
@@ -324,35 +371,13 @@ export function RollWall({ state, run, wall, colour, lowerColour, dispatch }: Ro
           </g>
         ) : null}
         {roller !== null ? (
-          <g transform={`translate(${roller[0]} ${roller[1]})`} pointerEvents="none">
-            <rect
-              x={-36}
-              y={-14}
-              width={72}
-              height={28}
-              rx={12}
-              fill={run.roller > 0 ? rollerColour : "#f4ecd8"}
-              stroke="#3b2a33"
-              strokeWidth={3}
-            />
-            <path
-              d="M0 14 L0 30 L22 36 L22 70"
-              fill="none"
-              stroke="#3b2a33"
-              strokeWidth={5}
-              strokeLinecap="round"
-            />
-            <rect
-              x={16}
-              y={62}
-              width={12}
-              height={34}
-              rx={5}
-              fill="#3c6aa8"
-              stroke="#3b2a33"
-              strokeWidth={3}
-            />
-          </g>
+          <PaintRoller
+            x={roller[0]}
+            y={roller[1]}
+            colour={rollerColour}
+            loaded={run.roller > 0}
+            still={reducedMotion}
+          />
         ) : null}
       </svg>
       <div className="is-roll__side">
@@ -402,12 +427,14 @@ export function RollWall({ state, run, wall, colour, lowerColour, dispatch }: Ro
           valueText={`${Math.round(coated * 100)}%`}
         />
         <p className="is-roll__stats">
-          Splats {record.splats.length} · Dry streaks {record.dryStrokes}
-          {zoned ? ` · Smudges ${record.smudges}` : ""}
+          <span className="is-roll__stat">Splats {record.splats.length}</span>
+          <span className="is-roll__stat">Dry streaks {record.dryStrokes}</span>
+          {zoned ? <span className="is-roll__stat">Smudges {record.smudges}</span> : null}
         </p>
         <p className="is-roll__hint" role="status" aria-live="polite">
           {hint ?? "Roll slowly. Two coats make it perfect."}
         </p>
+        <CoatLegend colour={colour} />
       </div>
     </div>
   );

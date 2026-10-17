@@ -30,6 +30,17 @@
   box-shadow: 0 4px 14px rgba(30, 40, 70, 0.25);
 }
 
+.is-makeover-header::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: linear-gradient(180deg, var(--paper) 30%, transparent);
+  pointer-events: none;
+}
+
 .is-makeover-header .ad-button--ghost {
   color: #ffffff;
 }
@@ -39,7 +50,11 @@
 }
 
 .is-makeover-header__title .ad-eyebrow {
-  color: var(--is-sun);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff3c8;
+  text-shadow: 0 1px 2px rgba(20, 24, 40, 0.45);
 }
 
 .is-makeover-header__title h1 {
@@ -89,7 +104,7 @@
   background: transparent;
   color: var(--ink-faint);
   font: inherit;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 700;
 }
 
@@ -249,13 +264,22 @@ button.is-rail__button:hover {
 .is-footer__status {
   flex: 1;
   min-width: 200px;
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
+}
+
+.is-footer__lock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 4px;
+  font-weight: 800;
+  color: var(--is-blue-deep);
 }
 
 .is-footer__status ul {
   margin: 0;
-  padding-left: 18px;
-  color: var(--ink-soft);
+  padding-left: 22px;
+  color: var(--ink);
 }
 
 .is-footer__ready {

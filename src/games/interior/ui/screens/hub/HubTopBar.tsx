@@ -26,10 +26,10 @@ export function HubTopBar({ state, onOpenSettings, onExit }: HubTopBarProps) {
           <StatChip kind="coins" value={state.coins} />
         </span>
         <span data-testid="stat-reputation">
-          <StatChip kind="reputation" value={state.reputation} />
+          <StatChip kind="reputation" value={state.reputation} showLabel />
         </span>
         <span data-testid="stat-buzz">
-          <StatChip kind="buzz" value={state.buzz} />
+          <StatChip kind="buzz" value={state.buzz} showLabel />
         </span>
       </div>
       <div className="is-hub-bar__actions">

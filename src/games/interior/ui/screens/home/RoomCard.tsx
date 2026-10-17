@@ -8,13 +8,17 @@ import {
   crewWage,
   isRoomReady,
   openHomeRoomIssue,
+  plotById,
   purposeById,
+  roomById,
   workSkill,
   type GameState,
   type MakeoverRun,
   type Project,
   type Action,
 } from "../../../core";
+import { cutawayFrame } from "../../art/cutawayFrame";
+import { MovingBoxes } from "../../art/MovingBoxes";
 import { RoomCutaway } from "../../art/RoomCutaway";
 import { BARE, FINISHED, roomLook } from "../../art/roomLook";
 
@@ -48,6 +52,7 @@ export function RoomCard({ state, project, index, dispatch, onOpen }: RoomCardPr
   const once = useDispatchOnce(state, dispatch);
   const purposeId = project.map.spaces[index] ?? "hall";
   const purpose = purposeById(purposeId);
+  const space = plotById(project.plotId).spaces[index] ?? { roomId: "living-room" as const };
   const run = project.rooms[index] ?? null;
   const open =
     state.activeRun !== null &&
@@ -76,8 +81,25 @@ export function RoomCard({ state, project, index, dispatch, onOpen }: RoomCardPr
         </span>
       </header>
       {shown === null ? (
-        <div className="is-room-card__empty" aria-hidden="true">
-          <Icon name="home" size={36} />
+        <div className="is-room-card__waiting">
+          <RoomCutaway
+            look={{
+              roomId: space.roomId,
+              backWall: null,
+              backLower: null,
+              sideWall: null,
+              floor: null,
+              pieces: [],
+              soft: "#e9c7b8",
+              lights: [],
+              decor: [],
+            }}
+            title={`${purpose.name}, empty and waiting`}
+            className="is-room-card__cutaway"
+          >
+            <MovingBoxes frame={cutawayFrame(roomById(space.roomId))} />
+          </RoomCutaway>
+          <span className="is-room-card__tag">Empty and waiting</span>
         </div>
       ) : (
         <RoomCutaway
@@ -90,6 +112,11 @@ export function RoomCard({ state, project, index, dispatch, onOpen }: RoomCardPr
         <p className="is-room-card__crew" data-testid={`crew-job-${index}`}>
           <Icon name="sparkle" size={16} /> {crewById(job.crewId).name.split(" ")[0]} {JOB_VERBS[job.job]}{" "}
           tonight.
+        </p>
+      ) : null}
+      {ready ? (
+        <p className="is-room-card__done">
+          <Icon name="check" size={18} /> Ready for the Open House
         </p>
       ) : null}
       {open !== null ? (

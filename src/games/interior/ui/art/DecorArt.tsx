@@ -31,13 +31,48 @@ export function DecorArt({ decorId, soft }: DecorArtProps) {
     case "potted-fern":
       return (
         <g>
-          <ellipse cx={0} cy={26} rx={20} ry={5} fill="#2b2230" opacity={0.15} />
-          <path d="M-14 6 L14 6 L10 26 L-10 26 Z" fill="#c8664a" stroke={INK} strokeWidth={2} />
-          <g fill="#3d9a68" stroke="#1f7a55" strokeWidth={1.5}>
-            <path d="M0 6 C-24 -6 -28 -22 -22 -28 C-14 -16 -6 -6 0 6 Z" />
-            <path d="M0 6 C22 -4 28 -20 24 -28 C14 -18 6 -6 0 6 Z" />
-            <path d="M0 6 C-4 -14 -2 -30 4 -36 C8 -22 6 -8 0 6 Z" />
+          <ellipse cx={0} cy={22} rx={17} ry={4.5} fill="#2b2230" opacity={0.18} />
+          <g strokeLinejoin="round">
+            <path
+              d="M0 6 C-20 0 -27 -10 -26 -16 C-16 -10 -8 -3 0 6 Z"
+              fill="#2f7d55"
+              stroke="#1d5a3c"
+              strokeWidth={1.3}
+            />
+            <path
+              d="M0 6 C20 0 27 -10 26 -16 C16 -10 8 -3 0 6 Z"
+              fill="#2f7d55"
+              stroke="#1d5a3c"
+              strokeWidth={1.3}
+            />
+            <path
+              d="M0 6 C-14 -6 -16 -20 -11 -26 C-6 -16 -3 -6 0 6 Z"
+              fill="#45a46f"
+              stroke="#1d5a3c"
+              strokeWidth={1.3}
+            />
+            <path
+              d="M0 6 C14 -6 16 -20 11 -26 C6 -16 3 -6 0 6 Z"
+              fill="#45a46f"
+              stroke="#1d5a3c"
+              strokeWidth={1.3}
+            />
+            <path
+              d="M0 6 C-4 -10 -2 -24 2 -30 C5 -18 4 -6 0 6 Z"
+              fill="#5cbc84"
+              stroke="#1d5a3c"
+              strokeWidth={1.3}
+            />
           </g>
+          <path
+            d="M-11 4 L11 4 L8.5 22 L-8.5 22 Z"
+            fill="#c8664a"
+            stroke={INK}
+            strokeWidth={1.8}
+            strokeLinejoin="round"
+          />
+          <rect x={-12.5} y={2} width={25} height={5} rx={2} fill="#d97f61" stroke={INK} strokeWidth={1.6} />
+          <path d="M-6 10 L-5 19" stroke="#e9a185" strokeWidth={2} strokeLinecap="round" />
         </g>
       );
     case "framed-print":

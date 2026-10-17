@@ -1,0 +1,342 @@
+.is-rooms__layout {
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+}
+
+.is-rooms__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-3);
+}
+
+.is-room-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 2px solid var(--paper-edge);
+  box-shadow: var(--shadow-sm);
+}
+
+.is-room-card--ready {
+  border-color: var(--is-olive);
+  background: radial-gradient(circle at 90% 10%, rgba(246, 215, 122, 0.4), transparent 45%), var(--card);
+}
+
+.is-room-card__head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.is-room-card__stage {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.is-room-card__stage--ready {
+  color: var(--is-olive);
+}
+
+.is-room-card__cutaway {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  background: var(--is-paper);
+}
+
+.is-room-card__waiting {
+  position: relative;
+}
+
+.is-room-card__done {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: var(--tap);
+  margin: auto 0 0;
+  border-radius: var(--radius-pill);
+  background: var(--is-olive-soft);
+  color: #3d4520;
+  font-weight: 800;
+}
+
+.is-room-card__waiting .is-room-card__cutaway {
+  background:
+    linear-gradient(rgba(60, 106, 168, 0.07) 1px, transparent 1px) 0 0 / 16px 16px,
+    linear-gradient(90deg, rgba(60, 106, 168, 0.07) 1px, transparent 1px) 0 0 / 16px 16px,
+    var(--is-paper);
+}
+
+.is-room-card__tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--is-blue-deep);
+  color: #ffffff;
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.is-room-card__crew {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--is-sun-soft);
+  font-weight: 700;
+}
+
+.is-room-card__assign {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.is-rooms__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.is-purse {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--space-3);
+  row-gap: 4px;
+  align-items: center;
+  padding: var(--space-4);
+}
+
+.is-purse > :not(.is-purse__coin) {
+  grid-column: 2;
+}
+
+.is-purse > .ad-button {
+  grid-column: 1 / -1;
+}
+
+.is-purse__coin {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff4c2, var(--is-sun) 60%, #d9a93a);
+  color: #6b4f12;
+  box-shadow:
+    inset 0 -3px 0 rgba(107, 79, 18, 0.25),
+    0 4px 10px rgba(107, 79, 18, 0.2);
+}
+
+.is-purse h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--ink);
+}
+
+.is-purse p {
+  margin: 0;
+}
+
+.is-purse__note {
+  grid-column: 1 / -1;
+  color: var(--ink-soft);
+}
+
+.is-rooms__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.is-front {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(230px, 0.85fr) minmax(0, 1.15fr);
+  min-height: 236px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--card);
+}
+
+.is-front__street {
+  grid-column: 2;
+  grid-row: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 236px;
+}
+
+.is-front__note {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--space-4);
+  background: linear-gradient(180deg, #fffdf8, #f8efe3);
+  box-shadow: 6px 0 18px rgba(43, 34, 48, 0.12);
+}
+
+.is-front__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--is-blue-deep);
+}
+
+.is-front__blurb {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.is-front__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: 4px;
+}
+
+.is-front__chips {
+  display: flex;
+  gap: 4px;
+}
+
+.is-front__chip {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(43, 34, 48, 0.25);
+}
+
+.is-front__ready {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--is-olive-soft);
+  font-weight: 800;
+  color: #3d4520;
+}
+
+.is-front__hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 2px 0 0;
+  font-weight: 700;
+  color: var(--is-blue-deep);
+}
+
+.is-front__hint svg {
+  flex: none;
+  margin-top: 3px;
+}
+
+.is-crew {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 2px solid var(--is-blue-soft);
+}
+
+.is-crew h2 {
+  margin: 2px 0;
+}
+
+.is-crew p {
+  margin: 0;
+}
+
+.is-crew__list,
+.is-crew__hire {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.is-crew__member {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--is-paper);
+}
+
+.is-crew__member > .ad-button {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.is-crew__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.is-crew__busy {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--is-terracotta-deep);
+}
+
+.is-crew__hire li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.is-crew__hire li > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.is-crew__coach {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.is-crew-coach {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.is-crew-coach p {
+  margin: 0;
+}
+
+.is-crew-coach__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

@@ -5,7 +5,8 @@ import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
 import { Meter } from "../../../../../ui/kit/Meter";
 import { HINTS } from "../../../content/hints";
 import { EDGE_PX_PER_CM, fitEdgeSamples, type EdgePath } from "../../../core";
-import { BARE_WALL } from "../../art/roomHex";
+import { useSvgId } from "../../../../../ui/art/useSvgId";
+import { EdgeSceneBack, EdgeSceneTape } from "./EdgeScene";
 
 interface EdgeStripProps {
   readonly path: EdgePath;
@@ -28,6 +29,7 @@ function pathD(points: readonly Point[], closed: boolean): string {
 
 export function EdgeStrip({ path, done, colour, tolerance, onFinish }: EdgeStripProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const sceneId = useSvgId("is-edge");
   const [strokes, setStrokes] = useState<readonly (readonly Point[])[]>([]);
   const [current, setCurrent] = useState<readonly Point[] | null>(null);
   const [brush, setBrush] = useState<Point | null>(null);
@@ -99,24 +101,8 @@ export function EdgeStrip({ path, done, colour, tolerance, onFinish }: EdgeStrip
         role="img"
         aria-label={`${KIND_NAMES[path.kind]} edging strip`}
       >
-        <rect width={path.width} height={path.height} fill={done ? colour : BARE_WALL} />
-        <path
-          d={pathD(path.points, path.closed)}
-          fill="none"
-          stroke="#7fb1e6"
-          strokeWidth={2.4}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          opacity={done ? 0.25 : 0.95}
-        />
-        <path
-          d={pathD(path.points, path.closed)}
-          fill="none"
-          stroke="#ffffff"
-          strokeWidth={0.25}
-          strokeDasharray="1 1"
-          opacity={done ? 0 : 0.8}
-        />
+        <EdgeSceneBack path={path} done={done} colour={colour} id={sceneId} />
+        <EdgeSceneTape path={path} done={done} />
         {painted.map((stroke, index) =>
           stroke.length > 1 ? (
             <path

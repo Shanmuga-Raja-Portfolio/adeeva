@@ -47,7 +47,7 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
         />
       )}
       <div className="is-hub-hero__figure" aria-hidden="true">
-        <DesignerAvatar look={profile.look} title={profile.name} />
+        <DesignerAvatar look={profile.look} title={profile.name} mood="delighted" pose="poised" />
       </div>
       <div className="is-hub-hero__card is-tape-card">
         <span className="ad-eyebrow">

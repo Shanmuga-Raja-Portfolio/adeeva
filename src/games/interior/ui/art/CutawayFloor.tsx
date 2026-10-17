@@ -23,8 +23,21 @@ function Boards({ frame, base }: { frame: CutawayFrame; base: string }) {
         );
         const [ax, ay] = floorPoint(frame, 0, top + 0.5);
         const [bx, by] = floorPoint(frame, frame.cols, top + 0.5);
+        const edges = [0, ...seams, frame.cols];
         return (
           <g key={band}>
+            {edges.slice(1).map((end, plank) => {
+              const begin = edges[plank] ?? 0;
+              const tone = seededUnit(band * 17 + plank * 5, 7) - 0.5;
+              return (
+                <polygon
+                  key={`p${begin}`}
+                  points={pointsAttr(floorQuad(frame, begin, top, end - begin, 0.5))}
+                  fill={tone > 0 ? lighten(base, tone * 0.22) : darken(base, -tone * 0.16)}
+                  stroke="none"
+                />
+              );
+            })}
             <line x1={ax} y1={ay} x2={bx} y2={by} />
             {seams.map((x) => {
               const [sx, sy] = floorPoint(frame, x, top);
@@ -88,7 +101,7 @@ function Checker({ frame }: { frame: CutawayFrame }) {
 export function CutawayFloor({ frame, floorId }: CutawayFloorProps) {
   const outline = floorQuad(frame, 0, 0, frame.cols, frame.rows);
   if (floorId === null)
-    return <polygon points={pointsAttr(outline)} fill={BARE_FLOOR} stroke="#8f867f" strokeWidth={1.5} />;
+    return <polygon points={pointsAttr(outline)} fill={BARE_FLOOR} stroke="#8c7966" strokeWidth={1.5} />;
   const floor = floorById(floorId);
   const base = floor.pattern === "checker" ? "#f4ecd8" : roomHex(floor.colours[0] ?? "ivory");
   return (
