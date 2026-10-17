@@ -9,7 +9,7 @@ const outDir = `dist-e2e/${port}`;
 export default defineConfig({
   testDir: "e2e",
   timeout: 120_000,
-  use: { baseURL: origin, trace: "retain-on-failure" },
+  use: { baseURL: origin, trace: { mode: "retain-on-failure", screenshots: false } },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
     command: `pnpm exec vite build --outDir ${outDir} && pnpm exec vite preview --outDir ${outDir} --host ${host} --port ${port} --strictPort`,
