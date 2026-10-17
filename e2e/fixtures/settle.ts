@@ -26,7 +26,21 @@ export async function countUpsDone(page: Page): Promise<void> {
   );
 }
 
+async function countTargetsReached(page: Page): Promise<void> {
+  await page.waitForFunction(
+    () =>
+      Array.from(document.querySelectorAll("[data-count-target]")).every(
+        (element) =>
+          element.querySelector("[data-count-value]")?.textContent?.trim() ===
+          element.getAttribute("data-count-target"),
+      ),
+    undefined,
+    { polling: "raf" },
+  );
+}
+
 export async function settledForShot(page: Page): Promise<void> {
   await countUpsDone(page);
+  await countTargetsReached(page);
   await settle(page);
 }

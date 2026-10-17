@@ -59,21 +59,30 @@ function Drizzle({ w, h, c1, c2 }: PieceArtProps) {
 function Leaf({ w, h, c1, c2 }: PieceArtProps) {
   const leaf = (angle: number, scale: number) => (
     <g transform={`translate(${w / 2} ${h / 2}) rotate(${angle}) scale(${scale})`}>
+      <path d="M2 3 C8 -9 20 -13 28 -11 C26 -2 14 6 2 3 Z" fill={darken(c1, 0.5)} opacity={0.25} />
       <path
-        d="M0 0 C6 -12 18 -16 24 -14 C22 -6 12 2 0 0 Z"
+        d="M0 0 C6 -13 19 -18 28 -15 C25 -6 13 3 0 0 Z"
         fill={c1}
-        stroke={darken(c1, 0.3)}
-        strokeWidth={1}
+        stroke={darken(c1, 0.32)}
+        strokeWidth={1.1}
       />
-      <path d="M0 0 C8 -6 16 -10 22 -13" stroke={c2} strokeWidth={1.2} fill="none" />
+      <path d="M4 -4 C10 -12 18 -15 25 -14 C20 -9 12 -5 4 -4 Z" fill={c2} opacity={0.55} />
+      <path d="M0 0 C8 -6 17 -11 26 -14" stroke={darken(c1, 0.25)} strokeWidth={1.2} fill="none" />
     </g>
   );
   return (
     <>
-      {leaf(-10, 1)}
-      {leaf(130, 0.9)}
-      {leaf(250, 0.8)}
-      <circle cx={w / 2} cy={h / 2} r={2.5} fill={darken(c1, 0.3)} />
+      {leaf(-14, 1.2)}
+      {leaf(118, 1.05)}
+      {leaf(236, 1.1)}
+      <path
+        d={`M${w / 2} ${h / 2} q6 10 2 20`}
+        stroke={darken(c1, 0.25)}
+        strokeWidth={2}
+        fill="none"
+        strokeLinecap="round"
+      />
+      <circle cx={w / 2} cy={h / 2} r={2.8} fill={darken(c1, 0.3)} />
     </>
   );
 }

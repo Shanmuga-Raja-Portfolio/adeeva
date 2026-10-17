@@ -11,6 +11,8 @@ import {
   type GameState,
   type RestaurantState,
 } from "../../../core";
+import { ClosedSign } from "../../art/ClosedSign";
+import { PathAwards } from "./PathAwards";
 
 export interface TonightCardProps {
   readonly state: GameState;
@@ -94,14 +96,18 @@ export function TonightCard(props: TonightCardProps) {
         </article>
       ) : null}
       {opened && state.service === null ? (
-        <p className="ck-board__empty">
-          The chairs are up and the lamps are low. Lovely work tonight.{" "}
+        <div className="ck-tonight__closed">
+          <ClosedSign />
+          <p className="ck-board__empty">The chairs are up and the lamps are low. Lovely work tonight.</p>
+          <p className="ck-tonight__next">
+            <Icon name="calendar" size={18} /> All done here. Tap End the day when you're ready to rest.
+          </p>
           {restaurant.lastNight === null ? null : (
-            <Button variant="ghost" size="sm" onClick={props.onLastNight}>
+            <Button variant="secondary" icon="star" onClick={props.onLastNight}>
               Tonight's report
             </Button>
           )}
-        </p>
+        </div>
       ) : null}
       {!serviceNight ? (
         <p className="ck-board__empty">
@@ -110,6 +116,7 @@ export function TonightCard(props: TonightCardProps) {
             : "Family Meal. The team rests. Practise a dish or plan next week."}
         </p>
       ) : null}
+      <PathAwards path={restaurant} className="ck-path-awards--board" />
     </section>
   );
 }

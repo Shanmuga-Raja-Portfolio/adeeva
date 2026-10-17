@@ -23,7 +23,8 @@ export function TicketChecklist({ run }: { readonly run: DishRun }) {
     })),
     {
       key: "plate",
-      label: `Plate with ${dish.plate.garnishCount} ${dish.plate.garnishCount === 1 ? "garnish" : "garnishes"}`,
+      label: "Plate",
+      sub: `with ${dish.plate.garnishCount} ${dish.plate.garnishCount === 1 ? "garnish" : "garnishes"}`,
       ok: run.plated !== null && run.plated.result.garnishMet,
       detail: run.plated === null ? "to do" : `${Math.round(accuracies.plate * 100)}%`,
     },
@@ -58,7 +59,10 @@ export function TicketChecklist({ run }: { readonly run: DishRun }) {
             <span className="ck-checklist__mark" aria-hidden="true">
               {row.ok ? <Icon name="check" size={12} /> : null}
             </span>
-            <span>{row.label}</span>
+            <span>
+              {row.label}
+              {"sub" in row ? <small className="ck-checklist__sub"> {row.sub}</small> : null}
+            </span>
             <span className="ck-checklist__detail">{row.detail}</span>
           </li>
         ))}

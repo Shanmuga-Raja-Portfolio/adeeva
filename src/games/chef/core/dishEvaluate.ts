@@ -75,7 +75,7 @@ export function evaluateDish(run: DishRun, dish: DishDef): DishEvaluation {
       "construction",
       "Every step done",
       finished,
-      finished ? "Every step cooked." : "A step was left unfinished.",
+      finished ? "Nothing was skipped." : "A step was left unfinished.",
       CONSTRUCTION_LINE,
     ),
     judgeQuality(quality, run.brief.minQuality, qualityLine(run, dish, accuracies)),

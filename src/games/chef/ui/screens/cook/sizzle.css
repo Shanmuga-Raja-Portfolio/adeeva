@@ -1,0 +1,224 @@
+.ck-sizzle__deck {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.ck-sizzle__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #3a464c, #263034);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 10px 24px rgba(0, 0, 0, 0.25);
+  color: var(--ck-chalk);
+}
+
+.ck-hob-flame {
+  display: block;
+  width: 100%;
+  max-width: 104px;
+  margin: auto auto 0;
+}
+
+.ck-sizzle__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ck-sizzle__status .ck-pause {
+  flex: none;
+}
+
+.ck-sizzle__count {
+  color: var(--ck-chalk);
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.ck-sizzle__count strong {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  color: #ffd58a;
+}
+
+.ck-sizzle__deck > .ck-pan {
+  width: 100%;
+  height: 470px;
+  padding: var(--space-2) 0;
+  background:
+    radial-gradient(circle at 37% 52%, rgba(255, 130, 50, 0.5), transparent 42%),
+    radial-gradient(circle at 37% 52%, transparent 0 42%, rgba(10, 12, 13, 0.6) 42% 44%, transparent 44.5%),
+    radial-gradient(ellipse 90% 70% at 50% 0%, rgba(255, 236, 200, 0.22), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 2px, transparent 2px 7px),
+    linear-gradient(180deg, #5a6266 0%, #3b4246 55%, #2a3033 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.12),
+    0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+.ck-sizzle__start {
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 50% 55%, rgba(255, 138, 42, 0.35), transparent 45%),
+    radial-gradient(circle at 50% 55%, #46545b, #1f272b);
+}
+
+.ck-heat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ck-sizzle__panel .ck-heat {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.ck-sizzle__panel .ck-heat__list {
+  flex-direction: column-reverse;
+  gap: 6px;
+}
+
+.ck-sizzle__panel .ck-heat__dot {
+  justify-content: flex-start;
+  width: 100%;
+  height: 42px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.ck-sizzle__panel .ck-heat__dot--picked {
+  transform: scale(1.04);
+}
+
+.ck-sizzle__panel .ck-heat__num {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.ck-sizzle__panel .ck-heat__flames {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.ck-sizzle__panel .ck-heat__flame {
+  width: 15px;
+  height: 20px;
+}
+
+.ck-sizzle__panel .ck-heat__dot--on:not(.ck-heat__dot--picked) {
+  opacity: 0.72;
+}
+
+.ck-sizzle__panel .ck-heat__dot:not(.ck-heat__dot--on) {
+  background: rgba(243, 240, 232, 0.12);
+  border-color: rgba(243, 240, 232, 0.3);
+  color: #e6ebed;
+}
+
+.ck-sizzle__tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--ck-amber);
+  background: rgba(0, 0, 0, 0.28);
+  color: #fff4dc;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.ck-sizzle__tip-ring {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 50%;
+  border: 4px solid #aeb9bf;
+  box-shadow: inset 0 0 0 4px rgba(242, 169, 59, 0.6);
+}
+
+.ck-sizzle__panel .ck-heat__ideal {
+  top: 50%;
+  right: 8px;
+  bottom: auto;
+  left: auto;
+  padding: 0 10px;
+  transform: translateY(-50%);
+  background: #1f262a;
+  color: #ffd58a;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 26px;
+  text-transform: none;
+}
+
+.ck-pan {
+  display: block;
+  width: min(560px, 100%);
+  margin: 0 auto;
+  touch-action: none;
+  border-radius: var(--radius-lg);
+}
+
+.ck-pan:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.ck-piece {
+  cursor: grab;
+}
+
+.ck-piece--focus circle:first-child {
+  stroke: #f2a93b;
+  stroke-width: 3;
+  stroke-dasharray: 4 4;
+}
+
+@keyframes ck-shimmer {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes ck-oil {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(1.4);
+  }
+}
+
+@media (max-width: 860px) {
+  .ck-sizzle__deck {
+    grid-template-columns: 1fr;
+  }
+}

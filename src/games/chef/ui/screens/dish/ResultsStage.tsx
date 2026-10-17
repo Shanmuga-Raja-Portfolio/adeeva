@@ -20,24 +20,51 @@ import {
 import { chefWhites } from "../../art/chefWhites";
 import { KitchenBackdrop } from "../../art/KitchenBackdrop";
 import { PlateArt } from "../../art/PlateArt";
+import { PlateSparkles } from "../../art/PlateSparkles";
+import { ScoreRosette } from "../../art/ScoreRosette";
 import type { StageProps } from "./stageProps";
 import { SegmentSummary } from "./SegmentSummary";
 import "./results.css";
 
+function RewardLines({ reward }: { readonly reward: Reward }) {
+  return (
+    <ul className="ck-results__lines" aria-label="Where the coins came from">
+      {reward.lines.map((line) => (
+        <li key={line.label} className={line.amount >= 0 ? undefined : "ck-results__line--minus"}>
+          {line.label}{" "}
+          <strong>
+            {line.amount >= 0 ? "+" : ""}
+            {line.amount}
+          </strong>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Totals({ reward, instant }: { readonly reward: Reward; readonly instant: boolean }) {
   const coins = useCountUp(reward.coins, 900, 300, instant);
   return (
-    <div className="ck-results__totals" data-testid="reward-totals">
-      <span>
-        <Icon name="coin" size={20} /> +{coins} coins
-      </span>
-      <span>
-        <Icon name="star" size={20} /> {reward.reputation >= 0 ? "+" : ""}
-        {reward.reputation} rep
-      </span>
-      <span>
-        <Icon name="megaphone" size={20} /> +{reward.buzz} buzz
-      </span>
+    <div className="ck-results__earned">
+      <div className="ck-results__earned-head">
+        <span className="ck-results__earned-label">You earned</span>
+        <RewardLines reward={reward} />
+      </div>
+      <div className="ck-results__totals" data-testid="reward-totals">
+        <span className="ck-results__reward ck-results__reward--coins" data-count-target={reward.coins}>
+          <Icon name="coin" size={24} />
+          <span>
+            +<span data-count-value="">{coins}</span> coins
+          </span>
+        </span>
+        <span className="ck-results__reward ck-results__reward--rep">
+          <Icon name="star" size={24} /> {reward.reputation >= 0 ? "+" : ""}
+          {reward.reputation} rep
+        </span>
+        <span className="ck-results__reward ck-results__reward--buzz">
+          <Icon name="megaphone" size={24} /> +{reward.buzz} buzz
+        </span>
+      </div>
     </div>
   );
 }
@@ -69,22 +96,6 @@ function Criteria({ evaluation }: { readonly evaluation: DishEvaluation | OrderE
         </div>
       ) : null}
     </>
-  );
-}
-
-function RewardLines({ reward }: { readonly reward: Reward }) {
-  return (
-    <ul className="ck-results__lines">
-      {reward.lines.map((line) => (
-        <li key={line.label}>
-          <span>{line.label}</span>
-          <strong>
-            {line.amount >= 0 ? "+" : ""}
-            {line.amount}
-          </strong>
-        </li>
-      ))}
-    </ul>
   );
 }
 
@@ -143,18 +154,24 @@ export function ResultsStage({ state, run, dispatch, onExit }: StageProps) {
       : dishEntry?.kind === "dish"
         ? dishEntry.evaluation
         : null;
+  const shownStars = segment?.stars ?? evaluation?.stars ?? stars;
   return (
     <div className="ck-results" data-testid="results">
       <div className="ck-results__scene">
         <KitchenBackdrop scene="counter" cuisine={dish.cuisine} className="ck-results__backdrop" />
         <div className="ck-results__glow" aria-hidden="true" />
         {plated !== null ? (
-          <PlateArt
-            colour={plated.plateColour}
-            components={plated.components}
-            title={`Your ${dish.name}`}
-            className={reducedMotion ? "ck-results__plate" : "ck-results__plate ck-results__plate--slide"}
-          />
+          <div className="ck-results__dish">
+            {shownStars >= 4 ? <div className="ck-burst" aria-hidden="true" /> : null}
+            <PlateArt
+              colour={plated.plateColour}
+              components={plated.components}
+              title={`Your ${dish.name}`}
+              className={reducedMotion ? "ck-results__plate" : "ck-results__plate ck-results__plate--slide"}
+            />
+            {shownStars >= 4 ? <PlateSparkles className="ck-results__sparkles" /> : null}
+            <ScoreRosette stars={shownStars} className="ck-results__rosette" />
+          </div>
         ) : null}
         {mentor !== null ? (
           <div className="ck-results__host">
@@ -162,7 +179,7 @@ export function ResultsStage({ state, run, dispatch, onExit }: StageProps) {
               look={mentor.look}
               garment={chefWhites(cuisine.accent)}
               mood={lessonPassed ? "delighted" : "happy"}
-              size={120}
+              size={104}
               title={mentor.name}
               frameColour={cuisine.wall}
             />
@@ -175,8 +192,8 @@ export function ResultsStage({ state, run, dispatch, onExit }: StageProps) {
       <section className="ck-results__card ck-card">
         <span className="ad-eyebrow">{segment === null ? title.eyebrow : "Spoon & Story, live"}</span>
         <h1>{title.title}</h1>
-        <div className="ck-results__stars">
-          <StarRating stars={segment?.stars ?? evaluation?.stars ?? stars} size={28} />
+        <div className="ck-results__stars" data-stars={shownStars}>
+          <StarRating stars={shownStars} size={28} />
           <strong>
             {segment !== null
               ? `Segment ${segment.score} / 100`
@@ -186,10 +203,14 @@ export function ResultsStage({ state, run, dispatch, onExit }: StageProps) {
           </strong>
         </div>
         <p className="ck-results__quality">
-          <Icon name="heart" size={16} /> Dish quality {quality}
-          {dishEntry?.kind === "dish" && dishEntry.mastery > 0
-            ? ` · ${cuisine.name} mastery +${dishEntry.mastery}`
-            : ""}
+          <span className="ck-results__quality-item">
+            <Icon name="heart" size={20} /> Dish quality {quality}
+          </span>
+          {dishEntry?.kind === "dish" && dishEntry.mastery > 0 ? (
+            <span className="ck-results__mastery">
+              <Icon name="star" size={18} /> {cuisine.name} mastery +{dishEntry.mastery}
+            </span>
+          ) : null}
         </p>
         {evaluation !== null ? <Criteria evaluation={evaluation} /> : null}
         <SegmentSummary state={state} run={run} />
@@ -213,12 +234,7 @@ export function ResultsStage({ state, run, dispatch, onExit }: StageProps) {
         {run.purpose.kind === "practice" ? (
           <p className="ck-muted">Practice makes progress. Your plating card is updated.</p>
         ) : null}
-        {reward !== null ? (
-          <>
-            <RewardLines reward={reward} />
-            <Totals reward={reward} instant={reducedMotion} />
-          </>
-        ) : null}
+        {reward !== null ? <Totals reward={reward} instant={reducedMotion} /> : null}
         <div className="ck-results__actions">
           {nextTest !== undefined ? (
             <Button

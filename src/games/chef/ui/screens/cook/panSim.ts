@@ -35,7 +35,7 @@ export function startPan(def: SizzleDef, heat: number): PanSim {
     tick: 0,
     pieces: Array.from({ length: def.count }, (_, index) => {
       const angle = (index / def.count) * Math.PI * 2 - Math.PI / 2;
-      const ring = def.count === 1 ? 0 : 52;
+      const ring = def.count === 1 ? 0 : Math.max(52, 40 / Math.sin(Math.PI / def.count));
       return {
         sides: Array.from({ length: def.flips + 1 }, () => 0),
         side: 0,

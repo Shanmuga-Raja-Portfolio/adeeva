@@ -4,10 +4,9 @@ import { slotSummary } from "../../../../../studio/slotSummary";
 import { Button } from "../../../../../ui/kit/Button";
 import { Dialog } from "../../../../../ui/kit/Dialog";
 import { Icon } from "../../../../../ui/kit/IconSet";
-import type { DishId } from "../../../content/dish";
-import { dishById, ghostLayout, type GameState } from "../../../core";
+import type { GameState } from "../../../core";
 import { KitchenBackdrop } from "../../art/KitchenBackdrop";
-import { PlateArt } from "../../art/PlateArt";
+import { TitleSpread } from "../../art/TitleSpread";
 import { Wordmark } from "../../art/Wordmark";
 import { chefSlots, type SaveSlotId, type SlotRead } from "../../chefSlots";
 import { SaveSlotCard } from "./SaveSlotCard";
@@ -28,12 +27,6 @@ type Pending =
   | { readonly kind: "pick-slot" }
   | { readonly kind: "overwrite"; readonly read: SlotRead }
   | { readonly kind: "delete"; readonly read: SlotRead };
-
-const SHOWCASE: readonly { readonly dishId: DishId; readonly colour: "white" | "slate" | "sand" }[] = [
-  { dishId: "jollof-rice", colour: "sand" },
-  { dishId: "spaghetti-al-pomodoro", colour: "white" },
-  { dishId: "elote", colour: "slate" },
-];
 
 export function TitleScreen({
   slots,
@@ -61,7 +54,7 @@ export function TitleScreen({
 
   return (
     <main className="ck-title ad-screen">
-      <KitchenBackdrop scene="hall" className="ck-title__backdrop" />
+      <KitchenBackdrop scene="hall" named={false} className="ck-title__backdrop" />
       <div className="ck-title__veil" aria-hidden="true" />
       <div className="ck-title__content">
         <nav className="ck-title__nav">
@@ -70,46 +63,38 @@ export function TitleScreen({
           </Button>
         </nav>
         <section className="ck-title__hero ck-card">
-          <Wordmark tagline="Six mentors, six kitchens, one Market Hall. Cook your way to head chef." />
-          <div className="ck-title__plates" aria-hidden="true">
-            {SHOWCASE.map((entry, index) => (
-              <PlateArt
-                key={entry.dishId}
-                colour={entry.colour}
-                components={ghostLayout(dishById(entry.dishId))}
-                title={null}
-                className={`ck-title__plate ck-title__plate--${index}`}
-              />
-            ))}
-          </div>
-          <div className="ck-title__menu">
-            {resume !== null && resume.kind === "ready" ? (
-              <Button
-                size="lg"
-                className="ck-title__continue"
-                onClick={() => onLoad(resume.slot, resume.state)}
-              >
-                <span className="ck-title__continue-label">Continue</span>
-                <span className="ck-title__continue-meta">
-                  {resume.state.profile.name} · Day {resume.state.calendar.day},{" "}
-                  {weekdayName(resume.state.calendar.day)}
-                </span>
-              </Button>
-            ) : null}
-            <div className="ck-title__menu-row">
-              <Button
-                size="lg"
-                variant={resume === null ? "primary" : "secondary"}
-                icon="sparkle"
-                onClick={startNew}
-              >
-                New Game
-              </Button>
-              <Button size="lg" variant="ghost" onClick={onOpenSettings}>
-                Settings
-              </Button>
+          <div className="ck-title__brand">
+            <Wordmark tagline="Six mentors, six kitchens, one Market Hall. Cook your way to head chef." />
+            <div className="ck-title__menu">
+              {resume !== null && resume.kind === "ready" ? (
+                <Button
+                  size="lg"
+                  className="ck-title__continue"
+                  onClick={() => onLoad(resume.slot, resume.state)}
+                >
+                  <span className="ck-title__continue-label">Continue</span>
+                  <span className="ck-title__continue-meta">
+                    {resume.state.profile.name} · Day {resume.state.calendar.day},{" "}
+                    {weekdayName(resume.state.calendar.day)}
+                  </span>
+                </Button>
+              ) : null}
+              <div className="ck-title__menu-row">
+                <Button
+                  size="lg"
+                  variant={resume === null ? "primary" : "secondary"}
+                  icon="sparkle"
+                  onClick={startNew}
+                >
+                  New Game
+                </Button>
+                <Button size="lg" variant="secondary" icon="gear" onClick={onOpenSettings}>
+                  Settings
+                </Button>
+              </div>
             </div>
           </div>
+          <TitleSpread className="ck-title__spread" />
         </section>
         {canSave ? null : (
           <section className="ck-title__offline" role="status" data-testid="saving-off">

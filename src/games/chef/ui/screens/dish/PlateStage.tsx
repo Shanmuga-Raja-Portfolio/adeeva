@@ -1,7 +1,5 @@
 import { useSettings } from "../../../../../studio/SettingsContext";
-import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
 import { dishById, toleranceFor } from "../../../core";
-import { HELPERS } from "../settings/SettingsDialog";
 import { useAssist } from "../../useAssist";
 import { PlateBuilder } from "../cook/PlateBuilder";
 import { StageFooter } from "./StageFooter";
@@ -10,22 +8,13 @@ import type { StageProps } from "./stageProps";
 export function PlateStage(props: StageProps) {
   const { state, run, dispatch } = props;
   const { reducedMotion } = useSettings();
-  const [assist, setAssist] = useAssist("plate");
+  const [assist] = useAssist("plate");
   const dish = dishById(run.dishId);
-  const helper = HELPERS.find((entry) => entry.step === "plate");
   const plated = run.plated;
   return (
     <div className="ck-station">
       <header className="ck-station__header">
         <h2 className="ck-stage-title">Plate It</h2>
-        {helper !== undefined ? (
-          <ToggleSwitch
-            label={helper.label}
-            description={helper.description}
-            checked={assist}
-            onChange={setAssist}
-          />
-        ) : null}
       </header>
       <PlateBuilder
         dish={dish}

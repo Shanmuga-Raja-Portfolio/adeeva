@@ -1,9 +1,11 @@
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
+import { CUISINE_IDS } from "../../../content/cuisine";
 import { isFamilyMeal, rungById, type GameState } from "../../../core";
 import { KitchenBackdrop } from "../../art/KitchenBackdrop";
 import { HeroCravings } from "./HeroCravings";
 import { HeroDayActions } from "./HeroDayActions";
+import "./hero.css";
 
 export interface HubHeroProps {
   readonly state: GameState;
@@ -14,31 +16,40 @@ export interface HubHeroProps {
 export function HubHero({ state, onPotWash, onEndDay }: HubHeroProps) {
   const rung = rungById(state.rung);
   const scene = state.rung === "student" ? "school" : state.rung === "line" ? "hall" : "kitchen";
+  const today = state.rung === "student" ? state.board.lesson?.cuisine : undefined;
+  const chefRight = today !== undefined && CUISINE_IDS.indexOf(today) < CUISINE_IDS.length / 2;
   return (
-    <section className="ck-hero" aria-labelledby="ck-hero-title">
-      <KitchenBackdrop scene={scene} className="ck-hero__backdrop" />
-      <div className="ck-hero__shade" aria-hidden="true" />
-      <div className="ck-hero__chef">
-        <Avatar
-          look={state.profile.look}
-          variant="full"
-          mood="delighted"
-          size={250}
-          title={`${state.profile.name}, ${rung.name}`}
-        />
-      </div>
+    <section className="ck-hero ck-hero--stacked" aria-labelledby="ck-hero-title">
       <div className="ck-hero__copy">
-        <span className="ad-eyebrow">{rung.place}</span>
-        <h1 id="ck-hero-title" className="ck-hero__title">
-          {isFamilyMeal(state.calendar.day) ? "Family Meal" : rung.name}
-        </h1>
-        <p className="ck-hero__goal">
-          {isFamilyMeal(state.calendar.day)
-            ? "No shifts or tests today. Practise any dish, visit the shop, and rest."
-            : rung.goal}
-        </p>
-        <HeroCravings state={state} />
-        <HeroDayActions state={state} home={rung.home} onPotWash={onPotWash} onEndDay={onEndDay} />
+        <div className="ck-hero__lead">
+          <span className="ad-eyebrow">{rung.place}</span>
+          <h1 id="ck-hero-title" className="ck-hero__title">
+            {isFamilyMeal(state.calendar.day) ? "Family Meal" : rung.name}
+          </h1>
+          <p className="ck-hero__goal">
+            {isFamilyMeal(state.calendar.day)
+              ? "No shifts or tests today. Practise any dish, visit the shop, and rest."
+              : rung.goal}
+          </p>
+        </div>
+        <div className="ck-hero__day">
+          <HeroDayActions state={state} home={rung.home} onPotWash={onPotWash} onEndDay={onEndDay} />
+          <HeroCravings state={state} />
+        </div>
+      </div>
+      <div className="ck-hero__stage">
+        <KitchenBackdrop scene={scene} today={today} headroom className="ck-hero__backdrop" />
+        <div className="ck-hero__shade" aria-hidden="true" />
+        <div className={chefRight ? "ck-hero__chef ck-hero__chef--right" : "ck-hero__chef"}>
+          <Avatar
+            look={state.profile.look}
+            variant="full"
+            mood="delighted"
+            pose="wave"
+            size={360}
+            title={`${state.profile.name}, ${rung.name}`}
+          />
+        </div>
       </div>
     </section>
   );

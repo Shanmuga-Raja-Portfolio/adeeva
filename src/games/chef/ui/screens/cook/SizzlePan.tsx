@@ -1,8 +1,7 @@
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import { darken, lighten, mixHex } from "../../../../../ui/art/colourMix";
 import { useSvgId } from "../../../../../ui/art/useSvgId";
 import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
-import type { PieceKind, SizzleDef } from "../../../content/dish";
+import type { SizzleDef } from "../../../content/dish";
 import { doneness, type PanZone } from "../../../core";
 import {
   CENTRE_SHARE,
@@ -14,7 +13,9 @@ import {
   type PanSim,
   type PieceSim,
 } from "./panSim";
+import { Gloss, PIECE_REACH, pieceColour, pieceScale, PieceShape } from "../../art/PanPiece";
 import "./cook.css";
+import "./sizzle.css";
 
 export interface SizzlePanProps {
   readonly def: SizzleDef;
@@ -27,95 +28,24 @@ export interface SizzlePanProps {
   readonly onToss: () => void;
 }
 
-const RAW: Readonly<Record<PieceKind, string>> = {
-  chicken: "#f0c4a4",
-  plantain: "#f6dc7a",
-  gnocchi: "#f3e3bd",
-  egg: "#fbe9a0",
-  bread: "#f2deb4",
-  seeds: "#c9a77a",
-  corn: "#f6dc6a",
-  onion: "#f3e3c4",
-  tortilla: "#f3dca0",
-};
-
-const GOLDEN = "#d99a3a";
-const DEEP = "#9a5a22";
 const TRAY_X = 420;
 
-export function pieceColour(kind: PieceKind, cook: number): string {
-  if (cook < 0.9) return mixHex(RAW[kind], GOLDEN, Math.max(0, cook / 0.9) * 0.55);
-  if (cook <= 1.1) return mixHex(RAW[kind], GOLDEN, 0.75);
-  return mixHex(GOLDEN, DEEP, Math.min(1, (cook - 1.1) / 0.5));
-}
+const OIL_SPOTS: readonly (readonly [number, number])[] = [
+  [110, 260],
+  [292, 132],
+  [96, 150],
+  [300, 280],
+  [190, 336],
+  [214, 62],
+];
 
-function PieceShape({ kind, fill }: { readonly kind: PieceKind; readonly fill: string }) {
-  const edge = darken(fill, 0.3);
-  switch (kind) {
-    case "seeds":
-      return (
-        <g>
-          {[-10, 0, 10, -5, 5].map((x, index) => (
-            <ellipse
-              key={index}
-              cx={x}
-              cy={index > 2 ? 8 : -4}
-              rx={5}
-              ry={3}
-              fill={fill}
-              stroke={edge}
-              strokeWidth={1.5}
-            />
-          ))}
-        </g>
-      );
-    case "corn":
-      return (
-        <rect x={-30} y={-14} width={60} height={28} rx={14} fill={fill} stroke={edge} strokeWidth={2.5} />
-      );
-    case "bread":
-      return (
-        <rect x={-24} y={-22} width={48} height={44} rx={10} fill={fill} stroke={edge} strokeWidth={2.5} />
-      );
-    case "onion":
-      return (
-        <g>
-          <circle r={20} fill="none" stroke={fill} strokeWidth={7} />
-          <circle r={11} fill="none" stroke={lighten(fill, 0.1)} strokeWidth={5} />
-        </g>
-      );
-    case "egg":
-    case "tortilla":
-      return <circle r={30} fill={fill} stroke={edge} strokeWidth={2.5} />;
-    case "chicken":
-      return (
-        <path
-          d="M-22 -10 C-18 -24 12 -24 22 -12 C28 0 20 20 2 20 C-16 22 -28 6 -22 -10 Z"
-          fill={fill}
-          stroke={edge}
-          strokeWidth={2.5}
-        />
-      );
-    case "gnocchi":
-      return (
-        <g>
-          <ellipse rx={20} ry={13} fill={fill} stroke={edge} strokeWidth={2} />
-          <path
-            d="M-10 -9 V9 M-3 -12 V12 M4 -12 V12 M11 -9 V9"
-            stroke={edge}
-            strokeWidth={1.5}
-            opacity={0.6}
-          />
-        </g>
-      );
-    case "plantain":
-      return <ellipse rx={20} ry={15} fill={fill} stroke={edge} strokeWidth={2.5} />;
-  }
+function traySlot(order: number, count: number): number {
+  return count === 1 ? 150 : 84 + (order * 156) / (count - 1);
 }
 
 function CookRing({ cook, flipsLeft }: { readonly cook: number; readonly flipsLeft: boolean }) {
   const share = Math.min(1, cook);
-  const radius = 36;
+  const radius = 37;
   const angle = share * Math.PI * 2 - Math.PI / 2;
   const large = share > 0.5 ? 1 : 0;
   const tone = doneness(cook);
@@ -123,22 +53,32 @@ function CookRing({ cook, flipsLeft }: { readonly cook: number; readonly flipsLe
     tone === "golden" ? "#f2a93b" : tone === "deep" || tone === "extra-crispy" ? "#9a5a22" : "#ffe6a8";
   return (
     <g>
-      <circle r={radius} fill="none" stroke="#000000" strokeOpacity={0.25} strokeWidth={6} />
+      <circle r={radius} fill="none" stroke="#000000" strokeOpacity={0.35} strokeWidth={5} />
       {share > 0.001 ? (
         share >= 0.999 ? (
-          <circle r={radius} fill="none" stroke={colour} strokeWidth={6} />
+          <circle r={radius} fill="none" stroke={colour} strokeWidth={5} />
         ) : (
           <path
             d={`M0 ${-radius} A${radius} ${radius} 0 ${large} 1 ${Math.cos(angle) * radius} ${Math.sin(angle) * radius}`}
             fill="none"
             stroke={colour}
-            strokeWidth={6}
+            strokeWidth={5}
             strokeLinecap="round"
           />
         )
       ) : null}
       {flipsLeft ? null : (
-        <circle r={radius + 6} fill="none" stroke="#ffffff" strokeOpacity={0.35} strokeDasharray="2 5" />
+        <g transform={`translate(${radius * 0.72} ${radius * 0.72})`}>
+          <circle r={9} fill="#4f8a3c" stroke="#ffffff" strokeWidth={2} />
+          <path
+            d="M-4 0 L-1 3 L4 -3"
+            stroke="#ffffff"
+            strokeWidth={2.2}
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
       )}
     </g>
   );
@@ -250,24 +190,83 @@ export function SizzlePan({
       )}
     >
       <defs>
-        <radialGradient id={`${id}-metal`} cx="0.45" cy="0.4" r="0.65">
-          <stop offset="0" stopColor="#56636a" />
-          <stop offset="1" stopColor="#1f272b" />
+        <radialGradient id={`${id}-metal`} cx="0.42" cy="0.38" r="0.72">
+          <stop offset="0" stopColor="#8d9498" />
+          <stop offset="0.45" stopColor="#5f676b" />
+          <stop offset="0.85" stopColor="#3d4448" />
+          <stop offset="1" stopColor="#24292c" />
+        </radialGradient>
+        <linearGradient id={`${id}-rim`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f4f7f8" />
+          <stop offset="0.3" stopColor="#b9c4c9" />
+          <stop offset="0.7" stopColor="#7d8a91" />
+          <stop offset="1" stopColor="#3a4448" />
+        </linearGradient>
+        <radialGradient id={`${id}-oil`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0.55" stopColor="#ffd58a" stopOpacity={0} />
+          <stop offset="0.8" stopColor="#ffd58a" stopOpacity={0.26} />
+          <stop offset="1" stopColor="#ffd58a" stopOpacity={0} />
         </radialGradient>
         <radialGradient id={`${id}-heat`} cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#ff9a3a" stopOpacity={0.15 + sim.heat * 0.08} />
+          <stop offset="0" stopColor="#ffb347" stopOpacity={0.2 + sim.heat * 0.09} />
+          <stop offset="0.7" stopColor="#ff7a2a" stopOpacity={0.08 + sim.heat * 0.04} />
           <stop offset="1" stopColor="#d9472b" stopOpacity={0} />
         </radialGradient>
+        <radialGradient id={`${id}-glow`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0.6" stopColor="#ff8a2a" stopOpacity={0.12 + sim.heat * 0.07} />
+          <stop offset="1" stopColor="#ff8a2a" stopOpacity={0} />
+        </radialGradient>
+        <linearGradient id={`${id}-board`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#e2b77a" />
+          <stop offset="1" stopColor="#b98444" />
+        </linearGradient>
       </defs>
+      <circle cx={PAN_CENTRE} cy={PAN_CENTRE + 8} r={PAN_RADIUS + 30} fill={`url(#${id}-glow)`} />
       <path
-        d={`M${PAN_CENTRE + PAN_RADIUS - 6} ${PAN_CENTRE - 40} L${PAN_CENTRE + PAN_RADIUS + 60} ${PAN_CENTRE - 150}`}
-        stroke="#2e3a40"
-        strokeWidth={22}
+        d={`M${PAN_CENTRE + PAN_RADIUS - 6} ${PAN_CENTRE - 40} L${PAN_CENTRE + PAN_RADIUS + 40} ${PAN_CENTRE - 112}`}
+        stroke="#3a4448"
+        strokeWidth={20}
         strokeLinecap="round"
       />
-      <circle cx={PAN_CENTRE + 6} cy={PAN_CENTRE + 10} r={PAN_RADIUS + 12} fill="#0d1215" opacity={0.35} />
-      <circle cx={PAN_CENTRE} cy={PAN_CENTRE} r={PAN_RADIUS + 10} fill="#3a4448" />
-      <circle cx={PAN_CENTRE} cy={PAN_CENTRE} r={PAN_RADIUS} fill={`url(#${id}-metal)`} />
+      <path
+        d={`M${PAN_CENTRE + PAN_RADIUS + 34} ${PAN_CENTRE - 102} L${PAN_CENTRE + PAN_RADIUS + 70} ${PAN_CENTRE - 158}`}
+        stroke="#1f2427"
+        strokeWidth={26}
+        strokeLinecap="round"
+      />
+      <path
+        d={`M${PAN_CENTRE + PAN_RADIUS + 40} ${PAN_CENTRE - 112} L${PAN_CENTRE + PAN_RADIUS + 64} ${PAN_CENTRE - 150}`}
+        stroke="#5f6c73"
+        strokeWidth={4}
+        strokeLinecap="round"
+        opacity={0.6}
+      />
+      <circle cx={PAN_CENTRE + PAN_RADIUS + 6} cy={PAN_CENTRE - 48} r={4} fill="#aeb9bf" />
+      <circle cx={PAN_CENTRE + 6} cy={PAN_CENTRE + 12} r={PAN_RADIUS + 12} fill="#0d1215" opacity={0.4} />
+      <circle cx={PAN_CENTRE} cy={PAN_CENTRE} r={PAN_RADIUS + 12} fill={`url(#${id}-rim)`} />
+      <circle cx={PAN_CENTRE} cy={PAN_CENTRE} r={PAN_RADIUS + 2} fill="#20282c" />
+      <circle cx={PAN_CENTRE} cy={PAN_CENTRE} r={PAN_RADIUS - 4} fill={`url(#${id}-metal)`} />
+      <circle cx={PAN_CENTRE} cy={PAN_CENTRE} r={PAN_RADIUS - 4} fill={`url(#${id}-oil)`} />
+      {[0.28, 0.42, 0.62, 0.78, 0.9].map((share) => (
+        <circle
+          key={share}
+          cx={PAN_CENTRE}
+          cy={PAN_CENTRE}
+          r={PAN_RADIUS * share}
+          fill="none"
+          stroke="#ffffff"
+          strokeWidth={1}
+          opacity={0.05}
+        />
+      ))}
+      <path
+        d={`M${PAN_CENTRE - PAN_RADIUS + 6} ${PAN_CENTRE - 20} A${PAN_RADIUS + 6} ${PAN_RADIUS + 6} 0 0 1 ${PAN_CENTRE + 30} ${PAN_CENTRE - PAN_RADIUS - 5}`}
+        stroke="#ffffff"
+        strokeWidth={3}
+        opacity={0.35}
+        fill="none"
+        strokeLinecap="round"
+      />
       <circle
         cx={PAN_CENTRE}
         cy={PAN_CENTRE}
@@ -275,18 +274,28 @@ export function SizzlePan({
         fill={`url(#${id}-heat)`}
         className={reducedMotion ? undefined : "ck-pan__shimmer"}
       />
+      <ellipse
+        cx={PAN_CENTRE - 50}
+        cy={PAN_CENTRE - 70}
+        rx={70}
+        ry={22}
+        fill="#ffe6a8"
+        opacity={0.08}
+        transform={`rotate(-28 ${PAN_CENTRE - 50} ${PAN_CENTRE - 70})`}
+      />
       <circle
         cx={PAN_CENTRE}
         cy={PAN_CENTRE}
         r={PAN_RADIUS * CENTRE_SHARE}
         fill="none"
         stroke="#f2a93b"
-        strokeOpacity={0.35}
+        strokeOpacity={0.45}
+        strokeWidth={2}
         strokeDasharray="6 8"
       />
-      <text x={PAN_CENTRE} y={PAN_CENTRE + PAN_RADIUS - 18} textAnchor="middle" className="ck-pan__label">
-        rim: slower
-      </text>
+      {OIL_SPOTS.map(([x, y]) => (
+        <circle key={`${x}-${y}`} cx={x} cy={y} r={3} fill="#ffe6a8" opacity={0.28} />
+      ))}
       {reducedMotion
         ? null
         : [0, 1, 2, 3, 4, 5].map((index) => (
@@ -300,24 +309,54 @@ export function SizzlePan({
               style={{ animationDelay: `${index * 0.35}s` }}
             />
           ))}
-      <g transform={`translate(${TRAY_X + 10} 90)`}>
-        <rect width={120} height={220} rx={16} fill="#dfe5e8" stroke="#7d8a91" strokeWidth={3} />
-        <text x={60} y={30} textAnchor="middle" className="ck-pan__tray-label">
-          Done
+      <g transform={`translate(${TRAY_X + 6} 70)`}>
+        <rect x={4} y={8} width={124} height={262} rx={18} fill="#0d1215" opacity={0.3} />
+        <rect width={124} height={258} rx={18} fill={`url(#${id}-board)`} stroke="#8a5a2a" strokeWidth={3} />
+        <rect x={12} y={52} width={100} height={194} rx={6} fill="#fbf3dd" transform="rotate(-2 62 149)" />
+        <path
+          d="M20 90 l20 6 M70 130 l22 -4 M28 200 l18 8 M74 220 l16 -6"
+          stroke="#e2d4b0"
+          strokeWidth={2}
+          strokeLinecap="round"
+        />
+        <rect x={10} y={10} width={104} height={34} rx={17} fill="#2e3a40" />
+        <text x={62} y={34} textAnchor="middle" className="ck-pan__tray-label">
+          Done {offCount}/{sim.pieces.length}
         </text>
-        {sim.pieces.map((piece, index) =>
-          piece.off ? (
-            <g
-              key={index}
-              transform={`translate(60 ${70 + (sim.pieces.slice(0, index).filter((entry) => entry.off).length % 4) * 38}) scale(0.7)`}
-            >
-              <PieceShape kind={def.piece} fill={pieceColour(def.piece, piece.sides[piece.side] ?? 0)} />
+        {sim.pieces.map((_, index) =>
+          index < offCount ? null : (
+            <g key={`slot-${index}`}>
+              <ellipse
+                cx={62}
+                cy={traySlot(index, sim.pieces.length)}
+                rx={24}
+                ry={17}
+                fill="#efe2c2"
+                stroke="#a8865a"
+                strokeWidth={2.5}
+                strokeDasharray="6 4"
+              />
+              <text
+                x={62}
+                y={traySlot(index, sim.pieces.length) + 6}
+                textAnchor="middle"
+                className="ck-pan__slot-label"
+              >
+                {index + 1}
+              </text>
             </g>
-          ) : null,
+          ),
         )}
-        <text x={60} y={208} textAnchor="middle" className="ck-pan__tray-count">
-          {offCount}/{sim.pieces.length}
-        </text>
+        {sim.pieces.map((piece, index) => {
+          if (!piece.off) return null;
+          const order = sim.pieces.slice(0, index).filter((entry) => entry.off).length;
+          return (
+            <g key={index} transform={`translate(62 ${traySlot(order, sim.pieces.length)}) scale(0.78)`}>
+              <PieceShape kind={def.piece} fill={pieceColour(def.piece, piece.sides[piece.side] ?? 0)} />
+              <Gloss />
+            </g>
+          );
+        })}
       </g>
       {sim.pieces.map((piece: PieceSim, index) => {
         if (piece.off) return null;
@@ -339,13 +378,25 @@ export function SizzlePan({
           >
             <circle r={40} fill="transparent" />
             <CookRing cook={cook} flipsLeft={piece.side < def.flips} />
-            <PieceShape kind={def.piece} fill={pieceColour(def.piece, top)} />
+            <g transform={`scale(${pieceScale(def.piece)})`}>
+              <ellipse
+                cx={2}
+                cy={5}
+                rx={PIECE_REACH[def.piece]}
+                ry={PIECE_REACH[def.piece] * 0.8}
+                fill="#0d0805"
+                opacity={0.35}
+              />
+              <PieceShape kind={def.piece} fill={pieceColour(def.piece, top)} />
+              <Gloss />
+            </g>
             {reducedMotion ? null : (
               <path
-                d="M-14 -40 q5 -8 0 -16 M0 -42 q5 -8 0 -16 M14 -40 q5 -8 0 -16"
+                d="M-10 -38 c-6 -6 6 -10 0 -16 c-5 -6 5 -9 0 -14 M10 -40 c-6 -6 6 -10 0 -16 c-5 -6 5 -9 0 -14"
                 stroke="#ffffff"
-                strokeWidth={2}
-                opacity={0.35}
+                strokeWidth={4}
+                strokeLinecap="round"
+                opacity={0.45}
                 fill="none"
                 className="ck-piece__steam"
               />

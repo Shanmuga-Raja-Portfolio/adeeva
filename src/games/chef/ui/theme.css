@@ -26,6 +26,8 @@
   --paper-deep: #e8e0cf;
   --paper-edge: #d9cfba;
   --card: #fffbf2;
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
   --font-display: "Franklin Gothic Medium", "Arial Narrow", "Segoe UI", sans-serif;
   --focus-ring: 0 0 0 3px #1d2528, 0 0 0 6px rgba(242, 169, 59, 0.9);
   min-height: 100dvh;
@@ -80,6 +82,8 @@
 
 .ck-root .ad-eyebrow {
   color: var(--rose-deep);
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .ck-root .ad-meter__fill {
@@ -382,6 +386,59 @@
   }
 }
 
+.ck-burst {
+  position: absolute;
+  inset: -20%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 4deg,
+    rgba(255, 228, 160, 0.26) 0deg 5deg,
+    transparent 5deg 16deg
+  );
+  -webkit-mask-image: radial-gradient(circle, #000 28%, transparent 66%);
+  mask-image: radial-gradient(circle, #000 28%, transparent 66%);
+  pointer-events: none;
+  animation: ck-burst-turn 24s linear infinite;
+}
+
+.ck-glory__steam {
+  animation: ck-glory-steam 3.2s ease-in-out infinite;
+}
+
+.ck-glory__spark {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ck-glory-spark 2.4s ease-in-out infinite;
+}
+
+@keyframes ck-glory-steam {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.42;
+  }
+  50% {
+    transform: translateY(-10px);
+    opacity: 0.6;
+  }
+}
+
+@keyframes ck-glory-spark {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(0.7) rotate(20deg);
+  }
+}
+
+@keyframes ck-burst-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes ck-rise {
   from {
     opacity: 0;
@@ -432,4 +489,11 @@
 :root[data-motion="reduced"] .ck-root *::after {
   animation: none !important;
   transition: none !important;
+}
+
+.ck-unit {
+  margin-left: 4px;
+  font-size: 0.9375em;
+  font-weight: 700;
+  color: #3a464c;
 }

@@ -5,6 +5,9 @@ import { Icon } from "../../../../../ui/kit/IconSet";
 import { StatChip } from "../../../../../ui/kit/StatChip";
 import { difficultyById, rungById } from "../../../core";
 import type { SlotRead } from "../../chefSlots";
+import { ApronHook } from "../../art/ApronHook";
+
+const APRONS = ["#4f8a3c", "#3d4f9a", "#d9472b"] as const;
 
 export interface SaveSlotCardProps {
   readonly read: SlotRead;
@@ -18,11 +21,14 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
   if (read.kind === "empty") {
     return (
       <article className="ck-slot ck-slot--empty" data-testid={`slot-${read.slot}`}>
-        <span className="ad-eyebrow">{label}</span>
-        <p className="ck-slot__empty">A clean apron on a hook, waiting for a new cook.</p>
-        <Button variant="secondary" size="sm" onClick={onNewGame}>
-          Start here
-        </Button>
+        <ApronHook colour={APRONS[(read.slot - 1) % APRONS.length] ?? "#4f8a3c"} />
+        <div className="ck-slot__empty-copy">
+          <span className="ad-eyebrow">{label}</span>
+          <p className="ck-slot__empty">A clean apron on a hook, waiting for a new cook.</p>
+          <Button variant="secondary" icon="sparkle" onClick={onNewGame}>
+            Start here
+          </Button>
+        </div>
       </article>
     );
   }
@@ -64,25 +70,20 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
           <span className="ck-muted">
             {rungById(state.rung).name} · {difficultyById(state.profile.difficulty).name}
           </span>
+          <span className="ck-slot__day">
+            Day {state.calendar.day}, {weekdayName(state.calendar.day)}
+          </span>
         </div>
       </div>
-      <p className="ck-slot__day">
-        Day {state.calendar.day}, {weekdayName(state.calendar.day)}
-      </p>
       <div className="ck-slot__stats">
         <StatChip kind="coins" value={state.coins} />
         <StatChip kind="reputation" value={state.reputation} />
       </div>
       <div className="ck-slot__actions">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onNewGame}
-          aria-label={`Start a new game in slot ${read.slot}`}
-        >
+        <Button variant="secondary" onClick={onNewGame} aria-label={`Start a new game in slot ${read.slot}`}>
           New game
         </Button>
-        <Button size="sm" onClick={onLoad} aria-label={`Load slot ${read.slot}`}>
+        <Button onClick={onLoad} aria-label={`Load slot ${read.slot}`}>
           Load
         </Button>
       </div>

@@ -5,6 +5,8 @@ import { useTickLoop } from "../../../../../ui/kit/useTickLoop";
 import { useSvgId } from "../../../../../ui/art/useSvgId";
 import type { ChopItemDef } from "../../../content/dish";
 import { ingredientById, markScore, type ChopRecord } from "../../../core";
+import { ChefKnife } from "../../art/ChefKnife";
+import { ChopPile } from "../../art/ChopPile";
 import { IngredientIcon } from "../../art/IngredientIcon";
 import { chopBoardLabel, chopInstruction } from "../../instructions/chopInstruction";
 import { useKitchenSound } from "../../sound/SoundContext";
@@ -17,13 +19,14 @@ export interface ChopBoardProps {
   readonly window: number;
   readonly assisted: boolean;
   readonly reducedMotion: boolean;
+  readonly hand: string;
   readonly onDone: (record: ChopRecord) => void;
 }
 
 type Phase = "ready" | "running" | "done";
 type Flash = "perfect" | "good" | "miss" | null;
 
-const KNIFE_X = 250;
+const KNIFE_X = 380;
 const MARK_GAP = 58;
 
 export function ChopBoard({
@@ -32,6 +35,7 @@ export function ChopBoard({
   window: chopWindow,
   assisted,
   reducedMotion,
+  hand,
   onDone,
 }: ChopBoardProps) {
   const timeline = chopTimeline(item, difficulty);
@@ -184,110 +188,194 @@ export function ChopBoard({
       <p className="ck-chop__hint" aria-live="polite" data-testid="station-instruction">
         {instruction}
       </p>
-      <div
-        className={pressing ? "ck-chop__board ck-chop__board--pressed" : "ck-chop__board"}
-        role="button"
-        tabIndex={0}
-        ref={surfaceRef}
-        aria-label={chopBoardLabel(item.cut, assisted, ingredient.name.toLowerCase())}
-        onPointerDown={(event) => {
-          event.currentTarget.setPointerCapture(event.pointerId);
-          press();
-        }}
-        onPointerUp={release}
-        onPointerCancel={release}
-        onKeyDown={keyDown}
-        onKeyUp={keyUp}
-        data-testid="chop-surface"
-      >
-        <svg viewBox="0 0 400 260" className="ck-chop__svg" aria-hidden="true">
-          <defs>
-            <linearGradient id={woodId} x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stopColor="#e2b77a" />
-              <stop offset="1" stopColor="#b98444" />
-            </linearGradient>
-          </defs>
-          <rect
-            x={10}
-            y={20}
-            width={380}
-            height={220}
-            rx={26}
-            fill={`url(#${woodId})`}
-            stroke="#8a5a2a"
-            strokeWidth={4}
-          />
-          {[60, 100, 150, 200].map((y) => (
-            <path
-              key={y}
-              d={`M24 ${y} C140 ${y - 8} 260 ${y + 8} 376 ${y}`}
-              stroke="#a8743a"
-              strokeWidth={2}
-              opacity={0.4}
-              fill="none"
+      <div className="ck-chop__counter">
+        <div
+          className={pressing ? "ck-chop__board ck-chop__board--pressed" : "ck-chop__board"}
+          role="button"
+          tabIndex={0}
+          ref={surfaceRef}
+          aria-label={chopBoardLabel(item.cut, assisted, ingredient.name.toLowerCase())}
+          onPointerDown={(event) => {
+            event.currentTarget.setPointerCapture(event.pointerId);
+            press();
+          }}
+          onPointerUp={release}
+          onPointerCancel={release}
+          onKeyDown={keyDown}
+          onKeyUp={keyUp}
+          data-testid="chop-surface"
+        >
+          <svg viewBox="0 0 600 300" className="ck-chop__svg" aria-hidden="true">
+            <defs>
+              <linearGradient id={woodId} x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#ecc68c" />
+                <stop offset="0.55" stopColor="#d6a462" />
+                <stop offset="1" stopColor="#b47a3c" />
+              </linearGradient>
+            </defs>
+            <rect x={20} y={38} width={568} height={256} rx={30} fill="#7a4a22" opacity={0.9} />
+            <rect
+              x={14}
+              y={26}
+              width={572}
+              height={258}
+              rx={30}
+              fill={`url(#${woodId})`}
+              stroke="#8a5a2a"
+              strokeWidth={3}
             />
-          ))}
-          <g transform={`translate(70 ${200 - Math.min(pile, 12) * 3})`}>
-            {Array.from({ length: Math.min(pile, 12) }, (_, index) => (
-              <rect
-                key={index}
-                x={(index % 4) * 13 - 20}
-                y={-Math.floor(index / 4) * 9}
-                width={12}
-                height={9}
-                rx={3}
-                fill={ingredient.colour}
-                stroke={ingredient.accent}
-                strokeWidth={1.2}
-                className={reducedMotion ? undefined : "ck-chop__piece"}
+            {[156, 300, 444].map((x) => (
+              <g key={x}>
+                <path d={`M${x} 30 V280`} stroke="#8a5a2a" strokeWidth={2.4} opacity={0.4} />
+                <path d={`M${x + 2} 30 V280`} stroke="#ffe2b0" strokeWidth={1} opacity={0.35} />
+              </g>
+            ))}
+            {[52, 70, 88, 104, 122, 140, 158, 176, 192, 210, 228, 246, 264].map((y, index) => (
+              <path
+                key={y}
+                d={`M30 ${y} C140 ${y - 8 + (index % 3) * 5} 320 ${y + 9 - (index % 4) * 3} 570 ${y - 3 + (index % 2) * 4}`}
+                stroke={index % 3 === 0 ? "#9a6430" : "#b88448"}
+                strokeWidth={index % 3 === 0 ? 2.2 : 1.2}
+                opacity={index % 3 === 0 ? 0.45 : 0.3}
+                fill="none"
               />
             ))}
-          </g>
-          <g transform={`translate(240 130) rotate(${turned ? 90 : 0})`} className="ck-chop__food">
-            <g transform="translate(-62 -62)">
-              <IngredientIcon ingredientId={item.ingredient} size={124} />
-            </g>
-          </g>
-          {timeline.marks.map((mark, index) => {
-            const x = KNIFE_X + (mark - shown) * speed;
-            if (offsets[index] !== null || x < 150 || x > 380) return null;
-            return (
+            {[
+              [92, 96],
+              [508, 214],
+            ].map(([x = 0, y = 0]) => (
+              <g key={x} transform={`translate(${x} ${y})`} opacity={0.5}>
+                <ellipse rx={16} ry={7} fill="none" stroke="#8a5a2a" strokeWidth={2} />
+                <ellipse rx={8} ry={3.5} fill="#a8743a" />
+              </g>
+            ))}
+            {[
+              [214, 70, 30],
+              [470, 92, -20],
+              [236, 236, 12],
+              [520, 160, 40],
+            ].map(([x = 0, y = 0, turn = 0]) => (
               <path
-                key={index}
-                d={`M${x} 60 V200`}
-                stroke={mark === nextMark ? "#2e3a40" : "#5f4630"}
-                strokeWidth={mark === nextMark ? 4 : 3}
-                strokeDasharray="8 6"
+                key={`${x}-${y}`}
+                d={`M${x - 14} ${y} H${x + 14}`}
+                transform={`rotate(${turn} ${x} ${y})`}
+                stroke="#fff1d6"
+                strokeWidth={1.4}
+                opacity={0.5}
+                strokeLinecap="round"
               />
-            );
-          })}
-          {timeline.stretch !== null ? (
+            ))}
             <rect
-              x={KNIFE_X + (timeline.stretch[0] - shown) * speed}
-              y={196}
-              width={(timeline.stretch[1] - timeline.stretch[0]) * speed}
-              height={14}
-              rx={7}
-              fill="#4f8a3c"
-              opacity={offsets[1] === null ? 0.9 : 0.4}
+              x={34}
+              y={44}
+              width={532}
+              height={222}
+              rx={20}
+              fill="none"
+              stroke="#a8743a"
+              strokeWidth={3}
+              opacity={0.45}
             />
+            <rect
+              x={36}
+              y={46}
+              width={528}
+              height={218}
+              rx={19}
+              fill="none"
+              stroke="#ffe2b0"
+              strokeWidth={1.2}
+              opacity={0.6}
+            />
+            <path d="M44 40 Q300 30 556 40" stroke="#fff3d6" strokeWidth={4} opacity={0.45} fill="none" />
+            <g transform="translate(140 180)">
+              <ChopPile
+                count={pile}
+                cut={item.cut}
+                colour={ingredient.colour}
+                accent={ingredient.accent}
+                animated={!reducedMotion}
+              />
+            </g>
+            <ellipse cx={KNIFE_X} cy={236} rx={78} ry={14} fill="#5a3412" opacity={0.2} />
+            <g transform={`translate(${KNIFE_X} 160) rotate(${turned ? 90 : 0})`} className="ck-chop__food">
+              <g transform="translate(-80 -80)">
+                <IngredientIcon ingredientId={item.ingredient} size={160} />
+              </g>
+            </g>
+            {timeline.marks.map((mark, index) => {
+              const x = KNIFE_X + (mark - shown) * speed;
+              if (offsets[index] !== null || x < 250 || x > 570) return null;
+              const next = mark === nextMark;
+              const tone = next ? "#d9472b" : "#8a6a4a";
+              return (
+                <g key={index} opacity={next ? 1 : 0.5}>
+                  <path d={`M${x} 70 V250`} stroke="#fffaf0" strokeWidth={next ? 10 : 5} opacity={0.75} />
+                  <path
+                    d={`M${x} 70 V250`}
+                    stroke={tone}
+                    strokeWidth={next ? 5 : 3}
+                    strokeDasharray={next ? "12 7" : "4 8"}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d={`M${x - 9} 56 H${x + 9} L${x} 70 Z`}
+                    fill={tone}
+                    stroke="#fffaf0"
+                    strokeWidth={2}
+                  />
+                  {next ? (
+                    <g transform={`translate(${x} 262)`}>
+                      <rect
+                        x={-27}
+                        y={-12}
+                        width={54}
+                        height={24}
+                        rx={12}
+                        fill={tone}
+                        stroke="#fffaf0"
+                        strokeWidth={2}
+                      />
+                      <text y={5} textAnchor="middle" className="ck-chop__tag">
+                        next
+                      </text>
+                    </g>
+                  ) : null}
+                </g>
+              );
+            })}
+            {timeline.stretch !== null ? (
+              <rect
+                x={KNIFE_X + (timeline.stretch[0] - shown) * speed}
+                y={252}
+                width={(timeline.stretch[1] - timeline.stretch[0]) * speed}
+                height={14}
+                rx={7}
+                fill="#4f8a3c"
+                opacity={offsets[1] === null ? 0.9 : 0.4}
+              />
+            ) : null}
+            <path d={`M${KNIFE_X} 40 V276`} stroke="#ffd387" strokeWidth={9} opacity={0.35} />
+            <path d={`M${KNIFE_X} 40 V276`} stroke="#f2a93b" strokeWidth={4} strokeDasharray="6 6" />
+            <g transform={`translate(${KNIFE_X} 0)`}>
+              <g
+                key={flash.id}
+                className={reducedMotion || flash.kind === null ? "ck-knife" : "ck-knife ck-knife--chop"}
+              >
+                <ChefKnife hand={hand} moving={phase === "running"} />
+              </g>
+            </g>
+          </svg>
+          {flash.kind !== null && phase === "running" ? (
+            <span
+              key={flash.id}
+              className={`ck-chop__flash ck-chop__flash--${flash.kind}`}
+              aria-hidden="true"
+            >
+              {flash.kind === "perfect" ? "Perfect!" : flash.kind === "good" ? "Good" : "Close"}
+            </span>
           ) : null}
-          <path d={`M${KNIFE_X} 40 V220`} stroke="#f2a93b" strokeWidth={3} strokeDasharray="4 6" />
-          <g
-            key={flash.id}
-            className={reducedMotion || flash.kind === null ? "ck-knife" : "ck-knife ck-knife--chop"}
-            transform={`translate(${KNIFE_X} 0)`}
-          >
-            <rect x={-6} y={0} width={12} height={34} rx={5} fill="#5a3a24" />
-            <path d="M-26 34 L26 34 L26 88 Q0 98 -26 88 Z" fill="#dfe5e8" stroke="#7d8a91" strokeWidth={2} />
-            <path d="M-20 42 L-20 82" stroke="#ffffff" strokeWidth={3} opacity={0.7} />
-          </g>
-        </svg>
-        {flash.kind !== null && phase === "running" ? (
-          <span key={flash.id} className={`ck-chop__flash ck-chop__flash--${flash.kind}`} aria-hidden="true">
-            {flash.kind === "perfect" ? "Perfect!" : flash.kind === "good" ? "Good" : "Close"}
-          </span>
-        ) : null}
+        </div>
       </div>
       <div className="ck-chop__controls">
         {phase === "ready" ? (
@@ -314,6 +402,15 @@ export function ChopBoard({
           >
             {paused ? "Resume" : "Pause"}
           </button>
+        )}
+        {item.cut === "mince" ? null : (
+          <ol className="ck-chop__beads" aria-hidden="true">
+            {offsets.map((offset, index) => {
+              const score = offset === null ? null : markScore(offset, chopWindow);
+              const tone = score === null ? "todo" : score === 1 ? "perfect" : score > 0 ? "good" : "miss";
+              return <li key={index} className={`ck-chop__bead ck-chop__bead--${tone}`} />;
+            })}
+          </ol>
         )}
         <span className="ck-chop__count">
           {item.cut === "mince"

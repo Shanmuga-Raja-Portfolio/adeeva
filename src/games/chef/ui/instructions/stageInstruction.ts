@@ -1,7 +1,7 @@
 export const STAGE_LINES = {
   mise: "Drag each ingredient into a bowl. Everything in its place!",
   miseDone: "All in place! Tap Start cooking.",
-  pass: "Tap the bell to send it out. Service!",
+  pass: "Your plate glows under the lamp. Ring the bell when ready!",
   quickPass: "Tap Wipe rim, then Service! to send it out.",
   quickPassWiped: "Shiny rim! Tap Service! to send it out.",
 } as const;

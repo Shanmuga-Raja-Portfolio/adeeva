@@ -26,13 +26,29 @@ export const PLATE_NAMES: Readonly<Record<PlateColour, string>> = {
 };
 
 export function PlacedPiece({ placed }: { readonly placed: PlacedComponent }) {
+  const shade = useSvgId("ck-piece-shade");
   const component = componentById(placed.componentId);
   const [cx, cy] = placedCentre(placed);
+  const { width, height } = component;
   return (
-    <g
-      transform={`translate(${cx} ${cy}) rotate(${placed.rotation}) scale(${placed.scale}) translate(${-component.width / 2} ${-component.height / 2})`}
-    >
-      <ComponentArt componentId={placed.componentId} />
+    <g>
+      {component.role === "garnish" ? (
+        <g transform={`translate(${cx + 3} ${cy + 6}) scale(${placed.scale})`}>
+          <defs>
+            <radialGradient id={shade}>
+              <stop offset="0" stopColor="#3a2410" stopOpacity={0.42} />
+              <stop offset="0.6" stopColor="#3a2410" stopOpacity={0.16} />
+              <stop offset="1" stopColor="#3a2410" stopOpacity={0} />
+            </radialGradient>
+          </defs>
+          <ellipse rx={width * 0.55} ry={height * 0.45} fill={`url(#${shade})`} />
+        </g>
+      ) : null}
+      <g
+        transform={`translate(${cx} ${cy}) rotate(${placed.rotation}) scale(${placed.scale}) translate(${-width / 2} ${-height / 2})`}
+      >
+        <ComponentArt componentId={placed.componentId} />
+      </g>
     </g>
   );
 }
@@ -103,10 +119,40 @@ export function PlateDisc({ colour, drips = false, showWell = false }: PlateDisc
         fill="none"
       />
       {drips ? (
-        <g fill="#c4502e" opacity={0.75}>
-          <circle cx={PLATE_CENTRE + 150} cy={PLATE_CENTRE - 96} r={5} />
-          <circle cx={PLATE_CENTRE + 160} cy={PLATE_CENTRE - 80} r={3} />
-          <circle cx={PLATE_CENTRE - 166} cy={PLATE_CENTRE + 60} r={4} />
+        <g>
+          {[
+            [PLATE_CENTRE + 156, PLATE_CENTRE - 104, 32],
+            [PLATE_CENTRE - 164, PLATE_CENTRE + 58, 20],
+          ].map(([x = 0, y = 0, r = 0]) => (
+            <circle
+              key={`${x}-${y}`}
+              cx={x}
+              cy={y}
+              r={r}
+              fill="#fff3d6"
+              fillOpacity={0.35}
+              stroke="#f2a93b"
+              strokeWidth={2.5}
+              strokeDasharray="5 5"
+            />
+          ))}
+          <g transform={`translate(${PLATE_CENTRE + 146} ${PLATE_CENTRE - 98}) rotate(-30)`}>
+            <path
+              d="M-14 0 C-14 -6 -4 -8 6 -7 C16 -6 20 0 14 4 C6 8 -14 6 -14 0 Z"
+              fill="#c4502e"
+              opacity={0.8}
+            />
+            <ellipse cx={-2} cy={-3} rx={6} ry={1.6} fill="#ffffff" opacity={0.45} />
+            <circle cx={24} cy={2} r={3} fill="#c4502e" opacity={0.75} />
+          </g>
+          <g transform={`translate(${PLATE_CENTRE - 164} ${PLATE_CENTRE + 58}) rotate(70)`}>
+            <path
+              d="M-10 0 C-10 -5 -2 -6 5 -5 C12 -4 14 0 10 3 C4 6 -10 5 -10 0 Z"
+              fill="#c4502e"
+              opacity={0.8}
+            />
+            <ellipse cx={-1} cy={-2} rx={4} ry={1.2} fill="#ffffff" opacity={0.45} />
+          </g>
         </g>
       ) : null}
     </g>

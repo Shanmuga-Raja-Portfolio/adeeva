@@ -194,15 +194,15 @@ export function PathHub(props: PathHubProps) {
     >
       {(tools) => (
         <>
-          <PathHero
-            state={state}
-            path={path}
-            onPotWash={(event) => tools.endDay(event, "potwash")}
-            onEndDay={(event) => tools.endDay(event, "rest")}
-          />
           {path.kind === "restaurant" ? (
-            <div className="ck-hub__grid">
-              <div className="ck-hub__column">
+            <>
+              <div className="ck-hub__top">
+                <PathHero
+                  state={state}
+                  path={path}
+                  onPotWash={(event) => tools.endDay(event, "potwash")}
+                  onEndDay={(event) => tools.endDay(event, "rest")}
+                />
                 <TonightCard
                   state={state}
                   restaurant={path}
@@ -215,20 +215,31 @@ export function PathHub(props: PathHubProps) {
                     if (tools.once(event, { type: "openNight" })) onOpen("service");
                   }}
                 />
-                {orders(tools)}
               </div>
-              <div className="ck-hub__column">
-                {onBoard(tools)}
-                {money}
-                {practice(tools)}
+              <div className="ck-hub__grid">
+                <div className="ck-hub__column">
+                  {onBoard(tools)}
+                  {money}
+                </div>
+                <div className="ck-hub__column">
+                  <ReviewsWall restaurant={path} />
+                  {orders(tools)}
+                </div>
+                <div className="ck-hub__column">
+                  {practice(tools)}
+                  {diary}
+                  <ShopPanel state={state} onBuy={tools.buy} />
+                </div>
               </div>
-              <div className="ck-hub__column">
-                <ReviewsWall restaurant={path} />
-                {diary}
-                <ShopPanel state={state} onBuy={tools.buy} />
-              </div>
-            </div>
-          ) : null}
+            </>
+          ) : (
+            <PathHero
+              state={state}
+              path={path}
+              onPotWash={(event) => tools.endDay(event, "potwash")}
+              onEndDay={(event) => tools.endDay(event, "rest")}
+            />
+          )}
           {path.kind === "truck" ? (
             <div className="ck-hub__grid">
               <div className="ck-hub__column">

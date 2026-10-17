@@ -15,10 +15,12 @@ import {
 } from "../../../core";
 import { ComponentArt } from "../../art/ComponentArt";
 import { PLATE_HEX, PLATE_NAMES, PlacedPiece, PlateDisc } from "../../art/PlateArt";
+import { PlateTable } from "../../art/PlateTable";
 import { plateInstruction } from "../../instructions/plateInstruction";
 import { useKitchenSound } from "../../sound/SoundContext";
 import { nudged, placeAt, rescaled, rotated, snapped, topLayer } from "./plateEditing";
 import "./cook.css";
+import "./plate.css";
 
 export interface PlateDraft {
   readonly components: readonly PlacedComponent[];
@@ -187,71 +189,93 @@ export function PlateBuilder({
         {instruction}
       </p>
       <div className="ck-plate__layout">
-        <div className="ck-plate__stage">
-          <svg
-            ref={svgRef}
-            viewBox="-12 -12 424 424"
-            className="ck-plate__svg"
-            role="application"
-            aria-label={`The plate. ${placed.length} of ${ids.length} parts placed.`}
-            onPointerMove={moveCarry}
-            onPointerUp={endCarry}
-            onPointerCancel={cancelCarry}
-            data-testid="plate-canvas"
-          >
-            <PlateDisc colour={colour} drips={!wiped} showWell />
-            {FOCUS_POINTS.map(([x, y]) => (
-              <circle key={`${x}-${y}`} cx={x} cy={y} r={5} fill="#f2a93b" opacity={0.35} />
-            ))}
-            {assisted
-              ? ghost.map((entry) => (
-                  <g key={`ghost-${entry.componentId}`} opacity={0.22}>
-                    <PlacedPiece placed={entry} />
-                  </g>
-                ))
-              : null}
-            {sorted.map((entry) => (
-              <g
-                key={entry.componentId}
-                tabIndex={0}
-                role="button"
-                aria-label={`${componentById(entry.componentId).name}. Arrows move, R turns, plus and minus resize.`}
-                className={
-                  selected === entry.componentId ? "ck-plate__piece ck-plate__piece--on" : "ck-plate__piece"
-                }
-                onPointerDown={(event) => begin(event, entry.componentId, false)}
-                onKeyDown={(event) => keyOnPiece(event, entry.componentId)}
-                onFocus={() => setSelected(entry.componentId)}
-                data-testid={`placed-${entry.componentId}`}
-              >
-                <PlacedPiece placed={entry} />
-              </g>
-            ))}
-            {wiping > 0 && !reducedMotion ? (
-              <g key={wiping} className="ck-plate__cloth">
-                <path
-                  d="M300 20 q30 10 60 0 l10 40 q-30 10 -60 0 Z"
-                  fill="#f3f0e8"
-                  stroke="#aeb9bf"
-                  strokeWidth={2}
-                />
-              </g>
-            ) : null}
-          </svg>
-          {carry !== null && carry.fromTray && carry.moved ? (
-            <div
-              className="ck-plate__carry"
-              style={{ left: carry.clientX, top: carry.clientY }}
-              aria-hidden="true"
+        <div className="ck-plate__left">
+          <div className="ck-plate__stage">
+            <PlateTable className="ck-plate__table" />
+            <svg
+              ref={svgRef}
+              viewBox="-12 -12 424 424"
+              className="ck-plate__svg"
+              role="application"
+              aria-label={`The plate. ${placed.length} of ${ids.length} parts placed.`}
+              onPointerMove={moveCarry}
+              onPointerUp={endCarry}
+              onPointerCancel={cancelCarry}
+              data-testid="plate-canvas"
             >
-              <svg
-                viewBox={`0 0 ${componentById(carry.componentId).width} ${componentById(carry.componentId).height}`}
-                width={componentById(carry.componentId).width * 0.8}
+              <PlateDisc colour={colour} drips={!wiped} showWell />
+              {FOCUS_POINTS.map(([x, y]) => (
+                <circle key={`${x}-${y}`} cx={x} cy={y} r={5} fill="#f2a93b" opacity={0.35} />
+              ))}
+              {assisted
+                ? ghost.map((entry) => (
+                    <g key={`ghost-${entry.componentId}`} opacity={0.22}>
+                      <PlacedPiece placed={entry} />
+                    </g>
+                  ))
+                : null}
+              {sorted.map((entry) => (
+                <g
+                  key={entry.componentId}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`${componentById(entry.componentId).name}. Arrows move, R turns, plus and minus resize.`}
+                  className={
+                    selected === entry.componentId ? "ck-plate__piece ck-plate__piece--on" : "ck-plate__piece"
+                  }
+                  onPointerDown={(event) => begin(event, entry.componentId, false)}
+                  onKeyDown={(event) => keyOnPiece(event, entry.componentId)}
+                  onFocus={() => setSelected(entry.componentId)}
+                  data-testid={`placed-${entry.componentId}`}
+                >
+                  <PlacedPiece placed={entry} />
+                </g>
+              ))}
+              {wiping > 0 && !reducedMotion ? (
+                <g key={wiping} className="ck-plate__cloth">
+                  <path
+                    d="M300 20 q30 10 60 0 l10 40 q-30 10 -60 0 Z"
+                    fill="#f3f0e8"
+                    stroke="#aeb9bf"
+                    strokeWidth={2}
+                  />
+                </g>
+              ) : null}
+            </svg>
+            {carry !== null && carry.fromTray && carry.moved ? (
+              <div
+                className="ck-plate__carry"
+                style={{ left: carry.clientX, top: carry.clientY }}
+                aria-hidden="true"
               >
-                <ComponentArt componentId={carry.componentId} />
-              </svg>
-            </div>
-          ) : null}
+                <svg
+                  viewBox={`0 0 ${componentById(carry.componentId).width} ${componentById(carry.componentId).height}`}
+                  width={componentById(carry.componentId).width * 0.8}
+                >
+                  <ComponentArt componentId={carry.componentId} />
+                </svg>
+              </div>
+            ) : null}
+          </div>
+          <div className="ck-plate__colours" role="radiogroup" aria-label="Plate">
+            <span className="ck-plate__colours-label" aria-hidden="true">
+              Plate
+            </span>
+            {PLATE_COLOURS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                role="radio"
+                aria-checked={colour === option}
+                aria-label={PLATE_NAMES[option]}
+                className="ck-plate__swatch-option"
+                onClick={() => setColour(option)}
+              >
+                <span className="ck-plate__swatch" style={{ background: PLATE_HEX[option] }} />
+                <span aria-hidden="true">{PLATE_NAMES[option]}</span>
+              </button>
+            ))}
+          </div>
         </div>
         <div className="ck-plate__side">
           <div className="ck-plate__tray" role="group" aria-label="Parts of the dish">
@@ -277,98 +301,105 @@ export function PlateBuilder({
                 >
                   <svg
                     viewBox={`-4 -4 ${component.width + 8} ${component.height + 8}`}
-                    width={56}
-                    height={44}
+                    width={72}
+                    height={56}
                     aria-hidden="true"
                   >
                     <ComponentArt componentId={id} />
                   </svg>
-                  <span>{component.name}</span>
-                  <span className="ck-tray-item__role">
-                    {component.role === "garnish" ? "garnish" : component.role}
+                  <span className="ck-tray-item__name">{component.name}</span>
+                  <span className={`ck-tray-item__role ck-tray-item__role--${component.role}`}>
+                    {component.role}
                   </span>
+                  {on ? (
+                    <span className="ck-tray-item__on" aria-hidden="true">
+                      <Icon name="check" size={14} />
+                    </span>
+                  ) : null}
                 </button>
               );
             })}
           </div>
           {selectedEntry !== undefined ? (
             <div className="ck-plate__tools" aria-label="Selected part">
-              <strong>{componentById(selectedEntry.componentId).name}</strong>
-              <button
-                type="button"
-                className="ck-pause"
-                onClick={() => setPlaced((current) => rotated(current, selectedEntry.componentId))}
-              >
-                Turn 45°
-              </button>
-              <button
-                type="button"
-                className="ck-pause"
-                aria-label="Smaller"
-                onClick={() => setPlaced((current) => rescaled(current, selectedEntry.componentId, -0.1))}
-              >
-                −
-              </button>
-              <button
-                type="button"
-                className="ck-pause"
-                aria-label="Bigger"
-                onClick={() => setPlaced((current) => rescaled(current, selectedEntry.componentId, 0.1))}
-              >
-                +
-              </button>
-              <button type="button" className="ck-pause" onClick={() => remove(selectedEntry.componentId)}>
-                Back to the tray
-              </button>
+              <strong className="ck-plate__tools-name">
+                {componentById(selectedEntry.componentId).name}
+              </strong>
+              <div className="ck-plate__tool-row">
+                <button
+                  type="button"
+                  className="ck-plate__tool"
+                  onClick={() => setPlaced((current) => rotated(current, selectedEntry.componentId))}
+                >
+                  <span aria-hidden="true">↻</span> Turn 45°
+                </button>
+                <button
+                  type="button"
+                  className="ck-plate__tool"
+                  aria-label="Smaller"
+                  onClick={() => setPlaced((current) => rescaled(current, selectedEntry.componentId, -0.1))}
+                >
+                  <span aria-hidden="true">−</span> Smaller
+                </button>
+                <button
+                  type="button"
+                  className="ck-plate__tool"
+                  aria-label="Bigger"
+                  onClick={() => setPlaced((current) => rescaled(current, selectedEntry.componentId, 0.1))}
+                >
+                  <span aria-hidden="true">+</span> Bigger
+                </button>
+                <button
+                  type="button"
+                  className="ck-plate__tool"
+                  onClick={() => remove(selectedEntry.componentId)}
+                >
+                  <span aria-hidden="true">×</span> Remove
+                </button>
+              </div>
             </div>
           ) : null}
-          <div className="ck-plate__colours" role="radiogroup" aria-label="Plate">
-            {PLATE_COLOURS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                role="radio"
-                aria-checked={colour === option}
-                aria-label={PLATE_NAMES[option]}
-                title={PLATE_NAMES[option]}
-                className="ck-plate__swatch"
-                style={{ background: PLATE_HEX[option] }}
-                onClick={() => setColour(option)}
-              />
-            ))}
-          </div>
           <ul className="ck-plate__checks">
-            <li className={preview.inWell === 1 ? "ck-good" : undefined}>
-              <Icon name={preview.inWell === 1 ? "check" : "close"} size={14} /> Everything in the well
-            </li>
-            <li className={preview.spacing === 1 ? "ck-good" : undefined}>
-              <Icon name={preview.spacing === 1 ? "check" : "close"} size={14} /> Each piece has its own space
-            </li>
-            <li className={preview.focus === 1 ? "ck-good" : undefined}>
-              <Icon name={preview.focus === 1 ? "check" : "close"} size={14} /> The star of the dish on a gold
-              dot
-            </li>
-            <li className={preview.garnishMet ? "ck-good" : undefined}>
-              <Icon name={preview.garnishMet ? "check" : "close"} size={14} /> {preview.garnishes} of{" "}
-              {dish.plate.garnishCount} garnishes
-            </li>
-            <li className={wiped ? "ck-good" : undefined}>
-              <Icon name={wiped ? "check" : "close"} size={14} /> Rim wiped
+            {[
+              { key: "well", ok: preview.inWell === 1, label: "Everything in the well" },
+              { key: "space", ok: preview.spacing === 1, label: "Each piece has its own space" },
+              { key: "focus", ok: preview.focus === 1, label: "Star piece on a gold dot" },
+              {
+                key: "garnish",
+                ok: preview.garnishMet,
+                label: `${preview.garnishes} of ${dish.plate.garnishCount} garnishes`,
+              },
+            ].map((check) => (
+              <li
+                key={check.key}
+                className={check.ok ? "ck-plate__check ck-plate__check--ok" : "ck-plate__check"}
+              >
+                <span className="ck-plate__check-mark" aria-hidden="true">
+                  {check.ok ? <Icon name="check" size={16} /> : null}
+                </span>
+                {check.label}
+                <span className="ad-visually-hidden">{check.ok ? ", done" : ", not yet"}</span>
+              </li>
+            ))}
+            <li className="ck-plate__check ck-plate__check--wipe">
+              <button
+                type="button"
+                className={wiped ? "ck-plate__wipe ck-plate__wipe--done" : "ck-plate__wipe"}
+                onClick={wipe}
+                disabled={wiped}
+                data-testid="wipe-rim"
+              >
+                <span className="ck-plate__wipe-cloth" aria-hidden="true">
+                  {wiped ? <Icon name="check" size={20} /> : <Icon name="sparkle" size={20} />}
+                </span>
+                {wiped ? "Rim wiped" : "Wipe rim"}
+              </button>
             </li>
           </ul>
           <div className="ck-plate__actions">
             <button
               type="button"
-              className="ck-big-button ck-big-button--cloth"
-              onClick={wipe}
-              disabled={wiped}
-              data-testid="wipe-rim"
-            >
-              Wipe rim
-            </button>
-            <button
-              type="button"
-              className="ck-big-button ck-big-button--go"
+              className="ck-big-button ck-big-button--go ck-plate__go"
               onClick={() => {
                 setPlatedKey(plateKey);
                 onPlate({ components: placed, plateColour: colour, wiped, assisted: helped.current });

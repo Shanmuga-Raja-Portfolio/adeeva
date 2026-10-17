@@ -1,5 +1,6 @@
 import { daysUntilWeekEnd } from "../../../../../engine/weekday";
 import { Button } from "../../../../../ui/kit/Button";
+import { Icon } from "../../../../../ui/kit/IconSet";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
 import { CAREER } from "../../../content/career";
 import { canEndDay, canPotWash, weeklyBill, type GameState } from "../../../core";
@@ -22,22 +23,26 @@ export function HeroDayActions({ state, home, onPotWash, onEndDay }: HeroDayActi
   const endDay = canEndDay(state);
   return (
     <>
-      <p className="ck-hero__rent">
-        {rentLine(weeklyBill(state), home, daysUntilWeekEnd(state.calendar.day))}
-      </p>
       <div className="ck-hero__actions">
+        {potWash.ok ? (
+          <Button variant="secondary" onClick={onPotWash} data-testid="pot-wash">
+            Pot-wash day (+{CAREER.potWashPay})
+          </Button>
+        ) : null}
         <Button
-          variant="secondary"
-          onClick={onPotWash}
-          disabledReason={potWash.reasons[0]}
-          data-testid="pot-wash"
+          variant={potWash.ok ? "secondary" : "primary"}
+          icon="calendar"
+          onClick={onEndDay}
+          disabledReason={endDay.reasons[0]}
+          data-testid="end-day"
         >
-          Pot-wash day (+{CAREER.potWashPay})
-        </Button>
-        <Button icon="calendar" onClick={onEndDay} disabledReason={endDay.reasons[0]} data-testid="end-day">
           End the day
         </Button>
       </div>
+      <p className="ck-hero__rent">
+        <Icon name="home" size={16} />
+        {rentLine(weeklyBill(state), home, daysUntilWeekEnd(state.calendar.day))}
+      </p>
     </>
   );
 }

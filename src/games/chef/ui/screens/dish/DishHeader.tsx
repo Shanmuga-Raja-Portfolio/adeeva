@@ -1,5 +1,6 @@
 import { Button } from "../../../../../ui/kit/Button";
 import { StatChip } from "../../../../../ui/kit/StatChip";
+import { StatUnit } from "../../StatUnit";
 import { cuisineById, dishById, type DishRun, type GameState } from "../../../core";
 import { purposeLabel } from "./stageNames";
 
@@ -26,9 +27,9 @@ export function DishHeader({ state, run, onExit, onSetAside }: DishHeaderProps) 
       </div>
       <div className="ck-dish-bar__stats">
         <span data-testid="dish-coins">
-          <StatChip kind="coins" value={state.coins} />
+          <StatChip kind="coins" value={<StatUnit value={state.coins} unit="coins" />} />
         </span>
-        <StatChip kind="hours" value={`${state.calendar.hoursLeft} h`} />
+        <StatChip kind="hours" value={<StatUnit value={state.calendar.hoursLeft} unit="h left" />} />
         <Button variant="ghost" size="sm" onClick={onSetAside}>
           Set aside
         </Button>

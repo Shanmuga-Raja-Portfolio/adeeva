@@ -7,13 +7,13 @@ import { SetAsideDialog } from "../SetAsideDialog";
 import { StoryOverlay } from "../story/StoryOverlay";
 import { CookStage } from "./CookStage";
 import { DishHeader } from "./DishHeader";
+import { DishSide } from "./DishSide";
 import { MiseStage } from "./MiseStage";
 import { PassStage } from "./PassStage";
 import { PlateStage } from "./PlateStage";
 import { ResultsStage } from "./ResultsStage";
 import { SegmentCueStrip } from "./SegmentCueStrip";
 import { StageRail } from "./StageRail";
-import { TicketChecklist } from "./TicketChecklist";
 import { TicketStage } from "./TicketStage";
 import "./dish.css";
 
@@ -73,7 +73,7 @@ export function DishFlow({ state, dispatch, onExit }: DishFlowProps) {
         <section className="ck-dish__stage" key={run.stage} aria-label={`${run.stage} step`}>
           <StageView state={state} run={run} dispatch={dispatch} onExit={onExit} />
         </section>
-        <TicketChecklist run={run} />
+        {run.stage === "pass" ? null : <DishSide run={run} />}
       </div>
       <SetAsideDialog
         open={settingAside}

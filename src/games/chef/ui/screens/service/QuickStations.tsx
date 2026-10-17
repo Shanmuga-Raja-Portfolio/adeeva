@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FollowProgress } from "../../../../../engine/followRecord";
+import { skinHex } from "../../../../../ui/art/avatar/Avatar";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import type { ChopRecord, GameState, QuickRecord, ServiceRun } from "../../../core";
 import {
@@ -52,6 +53,7 @@ export function QuickChop({ state, service, dish, assisted, reducedMotion, onRec
       window={chopWindow(toleranceFor(state, "chop"))}
       assisted={assisted}
       reducedMotion={reducedMotion}
+      hand={skinHex(state.profile.look)}
       onDone={(record) => {
         const next = [...records, record];
         setRecords(next);

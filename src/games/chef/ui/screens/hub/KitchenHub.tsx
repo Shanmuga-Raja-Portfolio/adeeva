@@ -129,35 +129,40 @@ export function KitchenHub(props: KitchenHubProps) {
     >
       {(tools) => (
         <>
-          <HubHero
-            state={state}
-            onPotWash={(event) => tools.endDay(event, "potwash")}
-            onEndDay={(event) => tools.endDay(event, "rest")}
-          />
+          <div className="ck-hub__top">
+            <HubHero
+              state={state}
+              onPotWash={(event) => tools.endDay(event, "potwash")}
+              onEndDay={(event) => tools.endDay(event, "rest")}
+            />
+            <BoardPanel
+              state={state}
+              onStartLesson={(event) => {
+                if (tools.once(event, { type: "startLesson" })) onOpen("dish");
+              }}
+              onDeclineLesson={(event) => {
+                if (tools.once(event, { type: "declineLesson" }))
+                  tools.toast("You can practise instead. A new lesson comes tomorrow.", "info");
+              }}
+              onPickShift={(offer) =>
+                state.rung === "line"
+                  ? startShift(offer.id, { special: null, helpers: [] })
+                  : setPicking({ kind: "shift", offer })
+              }
+              onTakeTest={() => setPicking({ kind: testFor(state.rung) === "station" ? "station" : "test" })}
+              onNextTestDish={(event) => {
+                if (tools.once(event, { type: "startNextTestDish" })) onOpen("dish");
+              }}
+              onOpenService={() => onOpen("service")}
+            />
+          </div>
           <CoachBubble show={state.guide && state.diary.length === 0 && !onBoard} text={coachLine(state)} />
           <div className="ck-hub__grid">
             <div className="ck-hub__column">
-              <BoardPanel
-                state={state}
-                onStartLesson={(event) => {
-                  if (tools.once(event, { type: "startLesson" })) onOpen("dish");
-                }}
-                onDeclineLesson={(event) => {
-                  if (tools.once(event, { type: "declineLesson" }))
-                    tools.toast("You can practise instead. A new lesson comes tomorrow.", "info");
-                }}
-                onPickShift={(offer) =>
-                  state.rung === "line"
-                    ? startShift(offer.id, { special: null, helpers: [] })
-                    : setPicking({ kind: "shift", offer })
-                }
-                onTakeTest={() =>
-                  setPicking({ kind: testFor(state.rung) === "station" ? "station" : "test" })
-                }
-                onNextTestDish={(event) => {
-                  if (tools.once(event, { type: "startNextTestDish" })) onOpen("dish");
-                }}
-                onOpenService={() => onOpen("service")}
+              <OnBoardCard state={state} onBack={() => onOpen("dish")} onSetAside={tools.setAside} />
+              <PracticeCard
+                onPick={tools.pickPractice}
+                lead="Cook any dish you've unlocked, just for the joy of it. Great on Family Meal days."
               />
               {state.rung === "head" ? (
                 <>
@@ -205,11 +210,6 @@ export function KitchenHub(props: KitchenHubProps) {
               ) : null}
             </div>
             <div className="ck-hub__column">
-              <OnBoardCard state={state} onBack={() => onOpen("dish")} onSetAside={tools.setAside} />
-              <PracticeCard
-                onPick={tools.pickPractice}
-                lead="Cook any dish you've unlocked, just for the joy of it. Great on Family Meal days."
-              />
               <MasteryPanel state={state} />
             </div>
             <div className="ck-hub__column">

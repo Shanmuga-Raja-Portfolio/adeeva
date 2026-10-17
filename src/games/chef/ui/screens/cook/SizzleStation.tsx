@@ -4,6 +4,7 @@ import { useTickLoop } from "../../../../../ui/kit/useTickLoop";
 import type { SizzleDef } from "../../../content/dish";
 import type { SizzleRecord } from "../../../core";
 import { sizzleInstruction } from "../../instructions/sizzleInstruction";
+import { HobFlame } from "../../art/HobFlame";
 import { useKitchenSound } from "../../sound/SoundContext";
 import { HeatDial } from "./HeatDial";
 import {
@@ -76,33 +77,54 @@ export function SizzleStation({ def, assisted, reducedMotion, onDone }: SizzleSt
       <p className="ck-chop__hint" aria-live="polite" data-testid="station-instruction">
         {sizzleInstruction({ def, sim, heat, assisted, paused })}
       </p>
-      <div className="ck-sizzle__controls">
-        <HeatDial
-          value={assisted ? def.idealDots : heat}
-          ideal={def.idealDots}
-          locked={sim !== null || assisted}
-          onChange={setHeat}
-        />
-        <span className="ck-sizzle__card">
-          Dish card: <strong>{def.idealDots} dots</strong>
-        </span>
-      </div>
-      {sim === null ? (
-        <div className="ck-sizzle__start">
-          <button
-            type="button"
-            className="ck-big-button"
-            onClick={() => {
-              play("pop");
-              update(startPan(def, assisted ? def.idealDots : heat));
-            }}
-            data-testid="pan-start"
-          >
-            <Icon name="sparkle" size={22} /> Into the pan!
-          </button>
-        </div>
-      ) : (
-        <>
+      <div className="ck-sizzle__deck">
+        <aside className="ck-sizzle__panel">
+          <HeatDial
+            value={assisted ? def.idealDots : heat}
+            ideal={def.idealDots}
+            locked={sim !== null || assisted}
+            onChange={setHeat}
+          />
+          <p className="ck-sizzle__tip">
+            <span className="ck-sizzle__tip-ring" aria-hidden="true" />
+            The rim cooks slower. Slide pieces there.
+          </p>
+          <HobFlame level={assisted ? def.idealDots : heat} max={5} />
+          {sim === null ? null : (
+            <div className="ck-sizzle__status">
+              <span className="ck-sizzle__count">
+                <strong>
+                  {sim.pieces.filter((piece) => piece.off).length} of {sim.pieces.length}
+                </strong>{" "}
+                on Done
+              </span>
+              <button
+                type="button"
+                className="ck-pause"
+                aria-pressed={paused}
+                onClick={() => setPaused((value) => !value)}
+                disabled={done}
+              >
+                {paused ? "Resume" : "Pause"}
+              </button>
+            </div>
+          )}
+        </aside>
+        {sim === null ? (
+          <div className="ck-sizzle__start">
+            <button
+              type="button"
+              className="ck-big-button"
+              onClick={() => {
+                play("pop");
+                update(startPan(def, assisted ? def.idealDots : heat));
+              }}
+              data-testid="pan-start"
+            >
+              <Icon name="sparkle" size={22} /> Into the pan!
+            </button>
+          </div>
+        ) : (
           <SizzlePan
             def={def}
             sim={sim}
@@ -113,22 +135,8 @@ export function SizzleStation({ def, assisted, reducedMotion, onDone }: SizzleSt
             onOff={(index) => act((current) => takeOff(current, index), "pop")}
             onToss={() => act((current) => tossPan(current, def), "flip")}
           />
-          <div className="ck-chop__controls">
-            <button
-              type="button"
-              className="ck-pause"
-              aria-pressed={paused}
-              onClick={() => setPaused((value) => !value)}
-              disabled={done}
-            >
-              {paused ? "Resume" : "Pause"}
-            </button>
-            <span className="ck-chop__count">
-              {sim.pieces.filter((piece) => piece.off).length} of {sim.pieces.length} on Done
-            </span>
-          </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 }

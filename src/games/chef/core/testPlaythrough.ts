@@ -4,7 +4,7 @@ import type { DishDef, SizzleDef } from "../content/dish";
 import type { Action } from "./action";
 import { dishById } from "./catalog";
 import { chopMarkCount, quickChopItems, type ChopRecord } from "./chop";
-import { currentCookStep } from "./dishRun";
+import { currentCookStep, type DishRun } from "./dishRun";
 import type { GameState } from "./gameState";
 import { createGame, type NewGameSettings } from "./newGame";
 import { ghostLayout, type PlateRecord } from "./plate";
@@ -144,14 +144,20 @@ function cookStepActions(state: GameState, plan: CookPlan): Action[] {
   }
 }
 
-export function cookDish(state: GameState, plan: CookPlan = GOOD_COOK, ring = true): GameState {
+export function cookUntil(
+  state: GameState,
+  stop: (run: DishRun, dish: DishDef) => boolean,
+  plan: CookPlan = GOOD_COOK,
+): GameState {
   let next = state;
   for (let guard = 0; guard < 16; guard += 1) {
     const run = next.activeRun;
     if (run === null) throw new Error("Nothing on the board");
     const dish = dishById(run.dishId);
+    if (stop(run, dish)) return next;
     switch (run.stage) {
       case "done":
+      case "pass":
         return next;
       case "ticket":
         next = must(next, { type: "goToStage", stage: "mise" });
@@ -177,11 +183,14 @@ export function cookDish(state: GameState, plan: CookPlan = GOOD_COOK, ring = tr
         });
         next = must(next, { type: "goToStage", stage: "pass" });
         break;
-      case "pass":
-        return ring ? must(next, { type: "ringBell" }) : next;
     }
   }
   throw new Error("The dish never finished");
+}
+
+export function cookDish(state: GameState, plan: CookPlan = GOOD_COOK, ring = true): GameState {
+  const next = cookUntil(state, () => false, plan);
+  return ring && next.activeRun?.stage === "pass" ? must(next, { type: "ringBell" }) : next;
 }
 
 export function quickRecordFor(state: GameState, ticketIndex: number, dishIndex: number): QuickRecord | null {

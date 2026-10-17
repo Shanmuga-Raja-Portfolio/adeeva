@@ -1,8 +1,8 @@
 import { darken, lighten } from "../../../../ui/art/colourMix";
 import { CUISINES, type CuisineId } from "../../content/cuisine";
-import { cuisineById, ghostLayout, lessonDish } from "../../core";
-import { PlateGroup } from "./PlateArt";
+import { cuisineById } from "../../core";
 import { CounterTools } from "./counterTools";
+import { SchoolCorridor } from "./SchoolCorridor";
 import {
   Counter,
   Hood,
@@ -16,72 +16,37 @@ import {
   type SceneIds,
 } from "./kitchenFixtures";
 
+export const HEADROOM_VIEWBOX = "0 -100 1200 700";
+
 export type BackdropScene = "school" | "hall" | "kitchen" | "counter";
 
 export interface KitchenBackdropProps {
   readonly scene: BackdropScene;
   readonly cuisine?: CuisineId | undefined;
+  readonly named?: boolean | undefined;
+  readonly today?: CuisineId | undefined;
+  readonly headroom?: boolean | undefined;
   readonly className?: string | undefined;
 }
 
-function SchoolScene({ ids }: { readonly ids: SceneIds }) {
+function Ceiling({ fill, beam }: { readonly fill: string; readonly beam: string }) {
   return (
     <g>
-      <rect width={1200} height={600} fill="#f3e6cf" />
-      <rect y={0} width={1200} height={90} fill="#e9d6b4" />
-      {[120, 520, 920].map((x) => (
-        <g key={x}>
-          <rect x={x} y={20} width={160} height={56} rx={6} fill="#bfe0ef" stroke="#c9a77a" strokeWidth={6} />
-          <path d={`M${x + 80} 20 V76 M${x} 48 H${x + 160}`} stroke="#c9a77a" strokeWidth={4} />
-        </g>
+      <rect y={-150} width={1200} height={150} fill={fill} />
+      {[100, 400, 700, 1000].map((x) => (
+        <rect key={x} x={x} y={-150} width={22} height={140} fill={beam} opacity={0.55} />
       ))}
-      {CUISINES.map((cuisine, index) => {
-        const x = 40 + index * 192;
-        return (
-          <g key={cuisine.id}>
-            <rect x={x} y={150} width={140} height={300} rx={8} fill={cuisine.wallDeep} />
-            <rect x={x + 10} y={160} width={120} height={280} rx={4} fill={cuisine.wall} />
-            <rect x={x + 22} y={176} width={96} height={74} rx={4} fill={lighten(cuisine.wall, 0.55)} />
-            <PlateGroup
-              colour="white"
-              components={ghostLayout(lessonDish(cuisine.id))}
-              transform={`translate(${x + 40} ${180}) scale(0.165)`}
-            />
-            <circle cx={x + 112} cy={316} r={7} fill="#f2a93b" />
-            <rect x={x + 18} y={262} width={104} height={26} rx={4} fill="#f3f0e8" />
-            <text
-              x={x + 70}
-              y={281}
-              textAnchor="middle"
-              fontSize={15}
-              fontWeight={700}
-              fill="#2e3a40"
-              className="ck-scene-label"
-            >
-              {cuisine.counter}
-            </text>
-          </g>
-        );
-      })}
-      <rect x={0} y={450} width={1200} height={150} fill="#c9a77a" />
-      {Array.from({ length: 13 }, (_, index) => (
-        <path
-          key={index}
-          d={`M${index * 100} 450 L${index * 100 - 60} 600`}
-          stroke="#b08e60"
-          strokeWidth={3}
-        />
-      ))}
-      <rect x={0} y={446} width={1200} height={8} fill="#8a6a44" />
-      <rect x={-10} y={-10} width={1220} height={620} fill={`url(#${ids.sheen})`} opacity={0.25} />
+      <rect y={-16} width={1200} height={16} fill={beam} />
     </g>
   );
 }
 
-function HallScene({ ids }: { readonly ids: SceneIds }) {
+function HallScene({ ids, named }: { readonly ids: SceneIds; readonly named: boolean }) {
   return (
     <g>
+      <Ceiling fill="#24232b" beam="#3a3346" />
       <rect width={1200} height={600} fill="#2b2a33" />
+      <rect width={1200} height={260} fill="#3a3346" opacity={0.6} />
       {[0, 300, 600, 900].map((x) => (
         <path
           key={x}
@@ -122,19 +87,57 @@ function HallScene({ ids }: { readonly ids: SceneIds }) {
                 opacity={0.35}
               />
             ))}
-            <rect x={x + 26} y={262} width={128} height={30} rx={4} fill="#2e3a40" />
-            <text
-              x={x + 90}
-              y={283}
-              textAnchor="middle"
-              fontSize={16}
-              fontWeight={700}
-              fill="#f3f0e8"
-              className="ck-scene-label"
-            >
-              {cuisine.counter}
-            </text>
+            <rect x={x} y={250} width={180} height={190} fill={`url(#${ids.lamp})`} opacity={0.35} />
+            {named ? (
+              <>
+                <rect x={x + 26} y={262} width={128} height={30} rx={4} fill="#2e3a40" />
+                <text
+                  x={x + 90}
+                  y={283}
+                  textAnchor="middle"
+                  fontSize={16}
+                  fontWeight={700}
+                  fill="#f3f0e8"
+                  className="ck-scene-label"
+                >
+                  {cuisine.counter}
+                </text>
+              </>
+            ) : (
+              <g>
+                <path
+                  d={`M${x + 20} 262 Q${x + 90} 290 ${x + 160} 262`}
+                  stroke="#1c1b22"
+                  strokeWidth={2}
+                  fill="none"
+                />
+                {[0, 1, 2, 3, 4].map((flag) => (
+                  <path
+                    key={flag}
+                    d={`M${x + 30 + flag * 30} ${266 + Math.sin((flag / 4) * Math.PI) * 12} l10 18 l10 -18 Z`}
+                    fill={flag % 2 === 0 ? cuisine.accent : "#f3f0e8"}
+                    opacity={0.9}
+                  />
+                ))}
+              </g>
+            )}
             <ellipse cx={x + 90} cy={330} rx={60} ry={14} fill={`url(#${ids.lamp})`} />
+            <g transform={`translate(${x + 90} 404)`}>
+              <ellipse cx={0} cy={22} rx={46} ry={8} fill="#0d1215" opacity={0.35} />
+              <path d="M-40 0 L40 0 L34 22 L-34 22 Z" fill={darken(cuisine.accent, 0.2)} />
+              <ellipse cx={0} cy={0} rx={40} ry={9} fill={lighten(cuisine.accent, 0.25)} />
+              <ellipse cx={0} cy={1} rx={32} ry={6} fill={lighten(cuisine.wall, 0.35)} />
+            </g>
+            <path
+              d={`M${x + 80} 392 c-10 -14 10 -24 0 -38 c-9 -12 9 -22 0 -34 M${x + 100} 392 c-10 -14 10 -24 0 -38 c-9 -12 9 -22 0 -34`}
+              stroke="#ffffff"
+              strokeWidth={5}
+              strokeLinecap="round"
+              fill="none"
+              opacity={0.22}
+              className="ck-glory__steam"
+              style={{ animationDelay: `${index * 0.4}s` }}
+            />
           </g>
         );
       })}
@@ -146,6 +149,7 @@ function HallScene({ ids }: { readonly ids: SceneIds }) {
 function MainKitchenScene({ ids }: { readonly ids: SceneIds }) {
   return (
     <g>
+      <Ceiling fill="#cfd5d3" beam="#8f9a9e" />
       <TileWall ids={ids} x={0} y={0} w={1200} h={440} colour="#e9ece8" grout="#b9c2c4" size={48} />
       <Hood ids={ids} x={330} w={540} />
       <g transform="translate(60 120)">
@@ -208,19 +212,26 @@ function CounterScene({ ids, cuisine }: { readonly ids: SceneIds; readonly cuisi
   );
 }
 
-export function KitchenBackdrop({ scene, cuisine = "italian", className }: KitchenBackdropProps) {
+export function KitchenBackdrop({
+  scene,
+  cuisine = "italian",
+  named = true,
+  today,
+  headroom = false,
+  className,
+}: KitchenBackdropProps) {
   const ids = useSceneIds();
   return (
     <svg
-      viewBox="0 0 1200 600"
-      preserveAspectRatio="xMidYMid slice"
+      viewBox={headroom ? HEADROOM_VIEWBOX : "0 0 1200 600"}
+      preserveAspectRatio={headroom ? "xMidYMax slice" : "xMidYMid slice"}
       className={className}
       aria-hidden="true"
       focusable="false"
     >
       <SceneDefs ids={ids} />
-      {scene === "school" ? <SchoolScene ids={ids} /> : null}
-      {scene === "hall" ? <HallScene ids={ids} /> : null}
+      {scene === "school" ? <SchoolCorridor today={today} /> : null}
+      {scene === "hall" ? <HallScene ids={ids} named={named} /> : null}
       {scene === "kitchen" ? <MainKitchenScene ids={ids} /> : null}
       {scene === "counter" ? <CounterScene ids={ids} cuisine={cuisine} /> : null}
     </svg>

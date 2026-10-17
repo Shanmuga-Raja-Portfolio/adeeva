@@ -1,18 +1,12 @@
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
-import { PATH_AWARDS } from "../../../content/award";
-import {
-  awardById,
-  isFamilyMeal,
-  nightOfWeek,
-  pathById,
-  type GameState,
-  type PathState,
-} from "../../../core";
+import { isFamilyMeal, nightOfWeek, pathById, type GameState, type PathState } from "../../../core";
 import { PathBackdrop } from "../../art/PathBackdrop";
 import { HeroCravings } from "../hub/HeroCravings";
 import { HeroDayActions } from "../hub/HeroDayActions";
+import { PathAwards } from "./PathAwards";
 import { restaurantName } from "./restaurantName";
+import "../hub/hero.css";
 
 export interface PathHeroProps {
   readonly state: GameState;
@@ -37,37 +31,39 @@ function todayLine(state: GameState, path: PathState): string {
 
 export function PathHero({ state, path, onPotWash, onEndDay }: PathHeroProps) {
   const def = pathById(path.kind);
+  const stacked = path.kind === "restaurant";
   return (
-    <section className={`ck-hero ck-hero--${path.kind}`} aria-labelledby="ck-hero-title">
-      <PathBackdrop state={state} className="ck-hero__backdrop" />
-      <div className="ck-hero__shade" aria-hidden="true" />
-      <div className="ck-hero__chef">
-        <Avatar
-          look={state.profile.look}
-          variant="full"
-          mood="delighted"
-          size={250}
-          title={state.profile.name}
-        />
-      </div>
+    <section
+      className={`ck-hero ck-hero--${path.kind}${stacked ? " ck-hero--stacked" : ""}`}
+      aria-labelledby="ck-hero-title"
+    >
       <div className="ck-hero__copy">
-        <span className="ad-eyebrow">{def.venue === title(state, path) ? def.name : def.venue}</span>
-        <h1 id="ck-hero-title" className="ck-hero__title">
-          {title(state, path)}
-        </h1>
-        <p className="ck-hero__goal">{todayLine(state, path)}</p>
-        <ul className="ck-path-awards" aria-label="Path awards">
-          {PATH_AWARDS[path.kind].map((id) => {
-            const won = path.awards.includes(id);
-            return (
-              <li key={id} className={won ? "ck-path-award ck-path-award--won" : "ck-path-award"}>
-                <span aria-hidden="true">{won ? "★" : "☆"}</span> {awardById(id).name}
-              </li>
-            );
-          })}
-        </ul>
-        <HeroCravings state={state} />
-        <HeroDayActions state={state} home={def.home} onPotWash={onPotWash} onEndDay={onEndDay} />
+        <div className="ck-hero__lead">
+          <span className="ad-eyebrow">{def.venue === title(state, path) ? def.name : def.venue}</span>
+          <h1 id="ck-hero-title" className="ck-hero__title">
+            {title(state, path)}
+          </h1>
+          <p className="ck-hero__goal">{todayLine(state, path)}</p>
+        </div>
+        <div className="ck-hero__day">
+          <HeroDayActions state={state} home={def.home} onPotWash={onPotWash} onEndDay={onEndDay} />
+          <HeroCravings state={state} />
+        </div>
+      </div>
+      <div className="ck-hero__stage">
+        <PathBackdrop state={state} headroom={stacked} className="ck-hero__backdrop" />
+        <div className="ck-hero__shade" aria-hidden="true" />
+        <div className="ck-hero__chef">
+          <Avatar
+            look={state.profile.look}
+            variant={stacked ? "full" : "three-quarter"}
+            mood="delighted"
+            pose="poised"
+            size={stacked ? 360 : 330}
+            title={state.profile.name}
+          />
+        </div>
+        {stacked ? null : <PathAwards path={path} />}
       </div>
     </section>
   );

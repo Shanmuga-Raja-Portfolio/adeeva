@@ -19,6 +19,7 @@ import {
   type GameState,
   type ShiftOffer,
 } from "../../../core";
+import { ChalkPot } from "../../art/ChalkPot";
 import { chefWhites } from "../../art/chefWhites";
 
 export interface BoardPanelProps {
@@ -40,11 +41,12 @@ function LessonCard({ state, onStartLesson, onDeclineLesson }: BoardPanelProps) 
   const issue = lessonStartIssue(state);
   return (
     <article
-      className="ck-ticket-card"
+      className="ck-ticket-card ck-ticket-card--today"
       style={{ ["--ck-cuisine" as string]: cuisine.accent }}
       data-testid="lesson-card"
     >
       <div className="ck-ticket-card__pin" aria-hidden="true" />
+      <span className="ck-ticket-card__flag">Today</span>
       <div className="ck-ticket-card__who">
         <Avatar
           look={mentor.look}
@@ -74,10 +76,11 @@ function LessonCard({ state, onStartLesson, onDeclineLesson }: BoardPanelProps) 
         </li>
       </ul>
       <div className="ck-ticket-card__actions">
-        <Button variant="ghost" size="sm" onClick={onDeclineLesson}>
+        <Button variant="secondary" onClick={onDeclineLesson}>
           Not today
         </Button>
         <Button
+          size="lg"
           icon="sparkle"
           onClick={onStartLesson}
           disabledReason={issue ?? undefined}
@@ -238,6 +241,7 @@ export function BoardPanel(props: BoardPanelProps) {
         </p>
       ) : null}
       {state.testDay === null ? <TestCard {...props} /> : null}
+      <ChalkPot />
     </section>
   );
 }

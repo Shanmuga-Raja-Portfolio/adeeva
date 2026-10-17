@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { darken, lighten } from "../../../../ui/art/colourMix";
+import { BowlArt } from "./BowlArt";
 import { scatterInEllipse } from "./scatter";
+import { SwirlArt } from "./SwirlArt";
 
 export interface PieceArtProps {
   readonly w: number;
@@ -12,35 +14,6 @@ export interface PieceArtProps {
 
 function Shadow({ w, h }: Pick<PieceArtProps, "w" | "h">) {
   return <ellipse cx={w / 2 + 3} cy={h / 2 + 6} rx={w / 2} ry={h / 2} fill="#1c1220" opacity={0.16} />;
-}
-
-function Bowl({ w, h, c1, c2 }: PieceArtProps) {
-  return (
-    <>
-      <Shadow w={w} h={h} />
-      <ellipse cx={w / 2} cy={h / 2} rx={w / 2} ry={h / 2} fill={c2} />
-      <ellipse cx={w / 2} cy={h / 2} rx={w / 2 - 4} ry={h / 2 - 4} fill={darken(c2, 0.08)} />
-      <ellipse cx={w / 2} cy={h / 2 + 2} rx={w / 2 - 14} ry={h / 2 - 14} fill={c1} />
-      <ellipse
-        cx={w / 2 - w * 0.12}
-        cy={h / 2 - h * 0.14}
-        rx={w * 0.18}
-        ry={h * 0.07}
-        fill="#ffffff"
-        opacity={0.28}
-      />
-      <ellipse
-        cx={w / 2}
-        cy={h / 2 + 2}
-        rx={w / 2 - 14}
-        ry={h / 2 - 14}
-        fill="none"
-        stroke={darken(c1, 0.2)}
-        strokeOpacity={0.4}
-        strokeWidth={3}
-      />
-    </>
-  );
 }
 
 function RiceBed({ w, h, c1, c2, seed }: PieceArtProps) {
@@ -63,28 +36,55 @@ function RiceBed({ w, h, c1, c2, seed }: PieceArtProps) {
   );
 }
 
-function Twirl({ w, h, c1, c2 }: PieceArtProps) {
-  const rings = [0.92, 0.76, 0.6, 0.44, 0.3];
+function Twirl({ w, h, c1, c2, seed }: PieceArtProps) {
+  const rings = [0.94, 0.8, 0.66, 0.52, 0.38, 0.26];
   return (
     <>
-      <Shadow w={w} h={h} />
+      <ellipse cx={w / 2 + 3} cy={h / 2 + 7} rx={w / 2} ry={h / 2} fill="#1c1220" opacity={0.22} />
+      <ellipse cx={w / 2} cy={h / 2} rx={w / 2 - 2} ry={h / 2 - 2} fill={darken(c1, 0.22)} />
       {rings.map((ring, index) => (
-        <ellipse
-          key={ring}
-          cx={w / 2 + (index % 2) * 3}
-          cy={h / 2 + index}
-          rx={(w / 2) * ring}
-          ry={(h / 2) * ring}
-          fill="none"
-          stroke={index % 2 === 0 ? c1 : darken(c1, 0.12)}
-          strokeWidth={7}
-        />
+        <g key={ring}>
+          <ellipse
+            cx={w / 2 + (index % 2) * 3}
+            cy={h / 2 + index * 0.8}
+            rx={(w / 2) * ring}
+            ry={(h / 2) * ring}
+            fill="none"
+            stroke={index % 2 === 0 ? c1 : darken(c1, 0.1)}
+            strokeWidth={6.5}
+          />
+          <path
+            d={`M${w / 2 - (w / 2) * ring * 0.9} ${h / 2 - (h / 2) * ring * 0.35} A${(w / 2) * ring} ${(h / 2) * ring} 0 0 1 ${w / 2 + (w / 2) * ring * 0.2} ${h / 2 - (h / 2) * ring * 0.98}`}
+            stroke={lighten(c1, 0.55)}
+            strokeWidth={1.6}
+            fill="none"
+            strokeLinecap="round"
+            opacity={0.85}
+          />
+        </g>
       ))}
       <path
-        d={`M${w * 0.32} ${h * 0.42} C${w * 0.38} ${h * 0.28} ${w * 0.66} ${h * 0.26} ${w * 0.7} ${h * 0.44} C${w * 0.74} ${h * 0.6} ${w * 0.4} ${h * 0.66} ${w * 0.32} ${h * 0.42} Z`}
+        d={`M${w * 0.32} ${h * 0.44} C${w * 0.36} ${h * 0.26} ${w * 0.66} ${h * 0.24} ${w * 0.7} ${h * 0.44} C${w * 0.74} ${h * 0.62} ${w * 0.4} ${h * 0.68} ${w * 0.32} ${h * 0.44} Z`}
+        fill={darken(c2, 0.25)}
+        transform="translate(1 3)"
+        opacity={0.6}
+      />
+      <path
+        d={`M${w * 0.32} ${h * 0.42} C${w * 0.36} ${h * 0.24} ${w * 0.66} ${h * 0.22} ${w * 0.7} ${h * 0.42} C${w * 0.74} ${h * 0.6} ${w * 0.4} ${h * 0.66} ${w * 0.32} ${h * 0.42} Z`}
         fill={c2}
       />
-      <ellipse cx={w * 0.46} cy={h * 0.38} rx={w * 0.08} ry={h * 0.04} fill="#ffffff" opacity={0.45} />
+      {scatterInEllipse(seed, 7, w * 0.36, h * 0.3, 0.7).map((bit, index) => (
+        <circle
+          key={index}
+          cx={w * 0.33 + bit.x}
+          cy={h * 0.28 + bit.y}
+          r={2 * bit.size}
+          fill={index % 2 === 0 ? darken(c2, 0.25) : lighten(c2, 0.25)}
+          opacity={0.8}
+        />
+      ))}
+      <ellipse cx={w * 0.46} cy={h * 0.34} rx={w * 0.09} ry={h * 0.04} fill="#ffffff" opacity={0.55} />
+      <circle cx={w * 0.6} cy={h * 0.4} r={2} fill="#ffffff" opacity={0.7} />
     </>
   );
 }
@@ -149,40 +149,6 @@ function Mound({ w, h, c1, c2, seed }: PieceArtProps) {
         />
       ))}
       <ellipse cx={w * 0.4} cy={h * 0.3} rx={w * 0.16} ry={h * 0.07} fill="#ffffff" opacity={0.22} />
-    </>
-  );
-}
-
-function Swirl({ w, h, c1, c2, seed }: PieceArtProps) {
-  return (
-    <>
-      <ellipse cx={w / 2} cy={h / 2} rx={w / 2 - 2} ry={h / 2 - 2} fill={c1} />
-      <path
-        d={`M${w / 2} ${h / 2} m-10 0 a10 8 0 1 1 20 0 a20 16 0 1 1 -40 0 a30 24 0 1 1 60 0 a40 32 0 1 1 -80 0`}
-        fill="none"
-        stroke={lighten(c1, 0.35)}
-        strokeWidth={4}
-        strokeLinecap="round"
-      />
-      <path
-        d={`M${w * 0.24} ${h * 0.36} C${w * 0.4} ${h * 0.2} ${w * 0.62} ${h * 0.5} ${w * 0.78} ${h * 0.32}`}
-        fill="none"
-        stroke={c2}
-        strokeWidth={5}
-        strokeLinecap="round"
-        opacity={0.85}
-      />
-      {scatterInEllipse(seed, 12, w, h, 0.6).map((seedDot, index) => (
-        <ellipse
-          key={index}
-          cx={seedDot.x}
-          cy={seedDot.y}
-          rx={2.6}
-          ry={1.2}
-          transform={`rotate(${seedDot.turn} ${seedDot.x} ${seedDot.y})`}
-          fill="#5a3a1c"
-        />
-      ))}
     </>
   );
 }
@@ -350,29 +316,82 @@ function Dip({ w, h, c1, c2, seed }: PieceArtProps) {
 function Cob({ w, h, c1, c2 }: PieceArtProps) {
   const kernels: ReactNode[] = [];
   for (let column = 0; column < 11; column += 1)
-    for (let row = 0; row < 4; row += 1)
+    for (let row = 0; row < 4; row += 1) {
+      const cx = w * 0.2 + column * (w * 0.062);
+      const cy = h * 0.3 + row * (h * 0.135) + Math.sin(column * 0.9) * 1.2;
       kernels.push(
-        <ellipse
-          key={`${column}-${row}`}
-          cx={w * 0.14 + column * (w * 0.068)}
-          cy={h * 0.28 + row * (h * 0.15)}
-          rx={4.6}
-          ry={5.2}
-          fill={(column + row) % 5 === 0 ? c2 : c1}
-          stroke={darken(c1, 0.25)}
-          strokeWidth={0.8}
-        />,
+        <g key={`${column}-${row}`}>
+          <ellipse
+            cx={cx}
+            cy={cy}
+            rx={4.4}
+            ry={5}
+            fill={(column * 3 + row) % 7 === 0 ? c2 : c1}
+            stroke={darken(c1, 0.28)}
+            strokeWidth={0.8}
+          />
+          <ellipse cx={cx - 1.2} cy={cy - 1.8} rx={1.6} ry={1.2} fill="#ffffff" opacity={0.55} />
+        </g>,
       );
+    }
   return (
     <>
       <Shadow w={w} h={h} />
-      <rect x={2} y={h * 0.16} width={w - 4} height={h * 0.68} rx={h * 0.34} fill={darken(c1, 0.1)} />
-      {kernels}
       <path
-        d={`M${w * 0.9} ${h * 0.3} C${w} ${h * 0.4} ${w} ${h * 0.6} ${w * 0.9} ${h * 0.7}`}
-        stroke="#8fb04a"
-        strokeWidth={6}
+        d={`M${w * 0.16} ${h * 0.5} C${w * 0.08} ${h * 0.2} ${w * 0.02} ${h * 0.08} 2 ${h * 0.22} C${w * 0.04} ${h * 0.36} ${w * 0.08} ${h * 0.44} ${w * 0.16} ${h * 0.5} Z`}
+        fill="#cfd98f"
+        stroke="#8fa04a"
+        strokeWidth={1.5}
+      />
+      <path
+        d={`M${w * 0.16} ${h * 0.5} C${w * 0.08} ${h * 0.8} ${w * 0.02} ${h * 0.92} 2 ${h * 0.78} C${w * 0.04} ${h * 0.64} ${w * 0.08} ${h * 0.56} ${w * 0.16} ${h * 0.5} Z`}
+        fill="#b9c873"
+        stroke="#8fa04a"
+        strokeWidth={1.5}
+      />
+      <path
+        d={`M${w * 0.15} ${h * 0.2} C${w * 0.4} ${h * 0.12} ${w * 0.8} ${h * 0.14} ${w * 0.94} ${h * 0.3} C${w} ${h * 0.42} ${w} ${h * 0.58} ${w * 0.94} ${h * 0.7} C${w * 0.8} ${h * 0.86} ${w * 0.4} ${h * 0.88} ${w * 0.15} ${h * 0.8} Z`}
+        fill={darken(c1, 0.12)}
+        stroke={darken(c1, 0.35)}
+        strokeWidth={1.5}
+      />
+      {kernels}
+      {[0.32, 0.5, 0.68, 0.84].map((share) => (
+        <path
+          key={share}
+          d={`M${w * share} ${h * 0.2} L${w * (share - 0.08)} ${h * 0.82}`}
+          stroke="#6a3a12"
+          strokeWidth={5}
+          strokeLinecap="round"
+          opacity={0.32}
+        />
+      ))}
+      <path
+        d={`M${w * 0.22} ${h * 0.46} l${w * 0.06} ${-h * 0.1} l${w * 0.06} ${h * 0.12} l${w * 0.06} ${-h * 0.12} l${w * 0.06} ${h * 0.12} l${w * 0.06} ${-h * 0.12} l${w * 0.06} ${h * 0.12} l${w * 0.06} ${-h * 0.12} l${w * 0.06} ${h * 0.1}`}
+        stroke="#fff6e0"
+        strokeWidth={3.2}
         fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity={0.9}
+      />
+      {[
+        [0.3, 0.3],
+        [0.42, 0.62],
+        [0.55, 0.36],
+        [0.66, 0.7],
+        [0.76, 0.42],
+        [0.86, 0.58],
+        [0.36, 0.74],
+      ].map(([x, y]) => (
+        <circle key={`${x}-${y}`} cx={w * (x ?? 0)} cy={h * (y ?? 0)} r={1.8} fill="#c9402a" opacity={0.85} />
+      ))}
+      <path
+        d={`M${w * 0.24} ${h * 0.24} C${w * 0.5} ${h * 0.18} ${w * 0.76} ${h * 0.2} ${w * 0.9} ${h * 0.3}`}
+        stroke="#ffffff"
+        strokeWidth={3}
+        fill="none"
+        opacity={0.35}
         strokeLinecap="round"
       />
     </>
@@ -497,13 +516,13 @@ function Stew({ w, h, c1, c2, seed }: PieceArtProps) {
 }
 
 export const HERO_ARTS = {
-  bowl: Bowl,
+  bowl: BowlArt,
   "rice-bed": RiceBed,
   twirl: Twirl,
   medley: Medley,
   dumplings: Dumplings,
   mound: Mound,
-  swirl: Swirl,
+  swirl: SwirlArt,
   beads: Beads,
   cubes: Cubes,
   "rice-balls": RiceBalls,
