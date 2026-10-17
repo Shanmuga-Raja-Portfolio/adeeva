@@ -11,7 +11,7 @@ interface BenchAvatarProps {
 export function BenchAvatar({ look, title, className }: BenchAvatarProps) {
   return (
     <svg className={className} viewBox={DOLL_VIEWBOX} role="img" aria-label={title}>
-      <AvatarFigure look={look} mood="happy" />
+      <AvatarFigure look={look} mood="happy" pose="wave" />
       <g aria-hidden="true">
         <path
           d="M168 214 Q200 206 232 214 L246 470 Q200 486 154 470 Z"

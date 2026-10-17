@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { lighten, mixHex } from "../../../../ui/art/colourMix";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 import { PaperLantern } from "./PaperLantern";
 
@@ -65,11 +66,15 @@ export function LanternStage({ dusk, lights, lantern, children }: LanternStagePr
             {Array.from({ length: row.count }, (_, index) => {
               const t = (index + 0.5) / row.count;
               const x = t * 1200;
-              const y = row.y + Math.sin(Math.PI * t) * row.sag;
+              const y = row.y + Math.sin(Math.PI * t) * row.sag + ((index * 5 + rowIndex) % 3) * 4;
+              const tone = (index + rowIndex * 2) % 4;
+              const hex =
+                tone === 1 ? lighten(lantern, 0.28) : tone === 3 ? mixHex(lantern, "#f6c46f", 0.45) : lantern;
+              const size = 22 - rowIndex * 2 + (((index * 7 + rowIndex) % 3) - 1) * 3;
               return (
                 <g key={index}>
-                  {lit > 0.5 ? <circle cx={x} cy={y} r={30} fill={`url(#${id}-glow)`} /> : null}
-                  <PaperLantern x={x} y={y} size={22 - rowIndex * 2} hex={lit > 0.5 ? lantern : null} />
+                  {lit > 0.5 ? <circle cx={x} cy={y} r={size * 1.5} fill={`url(#${id}-glow)`} /> : null}
+                  <PaperLantern x={x} y={y} size={size} hex={lit > 0.5 ? hex : null} />
                 </g>
               );
             })}

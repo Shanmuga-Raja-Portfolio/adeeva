@@ -57,13 +57,13 @@ export async function toScreen(svg: Locator, points: readonly Pair[]): Promise<P
   }, points);
 }
 
-async function dragPath(page: Page, route: readonly Pair[]): Promise<void> {
+async function dragPath(page: Page, route: readonly Pair[], release = true): Promise<void> {
   const first = route[0];
   if (first === undefined) return;
   await page.mouse.move(first[0], first[1]);
   await page.mouse.down();
   for (const [x, y] of route.slice(1)) await page.mouse.move(x, y, { steps: 3 });
-  await page.mouse.up();
+  if (release) await page.mouse.up();
 }
 
 function strokesAlong(points: readonly Pair[], dots: readonly Pair[]): Pair[][] {
@@ -84,7 +84,7 @@ function strokesAlong(points: readonly Pair[], dots: readonly Pair[]): Pair[][] 
   return strokes;
 }
 
-export async function cutByHand(page: Page, share = 1): Promise<void> {
+export async function cutByHand(page: Page, share = 1, holdLast = false): Promise<void> {
   const loupe = page.getByTestId("cut-loupe");
   await loupe.scrollIntoViewIfNeeded();
   const points = JSON.parse((await loupe.getAttribute("data-path")) ?? "[]") as Pair[];
@@ -92,7 +92,8 @@ export async function cutByHand(page: Page, share = 1): Promise<void> {
   let budget = Math.ceil(points.length * share) + 1;
   for (const stroke of strokesAlong(points, dots)) {
     if (budget < 2) return;
-    await dragPath(page, await toScreen(loupe, stroke.slice(0, budget)));
+    const part = stroke.slice(0, budget);
+    await dragPath(page, await toScreen(loupe, part), !holdLast || part.length === stroke.length);
     budget -= stroke.length - 1;
   }
 }

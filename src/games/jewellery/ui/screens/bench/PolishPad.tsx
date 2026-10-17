@@ -21,6 +21,7 @@ import {
 import { Glint } from "../../art/Glint";
 import type { MetalLook } from "../../art/metalLook";
 import { outlinePath } from "../../art/outlinePath";
+import { StationStat } from "./StationStat";
 
 interface PolishPadProps {
   readonly run: PieceRun;
@@ -115,16 +116,10 @@ export function PolishPad({
   };
 
   return (
-    <div className="jb-polish-pad" data-testid="polish-pad" data-shine={shine.toFixed(3)}>
+    <div className="jb-polish-pad jb-station" data-testid="polish-pad" data-shine={shine.toFixed(3)}>
       <div className="jb-stats" aria-live="polite">
-        <span>
-          <span className="ad-eyebrow">Shining</span>
-          <strong>{Math.round(shine * 100)}%</strong>
-        </span>
-        <span>
-          <span className="ad-eyebrow">Needs</span>
-          <strong>60%</strong>
-        </span>
+        <StationStat label="Shining" value={`${Math.round(shine * 100)}%`} fill={shine} tone="gold" />
+        <StationStat label="Needs" value="60%" fill={0.6} tone="teal" />
       </div>
       <div className="jb-loupe">
         <div className="jb-loupe__glass" ref={wrapRef}>

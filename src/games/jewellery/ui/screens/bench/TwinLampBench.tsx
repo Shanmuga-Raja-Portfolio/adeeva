@@ -14,7 +14,9 @@ import {
   type TwinSeam,
 } from "../../../core";
 import { JoiningLamp } from "../../art/JoiningLamp";
+import { WarmingBlock } from "../../art/WarmingBlock";
 import type { MetalLook } from "../../art/metalLook";
+import { StationStat } from "./StationStat";
 
 interface TwinLampBenchProps {
   readonly joints: readonly [JointDef, JointDef];
@@ -112,7 +114,7 @@ export function TwinLampBench({
           : "One Warm button, two seams. Find where the gold zones meet!";
   return (
     <div
-      className="jb-lamp-bench jb-twin-bench"
+      className="jb-lamp-bench jb-twin-bench jb-station jb-station--wide"
       data-testid="twin-bench"
       data-warmth={lamp.warmth.toFixed(3)}
       data-zones={`${zones[0].from.toFixed(3)},${zones[0].to.toFixed(3)},${zones[1].from.toFixed(3)},${zones[1].to.toFixed(3)}`}
@@ -120,10 +122,13 @@ export function TwinLampBench({
     >
       <div className="jb-stats" aria-live="polite">
         {SEAMS.map((side, index) => (
-          <span key={side.label}>
-            <span className="ad-eyebrow">{side.label} seam</span>
-            <strong>{Math.round((shares[index] ?? 0) * 100)}%</strong>
-          </span>
+          <StationStat
+            key={side.label}
+            label={`${side.label} seam`}
+            value={`${Math.round((shares[index] ?? 0) * 100)}%`}
+            fill={shares[index] ?? 0}
+            tone={index === 0 ? "gold" : "teal"}
+          />
         ))}
       </div>
       <div className="jb-lamp-bench__scene">
@@ -133,8 +138,7 @@ export function TwinLampBench({
           role="img"
           aria-label={`Twin Lamp: left ${Math.round((shares[0] ?? 0) * 100)}%, right ${Math.round((shares[1] ?? 0) * 100)}% joined`}
         >
-          <rect x={20} y={180} width={260} height={64} rx={10} fill="#8c8a86" />
-          <rect x={20} y={180} width={260} height={64} rx={10} fill="none" stroke="#5f5d59" strokeWidth={2} />
+          <WarmingBlock x={20} width={260} warmth={lamp.warmth} over={over} />
           <JoiningLamp warmth={lamp.warmth} over={over} flicker={!reducedMotion && holding} />
           {SEAMS.map((side, index) => {
             const share = shares[index] ?? 0;

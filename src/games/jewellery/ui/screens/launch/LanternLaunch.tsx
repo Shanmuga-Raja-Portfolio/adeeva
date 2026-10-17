@@ -36,6 +36,7 @@ import { LanternStage } from "../../art/LanternStage";
 import { LightThread } from "../../art/LightThread";
 import { MusicBoxPlinth } from "../../art/MusicBoxPlinth";
 import { PiecePreview } from "../../art/PiecePreview";
+import { ShowcaseHalo } from "../../art/ShowcaseHalo";
 import { PANEL_LOOKS } from "./panelLooks";
 import "./reveal.css";
 
@@ -56,6 +57,7 @@ const TIMINGS: RevealTimings = {
 };
 
 const PLINTH_Y = 470;
+const PIECE_SIZE = 240;
 const REST_Y = 500;
 
 function caption(
@@ -164,7 +166,7 @@ function StepView({
                 piece={current.look}
                 lantern={lantern.hex}
                 glow={lantern.glow}
-                shown={slide}
+                shown={slide * 0.6}
               />
             ) : null}
           </LanternStage>
@@ -222,16 +224,20 @@ function StepView({
                 rise={lift}
                 notes={!reduced && (step.kind === "glide" || step.kind === "wait")}
               >
-                {lid > 0.2 ? pieceSvg(current, 150, !reduced) : null}
+                {lid > 0.2 ? (
+                  <>
+                    <ShowcaseHalo size={PIECE_SIZE} glow={lantern.glow} />
+                    {pieceSvg(current, PIECE_SIZE, !reduced)}
+                  </>
+                ) : null}
               </MusicBoxPlinth>
               {glint > 0 ? (
-                <g transform={`translate(640 ${PLINTH_Y - 220})`} className="jb-launch-reveal__glint">
-                  <circle r={20 + 60 * glint} fill={lantern.glow} opacity={0.35 * glint} />
+                <g transform={`translate(712 ${PLINTH_Y - 330})`} className="jb-launch-reveal__glint">
                   <path
                     d="M0 -30 Q4 -4 30 0 Q4 4 0 30 Q-4 4 -30 0 Q-4 -4 0 -30 Z"
                     fill="#ffffff"
                     opacity={glint}
-                    transform={`scale(${0.5 + glint})`}
+                    transform={`scale(${0.35 + glint * 0.5})`}
                   />
                 </g>
               ) : null}

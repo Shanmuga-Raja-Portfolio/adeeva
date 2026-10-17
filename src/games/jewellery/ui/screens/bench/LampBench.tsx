@@ -16,7 +16,9 @@ import {
   type LampState,
 } from "../../../core";
 import { JoiningLamp } from "../../art/JoiningLamp";
+import { WarmingBlock } from "../../art/WarmingBlock";
 import type { MetalLook } from "../../art/metalLook";
+import { StationStat } from "./StationStat";
 
 interface LampBenchProps {
   readonly joint: JointDef;
@@ -161,21 +163,25 @@ export function LampBench({
   return (
     <div
       ref={benchRef}
-      className="jb-lamp-bench"
+      className="jb-lamp-bench jb-station jb-station--wide"
       data-testid="lamp-bench"
       data-progress={progress.toFixed(3)}
       data-warmth={lamp.warmth.toFixed(3)}
       data-zone={`${zone.from.toFixed(3)},${zone.to.toFixed(3)}`}
     >
       <div className="jb-stats" aria-live="polite">
-        <span>
-          <span className="ad-eyebrow">Seam joined</span>
-          <strong>{Math.round(progress * 100)}%</strong>
-        </span>
-        <span>
-          <span className="ad-eyebrow">Smooth glow</span>
-          <strong>{accuracy === null ? "—" : `${Math.round(accuracy * 100)}%`}</strong>
-        </span>
+        <StationStat
+          label="Seam joined"
+          value={`${Math.round(progress * 100)}%`}
+          fill={progress}
+          tone="gold"
+        />
+        <StationStat
+          label="Smooth glow"
+          value={accuracy === null ? "—" : `${Math.round(accuracy * 100)}%`}
+          fill={accuracy}
+          tone="teal"
+        />
       </div>
       <div className="jb-lamp-bench__scene">
         <svg
@@ -184,14 +190,7 @@ export function LampBench({
           role="img"
           aria-label={`${joint.name}: ${Math.round(progress * 100)}% joined`}
         >
-          <rect x={30} y={180} width={240} height={64} rx={10} fill="#8c8a86" />
-          <rect x={30} y={180} width={240} height={64} rx={10} fill="none" stroke="#5f5d59" strokeWidth={2} />
-          <path
-            d="M48 196 L120 196 M150 214 L250 214 M60 232 L180 232"
-            stroke="#a9a7a2"
-            strokeWidth={2}
-            strokeLinecap="round"
-          />
+          <WarmingBlock x={30} width={240} warmth={lamp.warmth} over={band === "over"} />
           <JoiningLamp warmth={lamp.warmth} over={band === "over"} flicker={!reducedMotion && holding} />
           <path
             d={`M${seamStart - 34} 176 Q150 150 ${seamEnd + 34} 176`}
@@ -224,18 +223,16 @@ export function LampBench({
           />
           <path
             d={`M${seamStart} 168 L${seamStart + (seamEnd - seamStart) * progress} 168`}
-            stroke="#ffffff"
-            strokeWidth={4}
+            stroke="#fff3c8"
+            strokeWidth={5}
             strokeLinecap="round"
           />
           {progress > 0 && progress < 1 ? (
-            <circle
-              cx={seamStart + (seamEnd - seamStart) * progress}
-              cy={168}
-              r={5}
-              fill="#fff8d0"
-              className={reducedMotion ? undefined : "jb-twinkle"}
-            />
+            <g transform={`translate(${seamStart + (seamEnd - seamStart) * progress} 168)`}>
+              <circle r={12} fill="#ffd27a" opacity={0.35} />
+              <circle r={7} fill="#fff8d0" className={reducedMotion ? undefined : "jb-twinkle"} />
+              <path d="M0 -11 L2 -2 L11 0 L2 2 L0 11 L-2 2 L-11 0 L-2 -2 Z" fill="#ffffff" />
+            </g>
           ) : null}
           {done ? (
             <g className="jb-lamp-bench__chime">
@@ -252,18 +249,15 @@ export function LampBench({
           aria-valuenow={Math.round(lamp.warmth * 100)}
         >
           <div
-            className="jb-warmth__zone"
-            style={{ bottom: `${zone.from * 100}%`, height: `${(zone.to - zone.from) * 100}%` }}
-          />
-          <div
             className={`jb-warmth__fill jb-warmth__fill--${band}`}
             style={{ height: `${lamp.warmth * 100}%` }}
           />
-          <span className="jb-warmth__label">
-            Gold
-            <br />
-            zone
-          </span>
+          <div
+            className="jb-warmth__zone"
+            style={{ bottom: `${zone.from * 100}%`, height: `${(zone.to - zone.from) * 100}%` }}
+          >
+            <span className="jb-warmth__tag">Gold</span>
+          </div>
         </div>
       </div>
       <p

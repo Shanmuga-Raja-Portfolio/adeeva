@@ -5,7 +5,9 @@
 }
 
 .jb-stone-bench .jb-loupe__glass {
-  background: radial-gradient(circle at 40% 30%, #2f6d7b, var(--jb-teal-deep) 75%);
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 1.4px) 0 0 / 5px 5px,
+    radial-gradient(circle at 40% 30%, #2f6d7b, var(--jb-teal-deep) 75%);
 }
 
 .jb-stone-bench svg {
@@ -32,9 +34,10 @@
   cursor: grab;
 }
 
-.jb-claw--snug path {
-  stroke: #e8a33d;
-  stroke-width: 0.35;
+.jb-claw--snug .jb-claw__prong {
+  stroke: #ffd27a;
+  stroke-width: 0.3;
+  filter: drop-shadow(0 0 0.6px #ffd27a);
 }
 
 .jb-stone-bench [data-testid="press-claws"][aria-disabled="true"] {

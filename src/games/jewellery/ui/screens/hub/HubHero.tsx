@@ -13,7 +13,6 @@ import {
   isMarketDay,
   isPopupDay,
   launchStaged,
-  lineNameById,
   popupDone,
   rentLabel,
   seasonByNumber,
@@ -22,6 +21,7 @@ import {
 } from "../../../core";
 import { ArcadeBackdrop } from "../../art/ArcadeBackdrop";
 import { BenchAvatar } from "../../art/BenchAvatar";
+import { HeroBench } from "../../art/HeroBench";
 import { LoftBackdrop } from "../../art/LoftBackdrop";
 import { garlandLights } from "../loft/garlandLights";
 import { HourBeads } from "./HourBeads";
@@ -86,13 +86,12 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
       )}
       <div className="jb-hub-hero__figure" aria-hidden="true">
         <BenchAvatar look={profile.look} title={profile.name} />
+        <HeroBench className="jb-hub-hero__bench" />
       </div>
       <div className="jb-hub-hero__card jb-measure">
         <span className="ad-eyebrow">
           Week {weekNumber(calendar.day)} · {weekdayName(calendar.day)} ·{" "}
-          {collection === null
-            ? ARCADE_NAME
-            : `${lineNameById(collection.lineNameId).name} · the Lantern Loft`}
+          {collection === null ? ARCADE_NAME : "The Lantern Loft"}
         </span>
         <h1 className="jb-hub-hero__title">
           {dayGreeting(calendar.hoursLeft, total)}, {profile.name}
@@ -103,20 +102,31 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
           </p>
         ) : null}
         <WeekDrawers day={calendar.day} />
-        <HourBeads left={calendar.hoursLeft} total={total} />
+        <div className="jb-hub-hero__hours">
+          <HourBeads left={calendar.hoursLeft} total={total} />
+          <span aria-hidden="true">
+            <strong>{calendar.hoursLeft}</strong> of {total} hours left
+          </span>
+        </div>
         <p className="jb-hint">
           <Icon name="coin" size={16} /> {rentNote(state)}
         </p>
         <div className="jb-hub-hero__buttons">
-          <Button
-            variant="secondary"
-            icon="bag"
-            onClick={onWorkShift}
-            disabledReason={shift.ok ? undefined : shift.reasons.join(" ")}
-            aria-label={`${career.shiftName} for ${career.shiftPay} coins`}
-          >
-            {career.shiftButton} · +{career.shiftPay}
-          </Button>
+          {!shift.ok && end.ok ? (
+            <p className="jb-hub-hero__shift-note" title={shift.reasons[0]}>
+              <Icon name="bag" size={16} /> {career.shiftButton} · +{career.shiftPay} · mornings only
+            </p>
+          ) : null}
+          {shift.ok ? (
+            <Button
+              variant="secondary"
+              icon="bag"
+              onClick={onWorkShift}
+              aria-label={`${career.shiftName} for ${career.shiftPay} coins`}
+            >
+              {career.shiftButton} · +{career.shiftPay}
+            </Button>
+          ) : null}
           <Button
             size="lg"
             icon="calendar"

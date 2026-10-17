@@ -36,7 +36,7 @@
 
 .jb-hub-hero {
   position: relative;
-  min-height: 320px;
+  min-height: 400px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -56,14 +56,58 @@
 .jb-hub-hero__figure {
   position: relative;
   align-self: end;
-  height: 300px;
+  height: 340px;
   padding-left: clamp(16px, 6vw, 90px);
 }
 
-.jb-hub-hero__figure svg {
+.jb-hub-hero__figure > svg:first-child {
   height: 100%;
   width: auto;
   filter: drop-shadow(0 8px 10px rgba(42, 29, 44, 0.35));
+}
+
+.jb-hub-hero__bench {
+  position: absolute;
+  left: calc(clamp(16px, 6vw, 90px) - 70px);
+  bottom: 0;
+  width: 330px;
+  height: auto;
+  filter: drop-shadow(0 10px 14px rgba(20, 10, 16, 0.45));
+}
+
+.jb-hub-hero__hours {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.jb-hub-hero__hours .jb-beads {
+  flex: 1;
+}
+
+.jb-hub-hero__hours > span {
+  flex: none;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.jb-hub-hero__hours strong {
+  color: var(--jb-amber-deep);
+  font-size: var(--text-lg);
+}
+
+.jb-hub-hero__shift-note {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  background: var(--jb-teal-soft);
+  color: var(--jb-teal-deep);
+  font-size: var(--text-sm);
 }
 
 .jb-hub-hero__card {
@@ -93,6 +137,7 @@
 .jb-hub-hero__buttons {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
   gap: var(--space-2);
 }
@@ -117,8 +162,8 @@
   border-radius: 5px;
   background: linear-gradient(180deg, #a87b55, #8a5d3e);
   color: #fbe9c8;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 0.8125rem;
+  font-weight: 800;
   box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25);
 }
 

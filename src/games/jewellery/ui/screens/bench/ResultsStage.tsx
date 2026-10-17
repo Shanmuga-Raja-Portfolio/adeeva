@@ -17,6 +17,7 @@ import {
 import { DeliveryScene } from "../../art/DeliveryScene";
 import { GiftBox } from "../../art/GiftBox";
 import { PiecePreview } from "../../art/PiecePreview";
+import { RibbonConfetti } from "../../art/RibbonConfetti";
 import { qualityRows } from "./qualityRows";
 import type { StageProps } from "./stageProps";
 import "./results.css";
@@ -117,33 +118,43 @@ export function ResultsStage(props: StageProps) {
   const finish = finishById(run.display.finish);
   return (
     <div className="jb-results" data-testid="results">
-      <div className="jb-results__scene">
-        <DeliveryScene scene={client?.scene ?? "kitchen"} className="jb-results__backdrop" />
-        <div className="jb-results__table">
-          <svg viewBox="0 0 240 240" className="jb-results__gift" aria-hidden="true">
-            <GiftBox open />
-          </svg>
-          <PiecePreview
-            source={source}
-            title={`${name}'s ${product.name}`}
-            twinkle={!reducedMotion}
-            className="jb-results__piece"
-          />
-        </div>
-        {client !== undefined ? (
-          <div className="jb-results__client">
-            <Avatar
-              look={client.look}
-              mood={happy ? "delighted" : "happy"}
-              size={120}
-              title={client.name}
-              frameColour="#fbe9c8"
+      <div className="jb-results__show">
+        <div className="jb-results__scene">
+          <DeliveryScene scene={client?.scene ?? "kitchen"} className="jb-results__backdrop" />
+          {happy ? <RibbonConfetti className="jb-results__confetti" seed={run.seed} /> : null}
+          <div className="jb-results__table">
+            <svg viewBox="0 0 240 240" className="jb-results__gift" aria-hidden="true">
+              <GiftBox open />
+            </svg>
+            <PiecePreview
+              source={source}
+              title={`${name}'s ${product.name}`}
+              twinkle={!reducedMotion}
+              className="jb-results__piece"
             />
-            <blockquote className="jb-results__quote">
-              “{happy ? client.lines.delighted : client.lines.nearMiss}”
-            </blockquote>
           </div>
-        ) : null}
+          {client !== undefined ? (
+            <div className="jb-results__client">
+              <Avatar
+                look={client.look}
+                mood={happy ? "delighted" : "happy"}
+                size={120}
+                title={client.name}
+                frameColour="#fbe9c8"
+              />
+              <blockquote className="jb-results__quote">
+                “{happy ? client.lines.delighted : client.lines.nearMiss}”
+              </blockquote>
+            </div>
+          ) : null}
+        </div>
+        <ul className="jb-results__summary">
+          {kidSummary(evaluation, run.brief.requiredExtras.length > 0).map((line) => (
+            <li key={line}>
+              <Icon name="sparkle" size={20} /> {line}
+            </li>
+          ))}
+        </ul>
       </div>
       <section className="jb-results__card jb-measure">
         <span className="ad-eyebrow">{happy ? "Delivered with a ribbon" : "A kind note"}</span>
@@ -152,13 +163,6 @@ export function ResultsStage(props: StageProps) {
           <StarRating stars={evaluation.stars} size={28} />
           <strong>{evaluation.score} / 100</strong>
         </div>
-        <ul className="jb-results__summary">
-          {kidSummary(evaluation, run.brief.requiredExtras.length > 0).map((line) => (
-            <li key={line}>
-              <Icon name="sparkle" size={14} /> {line}
-            </li>
-          ))}
-        </ul>
         <ul className="jb-results__criteria">
           {evaluation.criteria.map((criterion) => (
             <li

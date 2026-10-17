@@ -1,0 +1,132 @@
+.jb-stats > .jb-stat {
+  --jb-stat-ink: var(--jb-amber-deep);
+  --jb-stat-fill: linear-gradient(90deg, #f6c46f, var(--jb-amber));
+  min-width: 128px;
+  padding: 10px 14px 12px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #fffaf0, #f6ead6);
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 4px 12px rgba(42, 22, 10, 0.3);
+  align-items: stretch;
+  text-align: left;
+}
+
+.jb-stats > .jb-stat--teal {
+  --jb-stat-ink: var(--jb-teal);
+  --jb-stat-fill: linear-gradient(90deg, #8fc1c4, var(--jb-teal));
+}
+
+.jb-stats > .jb-stat--rose {
+  --jb-stat-ink: var(--rose-deep);
+  --jb-stat-fill: linear-gradient(90deg, #f2b08a, var(--rose));
+}
+
+.jb-stat__label {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--jb-plum);
+}
+
+.jb-stats .jb-stat__value {
+  font-family: var(--font-display);
+  font-size: 1.875rem;
+  line-height: 1.1;
+  color: var(--jb-stat-ink);
+}
+
+.jb-stat__bar {
+  display: block;
+  height: 8px;
+  margin-top: 4px;
+  border-radius: var(--radius-pill);
+  background: rgba(75, 42, 79, 0.12);
+  overflow: hidden;
+}
+
+.jb-stat__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--jb-stat-fill);
+  transition: width var(--duration-base) var(--ease-out);
+}
+
+.jb-stat--full .jb-stat__fill {
+  box-shadow: 0 0 8px rgba(255, 210, 122, 0.9);
+}
+
+.jb-station {
+  display: grid;
+  grid-template-columns: minmax(124px, 1fr) auto minmax(124px, 1fr);
+  grid-template-areas:
+    "stats scene tools"
+    "hint hint hint";
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.jb-station > .jb-stats {
+  grid-area: stats;
+  flex-direction: column;
+  align-self: start;
+}
+
+.jb-station > .jb-loupe,
+.jb-station > .jb-lamp-bench__scene {
+  grid-area: scene;
+}
+
+.jb-station > .jb-loupe {
+  width: min(400px, calc(100dvh - 440px), 52vw);
+  min-width: 260px;
+}
+
+.jb-station > .jb-hint-line {
+  grid-area: hint;
+}
+
+.jb-station > .jb-tools {
+  grid-area: tools;
+  flex-direction: column;
+  align-self: end;
+}
+
+.jb-station > .jb-tools .ad-button {
+  width: 100%;
+  padding: 0 var(--space-3);
+  line-height: 1.15;
+  white-space: normal;
+}
+
+@media (max-width: 860px) {
+  .jb-station {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "stats"
+      "scene"
+      "hint"
+      "tools";
+  }
+
+  .jb-station > .jb-stats {
+    flex-direction: row;
+    justify-self: center;
+  }
+
+  .jb-station > .jb-loupe {
+    width: min(100%, 420px);
+    min-width: 0;
+  }
+
+  .jb-station > .jb-tools {
+    flex-direction: row;
+    align-self: center;
+  }
+
+  .jb-station > .jb-tools .ad-button {
+    width: auto;
+  }
+}

@@ -8,7 +8,7 @@ interface PaperLanternProps {
   readonly glowId?: string | undefined;
 }
 
-const UNLIT = "#8d7f8f";
+const UNLIT = "#d9c9b4";
 
 export function PaperLantern({ x, y, size, hex, glowId }: PaperLanternProps) {
   const body = hex ?? UNLIT;
@@ -33,7 +33,7 @@ export function PaperLantern({ x, y, size, hex, glowId }: PaperLanternProps) {
         fill={body}
         stroke={darken(body, 0.35)}
         strokeWidth={size * 0.035}
-        opacity={lit ? 1 : 0.55}
+        opacity={lit ? 1 : 0.8}
       />
       {[-0.55, 0, 0.55].map((offset) => (
         <ellipse

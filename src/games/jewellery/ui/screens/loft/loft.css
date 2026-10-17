@@ -45,7 +45,9 @@
   padding: 10px 18px;
   border-radius: var(--radius-pill);
   background: linear-gradient(90deg, var(--jb-plum-deep), var(--jb-teal-deep));
-  color: #fdf3df;
+  color: #ffffff;
+  font-size: 1.0625rem;
+  font-weight: 600;
   box-shadow: var(--shadow-sm);
 }
 

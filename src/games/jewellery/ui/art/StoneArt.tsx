@@ -35,8 +35,13 @@ export function StoneArt({ cut, hex, x, y, size, rotation = 0, twinkle = false }
           <stop offset="1" stopColor={darken(hex, 0.35)} />
         </radialGradient>
       </defs>
-      <path d={outlinePath(outline)} fill={`url(#${id}-body)`} stroke={darken(hex, 0.5)} strokeWidth={1.2} />
-      <g stroke={lighten(hex, 0.7)} strokeOpacity={0.55} strokeWidth={0.8}>
+      <path
+        d={outlinePath(outline)}
+        fill={`url(#${id}-body)`}
+        stroke={darken(hex, 0.5)}
+        strokeWidth={size * 0.04}
+      />
+      <g stroke={lighten(hex, 0.7)} strokeOpacity={0.55} strokeWidth={size * 0.026}>
         {facets.map(([fx, fy], index) => {
           const inner = table[(index * step) % table.length] ?? [0, 0];
           return <line key={index} x1={fx} y1={fy} x2={inner[0]} y2={inner[1]} />;
@@ -47,7 +52,7 @@ export function StoneArt({ cut, hex, x, y, size, rotation = 0, twinkle = false }
         fill={lighten(hex, 0.35)}
         fillOpacity={0.75}
         stroke={lighten(hex, 0.7)}
-        strokeWidth={0.8}
+        strokeWidth={size * 0.026}
       />
       <path
         d={outlinePath(centred(seatOutline(cut).points, size, 0.5), 1, size * 0.08, size * 0.1)}

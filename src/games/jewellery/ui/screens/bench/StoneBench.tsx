@@ -1,5 +1,6 @@
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { clamp } from "../../../../../engine/clamp";
+import { useSvgId } from "../../../../../ui/art/useSvgId";
 import { Button } from "../../../../../ui/kit/Button";
 import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
 import { HINTS } from "../../../content/hints";
@@ -18,8 +19,11 @@ import {
 import type { MetalLook } from "../../art/metalLook";
 import { outlinePath } from "../../art/outlinePath";
 import { StoneArt } from "../../art/StoneArt";
+import { ClawProng } from "../../art/ClawProng";
+import { SettingPlate } from "../../art/SettingPlate";
 import { clawAngles } from "../../art/StoneSeatArt";
 import { HoldButton } from "./HoldButton";
+import { StationStat } from "./StationStat";
 
 interface StoneBenchProps {
   readonly cut: StoneCut;
@@ -47,6 +51,7 @@ function round(value: number, places: number): number {
 }
 
 export function StoneBench({ cut, hex, stoneMm, start, tolerance, assisted, metal, onSet }: StoneBenchProps) {
+  const id = useSvgId("jb-setting");
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [pose, setPose] = useState<StonePose>(start);
   const [pressing, setPressing] = useState(false);
@@ -168,20 +173,19 @@ export function StoneBench({ cut, hex, stoneMm, start, tolerance, assisted, meta
   ]);
   return (
     <div
-      className="jb-stone-bench"
+      className="jb-stone-bench jb-station"
       data-testid="stone-bench"
       data-pose={`${pose.x},${pose.y},${pose.rotation}`}
       data-seated={seated ? "true" : "false"}
     >
       <div className="jb-stats" aria-live="polite">
-        <span>
-          <span className="ad-eyebrow">In the seat</span>
-          <strong>{seated ? "Yes!" : "Not yet"}</strong>
-        </span>
-        <span>
-          <span className="ad-eyebrow">Snug</span>
-          <strong>{accuracy === null ? "—" : `${Math.round(accuracy * 100)}%`}</strong>
-        </span>
+        <StationStat label="Stone" value={seated ? "Seated" : "Loose"} fill={seated ? 1 : 0} tone="teal" />
+        <StationStat
+          label="Claws snug"
+          value={accuracy === null ? "—" : `${Math.round(accuracy * 100)}%`}
+          fill={accuracy}
+          tone="gold"
+        />
       </div>
       <div className="jb-loupe">
         <div className="jb-loupe__glass">
@@ -194,9 +198,7 @@ export function StoneBench({ cut, hex, stoneMm, start, tolerance, assisted, meta
             role="group"
             aria-label="Stone seat"
           >
-            <circle r={radius * 1.18} fill={metal.mid} stroke={metal.line} strokeWidth={0.25} />
-            <circle r={radius * 1.02} fill={metal.dark} opacity={0.55} />
-            <circle r={tolerance.distance} fill="#e8a33d" opacity={0.18} />
+            <SettingPlate id={id} radius={radius} metal={metal} view={VIEW} target={tolerance.distance} />
             <path
               d={outlinePath(ghost)}
               fill="none"
@@ -260,16 +262,25 @@ export function StoneBench({ cut, hex, stoneMm, start, tolerance, assisted, meta
                         y1={Math.sin(radians) * (openRadius + 1)}
                         x2={Math.cos(radians) * closedRadius}
                         y2={Math.sin(radians) * closedRadius}
-                        stroke="#fff8ea"
-                        strokeOpacity={0.4}
-                        strokeWidth={0.2}
-                        strokeDasharray="0.4 0.3"
+                        stroke="#1c1220"
+                        strokeOpacity={0.35}
+                        strokeWidth={0.9}
+                        strokeLinecap="round"
                       />
                       <circle
                         cx={Math.cos(radians) * snugAt}
                         cy={Math.sin(radians) * snugAt}
-                        r={0.45}
-                        fill="#e8a33d"
+                        r={0.85}
+                        fill="#ffd27a"
+                        opacity={0.35}
+                      />
+                      <circle
+                        cx={Math.cos(radians) * snugAt}
+                        cy={Math.sin(radians) * snugAt}
+                        r={0.48}
+                        fill="#f2b33d"
+                        stroke="#fff3c8"
+                        strokeWidth={0.12}
                       />
                       <g
                         transform={`translate(${Math.cos(radians) * at} ${Math.sin(radians) * at}) rotate(${angle + 90 + (isClawBent(t) ? 25 : 0)})`}
@@ -288,12 +299,7 @@ export function StoneBench({ cut, hex, stoneMm, start, tolerance, assisted, meta
                         data-snug={`${(Math.cos(radians) * snugAt).toFixed(3)},${(Math.sin(radians) * snugAt).toFixed(3)}`}
                       >
                         <circle r={2} fill="transparent" />
-                        <path
-                          d="M-0.8 -1.6 L0.8 -1.6 L0.5 1.4 L-0.5 1.4 Z"
-                          fill={metal.mid}
-                          stroke={metal.line}
-                          strokeWidth={0.2}
-                        />
+                        <ClawProng id={id} metal={metal} />
                       </g>
                     </g>
                   );
@@ -318,17 +324,18 @@ export function StoneBench({ cut, hex, stoneMm, start, tolerance, assisted, meta
           </Button>
         ) : pressing ? (
           <>
-            <Button variant="ghost" onClick={lift}>
+            <Button variant="secondary" onClick={lift}>
               Lift the stone
             </Button>
             <Button
               size="lg"
               icon="check"
               onClick={() => onSet(pose, claws)}
-              disabledReason={claws.some((claw) => claw === 0) ? "Press every claw first." : undefined}
+              disabledReason={claws.some((claw) => claw === 0) ? "Press every claw in first." : undefined}
+              showReason
               data-testid="seat-done"
             >
-              Stone is set
+              Finish setting
             </Button>
           </>
         ) : (

@@ -21,9 +21,11 @@ import {
 } from "../../../core";
 import type { MetalLook } from "../../art/metalLook";
 import { openPath, outlinePath } from "../../art/outlinePath";
+import { MetalSheet } from "../../art/MetalSheet";
 import { SawSprite } from "../../art/SawSprite";
 import { Shavings, type Shaving } from "../../art/Shavings";
 import type { CutStrokes } from "../../cutDraft";
+import { StationStat } from "./StationStat";
 
 interface CutLoupeProps {
   readonly path: CutPath;
@@ -211,18 +213,18 @@ export function CutLoupe({
   };
 
   const unit = box.size / 60;
+  const round = Math.min(1, coverage / CUT_COVERAGE_NEEDED);
   const holes = outerPath.id === path.id ? [] : [outerPath];
   return (
-    <div className="jb-cut-loupe">
+    <div className="jb-cut-loupe jb-station">
       <div className="jb-stats" aria-live="polite">
-        <span>
-          <span className="ad-eyebrow">Cut round</span>
-          <strong>{Math.round(Math.min(1, coverage / CUT_COVERAGE_NEEDED) * 100)}%</strong>
-        </span>
-        <span>
-          <span className="ad-eyebrow">On the line</span>
-          <strong>{accuracy === null ? "—" : `${Math.round(accuracy * 100)}%`}</strong>
-        </span>
+        <StationStat label="Cut round" value={`${Math.round(round * 100)}%`} fill={round} tone="gold" />
+        <StationStat
+          label="On the line"
+          value={accuracy === null ? "—" : `${Math.round(accuracy * 100)}%`}
+          fill={accuracy}
+          tone="teal"
+        />
       </div>
       <div className="jb-loupe">
         <div className="jb-loupe__glass" ref={wrapRef}>
@@ -246,6 +248,7 @@ export function CutLoupe({
             data-path={JSON.stringify(path.points)}
             data-dots={JSON.stringify(path.dots)}
           >
+            <MetalSheet x={box.x} y={box.y} size={box.size} look={metal} />
             {holes.map((hole) => (
               <path
                 key={hole.id}
@@ -255,11 +258,7 @@ export function CutLoupe({
                 strokeWidth={unit * 0.3}
               />
             ))}
-            <path
-              d={outlinePath(path.points)}
-              fill={metal.light}
-              fillOpacity={holes.length > 0 ? 0.4 : 0.85}
-            />
+            <path d={outlinePath(path.points)} fill="#fffdf4" fillOpacity={holes.length > 0 ? 0.3 : 0.24} />
             <path
               d={outlinePath(path.points)}
               fill="none"
@@ -321,7 +320,7 @@ export function CutLoupe({
             ))}
             <Shavings shavings={shavings} colour={metal.light} unit={unit} />
             {tip !== null ? (
-              <SawSprite x={tip[0]} y={tip[1]} angle={angle} size={unit * 7} working={current.length > 0} />
+              <SawSprite x={tip[0]} y={tip[1]} angle={angle} size={unit * 12} working={current.length > 0} />
             ) : null}
             {tip === null ? (
               <circle
