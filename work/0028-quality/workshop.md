@@ -79,7 +79,20 @@ The critic's main points:
 
 ### Final result
 
-**Passed in round 2: 8/8 won or tied (100%), none clearly worse.**
+Round 2 scored 8/8 won or tied (100%) from a single critic. A fresh three-critic blind panel re-judged the same round-2 screens with new random labels and scored them **5/8 won or tied (63%), none clearly worse — below the 85% bar, so this is not a pass.**
+
+| Pair | Screen       | Panel votes (ours) | Art votes      |
+| ---- | ------------ | ------------------ | -------------- |
+| 1    | title        | win/win/win        | loss/loss/loss |
+| 2    | garage hub   | win/win/win        | loss/loss/loss |
+| 3    | showroom hub | win/loss/loss      | loss/loss/loss |
+| 4    | saw step     | win/win/win        | win/win/win    |
+| 5    | sand step    | win/win/loss       | loss/loss/loss |
+| 6    | finish step  | loss/loss/loss     | loss/loss/loss |
+| 7    | results      | win/win/win        | loss/loss/loss |
+| 8    | showcase     | loss/loss/loss     | loss/loss/loss |
+
+The panel's grey-bar complaints came from the comparison tool letterboxing our 16:10 shots; the tool now crops both sides to the same 16:9 frame. Workshop goes into the gap rounds.
 
 ### Remaining gap
 
