@@ -28,7 +28,10 @@ export function Dialog({
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-    if (open && !element.open) element.showModal();
+    if (open && !element.open) {
+      element.showModal();
+      element.querySelector<HTMLElement>("[data-autofocus]:not(:disabled)")?.focus();
+    }
     if (!open && element.open) element.close();
   }, [open]);
 

@@ -121,6 +121,7 @@ test("a dress can be set aside from the table and from a blocked gig", async ({ 
   await openTable(page, sewn());
   await page.getByTestId("set-aside").click();
   const dialog = page.getByRole("dialog", { name: "Set aside this dress?" });
+  await expect(dialog.getByRole("button", { name: "Keep working" })).toBeFocused();
   await expect(dialog).toContainText("fabric you have already cut stays used");
   await expect(dialog).toContainText("The gig stays in your list");
   await dialog.getByTestId("confirm-set-aside").click();
@@ -224,6 +225,7 @@ test("a failed save warns once and asks before leaving", async ({ page }) => {
   await page.getByRole("button", { name: "Save & exit" }).click();
   const dialog = page.getByRole("dialog", { name: "We couldn't save" });
   await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "Stay" })).toBeFocused();
   await dialog.getByRole("button", { name: "Stay" }).click();
   await expect(dialog).toBeHidden();
   await expect(page.getByTestId("studio-hub")).toBeVisible();

@@ -43,6 +43,7 @@ export function Button({
   const button = (
     <button
       {...rest}
+      data-autofocus={rest.autoFocus === true ? "" : undefined}
       type={type}
       className={classes}
       disabled={blocked}
