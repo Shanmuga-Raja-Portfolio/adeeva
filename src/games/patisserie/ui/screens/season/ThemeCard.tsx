@@ -8,9 +8,10 @@ import { ToppingBadge } from "../../art/ToppingArt";
 export interface ThemeCardProps {
   readonly theme: FairThemeDef;
   readonly compact?: boolean | undefined;
+  readonly titled?: boolean | undefined;
 }
 
-export function ThemeCard({ theme, compact = false }: ThemeCardProps) {
+export function ThemeCard({ theme, compact = false, titled = true }: ThemeCardProps) {
   return (
     <span className={compact ? "pa-theme pa-theme--compact" : "pa-theme"} data-theme={theme.id}>
       <ThemeVignette theme={theme} className="pa-theme__vignette" />
@@ -20,7 +21,7 @@ export function ThemeCard({ theme, compact = false }: ThemeCardProps) {
         ))}
       </span>
       <span className="pa-theme__body">
-        <strong className="pa-theme__name">{theme.name}</strong>
+        {titled ? <strong className="pa-theme__name">{theme.name}</strong> : null}
         {compact ? null : <span className="pa-theme__blurb">{theme.blurb}</span>}
         <span className="pa-theme__tags">
           {theme.tags.map((tag) => (

@@ -47,7 +47,9 @@ export function StageFooter({ state, run, dispatch, onExit, ready }: StageFooter
         <Button
           size="lg"
           onClick={(event) => once(event, { type: "goToStage", stage: next })}
+          icon={check.ok ? undefined : "lock"}
           disabled={!check.ok}
+          className="pa-footer__next"
           disabledReason={check.ok ? undefined : check.reasons[0]}
           data-testid="advance-stage"
         >

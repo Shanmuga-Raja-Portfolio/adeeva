@@ -121,6 +121,9 @@
   .pa-stack__layout {
     grid-template-columns: 1fr;
   }
+  .pa-stack__pieces {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
 }
 
 .pa-level {

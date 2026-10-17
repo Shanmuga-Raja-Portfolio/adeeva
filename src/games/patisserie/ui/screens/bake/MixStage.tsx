@@ -67,7 +67,7 @@ export function MixStage(props: StageProps) {
             checked={assist}
             onChange={setAssist}
           />
-          <p className="pa-hint">{assistHint("Steady spoon")}</p>
+          {assist ? null : <p className="pa-hint">{assistHint("Steady spoon")}</p>}
         </aside>
       </div>
       <StageFooter {...props} ready="Silky smooth. Into the oven!" />

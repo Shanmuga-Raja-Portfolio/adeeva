@@ -4,6 +4,7 @@ export interface GlasshouseBackdropProps {
   readonly className?: string | undefined;
   readonly lights?: number | undefined;
   readonly cloth?: string | undefined;
+  readonly view?: "hall" | "roof" | undefined;
 }
 
 const ARCHES = [0, 1, 2, 3, 4, 5];
@@ -38,13 +39,18 @@ function Palm({ x, y, scale }: { readonly x: number; readonly y: number; readonl
   );
 }
 
-export function GlasshouseBackdrop({ className, lights = 0.5, cloth = "#efe6d2" }: GlasshouseBackdropProps) {
+export function GlasshouseBackdrop({
+  className,
+  lights = 0.5,
+  cloth = "#efe6d2",
+  view = "hall",
+}: GlasshouseBackdropProps) {
   const id = useSvgId("glasshouse");
   return (
     <svg
       className={className}
-      viewBox="0 0 1200 640"
-      preserveAspectRatio="xMidYMid slice"
+      viewBox={view === "roof" ? "0 70 1200 200" : "0 0 1200 640"}
+      preserveAspectRatio={view === "roof" ? "xMidYMin slice" : "xMidYMid slice"}
       aria-hidden="true"
       focusable="false"
     >

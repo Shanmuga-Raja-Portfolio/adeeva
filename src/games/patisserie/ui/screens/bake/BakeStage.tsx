@@ -101,8 +101,10 @@ export function BakeStage(props: StageProps) {
           onChange={setAssist}
           disabled={baking}
         />
-        <p className="pa-hint">{assistHint("Oven helper")}</p>
-        <p className="pa-safety">{SAFETY_LINE}</p>
+        {assist ? null : <p className="pa-hint">{assistHint("Oven helper")}</p>}
+        <p className="pa-safety">
+          <Icon name="shield" size={16} /> {SAFETY_LINE}
+        </p>
       </div>
       <StageFooter {...props} ready="Out of the oven and cooling. Lovely!" />
     </div>

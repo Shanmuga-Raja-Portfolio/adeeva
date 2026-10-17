@@ -20,7 +20,7 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
       <article className="pa-slot pa-slot--empty" data-testid={`slot-${read.slot}`}>
         <span className="ad-eyebrow">{label}</span>
         <p className="pa-slot__empty">An empty cake stand, waiting for a story.</p>
-        <Button variant="secondary" size="sm" onClick={onNewGame}>
+        <Button variant="secondary" icon="sparkle" onClick={onNewGame}>
           Start here
         </Button>
       </article>
@@ -52,30 +52,25 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
   return (
     <article className="pa-slot pa-slot--ready" data-testid={`slot-${read.slot}`}>
       <div className="pa-slot__head">
-        <Avatar look={state.profile.look} size={64} title={`${state.profile.name}'s portrait`} />
+        <Avatar look={state.profile.look} size={56} title={`${state.profile.name}'s portrait`} />
         <div>
           <span className="ad-eyebrow">{label}</span>
           <h3 className="pa-slot__name">{state.profile.name}</h3>
           <span className="pa-muted">Corner Baker · {difficultyById(state.profile.difficulty).name}</span>
+          <span className="pa-slot__day">
+            Day {state.calendar.day}, {weekdayName(state.calendar.day)}
+          </span>
+        </div>
+        <div className="pa-slot__stats">
+          <StatChip kind="coins" value={state.coins} />
+          <StatChip kind="reputation" value={state.reputation} />
         </div>
       </div>
-      <p className="pa-slot__day">
-        Day {state.calendar.day}, {weekdayName(state.calendar.day)}
-      </p>
-      <div className="pa-slot__stats">
-        <StatChip kind="coins" value={state.coins} />
-        <StatChip kind="reputation" value={state.reputation} />
-      </div>
       <div className="pa-slot__actions">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onNewGame}
-          aria-label={`Start a new game in slot ${read.slot}`}
-        >
-          New game
+        <Button variant="ghost" onClick={onNewGame} aria-label={`Start a new game in slot ${read.slot}`}>
+          Start over
         </Button>
-        <Button size="sm" onClick={onLoad} aria-label={`Load slot ${read.slot}`}>
+        <Button onClick={onLoad} aria-label={`Load slot ${read.slot}`}>
           Load
         </Button>
       </div>

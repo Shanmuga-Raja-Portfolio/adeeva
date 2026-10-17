@@ -3,7 +3,7 @@ import { useSettings } from "../../../../../studio/SettingsContext";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
-import { Meter } from "../../../../../ui/kit/Meter";
+import { Meter, type MeterTone } from "../../../../../ui/kit/Meter";
 import { StarRating } from "../../../../../ui/kit/StarRating";
 import { useCountUp } from "../../../../../ui/kit/useCountUp";
 import { clientById, fairDayOf, flourishById, isCustomBake, lastResult, productById } from "../../../core";
@@ -19,6 +19,26 @@ function delay(index: number): CSSProperties {
 
 function signed(amount: number): string {
   return amount > 0 ? `+${amount}` : String(amount);
+}
+
+function skillLevel(percent: number): readonly [MeterTone, string] {
+  if (percent >= 90) return ["sage", "Super"];
+  if (percent >= 70) return ["gold", "Good"];
+  return ["rose", "Keep practising"];
+}
+
+function SkillMeter({ label, share }: { readonly label: string; readonly share: number }) {
+  const percent = Math.round(share * 100);
+  const [tone, word] = skillLevel(percent);
+  return (
+    <Meter
+      label={label}
+      tone={tone}
+      value={percent}
+      valueText={`${percent}% · ${word}`}
+      className="pa-results__skill"
+    />
+  );
 }
 
 export function ResultsStage({ state, run, onExit }: StageProps) {
@@ -114,6 +134,8 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
   const client = clientById(entry.clientId);
   const happy = reward.outcome === "pass";
   const quality = evaluation.quality;
+  const granted = evaluation.criteria.filter((criterion) => criterion.passed);
+  const missed = evaluation.criteria.filter((criterion) => !criterion.passed);
   const headline = happy
     ? `${client?.name ?? "They"} loved it!`
     : reward.outcome === "soft-fail"
@@ -133,7 +155,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
               <Avatar
                 look={client.look}
                 mood={happy ? "delighted" : "thinking"}
-                size={72}
+                size={64}
                 title={client.name}
               />
               <blockquote className="pa-results__quote">
@@ -152,7 +174,11 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
             <ul>
               {reward.lines.map((line) => (
                 <li key={line.label}>
-                  <span>{line.label}</span>
+                  <span>
+                    {line.label === "Trend bonus" && reward.trendMatches.length > 0
+                      ? `Town favourite: ${reward.trendMatches.join(", ")}`
+                      : line.label}
+                  </span>
                   <strong>{signed(line.amount)} coins</strong>
                 </li>
               ))}
@@ -168,11 +194,6 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
                 <Icon name="megaphone" size={18} /> {signed(reward.buzz)} buzz
               </span>
             </div>
-            {reward.trendMatches.length > 0 ? (
-              <p className="pa-results__trend">
-                <Icon name="sparkle" size={16} /> Town favourite: {reward.trendMatches.join(", ")}
-              </p>
-            ) : null}
           </div>
           <p className="pa-results__book">
             <Icon name="heart" size={16} /> Added to your Bake Book.
@@ -185,52 +206,57 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
       <section className="pa-results__details">
         <div className="pa-results__panel">
           <h2>How it measured up</h2>
-          <ul className="pa-results__criteria">
-            {evaluation.criteria.map((criterion, index) => (
-              <li
-                key={criterion.id}
-                className={
-                  criterion.passed ? "pa-criterion pa-criterion--passed" : "pa-criterion pa-criterion--missed"
-                }
-                style={delay(index + 3)}
-              >
-                <span className="pa-criterion__mark" aria-hidden="true">
-                  {criterion.passed ? <Icon name="check" size={16} /> : "•"}
+          <div className="pa-wishes">
+            <span className="pa-wishes__count">
+              <strong>{granted.length}</strong> of {evaluation.criteria.length} wishes
+            </span>
+            <span
+              className="pa-wishes__hearts"
+              role="img"
+              aria-label={`Wishes met: ${granted.map((criterion) => criterion.label).join(", ")}`}
+            >
+              {evaluation.criteria.map((criterion, index) => (
+                <span
+                  key={criterion.id}
+                  className={
+                    criterion.passed ? "pa-wishes__heart" : "pa-wishes__heart pa-wishes__heart--missed"
+                  }
+                  style={delay(index + 3)}
+                  title={criterion.label}
+                >
+                  <Icon name="heart" size={22} />
                 </span>
-                <span>
-                  <strong>{criterion.label}</strong>
-                  <span className="pa-muted"> {criterion.detail}</span>
-                </span>
-                <span className="ad-visually-hidden">{criterion.passed ? "passed" : "missed"}</span>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </span>
+          </div>
+          {missed.length > 0 ? (
+            <ul className="pa-results__criteria">
+              {missed.map((criterion, index) => (
+                <li key={criterion.id} className="pa-criterion" style={delay(index + 3)}>
+                  <span className="pa-criterion__mark" aria-hidden="true">
+                    •
+                  </span>
+                  <span>
+                    <strong>{criterion.label}</strong>{" "}
+                    <span className="pa-criterion__detail">{criterion.detail}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="pa-results__praise">
+              <Icon name="heart" size={18} /> Every wish on the order, granted.
+            </p>
+          )}
         </div>
         <div className="pa-results__panel">
           <h2>Baking skills · {quality.quality}</h2>
-          <Meter
-            label="Weighing"
-            value={Math.round(quality.weigh * 100)}
-            valueText={`${Math.round(quality.weigh * 100)}%`}
-          />
-          <Meter
-            label="Stirring"
-            tone="sage"
-            value={Math.round(quality.stir * 100)}
-            valueText={`${Math.round(quality.stir * 100)}%`}
-          />
-          <Meter
-            label="Oven"
-            tone="gold"
-            value={Math.round(quality.bake * 100)}
-            valueText={`${Math.round(quality.bake * 100)}%`}
-          />
-          <Meter
-            label="Piping"
-            tone="ink"
-            value={Math.round(quality.pipe * 100)}
-            valueText={`${Math.round(quality.pipe * 100)}%`}
-          />
+          <div className="pa-results__skills">
+            <SkillMeter label="Weighing" share={quality.weigh} />
+            <SkillMeter label="Stirring" share={quality.stir} />
+            <SkillMeter label="Oven" share={quality.bake} />
+            <SkillMeter label="Piping" share={quality.pipe} />
+          </div>
           {evaluation.feedback.length > 0 ? (
             <div className="pa-results__notes">
               <h3>Notes for next time</h3>
@@ -240,11 +266,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
                 ))}
               </ul>
             </div>
-          ) : (
-            <p className="pa-results__praise">
-              <Icon name="heart" size={16} /> Every wish on the order, granted.
-            </p>
-          )}
+          ) : null}
         </div>
       </section>
     </div>

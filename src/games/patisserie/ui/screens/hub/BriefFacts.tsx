@@ -54,8 +54,6 @@ export function BriefFacts({ brief, hotTags, fair = false }: BriefFactsProps) {
             Not {mixById(id).name}
           </TagPill>
         ))}
-      </div>
-      <div className="pa-brief-facts__row">
         {brief.favouredColours.map((id) => (
           <span key={id} className="pa-brief-facts__swatch" title={`Loves ${colourById(id).name}`}>
             <span style={{ background: colourById(id).hex }} /> {colourById(id).name}
@@ -67,7 +65,10 @@ export function BriefFacts({ brief, hotTags, fair = false }: BriefFactsProps) {
             className="pa-brief-facts__swatch pa-brief-facts__swatch--avoid"
             title={`No ${colourById(id).name}`}
           >
-            <span style={{ background: colourById(id).hex }} /> No {colourById(id).name}
+            <span className="pa-brief-facts__ban" style={{ background: colourById(id).hex }}>
+              <Icon name="close" size={12} />
+            </span>
+            No {colourById(id).name}
           </span>
         ))}
         {brief.requiredToppings.map((requirement) => (

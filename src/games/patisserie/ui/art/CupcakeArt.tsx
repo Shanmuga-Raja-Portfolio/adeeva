@@ -36,6 +36,7 @@ export function CupcakeArt({ x, y, scale, sponge, icing, paper, pattern, iced, f
         stroke={darken(sponge, 0.2)}
         strokeWidth={1.2}
       />
+      <path d="M10 -4 L34 -4 L26 30 H6 Z" fill="#3b2620" opacity={0.1} />
       {filled !== null && !iced ? (
         <circle cx={0} cy={-12} r={7} fill={filled} stroke={darken(filled, 0.2)} />
       ) : null}
@@ -66,6 +67,16 @@ export function CupcakeArt({ x, y, scale, sponge, icing, paper, pattern, iced, f
             fill="none"
             strokeLinecap="round"
           />
+          <ellipse
+            cx={-14}
+            cy={-28}
+            rx={7}
+            ry={3.5}
+            fill="#ffffff"
+            opacity={0.5}
+            transform="rotate(-20 -14 -28)"
+          />
+          <ellipse cx={-4} cy={-44} rx={4} ry={2.4} fill="#ffffff" opacity={0.55} />
         </g>
       ) : null}
       {iced && pattern === "b" ? (

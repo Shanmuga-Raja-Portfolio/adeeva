@@ -28,11 +28,11 @@ export function GigCard({ state, gig, onStart, onContinue }: GigCardProps) {
           <h4 className="pa-order__client">{client?.name ?? "A neighbour"}</h4>
           <span className="pa-muted">{gig.brief.occasion}</span>
         </div>
+      </div>
+      <div className="pa-order__actions pa-order__actions--due">
         <TagPill tone={left < 0 ? "danger" : left <= 1 ? "hot" : "sage"}>
           {left < 0 ? "Late" : left === 0 ? "Due today" : `Due in ${left} d`}
         </TagPill>
-      </div>
-      <div className="pa-order__actions">
         {onBench ? (
           <Button size="sm" onClick={onContinue}>
             Back to the bench

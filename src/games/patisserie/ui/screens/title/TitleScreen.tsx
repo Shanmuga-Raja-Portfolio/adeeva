@@ -23,6 +23,13 @@ export interface TitleScreenProps {
   readonly onExitToStudio: () => void;
 }
 
+const GLINTS: readonly [number, number, number][] = [
+  [22, 30, 22],
+  [76, 22, 16],
+  [64, 52, 12],
+  [30, 60, 14],
+];
+
 type Pending =
   | { readonly kind: "none" }
   | { readonly kind: "pick-slot" }
@@ -55,11 +62,26 @@ export function TitleScreen({
 
   return (
     <main className="pa-title ad-screen">
-      <BakeryBackdrop className="pa-title__backdrop" />
+      <BakeryBackdrop className="pa-title__backdrop" sign={false} />
       <div className="pa-title__veil" aria-hidden="true" />
       <div className="pa-title__showcase" aria-hidden="true">
         {SHOWCASE_LOOKS.map((look) => (
-          <BakePreview key={look.productId} look={look} title={null} className="pa-title__bake" />
+          <span key={look.productId} className="pa-title__plinth">
+            <BakePreview look={look} title={null} className="pa-title__bake" />
+            {GLINTS.map(([x, y, size], index) => (
+              <span
+                key={index}
+                className="pa-title__glint"
+                style={{
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  width: size,
+                  height: size,
+                  animationDelay: `${index * -0.7}s`,
+                }}
+              />
+            ))}
+          </span>
         ))}
       </div>
       <div className="pa-title__content">
@@ -69,7 +91,7 @@ export function TitleScreen({
           </Button>
         </nav>
         <section className="pa-title__hero pa-doily">
-          <Wordmark tagline="Bake, pipe and box up treats for Larkspur Street." />
+          <Wordmark tagline="Bake, pipe and box up treats at Crumb & Comet on Larkspur Street." />
           <div className="pa-title__menu">
             {resume !== null && resume.kind === "ready" ? (
               <Button

@@ -41,7 +41,7 @@ export function FairCard({ state, onStartShowpiece, onMoveUp, onOpen }: FairCard
   return (
     <div className="pa-fair-card" data-testid="fair-card">
       <div className="pa-fair-card__theme">
-        <ThemeCard theme={theme} compact />
+        <ThemeCard theme={theme} compact titled={false} />
       </div>
       <div className="pa-fair-card__tent">
         <span className="ad-eyebrow">Tent {tent.tent} of 5</span>

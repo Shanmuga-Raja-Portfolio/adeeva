@@ -47,6 +47,13 @@ export function BriefChecklist({ state, run }: BriefChecklistProps) {
           </li>
         ))}
       </ul>
+      {client !== undefined && run.stage !== "brief" ? (
+        <figure className="pa-checklist__note">
+          <span className="pa-checklist__pin" aria-hidden="true" />
+          <blockquote>“{client.lines.request}”</blockquote>
+          <figcaption>{client.name}</figcaption>
+        </figure>
+      ) : null}
     </aside>
   );
 }

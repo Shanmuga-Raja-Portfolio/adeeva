@@ -10,8 +10,10 @@ import {
   type WeighAttempt,
   type WeighRecord,
 } from "../../../core";
+import { BenchScene } from "../../art/BenchScene";
 import { DialScale } from "../../art/DialScale";
 import { IngredientPack } from "../../art/IngredientPack";
+import { weighBanner } from "./weighBanner";
 import { FRESH_POUR, pourTick, releasePour, settled, startPour, type PourState } from "./weighPour";
 
 export interface WeighStationProps {
@@ -106,24 +108,41 @@ export function WeighStation({
     if (dispatch({ type: "recordWeigh", batch, ingredientId: ingredient.id, ...record })) onKept();
   };
   const unit = ingredient.mode === "piece" && ingredient.pieceGrams === 1 ? "drops" : "g";
+  const banner = weighBanner({
+    pour,
+    target,
+    band,
+    unit,
+    piece: ingredient.mode !== "pour",
+    covered,
+    verdict: canKeep ? verdict(accuracy) : null,
+    great: accuracy >= 0.99,
+  });
   return (
     <div className="pa-weigh-station" data-testid="weigh-station" data-ingredient={ingredient.id}>
-      <div className="pa-weigh-station__scale">
-        <DialScale
-          grams={pour.grams}
-          target={target}
-          band={band}
-          colour={ingredient.colour}
-          stopLine={assisted}
-          pouring={pour.holding}
-          unit={unit}
-          hideZone={covered && (moving || pour.actions === 0)}
-        />
-      </div>
-      <div className="pa-weigh-station__controls">
+      <div className="pa-weigh-station__scene">
+        <BenchScene className="pa-bench-scene" />
+        <p
+          key={banner.tone}
+          className={`pa-weigh-station__banner pa-weigh-station__banner--${banner.tone}`}
+          aria-live="polite"
+        >
+          {banner.text}
+        </p>
+        <div className="pa-weigh-station__scale">
+          <DialScale
+            grams={pour.grams}
+            target={target}
+            band={band}
+            colour={ingredient.colour}
+            stopLine={assisted}
+            pouring={pour.holding}
+            unit={unit}
+            hideZone={covered && (moving || pour.actions === 0)}
+          />
+        </div>
         <div className="pa-weigh-station__target">
-          <IngredientPack ingredient={ingredient} size={56} />
-          <div>
+          <div className="pa-weigh-station__tag">
             <strong>{ingredient.name}</strong>
             <span>
               Aim for{" "}
@@ -132,7 +151,12 @@ export function WeighStation({
               </b>
             </span>
           </div>
+          <span className="pa-weigh-station__pack">
+            <IngredientPack ingredient={ingredient} size={104} />
+          </span>
         </div>
+      </div>
+      <div className="pa-weigh-station__controls">
         {ingredient.mode === "pour" ? (
           <button
             type="button"
@@ -163,15 +187,6 @@ export function WeighStation({
             {ingredient.id === "butter" ? "Add a 25 g slice" : "Add a drop"}
           </button>
         )}
-        {pour.settleLeft > 0 ? <p className="pa-hint">The scale keeps going after you let go!</p> : null}
-        {pour.emptied ? (
-          <p className="pa-weigh-station__empty" role="status">
-            The bag is empty! Buy more in the pantry.{" "}
-            <Button size="sm" variant="secondary" onClick={onNeedPantry}>
-              Back to pantry
-            </Button>
-          </p>
-        ) : null}
         <div className="pa-weigh-station__row">
           <Button
             variant="secondary"
@@ -181,23 +196,19 @@ export function WeighStation({
           >
             Scoop back
           </Button>
-          <Button onClick={keep} disabled={!canKeep} data-testid="keep-weigh">
+          <Button onClick={keep} disabled={!canKeep} className="pa-keep-weigh" data-testid="keep-weigh">
             Keep {grams} {unit}
           </Button>
         </div>
-        {canKeep ? (
-          <p
-            className={
-              accuracy >= 0.99
-                ? "pa-weigh-station__verdict pa-weigh-station__verdict--great"
-                : "pa-weigh-station__verdict"
-            }
-            aria-live="polite"
-          >
-            {verdict(accuracy)}
-          </p>
-        ) : null}
       </div>
+      {pour.emptied ? (
+        <p className="pa-weigh-station__empty" role="status">
+          The bag is empty! Buy more in the pantry.{" "}
+          <Button size="sm" variant="secondary" onClick={onNeedPantry}>
+            Back to pantry
+          </Button>
+        </p>
+      ) : null}
     </div>
   );
 }

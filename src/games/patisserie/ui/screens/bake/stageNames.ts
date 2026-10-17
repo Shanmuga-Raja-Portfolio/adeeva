@@ -56,6 +56,6 @@ export const STAGE_HINTS: Readonly<Partial<Record<RunStage, string>>> = {
 };
 
 export function assistHint(helper: string): string {
-  return `Stuck? Switch on the ${helper.toLowerCase()} for help. You can switch it off again before your next try.`;
+  return `Stuck? Try the ${helper.toLowerCase()}. Switch it off again before your next try.`;
 }
 export const SAFETY_LINE = "Real ovens, mixers and knives: ask an adult first.";

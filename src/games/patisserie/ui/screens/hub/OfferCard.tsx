@@ -20,7 +20,7 @@ export function OfferCard({ state, view, onAccept, onDecline }: OfferCardProps) 
     <article className="pa-order pa-order--offer" data-testid="offer-card">
       <span className="pa-order__pin" aria-hidden="true" />
       <div className="pa-order__head">
-        <Avatar look={client.look} size={56} title={client.name} frameColour="#fde6cf" />
+        <Avatar look={client.look} size={50} title={client.name} frameColour="#fde6cf" />
         <div>
           <h4 className="pa-order__client">{client.name}</h4>
           <span className="pa-muted pa-order__relation">{client.relation}</span>

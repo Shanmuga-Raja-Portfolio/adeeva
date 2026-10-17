@@ -1,4 +1,5 @@
 import { darken, lighten } from "../../../../ui/art/colourMix";
+import { useSvgId } from "../../../../ui/art/useSvgId";
 import type { PipePathDef } from "../../content/pipePattern";
 
 export interface PipeSurfaceProps {
@@ -16,6 +17,42 @@ function outline(path: PipePathDef, scale: number): string {
     .join(" ")} Z`;
 }
 
+function Frosting({ coat, radius }: { readonly coat: string; readonly radius: number }) {
+  const id = useSvgId("frosting");
+  return (
+    <g>
+      <defs>
+        <radialGradient id={`${id}-sheen`} cx="0.36" cy="0.3" r="0.8">
+          <stop offset="0" stopColor="#ffffff" stopOpacity={0.7} />
+          <stop offset="0.4" stopColor="#ffffff" stopOpacity={0.1} />
+          <stop offset="0.8" stopColor={darken(coat, 0.2)} stopOpacity={0.25} />
+          <stop offset="1" stopColor={darken(coat, 0.35)} stopOpacity={0.55} />
+        </radialGradient>
+      </defs>
+      <g fill="none" strokeLinecap="round">
+        {[0.3, 0.52, 0.74, 0.92].map((share, index) => (
+          <path
+            key={share}
+            d={`M${(12 - radius * share).toFixed(2)} 12 A${(radius * share).toFixed(2)} ${(radius * share).toFixed(2)} 0 1 1 ${(12 + radius * share * 0.7).toFixed(2)} ${(12 + radius * share * 0.7).toFixed(2)}`}
+            stroke={index % 2 === 0 ? lighten(coat, 0.6) : darken(coat, 0.2)}
+            strokeWidth={0.5}
+            opacity={0.9}
+          />
+        ))}
+      </g>
+      <circle cx={12} cy={12} r={radius} fill={`url(#${id}-sheen)`} />
+      <path
+        d={`M${(12 - radius * 0.86).toFixed(2)} ${(12 - radius * 0.3).toFixed(2)} A${radius} ${radius} 0 0 1 ${(12 - radius * 0.2).toFixed(2)} ${(12 - radius * 0.97).toFixed(2)}`}
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth={0.4}
+        strokeLinecap="round"
+        opacity={0.7}
+      />
+    </g>
+  );
+}
+
 export function PipeSurface({ path, coat, sponge }: PipeSurfaceProps) {
   switch (path.surface) {
     case "cupcake":
@@ -29,18 +66,22 @@ export function PipeSurface({ path, coat, sponge }: PipeSurfaceProps) {
     case "cake":
       return (
         <g>
-          <circle cx={12} cy={12} r={11.6} fill={darken(coat, 0.08)} />
+          <circle cx={12.35} cy={12.6} r={11.7} fill="#3b2620" opacity={0.2} />
+          <circle cx={12} cy={12} r={11.6} fill={darken(coat, 0.16)} />
           <circle cx={12} cy={12} r={11} fill={coat} />
-          <circle cx={9} cy={8} r={4} fill="#ffffff" opacity={0.18} />
+          <Frosting coat={coat} radius={11} />
         </g>
       );
     case "tier":
       return (
         <g>
-          <circle cx={12} cy={12} r={11.6} fill={darken(coat, 0.1)} />
+          <circle cx={12.35} cy={12.6} r={11.7} fill="#3b2620" opacity={0.2} />
+          <circle cx={12} cy={12} r={11.6} fill={darken(coat, 0.14)} />
           <circle cx={12} cy={12} r={11} fill={coat} />
+          <Frosting coat={coat} radius={11} />
           <circle cx={12} cy={12} r={6.4} fill={darken(coat, 0.06)} />
           <circle cx={12} cy={12} r={6} fill={lighten(coat, 0.08)} />
+          <Frosting coat={coat} radius={6} />
         </g>
       );
     case "tart":

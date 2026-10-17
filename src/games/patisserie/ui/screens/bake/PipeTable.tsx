@@ -1,6 +1,9 @@
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { Point } from "../../../../../engine/geometry/point";
+import { darken, lighten } from "../../../../../ui/art/colourMix";
 import { Button } from "../../../../../ui/kit/Button";
+import { Meter } from "../../../../../ui/kit/Meter";
+import { StarRating } from "../../../../../ui/kit/StarRating";
 import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
 import { useElementSize } from "../../../../../ui/kit/useElementSize";
 import type { PipePathDef } from "../../../content/pipePattern";
@@ -28,6 +31,13 @@ export interface PipeTableProps {
 }
 
 const KEY_STEP = 0.35;
+
+function neatWord(accuracy: number): string {
+  if (accuracy >= 0.9) return "Super neat!";
+  if (accuracy >= 0.7) return "Neat";
+  if (accuracy >= 0.5) return "A bit wobbly";
+  return "Wobbly";
+}
 
 function pathData(points: readonly Point[], closed: boolean): string {
   const body = points
@@ -127,14 +137,25 @@ export function PipeTable({
   return (
     <div className="pa-pipe-table">
       <div className="pa-pipe-table__stats" aria-live="polite">
-        <span>
-          <span className="ad-eyebrow">Covered</span>
-          <strong>{Math.round(covered * 100)}%</strong>
-        </span>
-        <span>
-          <span className="ad-eyebrow">On the line</span>
-          <strong>{samples.length > 1 ? `${Math.round(accuracy * 100)}%` : "—"}</strong>
-        </span>
+        <Meter
+          label="How far you have piped"
+          value={Math.round(covered * 100)}
+          valueText={`${Math.round(covered * 100)}%`}
+        />
+        <div className="pa-pipe-table__neat">
+          <span className="ad-meter__row">
+            <span className="ad-meter__label">How neat it is</span>
+            <span className="ad-meter__value">{samples.length > 1 ? neatWord(accuracy) : "—"}</span>
+          </span>
+          <StarRating stars={samples.length > 1 ? Math.round(accuracy * 5) : 0} size={22} />
+        </div>
+        <p className="pa-pipe-table__tip">
+          {held
+            ? "Squeeze gently and follow the dots."
+            : samples.length === 0
+              ? "Start at the blue dot and trace all the way along."
+              : "Lift any time, then carry on where you stopped."}
+        </p>
       </div>
       <div
         ref={wrapRef}
@@ -163,8 +184,8 @@ export function PipeTable({
           <path
             d={pathData(path.points, path.closed)}
             fill="none"
-            stroke="#ffffff"
-            strokeOpacity={0.55}
+            stroke="#4b5aa6"
+            strokeOpacity={0.12}
             strokeWidth={tolerance * 2}
             strokeLinejoin="round"
             strokeLinecap="round"
@@ -172,30 +193,45 @@ export function PipeTable({
           <path
             d={pathData(path.points, path.closed)}
             fill="none"
-            stroke="#4b5aa6"
-            strokeWidth={0.16}
-            strokeDasharray="0.12 0.42"
+            stroke="#ffffff"
+            strokeWidth={0.5}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+          <path
+            d={pathData(path.points, path.closed)}
+            fill="none"
+            stroke="#2f3c86"
+            strokeWidth={0.3}
+            strokeDasharray="0.02 0.52"
             strokeLinecap="round"
             className={reducedMotion ? undefined : "pa-pipe-table__march"}
           />
-          <path
-            d={trail}
-            fill="none"
-            stroke={icing}
-            strokeWidth={lineWidth}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d={trail}
-            fill="none"
-            stroke="#ffffff"
-            strokeOpacity={0.4}
-            strokeWidth={lineWidth * 0.3}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            transform="translate(-0.08 -0.08)"
-          />
+          <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path
+              d={trail}
+              stroke="#3b2620"
+              strokeOpacity={0.22}
+              strokeWidth={lineWidth * 1.15}
+              transform="translate(0.1 0.18)"
+            />
+            <path d={trail} stroke={darken(icing, 0.24)} strokeWidth={lineWidth * 1.14} />
+            <path d={trail} stroke={icing} strokeWidth={lineWidth} />
+            <path
+              d={trail}
+              stroke={darken(icing, 0.1)}
+              strokeWidth={lineWidth * 0.78}
+              strokeLinecap="butt"
+              strokeDasharray={`${(lineWidth * 0.14).toFixed(3)} ${(lineWidth * 0.36).toFixed(3)}`}
+            />
+            <path
+              d={trail}
+              stroke={lighten(icing, 0.7)}
+              strokeOpacity={0.75}
+              strokeWidth={lineWidth * 0.26}
+              transform="translate(-0.07 -0.09)"
+            />
+          </g>
           {samples.length === 0 ? (
             <circle
               cx={start[0]}
@@ -215,13 +251,6 @@ export function PipeTable({
           Keep this line
         </Button>
       </div>
-      <p className="pa-hint">
-        {held
-          ? "Squeeze gently and follow the dots."
-          : samples.length === 0
-            ? "Start at the blue dot and trace all the way along."
-            : "Lift any time, then carry on where you stopped."}
-      </p>
     </div>
   );
 }

@@ -20,6 +20,7 @@ import {
 import type { PlayView } from "../../patisserieRoute";
 import { TreatIcon } from "../../art/TreatIcon";
 import { TeaTins } from "../salon/TeaTins";
+import "./salonPlan.css";
 
 export interface SalonPlanProps {
   readonly state: GameState;
@@ -45,42 +46,63 @@ export function SalonPlan({ state, dispatch, onBakeTray, onOpenTables, onOpen }:
           const tally = splitTally(salon.bookings, menu, tier.id);
           const issue = salonTrayIssue(state, tier.id);
           return (
-            <article key={tier.id} className="pa-salon-tier" data-testid={`salon-tier-${tier.id}`}>
+            <article
+              key={tier.id}
+              className={tray !== undefined ? "pa-salon-tier pa-salon-tier--ready" : "pa-salon-tier"}
+              data-testid={`salon-tier-${tier.id}`}
+            >
+              {tray !== undefined ? (
+                <p className="pa-salon-tier__ready">
+                  <Icon name="check" size={16} /> On the shelf
+                  <span className="pa-salon-tier__quality">
+                    <Icon name="star" size={14} /> quality {tray.quality}
+                  </span>
+                </p>
+              ) : null}
               <span className="pa-salon-tier__icons" aria-hidden="true">
-                <TreatIcon productId={entry.productId} colour={colourById(entry.colours[0]).hex} size={40} />
-                <TreatIcon productId={entry.productId} colour={colourById(entry.colours[1]).hex} size={40} />
+                <TreatIcon productId={entry.productId} colour={colourById(entry.colours[0]).hex} size={46} />
+                <TreatIcon productId={entry.productId} colour={colourById(entry.colours[1]).hex} size={46} />
               </span>
               <div className="pa-salon-tier__body">
                 <span className="ad-eyebrow">{tier.name}</span>
-                <strong>
-                  {MENU_ITEM_NAMES[entry.productId]} · {mixById(entry.mixId).name}
-                </strong>
-                <span className="pa-salon-tier__tally">
-                  {entry.colours.map((colour, index) => (
-                    <span key={colour} className="pa-salon-tier__count">
-                      <span style={{ background: colourById(colour).hex }} aria-hidden="true" />
-                      {colourById(colour).name}: {tally[index]} booked
-                      {tray !== undefined ? `, ${tray.left[index] ?? 0} on the shelf` : ""}
-                    </span>
-                  ))}
-                </span>
+                <strong>{MENU_ITEM_NAMES[entry.productId]}</strong>
+                <span className="pa-salon-tier__mix">{mixById(entry.mixId).name}</span>
               </div>
-              {tray !== undefined ? (
-                <TagPill tone="sage">
-                  <Icon name="check" size={14} /> On the shelf · quality {tray.quality}
-                </TagPill>
-              ) : done ? (
-                <TagPill>Next season</TagPill>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={(event) => onBakeTray(event, tier.id)}
-                  disabledReason={issue ?? undefined}
-                  data-testid={`bake-salon-${tier.id}`}
-                >
-                  Bake this tray · 6 h
-                </Button>
+              <ul className="pa-salon-tier__tally">
+                {entry.colours.map((colour, index) => (
+                  <li key={colour} className="pa-salon-tier__count">
+                    <span className="pa-salon-tier__swatch" style={{ background: colourById(colour).hex }} />
+                    <strong className="pa-salon-tier__colour">{colourById(colour).name}</strong>
+                    <span className="pa-salon-tier__numbers">
+                      <span>
+                        <b>{tally[index]}</b> booked
+                      </span>
+                      {tray !== undefined ? (
+                        <span>
+                          <b>{tray.left[index] ?? 0}</b> on the shelf
+                        </span>
+                      ) : null}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {tray !== undefined ? null : (
+                <div className="pa-salon-tier__status">
+                  {done ? (
+                    <TagPill>Next season</TagPill>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      block
+                      onClick={(event) => onBakeTray(event, tier.id)}
+                      disabledReason={issue ?? undefined}
+                      data-testid={`bake-salon-${tier.id}`}
+                    >
+                      Bake this tray · 6 h
+                    </Button>
+                  )}
+                </div>
               )}
             </article>
           );

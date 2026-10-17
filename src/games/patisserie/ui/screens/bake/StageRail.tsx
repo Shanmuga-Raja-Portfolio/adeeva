@@ -18,7 +18,9 @@ export function StageRail({ state, run, dispatch }: Omit<StageProps, "onExit">) 
               <span className="pa-rail__dot" aria-hidden="true">
                 {done ? <Icon name="check" size={14} /> : index + 1}
               </span>
-              <span className="pa-rail__label">{STAGE_LABELS[stage]}</span>
+              <span className={done ? "pa-rail__label ad-visually-hidden" : "pa-rail__label"}>
+                {STAGE_LABELS[stage]}
+              </span>
             </>
           );
           return (

@@ -41,6 +41,13 @@ export function WeighStage(props: StageProps) {
   const current = picked ?? firstMissing ?? mix?.weighed[0]?.ingredient ?? null;
   if (mix === null || entry === undefined || run.design.productId === null) return null;
   const product = productById(run.design.productId);
+  const struggling = mix.weighed.some((item) => {
+    const record = entry.weighs[item.ingredient];
+    return (
+      record !== undefined &&
+      weighAccuracy(record, ingredientById(item.ingredient), item.grams, record.band) < 0.8
+    );
+  });
   const amount = mix.weighed.find((item) => item.ingredient === current);
   const nextMissing = (after: IngredientId) =>
     mix.weighed.find((item) => item.ingredient !== after && entry.weighs[item.ingredient] === undefined)
@@ -97,15 +104,27 @@ export function WeighStage(props: StageProps) {
             })}
           </ul>
           <div className="pa-eggs">
-            <span>
-              Eggs {entry.eggs}/{mix.eggs}
+            <span className="pa-eggs__head">
+              <strong>Eggs</strong>
+              <span className="pa-eggs__count">
+                {entry.eggs}/{mix.eggs}
+              </span>
+              {entry.eggs < mix.eggs && !entry.committed ? (
+                <span className="pa-eggs__tip">Tap to crack!</span>
+              ) : null}
             </span>
             <div className="pa-eggs__row">
               {Array.from({ length: mix.eggs }, (_, index) => (
                 <button
                   key={index}
                   type="button"
-                  className={index < entry.eggs ? "pa-egg pa-egg--cracked" : "pa-egg"}
+                  className={
+                    index < entry.eggs
+                      ? "pa-egg pa-egg--cracked"
+                      : index === entry.eggs && !entry.committed
+                        ? "pa-egg pa-egg--next"
+                        : "pa-egg"
+                  }
                   disabled={index !== entry.eggs || entry.committed}
                   onClick={(event) => once(event, { type: "crackEgg", batch })}
                   aria-label={index < entry.eggs ? "Egg cracked" : "Tap to crack an egg"}
@@ -148,7 +167,7 @@ export function WeighStage(props: StageProps) {
             checked={assist}
             onChange={setAssist}
           />
-          <p className="pa-safety">{SAFETY_LINE}</p>
+          {struggling && !assist ? <p className="pa-hint">{assistHint("Scale helper")}</p> : null}
         </aside>
         <div className="pa-weigh__bench">
           {amount !== undefined && !entry.committed ? (
@@ -173,7 +192,9 @@ export function WeighStage(props: StageProps) {
               </p>
             </div>
           )}
-          <p className="pa-hint">{assistHint("Scale helper")}</p>
+          <p className="pa-safety pa-safety--quiet">
+            <Icon name="shield" size={14} /> {SAFETY_LINE}
+          </p>
         </div>
       </div>
       <PantryDialog

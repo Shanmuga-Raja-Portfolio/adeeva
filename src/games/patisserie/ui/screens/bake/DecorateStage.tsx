@@ -8,6 +8,7 @@ import {
   type PlacedPose,
 } from "../../../../../engine/placedPose";
 import { Button } from "../../../../../ui/kit/Button";
+import { Icon } from "../../../../../ui/kit/IconSet";
 import { clientToSvg } from "../../../../../ui/kit/clientToSvg";
 import { TOPPINGS, type ToppingId } from "../../../content/topping";
 import {
@@ -18,6 +19,7 @@ import {
   type PlacedTopping,
 } from "../../../core";
 import { BakePreview } from "../../art/BakePreview";
+import { BenchScene } from "../../art/BenchScene";
 import { bakeLook } from "../../art/bakeLook";
 import { TOPPING_EXTENT, ToppingBadge } from "../../art/ToppingArt";
 import { PantryDialog } from "./PantryDialog";
@@ -67,7 +69,7 @@ export function DecorateStage(props: StageProps) {
   const [tray, setTray] = useState<TrayDrag | null>(null);
   const [pantryOpen, setPantryOpen] = useState(false);
   const focusAfter = useRef<string | null>(null);
-  const svg = () => cakeRef.current?.querySelector("svg") ?? null;
+  const svg = () => cakeRef.current?.querySelector<SVGSVGElement>(".pa-decorate__art") ?? null;
 
   useEffect(() => {
     const wanted = focusAfter.current;
@@ -215,6 +217,15 @@ export function DecorateStage(props: StageProps) {
   };
 
   const required = run.brief?.requiredToppings ?? [];
+  const trayRank = (toppingId: ToppingId): number =>
+    availableToppings(state, toppingId) > 0
+      ? 2
+      : run.toppings.some((entry) => entry.toppingId === toppingId)
+        ? 1
+        : 0;
+  const trayOrder = [...TOPPINGS].sort((a, b) => trayRank(b.id) - trayRank(a.id));
+  const onTray = trayOrder.filter((topping) => trayRank(topping.id) > 0);
+  const soldOut = trayOrder.filter((topping) => trayRank(topping.id) === 0);
   return (
     <div className="pa-decorate">
       <aside className="pa-decorate__tray pa-doily" aria-label="Topping tray">
@@ -223,13 +234,20 @@ export function DecorateStage(props: StageProps) {
           <span className="pa-muted">Drag onto the bake</span>
         </header>
         <div className="pa-decorate__grid">
-          {TOPPINGS.map((topping) => {
+          {onTray.map((topping) => {
             const left = availableToppings(state, topping.id);
+            const onBake = run.toppings.filter((entry) => entry.toppingId === topping.id).length;
             return (
               <button
                 key={topping.id}
                 type="button"
-                className={left > 0 ? "pa-topping-tile" : "pa-topping-tile pa-topping-tile--empty"}
+                className={
+                  left > 0
+                    ? "pa-topping-tile"
+                    : onBake > 0
+                      ? "pa-topping-tile pa-topping-tile--empty pa-topping-tile--placed"
+                      : "pa-topping-tile pa-topping-tile--empty"
+                }
                 disabled={left <= 0}
                 onPointerDown={(event) => trayDown(event, topping.id)}
                 onPointerMove={trayMove}
@@ -242,13 +260,29 @@ export function DecorateStage(props: StageProps) {
                 data-testid={`topping-${topping.id}`}
                 data-topping={`tile-${topping.id}`}
               >
-                <ToppingBadge toppingId={topping.id} size={48} />
+                <span className="pa-topping-tile__plate" aria-hidden="true">
+                  <ToppingBadge toppingId={topping.id} size={54} />
+                </span>
                 <span className="pa-topping-tile__name">{topping.name}</span>
-                <span className="pa-topping-tile__count">×{left}</span>
+                <span
+                  className={
+                    left <= 0 && onBake > 0
+                      ? "pa-topping-tile__count pa-topping-tile__count--placed"
+                      : "pa-topping-tile__count"
+                  }
+                >
+                  {left > 0 ? `${left} left` : onBake > 0 ? `${onBake} placed` : "0 left"}
+                </span>
               </button>
             );
           })}
         </div>
+        {soldOut.length > 0 ? (
+          <p className="pa-decorate__out">
+            <Icon name="bag" size={16} /> {soldOut.length} more{" "}
+            {soldOut.length === 1 ? "topping waits" : "toppings wait"} in the pantry.
+          </p>
+        ) : null}
         {required.length > 0 ? (
           <ul className="pa-decorate__wants">
             {required.map((requirement) => {
@@ -265,11 +299,12 @@ export function DecorateStage(props: StageProps) {
             })}
           </ul>
         ) : null}
-        <Button variant="ghost" size="sm" onClick={() => setPantryOpen(true)}>
-          Need more? Quick pantry trip
+        <Button variant="secondary" size="sm" icon="bag" onClick={() => setPantryOpen(true)}>
+          Quick pantry trip
         </Button>
       </aside>
       <div className="pa-decorate__cake" ref={cakeRef} onPointerDown={() => setSelectedId(null)}>
+        <BenchScene className="pa-bench-scene" />
         <BakePreview
           look={look}
           title="Your bake with toppings"

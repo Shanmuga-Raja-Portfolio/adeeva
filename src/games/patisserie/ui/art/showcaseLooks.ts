@@ -5,7 +5,7 @@ export const SHOWCASE_LOOKS: readonly BakeLook[] = [
     productId: "two-tier-cake",
     mixColours: ["#7a4a35", "#f3d996"],
     fillingColour: "#c2304f",
-    icing: ["#22305a", "#c9a227", "#f4ecd8"],
+    icing: ["#f6dfe4", "#c9a227", "#fffaf0"],
     pattern: "a",
     toppings: [
       { id: "star-1", toppingId: "gold-star", x: 172, y: 150, rotation: 0, scale: 1, layer: 1 },

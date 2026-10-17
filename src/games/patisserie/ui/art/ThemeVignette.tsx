@@ -10,7 +10,7 @@ export interface ThemeVignetteProps {
 
 type Scene = (palette: readonly string[]) => ReactNode;
 
-function petals(colour: string): ReactNode {
+function petals(colour: string, shift = 0): ReactNode {
   return [
     [40, 20],
     [90, 44],
@@ -18,15 +18,15 @@ function petals(colour: string): ReactNode {
     [210, 50],
     [260, 24],
     [300, 60],
-  ].map(([x, y]) => (
+  ].map(([x = 0, y = 0]) => (
     <ellipse
       key={`${x}-${y}`}
-      cx={x}
-      cy={y}
+      cx={x + shift}
+      cy={y + shift / 3}
       rx={4}
       ry={2.4}
       fill={colour}
-      transform={`rotate(30 ${x} ${y})`}
+      transform={`rotate(30 ${x + shift} ${y + shift / 3})`}
     />
   ));
 }
@@ -34,18 +34,51 @@ function petals(colour: string): ReactNode {
 const SCENES: Readonly<Record<FairThemeId, Scene>> = {
   "blossom-lane": ([blush = "#f2c4c9", lavender = "#b9a7dc", , sage = "#9cb59a"]) => (
     <g>
-      <rect width={320} height={90} fill="#fdf2f4" />
-      <path d="M0 90 Q160 50 320 90 Z" fill={sage} opacity={0.7} />
-      <path d="M140 90 Q160 60 180 90 Z" fill="#efe6d2" />
-      {[50, 270].map((x) => (
+      <rect width={320} height={90} fill="#fdeef2" />
+      <rect width={320} height={40} fill="#e8f1f8" opacity={0.7} />
+      <circle cx={250} cy={18} r={26} fill="#fff6dc" opacity={0.8} />
+      <path d="M0 62 Q60 40 130 56 T250 48 T320 54 V90 H0 Z" fill={sage} opacity={0.45} />
+      <path d="M0 74 Q90 56 170 70 T320 66 V90 H0 Z" fill={sage} opacity={0.85} />
+      <path d="M146 90 Q154 76 160 66 Q166 76 178 90 Z" fill="#f4ead6" />
+      <path d="M150 90 Q156 78 160 68" stroke="#e2d4b8" strokeWidth={1.2} fill="none" />
+      {[
+        [56, 1],
+        [262, 1.08],
+        [118, 0.6],
+        [206, 0.62],
+      ].map(([x = 0, scale = 1]) => (
+        <g key={x} transform={`translate(${x} 74) scale(${scale})`}>
+          <ellipse cx={0} cy={4} rx={26} ry={4} fill="#3b2620" opacity={0.14} />
+          <path
+            d="M-3 4 L-2 -24 Q-14 -34 -18 -40 M-2 -24 Q8 -34 14 -42 M-1 -14 L-1 -30"
+            stroke="#7d5a43"
+            strokeWidth={4}
+            strokeLinecap="round"
+            fill="none"
+          />
+          <circle cx={-14} cy={-40} r={14} fill="#e7a3b6" />
+          <circle cx={14} cy={-42} r={15} fill="#e7a3b6" />
+          <circle cx={0} cy={-50} r={18} fill={blush} />
+          <circle cx={-20} cy={-46} r={10} fill={blush} />
+          <circle cx={20} cy={-50} r={11} fill={blush} />
+          <circle cx={-6} cy={-58} r={9} fill="#fde4ea" />
+          <circle cx={10} cy={-56} r={6} fill="#fde4ea" />
+          <circle cx={-16} cy={-34} r={6} fill={lavender} opacity={0.8} />
+          <circle cx={18} cy={-36} r={5} fill={lavender} opacity={0.8} />
+        </g>
+      ))}
+      {[
+        [96, 76],
+        [226, 74],
+      ].map(([x = 0, y = 0]) => (
         <g key={x}>
-          <rect x={x - 3} y={46} width={6} height={36} fill="#8e6a45" />
-          <circle cx={x} cy={40} r={22} fill={blush} />
-          <circle cx={x - 14} cy={48} r={14} fill={lavender} opacity={0.8} />
-          <circle cx={x + 14} cy={46} r={15} fill={blush} />
+          <ellipse cx={x} cy={y} rx={10} ry={3} fill="#e7a3b6" opacity={0.7} />
+          <circle cx={x - 4} cy={y - 2} r={2} fill={blush} />
+          <circle cx={x + 3} cy={y - 3} r={2} fill={lavender} />
         </g>
       ))}
       {petals(blush)}
+      {petals("#ffffff", 22)}
     </g>
   ),
   "kite-day": ([sky = "#9fd0ee", mustard = "#d9a42b", coral = "#f07f63"]) => (
@@ -170,8 +203,21 @@ export function ThemeVignette({ theme, className }: ThemeVignetteProps) {
         <clipPath id={`${id}-clip`}>
           <rect width={320} height={90} />
         </clipPath>
+        <linearGradient id={`${id}-light`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity={0.28} />
+          <stop offset="0.45" stopColor="#ffffff" stopOpacity={0} />
+          <stop offset="1" stopColor="#3b2620" stopOpacity={0.16} />
+        </linearGradient>
+        <radialGradient id={`${id}-vignette`} cx="0.5" cy="0.45" r="0.7">
+          <stop offset="0.6" stopColor="#3b2620" stopOpacity={0} />
+          <stop offset="1" stopColor="#3b2620" stopOpacity={0.22} />
+        </radialGradient>
       </defs>
-      <g clipPath={`url(#${id}-clip)`}>{SCENES[theme.id](palette)}</g>
+      <g clipPath={`url(#${id}-clip)`}>
+        {SCENES[theme.id](palette)}
+        <rect width={320} height={90} fill={`url(#${id}-light)`} />
+        <rect width={320} height={90} fill={`url(#${id}-vignette)`} />
+      </g>
     </svg>
   );
 }

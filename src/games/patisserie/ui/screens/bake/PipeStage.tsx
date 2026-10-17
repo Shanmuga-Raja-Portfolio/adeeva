@@ -4,6 +4,7 @@ import { Icon } from "../../../../../ui/kit/IconSet";
 import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
 import { pipeTolerance, runPipePaths } from "../../../core";
 import { bakeLook, icingHex, spongeHex } from "../../art/bakeLook";
+import { TableTop } from "../../art/TableTop";
 import { useAssist } from "../../useAssist";
 import { PipeTable } from "./PipeTable";
 import { StageFooter } from "./StageFooter";
@@ -25,6 +26,7 @@ export function PipeStage(props: StageProps) {
   const look = bakeLook(run.design, [], true);
   if (look === null) return null;
   const done = paths.filter((path) => Object.hasOwn(run.pipes, path.id)).length;
+  const struggling = paths.some((path) => (run.pipes[path.id]?.accuracy ?? 1) < 0.8);
   return (
     <div className="pa-pipe">
       <div className="pa-pipe__layout">
@@ -69,7 +71,7 @@ export function PipeStage(props: StageProps) {
             checked={assist}
             onChange={setAssist}
           />
-          <p className="pa-hint">{assistHint("Guide dots")}</p>
+          {struggling && !assist ? <p className="pa-hint">{assistHint("Guide dots")}</p> : null}
           {COPY_SETS.some((id) => id === run.design.productId) ? (
             <p className="pa-muted pa-pipe__note">The rest of the set copies your best ones.</p>
           ) : null}
@@ -80,6 +82,7 @@ export function PipeStage(props: StageProps) {
           ) : null}
         </aside>
         <div className="pa-pipe__table">
+          <TableTop className="pa-bench-scene" />
           {active !== undefined ? (
             <PipeTable
               key={`${active.id}-${assist ? "a" : "m"}`}

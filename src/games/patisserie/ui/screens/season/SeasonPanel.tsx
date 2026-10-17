@@ -20,10 +20,11 @@ import {
   type SalonMenu,
 } from "../../../core";
 import type { PlayView } from "../../patisserieRoute";
-import { CometRoomBackdrop } from "../../art/CometRoomBackdrop";
+import { GlasshouseBackdrop } from "../../art/GlasshouseBackdrop";
 import { FairCard } from "./FairCard";
 import { MenuBoard } from "./MenuBoard";
 import { RibbonWall } from "./RibbonWall";
+import { SeasonCountdown } from "./SeasonCountdown";
 import { SalonPlan } from "./SalonPlan";
 import { ThemePicker } from "./ThemePicker";
 import "./season.css";
@@ -80,7 +81,7 @@ export function SeasonPanel({ state, dispatch, once, onOpen }: SeasonPanelProps)
   return (
     <section className="pa-season" aria-labelledby="pa-season-title" data-testid="season-panel">
       <header className="pa-season__ribbon">
-        <CometRoomBackdrop className="pa-season__backdrop" glow={0.8} />
+        <GlasshouseBackdrop className="pa-season__backdrop" lights={1} view="roof" />
         <div className="pa-season__title">
           <span className="ad-eyebrow">
             {SALON_NAME} · Fair Season {fair.seasonNumber}
@@ -91,16 +92,6 @@ export function SeasonPanel({ state, dispatch, once, onOpen }: SeasonPanelProps)
           </h2>
           <span className="pa-season__chips">
             <TagPill tone="gold">Tent: {fairTentByNumber(fair.tent).name}</TagPill>
-            {begun && salon.parlour !== "resting" ? (
-              <>
-                <TagPill tone="sage">
-                  <Icon name="heart" size={12} /> Salon Day {daysAway(day, salonDayOf(fair))}
-                </TagPill>
-                <TagPill tone="hot">
-                  <Icon name="star" size={12} /> Fair Day {daysAway(day, fairDayOf(fair))}
-                </TagPill>
-              </>
-            ) : null}
             {salon.parlour === "resting" ? <TagPill>Parlour resting</TagPill> : null}
           </span>
           {preview.length > 0 ? (
@@ -110,6 +101,17 @@ export function SeasonPanel({ state, dispatch, once, onOpen }: SeasonPanelProps)
             </span>
           ) : null}
         </div>
+        {begun && salon.parlour !== "resting" ? (
+          <div className="pa-season__countdowns">
+            <SeasonCountdown
+              label="Salon Day"
+              when={daysAway(day, salonDayOf(fair))}
+              icon="heart"
+              tone="sage"
+            />
+            <SeasonCountdown label="Fair Day" when={daysAway(day, fairDayOf(fair))} icon="star" tone="hot" />
+          </div>
+        ) : null}
       </header>
       <div className="pa-season__body">
         {!begun ? (

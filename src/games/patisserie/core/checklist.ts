@@ -79,7 +79,7 @@ export function checklist(state: GameState, run: BakeRun): ChecklistItem[] {
   const spend = bakeSpend(run);
   items.push({
     id: "budget",
-    label: `Ingredients ${spend}/${brief.budget} coins`,
+    label: `Within budget: ${spend}/${brief.budget} coins`,
     status: spend <= brief.budget ? "met" : "unmet",
   });
   items.push({

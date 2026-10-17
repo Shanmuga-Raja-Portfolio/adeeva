@@ -4,6 +4,7 @@ import { useSettings } from "../../../../../studio/SettingsContext";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { PetalFall } from "../../../../../ui/art/PetalFall";
 import { Button } from "../../../../../ui/kit/Button";
+import { Icon, type IconName } from "../../../../../ui/kit/IconSet";
 import { easeInOut, easeOut, window01 } from "../../../../../ui/kit/easing";
 import { useShowClock } from "../../../../../ui/kit/useShowClock";
 import type { FairThemeDef } from "../../../content/fairTheme";
@@ -30,7 +31,13 @@ export interface FairShowcaseProps {
 }
 
 const REST_SPOTS = [20, 80, 50];
-const SPARKLES = Array.from({ length: 10 }, (_, index) => index);
+const SPARKLES = Array.from({ length: 16 }, (_, index) => index);
+const STAR_PATH = "M0 -7 Q1.2 -1.2 7 0 Q1.2 1.2 0 7 Q-1.2 1.2 -7 0 Q-1.2 -1.2 0 -7 Z";
+const BURST_PATH =
+  "M0 -8 L1.6 -2.4 L5.7 -5.7 L2.4 -1.6 L8 0 L2.4 1.6 L5.7 5.7 L1.6 2.4 L0 8 L-1.6 2.4 L-5.7 5.7 L-2.4 1.6 L-8 0 L-2.4 -1.6 L-5.7 -5.7 L-1.6 -2.4 Z";
+const CHEERS: readonly (IconName | null)[] = ["heart", null, "star", "sparkle", null, "heart", "star", null];
+const CROWD_POSES = ["cheer", "wave", "present", "wave", "cheer", "graceful-right"] as const;
+const CROWD_SIZES = [1, 0.9, 1.08, 0.95, 1.04, 0.92];
 
 function restSpot(position: number, count: number): number {
   if (position === count - 1) return 50;
@@ -81,6 +88,7 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
   const lift = step.kind === "reveal" ? easeOut(window01(t, 0, 0.6)) : 0;
   const sparkle = step.kind === "reveal" ? window01(t, 0.15, 1) : 0;
   const clapping = step.kind === "finale" || step.kind === "panels";
+  const cheering = clapping || step.kind === "reveal";
   const petals = clapping ? (step.kind === "finale" ? t : 1 + t) * 0.9 : -1;
   const palette = [...theme.palette.map((colour) => colourById(colour).hex), "#fff6ee"];
   const members = [
@@ -116,12 +124,20 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
             className="pa-showcase__plate pa-showcase__plate--turntable"
             style={{ left: `${reduced ? 50 : glideX}%` }}
           >
+            {sparkle > 0 ? (
+              <span
+                className="pa-showcase__halo"
+                style={{ opacity: Math.min(1, sparkle * 1.6) } as CSSProperties}
+                aria-hidden="true"
+              />
+            ) : null}
             <BakePreview
               look={current.look}
               title={step.kind === "reveal" ? current.label : null}
               plaque={current.plaque}
             />
             <span className="pa-showcase__trolley" aria-hidden="true" />
+            {step.kind === "reveal" ? <span className="pa-showcase__spot" aria-hidden="true" /> : null}
             {step.kind === "wait" ? (
               <button
                 type="button"
@@ -144,15 +160,25 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
             {sparkle > 0 ? (
               <svg className="pa-showcase__sparkles" viewBox="-100 -100 200 200" aria-hidden="true">
                 {SPARKLES.map((index) => {
-                  const angle = (index / SPARKLES.length) * Math.PI * 2;
-                  const radius = 30 + 60 * sparkle;
+                  const angle = -Math.PI / 2 + ((index * 137.5) % 360) * (Math.PI / 180);
+                  const radius = [30, 46, 38, 58][index % 4] ?? 40;
+                  const reach = radius + (14 + (index % 5) * 9) * sparkle;
+                  const size = [1.25, 0.4, 0.8, 0.3, 0.55][index % 5] ?? 1;
+                  const x = (Math.cos(angle) * reach).toFixed(1);
+                  const y = (Math.sin(angle) * reach * 0.85).toFixed(1);
+                  if (index % 4 === 3)
+                    return (
+                      <circle key={index} cx={x} cy={y} r={2.2} fill="#ffffff" opacity={1 - sparkle * 0.3} />
+                    );
                   return (
                     <path
                       key={index}
-                      d="M0 -8 L2 -2 L8 0 L2 2 L0 8 L-2 2 L-8 0 L-2 -2 Z"
-                      fill={index % 2 === 0 ? "#ffe08a" : "#ffffff"}
-                      opacity={1 - sparkle * 0.8}
-                      transform={`translate(${(Math.cos(angle) * radius).toFixed(1)} ${(Math.sin(angle) * radius).toFixed(1)}) scale(${1 + sparkle})`}
+                      d={index % 3 === 1 ? BURST_PATH : STAR_PATH}
+                      fill={index % 2 === 0 ? "#ffd65c" : "#fff7d6"}
+                      stroke="#ffffff"
+                      strokeWidth={0.8}
+                      opacity={1 - sparkle * 0.3}
+                      transform={`translate(${x} ${y}) rotate(${(index * 23) % 45}) scale(${size + sparkle * 0.5})`}
                     />
                   );
                 })}
@@ -169,16 +195,35 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
           className={clapping ? "pa-showcase__crowd pa-showcase__crowd--clap" : "pa-showcase__crowd"}
           aria-hidden="true"
         >
-          {members.map((member, at) => (
-            <span key={member.name} style={{ animationDelay: `${(at % 4) * 120}ms` }}>
-              <Avatar
-                look={member.look}
-                mood={clapping ? "delighted" : "happy"}
-                size={64}
-                title={member.name}
-              />
-            </span>
-          ))}
+          <span className="pa-showcase__bench" />
+          {members.map((member, at) => {
+            const cheer = CHEERS[at % CHEERS.length] ?? null;
+            const pose = {
+              animationDelay: `${(at % 4) * 120}ms`,
+              "--lean": `${((at % 3) - 1) * 4}deg`,
+              "--lift": `${(at % 2) * -1.2}cqi`,
+              "--size": CROWD_SIZES[at % CROWD_SIZES.length],
+              "--flip": at % 2 === 0 ? 1 : -1,
+            } as CSSProperties;
+            return (
+              <span key={member.name} className="pa-showcase__fan" style={pose}>
+                <span className="pa-showcase__body">
+                  <Avatar
+                    variant="three-quarter"
+                    look={member.look}
+                    mood={cheering ? "delighted" : "happy"}
+                    pose={cheering ? CROWD_POSES[at % CROWD_POSES.length] : "rest"}
+                    title={member.name}
+                  />
+                </span>
+                {cheering && cheer !== null ? (
+                  <span className={`pa-showcase__cheer pa-showcase__cheer--${cheer}`}>
+                    <Icon name={cheer} size={30} />
+                  </span>
+                ) : null}
+              </span>
+            );
+          })}
         </div>
         {step.kind === "title" ? (
           <div className="pa-showcase__title" style={{ opacity: Math.min(1, t * 3) }}>
@@ -244,13 +289,21 @@ export function FairShowcase({ theme, result, plates, visitors, skippable, onDon
         <span
           className={reducedMotion ? "pa-showcase__music" : "pa-showcase__music pa-showcase__music--playing"}
         >
-          ♪ {music.name}
+          <span aria-hidden="true">♪</span> Music: {music.name}
         </span>
-        <ol className="pa-showcase__pips" aria-label="Showcase progress">
-          {steps.map((_, at) => (
-            <li key={at} className={at === index ? "is-active" : at < index ? "is-done" : ""} />
-          ))}
-        </ol>
+        <span
+          className="pa-showcase__progress"
+          role="progressbar"
+          aria-label="Showcase progress"
+          aria-valuemin={0}
+          aria-valuemax={steps.length}
+          aria-valuenow={Math.min(index + 1, steps.length)}
+        >
+          <span
+            className="pa-showcase__progress-fill"
+            style={{ width: `${(Math.min(index + 1, steps.length) / steps.length) * 100}%` }}
+          />
+        </span>
         {canSkip ? (
           <Button variant="secondary" size="sm" onClick={onDone} data-testid="skip-showcase">
             Skip to the ribbons ›

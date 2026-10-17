@@ -290,8 +290,8 @@ function decorateAll(state: GameState, plan: BakePlan): GameState {
       next = reduce(next, {
         type: "addTopping",
         toppingId: requirement.topping,
-        x: 120 + (spot % 6) * 30,
-        y: 150 + Math.floor(spot / 6) * 30,
+        x: 168 + (spot % 6) * 32,
+        y: 194 + Math.floor(spot / 6) * 30,
       });
       spot += 1;
     }
