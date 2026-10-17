@@ -145,10 +145,36 @@ export function ProductPreview({
         <filter id={`${id}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="6" stdDeviation="6" floodColor="#3b2a1c" floodOpacity="0.22" />
         </filter>
+        <linearGradient id={`${id}-light`} x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity={0.34} />
+          <stop offset="0.42" stopColor="#ffffff" stopOpacity={0.04} />
+          <stop offset="0.75" stopColor="#2b1a10" stopOpacity={0.06} />
+          <stop offset="1" stopColor="#2b1a10" stopOpacity={0.26} />
+        </linearGradient>
+        <radialGradient id={`${id}-puff`} cx="0.42" cy="0.32" r="0.55">
+          <stop offset="0" stopColor="#ffffff" stopOpacity={0.3} />
+          <stop offset="1" stopColor="#ffffff" stopOpacity={0} />
+        </radialGradient>
+        <filter id={`${id}-lift`} x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="2.5" stdDeviation="2" floodColor="#2b1a10" floodOpacity="0.45" />
+        </filter>
       </defs>
       {shape.mount === "stand" || shape.mount === "stool" || shape.mount === "peg" ? (
         <MountArt mount={shape.mount} />
       ) : null}
+      {(shape.backing ?? []).map((card) => (
+        <g key={card} filter={`url(#${id}-shadow)`}>
+          <path d={card} fill="#fff8ec" stroke="#c9b48c" strokeWidth={3} />
+          <path
+            d={card}
+            fill="none"
+            stroke="#e8d9bd"
+            strokeWidth={2}
+            strokeDasharray="8 6"
+            transform="translate(200 210) scale(0.9) translate(-200 -210)"
+          />
+        </g>
+      ))}
       <g filter={`url(#${id}-shadow)`}>
         {shape.bodies.map((body) => (
           <path
@@ -167,6 +193,14 @@ export function ProductPreview({
             <path key={`sheen-${body}`} d={body} fill={fabricSheenFill(`${id}-fabric`)} fillRule="evenodd" />
           ))
         : null}
+      {cloth !== null
+        ? shape.bodies.map((body) => (
+            <g key={`light-${body}`}>
+              <path d={body} fill={`url(#${id}-light)`} fillRule="evenodd" />
+              <path d={body} fill={`url(#${id}-puff)`} fillRule="evenodd" />
+            </g>
+          ))
+        : null}
       <g fill="none" stroke={look?.deep ?? "#b7a27c"} strokeWidth={6} opacity={0.18} strokeLinecap="round">
         {shape.shade.map((path) => (
           <path key={path} d={path} />
@@ -182,11 +216,13 @@ export function ProductPreview({
         <MountArt mount={shape.mount} />
       ) : null}
       {base}
-      <PlacedLayer
-        items={finishes}
-        className="tf-finish-layer"
-        render={(finish) => <FinishArt {...finish} selected={finish.id === selectedId} />}
-      />
+      <g filter={`url(#${id}-lift)`}>
+        <PlacedLayer
+          items={finishes}
+          className="tf-finish-layer"
+          render={(finish) => <FinishArt {...finish} selected={finish.id === selectedId} />}
+        />
+      </g>
       {children}
     </svg>
   );

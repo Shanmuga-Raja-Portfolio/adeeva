@@ -5,6 +5,7 @@ export type Mount = "hanger" | "clip" | "hook" | "stand" | "stool" | "peg";
 
 export interface ProductShape {
   readonly mount: Mount;
+  readonly backing?: readonly string[] | undefined;
   readonly bodies: readonly string[];
   readonly seams: readonly string[];
   readonly shade: readonly string[];
@@ -99,12 +100,20 @@ export function productShape(design: Design): ProductShape {
     case "cushion-cover":
       return {
         mount: "stool",
-        bodies: ["M96 112 Q200 92 304 112 Q324 220 304 316 Q200 336 96 316 Q76 220 96 112 Z"],
-        seams: [
-          "M110 126 Q200 110 290 126 Q306 220 290 302 Q200 318 110 302 Q94 220 110 126 Z",
-          "M98 200 Q200 230 302 200",
+        bodies: [
+          "M84 104 Q142 124 200 116 Q258 124 316 104 Q300 160 304 216 Q300 272 316 330 Q258 312 200 318 Q142 312 84 330 Q100 272 96 216 Q100 160 84 104 Z",
         ],
-        shade: ["M116 140 Q104 220 116 296"],
+        seams: [
+          "M100 122 Q150 136 200 130 Q250 136 300 122 Q288 170 290 216 Q288 262 300 312 Q250 298 200 304 Q150 298 100 312 Q112 262 110 216 Q112 170 100 122 Z",
+          "M98 198 Q200 232 302 198",
+        ],
+        shade: [
+          "M92 112 Q128 140 146 166",
+          "M308 112 Q272 140 254 166",
+          "M92 322 Q128 296 146 274",
+          "M308 322 Q272 296 254 274",
+          "M200 300 Q232 300 262 292",
+        ],
       };
     case "scrunchie-trio":
       return {

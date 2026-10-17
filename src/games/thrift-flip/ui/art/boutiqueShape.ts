@@ -55,16 +55,9 @@ export function boutiqueShape(design: Design): ProductShape | null {
     case "hair-bow-set":
       return {
         mount: "clip",
-        bodies: [
-          "M120 70 L280 70 L280 350 Q200 362 120 350 Z",
-          ...bow(200, 160, 0.92),
-          ...bow(200, 280, 0.78),
-        ],
-        seams: [
-          ...bowSeams(200, 160, 0.92),
-          ...bowSeams(200, 280, 0.78),
-          "M132 82 L268 82 L268 338 L132 338 Z",
-        ],
+        backing: ["M120 70 L280 70 L280 350 Q200 362 120 350 Z"],
+        bodies: [...bow(200, 160, 0.92), ...bow(200, 280, 0.78)],
+        seams: [...bowSeams(200, 160, 0.92), ...bowSeams(200, 280, 0.78)],
         shade: [],
       };
     case "book-sleeve":

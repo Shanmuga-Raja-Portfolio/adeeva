@@ -34,6 +34,9 @@
   --card: #fffaf0;
   --font-display: "Rockwell", "Roboto Slab", "Rockwell Nova", Georgia, serif;
   --focus-ring: 0 0 0 3px var(--paper), 0 0 0 6px rgba(240, 138, 60, 0.7);
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --ink-soft: #4a3f50;
 
   min-height: 100dvh;
   color: var(--ink);
@@ -75,6 +78,20 @@
 
 .tf-theme .ad-eyebrow {
   color: var(--tf-denim);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.tf-theme .ad-button--ghost {
+  background: rgba(255, 250, 240, 0.75);
+  border-color: rgba(160, 122, 82, 0.4);
+  color: var(--tf-denim-deep);
+}
+
+.tf-theme .ad-button--ghost:hover:not(:disabled) {
+  background: var(--tf-tangerine-soft);
+  border-color: var(--tf-tangerine);
+  color: var(--tf-tangerine-deep);
 }
 
 .tf-stitch-border {

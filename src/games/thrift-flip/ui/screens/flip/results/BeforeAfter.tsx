@@ -1,5 +1,6 @@
 import { Icon } from "../../../../../../ui/kit/IconSet";
 import { conditionById, findById, type FlipRun, type OwnedFind } from "../../../../core";
+import { CelebrationBurst } from "../../../art/CelebrationBurst";
 import { FindArt } from "../../../art/FindArt";
 import { findCloth } from "../../../art/findCloth";
 import { ProductPreview } from "../../../art/ProductPreview";
@@ -19,7 +20,7 @@ export function BeforeAfter({ run, main, name }: BeforeAfterProps) {
         <span className="tf-split__label">Before</span>
         {find !== null && main !== null ? (
           <>
-            <FindArt find={find} grade={main.grade} size={150} />
+            <FindArt find={find} grade={main.grade} size={230} />
             <figcaption>
               {conditionById(main.grade).name} {find.name}
             </figcaption>
@@ -30,9 +31,10 @@ export function BeforeAfter({ run, main, name }: BeforeAfterProps) {
         <Icon name="sparkle" size={28} />
       </span>
       <figure className="tf-split__after">
+        <CelebrationBurst className="tf-split__burst" />
         <span className="tf-split__label">After</span>
         {ticket && find !== null ? (
-          <FindArt find={find} grade="like-new" size={150} mended title={`${find.name}, mended`} />
+          <FindArt find={find} grade="like-new" size={240} mended title={`${find.name}, mended`} />
         ) : (
           <ProductPreview
             design={run.design}

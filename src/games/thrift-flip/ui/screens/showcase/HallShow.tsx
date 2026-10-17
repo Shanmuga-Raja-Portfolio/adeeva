@@ -45,9 +45,45 @@ function roleOf(position: number, count: number): string {
   return "Middle";
 }
 
+const WORN_TOPS: readonly string[] = ["remade-top", "remade-pinafore", "garden-apron"];
+const WORN_SKIRTS: readonly string[] = ["remade-skirt"];
+
+function pieceArt(piece: RackPiece) {
+  return (
+    <ProductPreview
+      design={piece.design}
+      cloth={pieceCloth(piece.id, piece.cloth)}
+      finishes={piece.finishes}
+      title={recipeById(piece.recipeId).name}
+      base={null}
+    />
+  );
+}
+
+function wornOrHeld(piece: RackPiece) {
+  if (WORN_TOPS.includes(piece.recipeId))
+    return (
+      <svg x={44} y={84} width={312} height={312} viewBox="0 0 400 400">
+        {pieceArt(piece)}
+      </svg>
+    );
+  if (WORN_SKIRTS.includes(piece.recipeId))
+    return (
+      <svg x={20} y={190} width={360} height={360} viewBox="0 0 400 400">
+        {pieceArt(piece)}
+      </svg>
+    );
+  return (
+    <svg x={86} y={206} width={250} height={250} viewBox="0 0 400 400">
+      {pieceArt(piece)}
+    </svg>
+  );
+}
+
 function carriedArt(piece: RackPiece, rollingRails: boolean) {
+  if (!rollingRails) return wornOrHeld(piece);
   const preview = (
-    <svg x={30} y={120} width={340} height={340} viewBox="0 0 400 400">
+    <svg x={60} y={190} width={280} height={280} viewBox="0 0 400 400">
       <ProductPreview
         design={piece.design}
         cloth={pieceCloth(piece.id, piece.cloth)}
@@ -56,7 +92,6 @@ function carriedArt(piece: RackPiece, rollingRails: boolean) {
       />
     </svg>
   );
-  if (!rollingRails) return preview;
   return (
     <g>
       <path

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useToast } from "../../../../../studio/ToastContext";
 import { Card } from "../../../../../ui/kit/Card";
 import { Icon } from "../../../../../ui/kit/IconSet";
@@ -34,6 +34,7 @@ import { LarkspurCard } from "../boutique/LarkspurCard";
 import { SeasonPanel } from "../boutique/SeasonPanel";
 import { WindowCard } from "../boutique/WindowCard";
 import "./hub.css";
+import "./board.css";
 import "../boutique/boutique.css";
 
 export interface StallHubProps {
@@ -70,6 +71,7 @@ export function StallHub({
   const once = useDispatchOnce(state, dispatch);
   const [ending, setEnding] = useState<DayEnding | null>(null);
   const [settingAside, setSettingAside] = useState(false);
+  const desk = useRef<HTMLDivElement>(null);
   const offers = offersFor(state);
   const gigs = state.gigs.active;
   const beat = ending === null ? currentBeat(state) : null;
@@ -121,6 +123,13 @@ export function StallHub({
       toast(`${signById(signId).name} is open on Larkspur Row!`);
   };
 
+  const toDesk = () => {
+    const calm =
+      document.documentElement.dataset["motion"] === "reduced" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    desk.current?.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+  };
+
   const setAside = () => {
     setSettingAside(false);
     if (dispatch({ type: "abandonFlip" })) toast("The flip is set aside. Your bench is clear.", "info");
@@ -138,15 +147,15 @@ export function StallHub({
           <h1 className="ad-visually-hidden">
             {state.boutique === null ? "Your stall at the market" : "Your boutique on Larkspur Row"}
           </h1>
-          <HubHero
-            state={state}
-            onWorkShift={(event) => endDay(event, "shift")}
-            onEndDay={(event) => endDay(event, "rest")}
-            onOpenStall={onOpenStall}
-            onOpenHall={onOpenHall}
-            onOpenShowcase={onOpenShowcase}
-          />
-          <div className="tf-hub__grid">
+          <div className="tf-hub__stage">
+            <HubHero
+              state={state}
+              onWorkShift={(event) => endDay(event, "shift")}
+              onEndDay={(event) => endDay(event, "rest")}
+              onOpenStall={onOpenStall}
+              onOpenHall={onOpenHall}
+              onOpenShowcase={onOpenShowcase}
+            />
             <section className="tf-board" aria-labelledby="tf-board-title">
               <Bunting className="tf-board__bunting" />
               <header className="tf-board__head">
@@ -176,7 +185,23 @@ export function StallHub({
                   ))}
                 </div>
               )}
+              {offers.length > 1 ? (
+                <div className="tf-board__more" aria-hidden="true">
+                  <span>
+                    <Icon name="bag" size={16} />
+                    {offers.length} requests pinned · scroll the board
+                  </span>
+                </div>
+              ) : null}
             </section>
+          </div>
+          <button type="button" className="tf-hub__more" onClick={toDesk}>
+            <span className="tf-hub__more-arrow" aria-hidden="true">
+              ↓
+            </span>
+            Your orders, stockroom and more
+          </button>
+          <div className="tf-hub__grid" ref={desk}>
             <div className="tf-hub__column">
               <Card
                 title="Your orders"
@@ -205,13 +230,15 @@ export function StallHub({
               </Card>
               <RackPanel state={state} onStartOwn={startOwn} onContinue={onOpenFlip} onShelf={shelf} />
               <WindowCard state={state} onOpen={onOpenWindow} />
-              <ResultsLog state={state} />
             </div>
             <div className="tf-hub__column">
               <LarkspurCard state={state} onOpen={openBoutique} />
               <SeasonPanel state={state} onOpenShowcase={onOpenShowcase} />
-              <KeepsakePanel state={state} />
               <CrowdPanel state={state} />
+              <ResultsLog state={state} />
+            </div>
+            <div className="tf-hub__column">
+              <KeepsakePanel state={state} />
               <StockPanel state={state} />
               <UpgradesPanel state={state} onBuy={buy} />
             </div>

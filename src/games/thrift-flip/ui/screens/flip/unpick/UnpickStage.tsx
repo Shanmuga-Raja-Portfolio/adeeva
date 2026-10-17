@@ -3,16 +3,7 @@ import { useSettings } from "../../../../../../studio/SettingsContext";
 import { Icon } from "../../../../../../ui/kit/IconSet";
 import { AssistSwitch } from "../../../../../adeeva/ui/screens/craft/AssistSwitch";
 import { HINTS } from "../../../../content/hint";
-import {
-  ASSIST_UNPICK_CAP,
-  findById,
-  isLineDone,
-  lineRecord,
-  maxPull,
-  MIN_PULL_CM,
-  runLines,
-  trimById,
-} from "../../../../core";
+import { findById, isLineDone, lineRecord, maxPull, MIN_PULL_CM, runLines, trimById } from "../../../../core";
 import { StageFooter } from "../StageFooter";
 import type { StageProps } from "../stageProps";
 import { StitchBench, type StitchPullRequest } from "./StitchBench";
@@ -109,27 +100,49 @@ export function UnpickStage(props: StageProps) {
           <Icon name="scissors" size={18} />
           {settings.assistUnpick ? "Tap each stitch to pop it." : HINTS.unpick}
         </p>
+        <AssistSwitch
+          label="Assist snip"
+          detail="Tap to pop. Scores a bit less."
+          checked={settings.assistUnpick}
+          onChange={(assistUnpick) => updateSettings({ assistUnpick })}
+        />
       </div>
-      <div className="tf-workbench__lines" role="tablist" aria-label="Stitch lines">
-        {lines.map(({ def, index }, position) => {
-          const lineState = lineRecord(run, owned.id, index);
-          const done = isLineDone(def, lineState);
-          return (
-            <button
-              key={index}
-              type="button"
-              role="tab"
-              aria-selected={index === lineIndex}
-              className={done ? "tf-line-chip tf-line-chip--done" : "tf-line-chip"}
-              onClick={() => setChosenLine(index)}
-              data-line={index}
-            >
-              {done ? <Icon name="check" size={14} /> : null}
-              {lines.length === 1 ? "The split" : `Line ${position + 1}`} · {lineState.popped.length}/
-              {def.stitches}
-            </button>
-          );
-        })}
+      <div className="tf-workbench__row">
+        <div className="tf-workbench__lines" role="tablist" aria-label="Stitch lines">
+          {lines.map(({ def, index }, position) => {
+            const lineState = lineRecord(run, owned.id, index);
+            const done = isLineDone(def, lineState);
+            return (
+              <button
+                key={index}
+                type="button"
+                role="tab"
+                aria-selected={index === lineIndex}
+                className={done ? "tf-line-chip tf-line-chip--done" : "tf-line-chip"}
+                onClick={() => setChosenLine(index)}
+                data-line={index}
+              >
+                {done ? <Icon name="check" size={14} /> : null}
+                {lines.length === 1 ? "The split" : `Line ${position + 1}`} · {lineState.popped.length}/
+                {def.stitches}
+              </button>
+            );
+          })}
+        </div>
+        <ul className="tf-workbench__facts">
+          <li>
+            <strong>
+              {stitchesOut}/{stitchesTotal}
+            </strong>{" "}
+            stitches out
+          </li>
+          <li className={snags > 0 ? "is-warn" : undefined}>
+            <strong>{snags}</strong> {snags === 1 ? "snag" : "snags"}
+          </li>
+          <li>
+            Safe pull: up to <strong>{limit.toFixed(1)} cm</strong>
+          </li>
+        </ul>
       </div>
       <div className="tf-workbench__table">
         {line !== undefined ? (
@@ -150,24 +163,18 @@ export function UnpickStage(props: StageProps) {
             {feedback.text}
           </span>
         ) : null}
-      </div>
-      <div className="tf-workbench__status">
-        <div className="tf-progress" aria-label={`${stitchesOut} of ${stitchesTotal} stitches out`}>
+        <div
+          className="tf-progress tf-workbench__meter"
+          aria-label={`${stitchesOut} of ${stitchesTotal} stitches out`}
+        >
           <span style={{ width: `${(100 * stitchesOut) / Math.max(1, stitchesTotal)}%` }} />
         </div>
-        <span>
-          {stitchesOut}/{stitchesTotal} stitches out · {snags} {snags === 1 ? "snag" : "snags"} · safe pull up
-          to {limit.toFixed(1)} cm
-        </span>
-        <AssistSwitch
-          label="Assist snip"
-          detail={`Tap to pop stitches. Counts up to ${Math.round(ASSIST_UNPICK_CAP * 100)}%.`}
-          checked={settings.assistUnpick}
-          onChange={(assistUnpick) => updateSettings({ assistUnpick })}
-        />
-        {snags >= 3 && !settings.assistUnpick ? <p className="tf-hint">{HINTS.assist}</p> : null}
-        <p className="tf-safety">{HINTS.tools}</p>
       </div>
+      {snags >= 3 && !settings.assistUnpick ? <p className="tf-hint">{HINTS.assist}</p> : null}
+      <p className="tf-safety">
+        <Icon name="shield" size={18} />
+        {HINTS.tools}
+      </p>
       <StageFooter {...props} hint="Every stitch is out. The panels lie flat!" />
     </div>
   );

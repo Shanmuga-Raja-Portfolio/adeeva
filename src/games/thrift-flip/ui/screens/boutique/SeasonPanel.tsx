@@ -63,14 +63,23 @@ export function SeasonPanel({ state, onOpenShowcase }: SeasonPanelProps) {
               key={day}
               className={`tf-season__day tf-season__day--${dayKind(day)}${day === today ? " is-today" : ""}${day < today ? " is-past" : ""}`}
               title={`Day ${day}`}
-            />
+            >
+              {day}
+            </li>
           );
         })}
       </ol>
-      <p className="tf-season__legend">
-        <span className="tf-key tf-key--till" /> Till Day <span className="tf-key tf-key--swap" /> Swap &amp;
-        Mend <span className="tf-key tf-key--show" /> Showcase
-      </p>
+      <ul className="tf-season__legend">
+        <li>
+          <span className="tf-key tf-key--till" /> Till Day
+        </li>
+        <li>
+          <span className="tf-key tf-key--swap" /> Swap &amp; Mend
+        </li>
+        <li>
+          <span className="tf-key tf-key--show" /> Showcase
+        </li>
+      </ul>
       {staged === null ? (
         <p className="ad-muted">
           The Showcase banner reads <strong>&ldquo;{season.banner}&rdquo;</strong>. Up to three pieces from

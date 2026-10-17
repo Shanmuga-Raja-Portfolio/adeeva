@@ -4,6 +4,7 @@ export interface BoutiqueBackdropProps {
   readonly className?: string | undefined;
   readonly signName?: string | undefined;
   readonly dusk?: boolean | undefined;
+  readonly view?: string | undefined;
   readonly windowColours?: readonly string[] | undefined;
 }
 
@@ -86,6 +87,7 @@ export function BoutiqueBackdrop({
   signName = "Second Bloom",
   dusk = false,
   windowColours = DEFAULT_WINDOW,
+  view = "0 0 1280 720",
 }: BoutiqueBackdropProps) {
   const id = useSvgId("boutique");
   const stripes = Array.from({ length: 22 }, (_, index) => index);
@@ -94,7 +96,7 @@ export function BoutiqueBackdrop({
       className={
         className ? `tf-backdrop tf-boutique-backdrop ${className}` : "tf-backdrop tf-boutique-backdrop"
       }
-      viewBox="0 0 1280 720"
+      viewBox={view}
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
       focusable="false"

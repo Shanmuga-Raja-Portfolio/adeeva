@@ -5,7 +5,6 @@ import { Icon } from "../../../../../../ui/kit/IconSet";
 import { AssistSwitch } from "../../../../../adeeva/ui/screens/craft/AssistSwitch";
 import { HINTS } from "../../../../content/hint";
 import {
-  ASSIST_CLEAN_CAP,
   cellThreshold,
   clearedCells,
   findById,
@@ -18,6 +17,7 @@ import {
 import { StageFooter } from "../StageFooter";
 import type { StageProps } from "../stageProps";
 import { StainScrubber } from "./StainScrubber";
+import { SoapDish, WashTub } from "../../../art/WashKit";
 import "../workbench.css";
 
 interface StainEntry {
@@ -47,34 +47,60 @@ export function CleanStage(props: StageProps) {
           <Icon name="sparkle" size={18} />
           {HINTS.clean}
         </p>
+        <AssistSwitch
+          label="Assist soak"
+          detail="Soaks all stains. Scores a bit less."
+          checked={settings.assistClean}
+          onChange={(assistClean) => updateSettings({ assistClean })}
+        />
       </div>
-      <div className="tf-workbench__lines" role="tablist" aria-label="Stains">
-        {stains.map((entry, index) => {
-          const finished = isStainDone(state, run, entry.owned, entry.stain);
-          const cleared = clearedCells(
-            state,
-            entry.owned,
-            entry.stain,
-            stainWork(run, entry.owned.id, entry.stain),
-          );
-          return (
-            <button
-              key={entry.key}
-              type="button"
-              role="tab"
-              aria-selected={entry.key === current?.key}
-              className={finished ? "tf-line-chip tf-line-chip--done" : "tf-line-chip"}
-              onClick={() => setChosen(entry.key)}
-              data-stain-chip={index}
-            >
-              {finished ? <Icon name="check" size={14} /> : null}
-              {findById(entry.owned.findId).name} · stain {index + 1} ·{" "}
-              {run.soaked ? "soaked" : `${cleared}/${entry.stain.cells}`}
-            </button>
-          );
-        })}
+      <div className="tf-workbench__row">
+        <div className="tf-workbench__lines" role="tablist" aria-label="Stains">
+          {stains.map((entry, index) => {
+            const finished = isStainDone(state, run, entry.owned, entry.stain);
+            const cleared = clearedCells(
+              state,
+              entry.owned,
+              entry.stain,
+              stainWork(run, entry.owned.id, entry.stain),
+            );
+            return (
+              <button
+                key={entry.key}
+                type="button"
+                role="tab"
+                aria-selected={entry.key === current?.key}
+                className={finished ? "tf-line-chip tf-line-chip--done" : "tf-line-chip"}
+                onClick={() => setChosen(entry.key)}
+                data-stain-chip={index}
+              >
+                {finished ? <Icon name="check" size={14} /> : null}
+                {run.finds.length > 1 ? `${findById(entry.owned.findId).name} · ` : ""}Stain {index + 1} ·{" "}
+                {run.soaked ? "soaked" : `${cleared}/${entry.stain.cells}`}
+              </button>
+            );
+          })}
+        </div>
+        <div className="tf-workbench__tally">
+          <div
+            className="tf-progress tf-progress--mint"
+            aria-label={`${done} of ${stains.length} stains done`}
+          >
+            <span style={{ width: `${(100 * done) / Math.max(1, stains.length)}%` }} />
+          </div>
+          <span>
+            {done}/{stains.length} stains done
+          </span>
+          {settings.assistClean && !run.soaked ? (
+            <Button icon="sparkle" onClick={() => dispatch({ type: "soakStains" })} data-testid="soak">
+              Soak it
+            </Button>
+          ) : null}
+        </div>
       </div>
-      <div className="tf-workbench__table">
+      <div className="tf-workbench__table tf-workbench__table--wash">
+        <WashTub className="tf-wash tf-wash--tub" />
+        <SoapDish className="tf-wash tf-wash--soap" />
         {run.soaked ? (
           <div className="tf-soaked" role="status">
             <span className="tf-soaked__tub" aria-hidden="true">
@@ -105,26 +131,10 @@ export function CleanStage(props: StageProps) {
           />
         ) : null}
       </div>
-      <div className="tf-workbench__status">
-        <div className="tf-progress tf-progress--mint" aria-label={`${done} of ${stains.length} stains done`}>
-          <span style={{ width: `${(100 * done) / Math.max(1, stains.length)}%` }} />
-        </div>
-        <span>
-          {done}/{stains.length} stains done
-        </span>
-        <AssistSwitch
-          label="Assist soak"
-          detail={`One tap soaks every stain. Counts up to ${Math.round(ASSIST_CLEAN_CAP * 100)}%.`}
-          checked={settings.assistClean}
-          onChange={(assistClean) => updateSettings({ assistClean })}
-        />
-        {settings.assistClean && !run.soaked ? (
-          <Button icon="sparkle" onClick={() => dispatch({ type: "soakStains" })} data-testid="soak">
-            Soak it
-          </Button>
-        ) : null}
-        <p className="tf-safety">{HINTS.safety}</p>
-      </div>
+      <p className="tf-safety">
+        <Icon name="shield" size={18} />
+        {HINTS.safety}
+      </p>
       <StageFooter {...props} hint="Fresh and clean! Time to lay out the pieces." />
     </div>
   );

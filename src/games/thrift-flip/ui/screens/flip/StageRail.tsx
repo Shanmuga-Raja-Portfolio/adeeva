@@ -22,7 +22,7 @@ export function StageRail({ state, run, dispatch }: StageRailProps) {
           const content = (
             <>
               <span className="tf-rail__dot" aria-hidden="true">
-                {done ? <Icon name="check" size={14} /> : index + 1}
+                {done ? <Icon name="check" size={14} /> : current ? index + 1 : null}
               </span>
               <span className="tf-rail__label">{STAGE_LABELS[stage]}</span>
             </>

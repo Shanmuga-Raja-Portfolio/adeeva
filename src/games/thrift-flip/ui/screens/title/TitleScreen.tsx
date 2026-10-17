@@ -2,15 +2,14 @@ import { useState } from "react";
 import { Button } from "../../../../../ui/kit/Button";
 import { Dialog } from "../../../../../ui/kit/Dialog";
 import { Icon } from "../../../../../ui/kit/IconSet";
-import { FINDS } from "../../../content/find";
 import type { GameState } from "../../../core";
 import { Awning } from "../../art/Awning";
-import { FindArt } from "../../art/FindArt";
 import { StallBackdrop } from "../../art/StallBackdrop";
 import { Wordmark } from "../../art/Wordmark";
 import { thriftSlots, type SaveSlotId, type SlotRead } from "../../thriftSlots";
 import { stallDayName } from "../stallDayName";
 import { SaveSlotCard } from "./SaveSlotCard";
+import { TitleStall } from "./TitleStall";
 import { slotSummary } from "../../../../../studio/slotSummary";
 import "./title.css";
 
@@ -29,8 +28,6 @@ type Pending =
   | { readonly kind: "pick-slot" }
   | { readonly kind: "overwrite"; readonly read: SlotRead }
   | { readonly kind: "delete"; readonly read: SlotRead };
-
-const RAIL = ["gingham-shirt", "tea-dress", "faded-jeans", "check-coat"] as const;
 
 export function TitleScreen({
   slots,
@@ -99,16 +96,8 @@ export function TitleScreen({
               </div>
             </div>
           </div>
-          <div className="tf-title__rail" aria-hidden="true">
-            <div className="tf-title__pole" />
-            {RAIL.map((findId, index) => {
-              const find = FINDS.find((entry) => entry.id === findId);
-              return find === undefined ? null : (
-                <div key={findId} className="tf-title__hanger" style={{ animationDelay: `${index * 0.4}s` }}>
-                  <FindArt find={find} size={118} />
-                </div>
-              );
-            })}
+          <div className="tf-title__rail">
+            <TitleStall owner={resume !== null && resume.kind === "ready" ? resume.state.profile : null} />
           </div>
         </section>
         {canSave ? null : (

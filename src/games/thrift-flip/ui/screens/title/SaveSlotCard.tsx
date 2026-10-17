@@ -19,7 +19,17 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
   if (read.kind === "empty") {
     return (
       <article className="tf-slot tf-slot--empty" data-testid={`slot-${read.slot}`}>
-        <PriceTag tone="cream" tilt={-2}>
+        <PriceTag tone="cream" tilt={0}>
+          <svg className="tf-slot__hanger" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <path
+              d="M32 10 q7 0 7 6 q0 5 -7 7 v5 M6 48 L32 30 L58 48 Z"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={4}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
           <span className="ad-eyebrow">{label}</span>
           <p className="tf-slot__empty-text">An empty hanger, waiting for a story.</p>
           <Button variant="secondary" size="sm" onClick={onNewGame}>
@@ -56,7 +66,7 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
   const { state } = read;
   return (
     <article className="tf-slot tf-slot--ready" data-testid={`slot-${read.slot}`}>
-      <PriceTag tilt={read.slot % 2 === 0 ? 1.5 : -1.5}>
+      <PriceTag tone="cream" tilt={read.slot % 2 === 0 ? 1 : -1}>
         <div className="tf-slot__head">
           <Avatar
             look={state.profile.look}
@@ -72,26 +82,26 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
               {difficultyById(state.profile.difficulty).name}
             </span>
             <span className="tf-slot__place" data-testid="slot-place">
+              <Icon name={state.boutique === null ? "bag" : "home"} size={14} />
               {state.boutique === null
                 ? "Market stall"
                 : `Boutique · ${signById(state.boutique.signId).name}`}
             </span>
           </div>
-        </div>
-        <div className="tf-slot__stats">
-          <StatChip kind="coins" value={state.coins} />
-          <StatChip kind="reputation" value={state.reputation} />
+          <div className="tf-slot__stats">
+            <StatChip kind="coins" value={state.coins} />
+            <StatChip kind="reputation" value={state.reputation} />
+          </div>
         </div>
         <div className="tf-slot__actions">
           <Button
-            variant="ghost"
-            size="sm"
+            variant="secondary"
             onClick={onNewGame}
             aria-label={`Start a new game in slot ${read.slot}`}
           >
-            New game
+            Start over
           </Button>
-          <Button size="sm" onClick={onLoad} aria-label={`Load slot ${read.slot}`}>
+          <Button icon="hanger" onClick={onLoad} aria-label={`Load slot ${read.slot}`}>
             Load
           </Button>
         </div>

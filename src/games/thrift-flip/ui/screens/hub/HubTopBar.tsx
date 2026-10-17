@@ -26,7 +26,7 @@ export function HubTopBar({ state, onOpenSettings, onExit }: HubTopBarProps) {
           />
           <strong>{state.profile.name}</strong>
         </div>
-        <div className="tf-hub-top__stats">
+        <div className="tf-hub-top__stats" role="group" aria-label="Your purse">
           <span data-testid="stat-coins">
             <StatChip kind="coins" value={state.coins} showLabel />
           </span>
@@ -34,10 +34,16 @@ export function HubTopBar({ state, onOpenSettings, onExit }: HubTopBarProps) {
           <StatChip kind="buzz" value={state.buzz} showLabel />
         </div>
         <div className="tf-hub-top__actions">
-          <Button variant="ghost" size="sm" onClick={onOpenSettings}>
-            Settings
-          </Button>
-          <Button variant="secondary" size="sm" onClick={onExit} data-testid="save-exit">
+          <Button
+            variant="ghost"
+            size="sm"
+            icon="gear"
+            className="tf-hub-top__icon"
+            onClick={onOpenSettings}
+            aria-label="Settings"
+            title="Settings"
+          />
+          <Button variant="ghost" size="sm" icon="home" onClick={onExit} data-testid="save-exit">
             Save & exit
           </Button>
         </div>

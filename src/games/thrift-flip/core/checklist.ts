@@ -26,6 +26,12 @@ function names(ids: readonly ColourId[]): string {
   return ids.map((id) => colourById(id).name).join(", ");
 }
 
+function either(ids: readonly ColourId[]): string {
+  const all = ids.map((id) => colourById(id).name);
+  const last = all.pop();
+  return all.length === 0 ? (last ?? "") : `${all.join(", ")} or ${last ?? ""}`;
+}
+
 export function checklist(state: GameState): ChecklistItem[] {
   const run = state.activeRun;
   const brief = run?.brief ?? null;
@@ -59,7 +65,7 @@ export function checklist(state: GameState): ChecklistItem[] {
   if (brief.favouredColours.length > 0)
     items.push({
       id: "favoured-colours",
-      label: `Bonus for ${names(brief.favouredColours)}`,
+      label: `Bonus: use ${either(brief.favouredColours)}`,
       status: colours.some((colour) => brief.favouredColours.includes(colour)) ? "met" : "pending",
     });
   for (const requirement of brief.requiredFinishes) {

@@ -3,7 +3,16 @@ import { DOLL_WIDTH } from "./Croquis";
 import { useSvgId } from "../useSvgId";
 
 export type AvatarPose =
-  "rest" | "poised" | "poised-right" | "cheer" | "wave" | "graceful" | "graceful-right" | "present";
+  | "rest"
+  | "poised"
+  | "poised-right"
+  | "cheer"
+  | "wave"
+  | "graceful"
+  | "graceful-right"
+  | "present"
+  | "point"
+  | "chat";
 
 interface ArmBend {
   readonly shoulder: number;
@@ -27,6 +36,8 @@ const LOOSE: ArmBend = { shoulder: 6, elbow: -9 };
 const SWAY: ArmBend = { shoulder: 15, elbow: -30 };
 const WAVE: ArmBend = { shoulder: 42, elbow: 138 };
 const OFFER: ArmBend = { shoulder: 30, elbow: 36 };
+const REACH: ArmBend = { shoulder: 62, elbow: 14 };
+const TALK: ArmBend = { shoulder: 22, elbow: 112 };
 
 const POSES: Readonly<Record<Exclude<AvatarPose, "rest">, PoseAngles>> = {
   poised: { left: HAND_ON_HIP, right: RELAXED },
@@ -36,6 +47,8 @@ const POSES: Readonly<Record<Exclude<AvatarPose, "rest">, PoseAngles>> = {
   graceful: { left: SWAY, right: LOOSE },
   "graceful-right": { left: LOOSE, right: SWAY },
   present: { left: HAND_ON_HIP, right: OFFER },
+  point: { left: SWAY, right: REACH },
+  chat: { left: HAND_ON_HIP, right: TALK },
 };
 
 interface SideProps {

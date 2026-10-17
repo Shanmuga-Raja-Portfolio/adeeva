@@ -23,7 +23,7 @@ export function StoryCardArt({ piece, card, className }: StoryCardArtProps) {
           <FindArt
             find={findById(card.findId)}
             grade="tired"
-            size={86}
+            size={110}
             title={`${findById(card.findId).name}, as it was found`}
           />
         )}

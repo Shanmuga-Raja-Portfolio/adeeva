@@ -52,6 +52,7 @@ export function ShowHud({
             <li
               key={sceneLabel(segment)}
               className={index === activePip ? "is-active" : index < activePip ? "is-done" : ""}
+              data-kind={segment.kind}
             >
               <span className="ad-visually-hidden">{sceneLabel(segment)}</span>
             </li>

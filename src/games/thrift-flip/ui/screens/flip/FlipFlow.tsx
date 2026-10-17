@@ -4,6 +4,7 @@ import type { Action, FlipRun, GameState } from "../../../core";
 import { Awning } from "../../art/Awning";
 import { BriefChecklist } from "./BriefChecklist";
 import { BriefStage } from "./BriefStage";
+import { ClientCorner } from "./ClientCorner";
 import { CleanStage } from "./clean/CleanStage";
 import { CutStage } from "./cut/CutStage";
 import { DesignStage } from "./DesignStage";
@@ -79,7 +80,10 @@ export function FlipFlow({ state, dispatch, onExit }: FlipFlowProps) {
         <section className="tf-flip__stage" key={run.stage} aria-label={`${run.stage} step`}>
           <StageView state={state} run={run} dispatch={dispatch} onExit={onExit} />
         </section>
-        <BriefChecklist state={state} run={run} />
+        <div className="tf-flip__side">
+          <ClientCorner state={state} run={run} />
+          <BriefChecklist state={state} run={run} />
+        </div>
       </div>
     </main>
   );

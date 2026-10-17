@@ -51,19 +51,25 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
         </span>
         <h1>{headline(run, name, happy)}</h1>
       </header>
-      <BeforeAfter run={run} main={mainFind(run)} name={name} />
       <div className="tf-results__grid">
+        <BeforeAfter run={run} main={mainFind(run)} name={name} />
         <section className="tf-results__score" aria-label="Score">
+          <span className="tf-results__score-label" aria-hidden="true">
+            Your score
+          </span>
           <span className="tf-results__number" aria-label={`Score ${evaluation.score} out of 100`}>
             {score}
           </span>
-          <StarRating stars={evaluation.stars} size={22} />
+          <StarRating stars={evaluation.stars} size={30} />
           {ticket ? (
             <TagPill tone="sage">
               <Icon name="heart" size={12} /> Things saved +1
             </TagPill>
           ) : (
-            <LeafMeter leaves={evaluation.leaves.leaves} />
+            <div className="tf-results__leaves">
+              <span>Kind to the planet</span>
+              <LeafMeter leaves={evaluation.leaves.leaves} size={34} />
+            </div>
           )}
           {reward?.leafPick === true ? (
             <TagPill tone="sage">
@@ -75,7 +81,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
               <Avatar
                 look={client.look}
                 mood={happy ? "delighted" : "thinking"}
-                size={72}
+                size={64}
                 frameColour="#e2f4ea"
                 title={client.name}
               />
@@ -93,8 +99,31 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
               Price it fairly on {boutique ? "Till Day" : "Stall Day"}. Fair prices bring regulars back.
             </p>
           )}
+          {reward !== null ? (
+            <div className="tf-results__totals">
+              <span className="tf-results__total tf-results__total--coins">
+                <Icon name="coin" size={20} /> {reward.coins >= 0 ? "+" : ""}
+                {reward.coins}
+              </span>
+              <span className="tf-results__total tf-results__total--rep">
+                <Icon name="star" size={20} /> {reward.reputation >= 0 ? "+" : ""}
+                {reward.reputation}
+              </span>
+              <span className="tf-results__total tf-results__total--buzz">
+                <Icon name="megaphone" size={20} /> +{reward.buzz}
+              </span>
+            </div>
+          ) : null}
+          <Button size="lg" icon="home" onClick={onExit} data-testid="results-exit">
+            {boutique ? "Back to the shop" : "Back to the stall"}
+          </Button>
         </section>
         <section className="tf-results__details" aria-label="How it went">
+          <h2 className="tf-results__report">
+            {evaluation.criteria.length > 0
+              ? `${evaluation.criteria.filter((criterion) => criterion.passed).length} of ${evaluation.criteria.length} wishes met`
+              : "How your piece came out"}
+          </h2>
           {evaluation.criteria.length > 0 ? (
             <ul className="tf-results__criteria">
               {evaluation.criteria.map((criterion) => (
@@ -105,7 +134,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
                   }
                 >
                   <span className="tf-criterion__mark" aria-hidden="true">
-                    {criterion.passed ? <Icon name="check" size={14} /> : "!"}
+                    {criterion.passed ? <Icon name="check" size={16} /> : "!"}
                   </span>
                   <span>
                     <strong>{criterion.label}</strong>
@@ -119,7 +148,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
               {QUALITY_ORDER.map((term) => (
                 <li key={term} className="tf-criterion tf-criterion--pass">
                   <span className="tf-criterion__mark" aria-hidden="true">
-                    <Icon name="star" size={14} />
+                    <Icon name="star" size={16} />
                   </span>
                   <span>
                     <strong>{QUALITY_LABELS[term]}</strong>
@@ -150,28 +179,10 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
                   </li>
                 ))}
               </ul>
-              <div className="tf-results__totals">
-                <span className="tf-results__total tf-results__total--coins">
-                  <Icon name="coin" size={18} /> {reward.coins >= 0 ? "+" : ""}
-                  {reward.coins}
-                </span>
-                <span className="tf-results__total">
-                  <Icon name="star" size={18} /> {reward.reputation >= 0 ? "+" : ""}
-                  {reward.reputation}
-                </span>
-                <span className="tf-results__total">
-                  <Icon name="megaphone" size={18} /> +{reward.buzz}
-                </span>
-              </div>
             </div>
           ) : null}
         </section>
       </div>
-      <footer className="tf-results__foot">
-        <Button size="lg" icon="home" onClick={onExit} data-testid="results-exit">
-          {boutique ? "Back to the shop" : "Back to the stall"}
-        </Button>
-      </footer>
     </div>
   );
 }

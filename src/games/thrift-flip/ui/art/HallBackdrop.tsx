@@ -1,6 +1,7 @@
 import type { RunwayLightId } from "../../../adeeva/content/runwayLight";
 import { RUNWAY_VIEW } from "../../../adeeva/ui/art/runwayGeometry";
 import { useSvgId } from "../../../../ui/art/useSvgId";
+import { HallAudience } from "./HallAudience";
 
 export interface HallBackdropProps {
   readonly banner: string;
@@ -12,7 +13,6 @@ export interface HallBackdropProps {
 }
 
 const { width: W, height: H, horizon: HORIZON, farFeet: FAR } = RUNWAY_VIEW;
-const CROWD = ["#7b7fd1", "#e57a8f", "#8fcfb2", "#f6b04e", "#9cb59a", "#b9a7dc", "#e58c78", "#6fa8c9"];
 
 function runnerAt(y: number): { readonly left: number; readonly right: number } {
   const t = (y - FAR) / (H - FAR);
@@ -94,53 +94,22 @@ function FairyLights({
   );
 }
 
-function Seat({
-  x,
-  y,
-  s,
-  colour,
-}: {
-  readonly x: number;
-  readonly y: number;
-  readonly s: number;
-  readonly colour: string;
-}) {
-  return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <circle cx={0} cy={-62} r={17} fill={colour} opacity={0.95} />
-      <path d="M-26 -38 Q0 -50 26 -38 L30 6 L-30 6 Z" fill={colour} opacity={0.85} />
-      <rect x={-30} y={-6} width={60} height={34} rx={6} fill="#c99f72" stroke="#a07a52" strokeWidth={3} />
-      <path d="M-24 28 L-30 64 M24 28 L30 64" stroke="#8a6a4a" strokeWidth={5} strokeLinecap="round" />
-    </g>
-  );
-}
-
-function Crowd() {
-  const rows = [
-    { y: 520, s: 0.62, xs: [140, 260, 380, 520] },
-    { y: 640, s: 0.8, xs: [80, 230, 380] },
-    { y: 790, s: 1.02, xs: [40, 220] },
-  ];
+function Curtain({ id, colour }: { readonly id: string; readonly colour: string }) {
+  const left = W / 2 - 280;
   return (
     <g>
-      {rows.flatMap((row, rowIndex) =>
-        row.xs.flatMap((x, index) => [
-          <Seat
-            key={`l-${rowIndex}-${index}`}
-            x={x}
-            y={row.y}
-            s={row.s}
-            colour={CROWD[(rowIndex * 3 + index) % CROWD.length] ?? "#7b7fd1"}
-          />,
-          <Seat
-            key={`r-${rowIndex}-${index}`}
-            x={W - x}
-            y={row.y}
-            s={row.s}
-            colour={CROWD[(rowIndex * 5 + index + 2) % CROWD.length] ?? "#e57a8f"}
-          />,
-        ]),
-      )}
+      <rect x={left} y={292} width={560} height={150} fill={`url(#${id}-velvet)`} />
+      <rect x={left} y={292} width={560} height={150} fill={colour} opacity={0.28} />
+      <path
+        d={`M${left - 10} 290 H${left + 570} V316 ${Array.from({ length: 10 }, (_, index) => {
+          const x = left + 570 - index * 58;
+          return `Q${x - 29} 336 ${x - 58} 316`;
+        }).join(" ")} Z`}
+        fill={colour}
+      />
+      <path d={`M${left - 10} 290 H${left + 570}`} stroke="#c9a227" strokeWidth={6} />
+      <path d={`M${left - 10} 318 H${left + 570}`} stroke="#c9a227" strokeWidth={2} opacity={0.7} />
+      <circle cx={W / 2} cy={392} r={110} fill={`url(#${id}-spot)`} />
     </g>
   );
 }
@@ -171,6 +140,23 @@ export function HallBackdrop({
           <stop offset="0" stopColor="#efe0c4" />
           <stop offset="1" stopColor="#e3cfa8" />
         </linearGradient>
+        <pattern id={`${id}-paper`} width={60} height={60} patternUnits="userSpaceOnUse">
+          <rect width={30} height={60} fill="#ffffff" opacity={0.08} />
+          <path d="M45 18 l4 8 l-4 8 l-4 -8 Z" fill="#c9a77b" opacity={0.35} />
+          <circle cx={15} cy={48} r={2.5} fill="#c9a77b" opacity={0.35} />
+        </pattern>
+        <radialGradient id={`${id}-sconce`}>
+          <stop offset="0" stopColor="#fff1c9" stopOpacity={0.75} />
+          <stop offset="1" stopColor="#fff1c9" stopOpacity={0} />
+        </radialGradient>
+        <radialGradient id={`${id}-vignette`} cx="0.5" cy="0.5" r="0.75">
+          <stop offset="0.55" stopColor="#1b1020" stopOpacity={0} />
+          <stop offset="1" stopColor="#1b1020" stopOpacity={0.45} />
+        </radialGradient>
+        <linearGradient id={`${id}-banner`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity={0.18} />
+          <stop offset="1" stopColor="#3b1a2a" stopOpacity={0.28} />
+        </linearGradient>
         <linearGradient id={`${id}-floor`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#b8875a" />
           <stop offset="1" stopColor="#8f6440" />
@@ -179,12 +165,35 @@ export function HallBackdrop({
           <stop offset="0" stopColor="#2c3566" />
           <stop offset="1" stopColor="#6f5f9a" />
         </linearGradient>
+        <linearGradient
+          id={`${id}-velvet`}
+          x1={0}
+          y1={0}
+          x2={40}
+          y2={0}
+          gradientUnits="userSpaceOnUse"
+          spreadMethod="repeat"
+        >
+          <stop offset="0" stopColor="#5a1f2e" />
+          <stop offset="0.5" stopColor="#8a3346" />
+          <stop offset="1" stopColor="#5a1f2e" />
+        </linearGradient>
         <radialGradient id={`${id}-spot`} cx="0.5" cy="0.55" r="0.5">
           <stop offset="0" stopColor="#fff6dc" stopOpacity={0.55} />
           <stop offset="1" stopColor="#fff6dc" stopOpacity={0} />
         </radialGradient>
       </defs>
       <rect width={W} height={HORIZON + 30} fill={`url(#${id}-wall)`} />
+      <rect width={W} height={300} fill={`url(#${id}-paper)`} />
+      <rect width={W} height={22} fill="#c9a77b" />
+      <rect y={22} width={W} height={6} fill="#a07a52" />
+      {[90, 350, 640, 960, 1250, 1510].map((x) => (
+        <g key={x}>
+          <ellipse cx={x} cy={180} rx={90} ry={120} fill={`url(#${id}-sconce)`} />
+          <path d={`M${x - 10} 196 L${x + 10} 196 L${x + 6} 214 L${x - 6} 214 Z`} fill="#b8902a" />
+          <path d={`M${x - 16} 170 Q${x} 150 ${x + 16} 170 L${x + 10} 196 L${x - 10} 196 Z`} fill="#fff1c9" />
+        </g>
+      ))}
       {[180, 470, 1030, 1320].map((x) => (
         <g key={x}>
           <path
@@ -202,17 +211,34 @@ export function HallBackdrop({
         </g>
       ))}
       <rect y={300} width={W} height={HORIZON + 30 - 300} fill="#b98a5c" />
+      <rect y={296} width={W} height={10} fill="#d9b083" />
+      <rect y={304} width={W} height={4} fill="#7a5634" opacity={0.5} />
       {Array.from({ length: 17 }, (_, index) => (
-        <rect
-          key={index}
-          x={index * 100 + 10}
-          y={312}
-          width={80}
-          height={96}
-          rx={6}
-          fill="#a87a4e"
-          opacity={0.6}
-        />
+        <g key={index}>
+          <rect x={index * 100 + 10} y={318} width={80} height={92} rx={6} fill="#a87a4e" />
+          <rect
+            x={index * 100 + 10}
+            y={318}
+            width={80}
+            height={92}
+            rx={6}
+            fill="none"
+            stroke="#d9b083"
+            strokeWidth={3}
+            opacity={0.7}
+          />
+          <rect
+            x={index * 100 + 14}
+            y={322}
+            width={72}
+            height={84}
+            rx={4}
+            fill="none"
+            stroke="#6b4a2b"
+            strokeWidth={2}
+            opacity={0.4}
+          />
+        </g>
       ))}
       <path d={`M0 ${HORIZON + 30} L${W} ${HORIZON + 30} L${W} ${H} L0 ${H} Z`} fill={`url(#${id}-floor)`} />
       {Array.from({ length: 21 }, (_, index) => {
@@ -227,12 +253,16 @@ export function HallBackdrop({
           />
         );
       })}
-      <rect x={W / 2 - 260} y={300} width={520} height={130} rx={8} fill="#7a5233" opacity={0.25} />
+      <Curtain id={id} colour={bannerColour} />
       <Runner palette={palette} />
       <g transform={`translate(${W / 2} 40)`}>
         <path
           d="M-430 0 L430 0 L430 110 Q408 132 386 110 Q364 132 342 110 L-342 110 Q-364 132 -386 110 Q-408 132 -430 110 Z"
           fill={bannerColour}
+        />
+        <path
+          d="M-430 0 L430 0 L430 110 Q408 132 386 110 Q364 132 342 110 L-342 110 Q-364 132 -386 110 Q-408 132 -430 110 Z"
+          fill={`url(#${id}-banner)`}
         />
         <path
           d="M-418 12 L418 12 L418 102 L-418 102 Z"
@@ -241,16 +271,30 @@ export function HallBackdrop({
           strokeWidth={4}
           strokeDasharray="12 8"
         />
+        <rect x={-300} y={22} width={600} height={74} rx={37} fill="#4a1f33" opacity={0.88} />
+        <rect
+          x={-292}
+          y={30}
+          width={584}
+          height={58}
+          rx={29}
+          fill="none"
+          stroke="#f6d36b"
+          strokeWidth={3}
+          opacity={0.8}
+        />
         <text
           x={0}
-          y={74}
+          y={78}
           textAnchor="middle"
           fontFamily="'Rockwell', 'Roboto Slab', Georgia, serif"
-          fontSize={54}
+          fontSize={52}
           fontWeight={700}
-          fill="#fffaf0"
-          stroke="#00000022"
-          strokeWidth={2}
+          fill="#fff4d6"
+          stroke="#2b0f1e"
+          strokeWidth={4}
+          strokeLinejoin="round"
+          paintOrder="stroke"
         >
           {banner}
         </text>
@@ -258,8 +302,9 @@ export function HallBackdrop({
       </g>
       <FairyLights y={26} sag={46} phase={0} />
       <FairyLights y={190} sag={40} phase={1} />
-      <Crowd />
+      <HallAudience />
       <rect width={W} height={H} fill={tint} opacity={light === "spotlight" ? 0.32 : 0.1} />
+      <rect width={W} height={H} fill={`url(#${id}-vignette)`} />
       {light === "spotlight" ? <rect width={W} height={H} fill={`url(#${id}-spot)`} /> : null}
     </svg>
   );

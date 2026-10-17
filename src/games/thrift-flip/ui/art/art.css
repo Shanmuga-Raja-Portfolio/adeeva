@@ -95,9 +95,9 @@
 }
 
 .tf-bubble {
-  fill: rgba(255, 255, 255, 0.85);
-  stroke: rgba(143, 207, 178, 0.9);
-  stroke-width: 0.25;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 0.14;
+  filter: drop-shadow(0 0.15px 0.2px rgba(59, 42, 28, 0.35));
   transform-box: fill-box;
   transform-origin: center;
   animation: tf-float-up 900ms ease-out infinite;
@@ -206,4 +206,46 @@
 .tf-shopper--busy {
   transform-box: fill-box;
   animation: tf-sway 2.8s ease-in-out infinite;
+}
+
+.tf-idle {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: tf-idle 5.2s ease-in-out infinite;
+}
+
+.tf-figure--far {
+  filter: saturate(0.78) brightness(1.04) contrast(0.92);
+}
+
+.tf-passerby {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  opacity: 0.78;
+  filter: saturate(0.7);
+  animation: tf-stroll 1.8s ease-in-out infinite;
+}
+
+.tf-mote {
+  animation: tf-twinkle 3.6s ease-in-out infinite;
+}
+
+@keyframes tf-idle {
+  0%,
+  100% {
+    transform: rotate(0deg) scaleY(1);
+  }
+  50% {
+    transform: rotate(0.8deg) scaleY(1.012);
+  }
+}
+
+@keyframes tf-stroll {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }

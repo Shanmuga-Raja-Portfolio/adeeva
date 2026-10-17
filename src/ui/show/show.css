@@ -222,6 +222,12 @@
   transition: background var(--duration-base);
 }
 
+.ad-show__pips li[data-kind="finale"],
+.ad-show__pips li[data-kind="bow"] {
+  width: 10px;
+  border-radius: 50%;
+}
+
 .ad-show__pips li.is-done {
   background: rgba(255, 248, 240, 0.8);
 }

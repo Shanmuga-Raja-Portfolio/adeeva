@@ -1,6 +1,6 @@
 .tf-finish {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
   gap: var(--space-4);
   align-items: start;
 }
@@ -16,9 +16,18 @@
 
 .tf-finish__stage {
   padding: var(--space-3);
-  border-radius: 28px;
-  background: radial-gradient(circle at 50% 35%, #fff8ec, transparent 70%), var(--tf-kraft);
-  border: 2px dashed rgba(160, 122, 82, 0.5);
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 38%, rgba(255, 252, 240, 0.95), transparent 70%),
+    radial-gradient(ellipse 55% 12% at 50% 86%, rgba(59, 42, 28, 0.22), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 18px, transparent 18px 44px) top / 100% 70%
+      no-repeat,
+    linear-gradient(180deg, #cfe7dc 0 70%, #a8784b 70% 71.5%, #d9b48a 71.5% 100%);
+  border: 6px solid #a07a52;
+  box-shadow:
+    inset 0 0 40px rgba(91, 58, 30, 0.25),
+    0 3px 0 #7a5634,
+    var(--shadow-md);
 }
 
 .tf-finish__svg {
@@ -70,9 +79,16 @@
   border: 1px solid var(--paper-edge);
 }
 
+.tf-drawer .tf-tabs {
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
 .tf-drawer .tf-tab {
+  flex: 1 1 auto;
   font-size: var(--text-sm);
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-2);
+  white-space: nowrap;
 }
 
 .tf-drawer__panel {
@@ -86,7 +102,7 @@
 
 .tf-drawer__items {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
   gap: var(--space-2);
 }
 
@@ -94,13 +110,14 @@
   display: grid;
   justify-items: center;
   gap: 2px;
-  min-height: 96px;
-  padding: var(--space-2);
+  min-height: 88px;
+  padding: 6px var(--space-2);
   border-radius: 16px;
-  border: 2px dashed var(--paper-edge);
-  background: var(--tf-cream);
+  border: 2px solid var(--paper-edge);
+  background: linear-gradient(180deg, #fffaf0, var(--tf-cream));
+  box-shadow: 0 3px 0 var(--paper-edge);
   font: inherit;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 700;
   text-align: center;
   cursor: grab;
@@ -118,13 +135,27 @@
   cursor: not-allowed;
 }
 
+.tf-chip > svg:first-child {
+  box-sizing: content-box;
+  padding: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #ffffff, var(--tf-plate, #e9d4b2) 70%);
+  box-shadow:
+    inset 0 -2px 4px rgba(59, 42, 28, 0.2),
+    0 0 0 2px #fffaf0,
+    0 3px 6px rgba(59, 42, 28, 0.25);
+}
+
 .tf-chip small {
   display: inline-flex;
-  font-size: var(--text-xs);
   align-items: center;
-  gap: 2px;
-  font-weight: 600;
-  color: var(--ink-soft);
+  gap: 3px;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  background: #fff3c4;
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: #7a5a10;
 }
 
 .tf-chip--saved {
@@ -171,8 +202,8 @@
 
 .tf-finish__controls {
   display: grid;
-  gap: var(--space-2);
-  padding: var(--space-3);
+  gap: 6px;
+  padding: var(--space-2) var(--space-3) var(--space-3);
   border-radius: 20px;
   background: var(--tf-tangerine-soft);
 }
@@ -183,10 +214,26 @@
   gap: var(--space-2);
 }
 
-.tf-finish__buttons {
+.tf-finish__title {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
   gap: var(--space-2);
+  font-size: var(--text-md);
+  color: var(--tf-denim-deep);
+}
+
+.tf-finish__buttons {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.tf-finish__buttons .ad-button {
+  justify-content: center;
+  padding: 0 6px;
+  font-size: var(--text-sm);
+  white-space: nowrap;
 }
 
 .tf-finish__ghost {
@@ -195,14 +242,16 @@
   top: 0;
   z-index: 40;
   display: grid;
-  justify-items: center;
-  padding: var(--space-2);
-  border-radius: 14px;
-  background: rgba(255, 248, 236, 0.92);
-  box-shadow: var(--shadow-md);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: #b85a17;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--tf-tangerine);
+  background: rgba(255, 250, 240, 0.85);
+  box-shadow:
+    0 0 0 6px rgba(240, 138, 60, 0.25),
+    0 0 22px rgba(255, 214, 140, 0.9);
+  color: var(--tf-tangerine-deep);
   pointer-events: none;
 }
 

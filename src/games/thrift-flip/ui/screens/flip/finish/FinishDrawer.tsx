@@ -1,8 +1,8 @@
-import { useState, type PointerEvent } from "react";
+import { useState, type CSSProperties, type PointerEvent } from "react";
 import { colourById, type ColourId } from "../../../../../../engine/palette";
 import { FabricSwatch } from "../../../../../adeeva/ui/art/FabricSwatch";
 import { TrimBadge } from "../../../../../adeeva/ui/art/TrimArt";
-import { TRIM_IDS } from "../../../../../adeeva/content/trim";
+import { TRIM_IDS, type TrimId } from "../../../../../adeeva/content/trim";
 import { Icon } from "../../../../../../ui/kit/IconSet";
 import { COLOURED_MARK_IDS, MARKS, PAINT_COLOURS, PATCHES } from "../../../../content/finish";
 import {
@@ -28,9 +28,24 @@ export interface FinishDrawerProps {
   readonly onDragCancel: () => void;
 }
 
+const PLATES: Readonly<Record<TrimId, string>> = {
+  button: "#b9cbe3",
+  bow: "#fff0c4",
+  lace: "#c9b8ea",
+  "flower-applique": "#d6f0e2",
+  "sequin-patch": "#dfe2f4",
+  "ribbon-belt": "#fde0c8",
+  pearl: "#b7c6dc",
+  "star-applique": "#e6defa",
+};
+
+function plate(trimId: TrimId): CSSProperties {
+  return { "--tf-plate": PLATES[trimId] } as CSSProperties;
+}
+
 const TABS: readonly { readonly id: DrawerTab; readonly label: string }[] = [
-  { id: "patches", label: "Scrap patches" },
-  { id: "saved", label: "Saved buttons & bows" },
+  { id: "patches", label: "Patches" },
+  { id: "saved", label: "Saved trims" },
   { id: "tin", label: "Trim tin" },
   { id: "marks", label: "Mend & paint" },
 ];
@@ -136,11 +151,12 @@ export function FinishDrawer({
                   key={trimId}
                   type="button"
                   className="tf-chip tf-chip--saved"
+                  style={plate(trimId)}
                   data-finish={`saved-${trimId}`}
                   aria-label={`Saved ${trimById(trimId).name}`}
                   {...chipProps({ kind: "trim", trimId, source: "saved" })}
                 >
-                  <TrimBadge trimId={trimId} size={44} />
+                  <TrimBadge trimId={trimId} size={50} />
                   <span>{trimById(trimId).name}</span>
                   <small>
                     <Icon name="heart" size={12} /> {availableSavedTrims(state, trimId)} saved · free
@@ -159,15 +175,16 @@ export function FinishDrawer({
                 key={trimId}
                 type="button"
                 className="tf-chip"
+                style={plate(trimId)}
                 data-finish={`new-${trimId}`}
                 aria-label={`New ${trimById(trimId).name}, ${trimById(trimId).price} coins`}
                 disabled={trimById(trimId).price > state.coins}
                 {...chipProps({ kind: "trim", trimId, source: "new" })}
               >
-                <TrimBadge trimId={trimId} size={44} />
+                <TrimBadge trimId={trimId} size={50} />
                 <span>{trimById(trimId).name}</span>
                 <small>
-                  <Icon name="coin" size={12} /> {trimById(trimId).price}
+                  <Icon name="coin" size={16} /> {trimById(trimId).price}
                 </small>
               </button>
             ))}
@@ -219,7 +236,7 @@ export function FinishDrawer({
                       </>
                     ) : (
                       <>
-                        <Icon name="coin" size={12} /> {price}
+                        <Icon name="coin" size={16} /> {price}
                       </>
                     )}
                   </small>

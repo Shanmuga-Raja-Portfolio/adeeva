@@ -19,6 +19,7 @@ import {
   type FinishRequest,
   type PlacedFinish,
 } from "../../../../core";
+import { TrimBadge } from "../../../../../adeeva/ui/art/TrimArt";
 import { FindArt } from "../../../art/FindArt";
 import { finishExtent } from "../../../art/FinishArt";
 import { findCloth } from "../../../art/findCloth";
@@ -189,9 +190,9 @@ export function FinishStage(props: StageProps) {
   return (
     <div className="tf-finish">
       <div className="tf-finish__preview">
-        <p className="tf-hint">
+        <p className="tf-hint" aria-live="polite">
           <Icon name="sparkle" size={18} />
-          {HINTS.finish}
+          {tray !== null && tray.moved ? `Drop the ${itemName(tray.request)} on your piece.` : HINTS.finish}
         </p>
         <div className="tf-finish__stage" onPointerDown={() => setActiveId(null)}>
           <ProductPreview
@@ -238,7 +239,7 @@ export function FinishStage(props: StageProps) {
                 );
               }}
             />
-            {active !== undefined && extent !== null ? (
+            {active !== undefined && extent !== null && (tray === null || !tray.moved) ? (
               <g
                 className="tf-finish__handles"
                 transform={`translate(${active.x} ${active.y}) rotate(${active.rotation})`}
@@ -312,7 +313,16 @@ export function FinishStage(props: StageProps) {
                 ))}
               </div>
             ) : null}
-            <strong aria-live="polite">{itemName(active.item)}</strong>
+            <div className="tf-finish__title">
+              <strong aria-live="polite">{itemName(active.item)}</strong>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => dispatch({ type: "removeFinish", finishId: active.id })}
+              >
+                Back to stock
+              </Button>
+            </div>
             <div className="tf-finish__buttons">
               <Button
                 variant="secondary"
@@ -320,7 +330,7 @@ export function FinishStage(props: StageProps) {
                 onClick={() => adjust(active, { rotation: active.rotation - FINISH_ROTATION_STEP })}
                 aria-label="Turn left"
               >
-                ↺
+                ↺ Left
               </Button>
               <Button
                 variant="secondary"
@@ -328,7 +338,7 @@ export function FinishStage(props: StageProps) {
                 onClick={() => adjust(active, { rotation: active.rotation + FINISH_ROTATION_STEP })}
                 aria-label="Turn right"
               >
-                ↻
+                ↻ Right
               </Button>
               <Button
                 variant="secondary"
@@ -336,7 +346,7 @@ export function FinishStage(props: StageProps) {
                 onClick={() => adjust(active, { scale: active.scale - 0.25 })}
                 aria-label="Smaller"
               >
-                −
+                − Smaller
               </Button>
               <Button
                 variant="secondary"
@@ -344,14 +354,7 @@ export function FinishStage(props: StageProps) {
                 onClick={() => adjust(active, { scale: active.scale + 0.25 })}
                 aria-label="Bigger"
               >
-                +
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => dispatch({ type: "removeFinish", finishId: active.id })}
-              >
-                Back to stock
+                + Bigger
               </Button>
             </div>
           </div>
@@ -364,8 +367,11 @@ export function FinishStage(props: StageProps) {
               style={{ transform: `translate(${tray.x - 28}px, ${tray.y - 28}px)` }}
               aria-hidden="true"
             >
-              <Icon name="sparkle" size={28} />
-              <span>{itemName(tray.request)}</span>
+              {tray.request.kind === "trim" ? (
+                <TrimBadge trimId={tray.request.trimId} size={44} />
+              ) : (
+                <Icon name="sparkle" size={26} />
+              )}
             </div>,
             document.body,
           )

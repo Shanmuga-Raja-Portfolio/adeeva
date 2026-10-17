@@ -14,9 +14,30 @@ export function finishExtent(item: FinishItem): { readonly width: number; readon
   return item.markId === "mend-cross" ? { width: 44, height: 20 } : { width: 40, height: 34 };
 }
 
+const SMALL_TRIM = 24;
+
 export function FinishArt({ item, x, y, rotation, scale, selected = false }: FinishArtProps) {
-  if (item.kind === "trim")
-    return <TrimArt trimId={item.trimId} x={x} y={y} rotation={rotation} scale={scale} selected={selected} />;
+  if (item.kind === "trim") {
+    const extent = TRIM_EXTENT[item.trimId];
+    const small = Math.max(extent.width, extent.height) < SMALL_TRIM;
+    return (
+      <g>
+        {small ? (
+          <g transform={`translate(${x} ${y}) scale(${scale})`}>
+            <circle r={Math.max(extent.width, extent.height) * 0.78} fill="#fffaf0" opacity={0.7} />
+            <circle
+              r={Math.max(extent.width, extent.height) * 0.78}
+              fill="none"
+              stroke="#3b2a1c"
+              strokeOpacity={0.35}
+              strokeWidth={1.4}
+            />
+          </g>
+        ) : null}
+        <TrimArt trimId={item.trimId} x={x} y={y} rotation={rotation} scale={scale} selected={selected} />
+      </g>
+    );
+  }
   return (
     <g transform={`translate(${x} ${y}) rotate(${rotation}) scale(${scale})`}>
       {selected ? (

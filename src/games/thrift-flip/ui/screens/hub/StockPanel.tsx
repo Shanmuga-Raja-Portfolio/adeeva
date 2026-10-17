@@ -13,7 +13,7 @@ export function StockPanel({ state }: StockPanelProps) {
   const { finds, savedTrims, scraps } = state.stock;
   const trims = TRIM_IDS.filter((id) => savedTrims[id] > 0);
   return (
-    <Card title="Stockroom" eyebrow="Finds, saved buttons & bows, scraps" className="tf-hub-card tf-stock">
+    <Card title="Stockroom" eyebrow="Ready for new flips" className="tf-hub-card tf-stock">
       <section aria-label="Finds in stock">
         <h4 className="tf-stock__heading">Finds</h4>
         {finds.length === 0 ? (

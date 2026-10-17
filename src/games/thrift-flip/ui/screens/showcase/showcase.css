@@ -162,8 +162,9 @@
 }
 
 .tf-story-card__piece {
-  width: 100px;
-  height: 100px;
+  width: 130px;
+  height: 130px;
+  filter: drop-shadow(0 6px 6px rgba(59, 42, 28, 0.22));
 }
 
 .tf-story-card__fresh {
@@ -182,9 +183,18 @@
   text-align: center;
 }
 
+.tf-story-card figcaption strong {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--tf-denim-deep);
+}
+
 .tf-story-card figcaption span {
-  font-style: italic;
-  color: var(--ink-soft);
+  font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #7a3410;
 }
 
 .tf-planner .ad-rw-choice__stage {
@@ -212,16 +222,66 @@
   user-select: none;
 }
 
+.tf-show .ad-show__screen::before {
+  height: 12vh;
+  background: linear-gradient(180deg, rgba(5, 4, 7, 0.72), rgba(5, 4, 7, 0));
+}
+
+.tf-show .ad-show__screen::after {
+  display: none;
+}
+
+.tf-show .ad-show__hud .ad-music-chip,
+.tf-show .ad-show__skip {
+  opacity: 0.82;
+  font-size: var(--text-sm);
+  background: rgba(5, 4, 7, 0.35);
+}
+
 .tf-show-card {
   position: absolute;
-  right: 4vw;
-  bottom: 12vh;
+  right: 3vw;
+  bottom: 14vh;
   z-index: 4;
-  width: min(360px, 42vw);
+  width: min(340px, 38vw);
   border-radius: 20px;
-  background: rgba(255, 250, 240, 0.95);
+  background:
+    repeating-linear-gradient(100deg, rgba(160, 122, 82, 0.05) 0 2px, transparent 2px 7px),
+    rgba(255, 250, 240, 0.97);
+  border: 4px solid #fffaf0;
+  outline: 2px dashed rgba(240, 138, 60, 0.55);
+  outline-offset: -10px;
   color: var(--ink);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  rotate: -1.5deg;
+}
+
+.tf-show .ad-show__stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 14% 30%, rgba(255, 241, 168, 0.9) 0 2px, transparent 4px),
+    radial-gradient(circle at 26% 62%, rgba(255, 214, 230, 0.9) 0 3px, transparent 5px),
+    radial-gradient(circle at 38% 22%, rgba(255, 255, 255, 0.9) 0 2px, transparent 4px),
+    radial-gradient(circle at 63% 28%, rgba(255, 241, 168, 0.9) 0 3px, transparent 5px),
+    radial-gradient(circle at 74% 58%, rgba(255, 214, 230, 0.9) 0 2px, transparent 4px),
+    radial-gradient(circle at 86% 36%, rgba(255, 255, 255, 0.9) 0 3px, transparent 5px),
+    radial-gradient(circle at 52% 14%, rgba(255, 214, 230, 0.8) 0 2px, transparent 4px),
+    radial-gradient(ellipse at 50% 55%, rgba(255, 236, 196, 0.22), transparent 55%);
+  animation: tf-twinkle 2.6s ease-in-out infinite;
+}
+
+:root[data-motion="reduced"] .tf-show .ad-show__stage::after {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-show .ad-show__stage::after {
+    animation: none;
+  }
 }
 
 .tf-show .ad-show-caption__count {
@@ -419,4 +479,8 @@
 
 .tf-planner .tf-planner__section--stage h2 {
   color: #f6d36b;
+}
+
+.tf-show .ad-show-caption {
+  z-index: 5;
 }
