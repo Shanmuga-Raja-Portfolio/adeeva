@@ -79,13 +79,6 @@ export function TableTop({ className }: TableTopProps) {
         </g>
         <rect x={0} y={0} width={150} height={120} rx={8} fill="none" stroke="#3b2620" strokeOpacity={0.12} />
       </g>
-      <g transform="translate(112 278) rotate(78) scale(0.78)">
-        <ellipse cx={8} cy={12} rx={86} ry={26} fill="#3b2620" opacity={0.14} />
-        <path d="M-70 0 L50 -22 Q70 0 50 22 Z" fill="#fff4f6" stroke="#e7b9c4" strokeWidth={2} />
-        <path d="M-70 0 L-92 -5 V5 Z" fill="#9aa3b5" />
-        <path d="M-40 -6 L30 -16 M-40 6 L30 16" stroke="#f2c4c9" strokeWidth={3} strokeLinecap="round" />
-        <path d="M50 -22 Q78 -10 76 0 Q78 10 50 22" fill="#f2c4c9" />
-      </g>
       <g transform="translate(690 252) scale(0.6)">
         <ellipse cx={6} cy={10} rx={66} ry={62} fill="#3b2620" opacity={0.14} />
         <circle cx={0} cy={0} r={60} fill="#eef3fb" stroke="#c8d6ee" strokeWidth={4} />

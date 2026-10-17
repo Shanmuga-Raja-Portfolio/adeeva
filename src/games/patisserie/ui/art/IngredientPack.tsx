@@ -1,4 +1,5 @@
 import { darken, lighten } from "../../../../ui/art/colourMix";
+import { useSvgId } from "../../../../ui/art/useSvgId";
 import type { IngredientDef } from "../../content/ingredient";
 
 export interface IngredientPackProps {
@@ -6,23 +7,79 @@ export interface IngredientPackProps {
   readonly size: number;
 }
 
-function Bag({ colour, label }: { readonly colour: string; readonly label: string }) {
+function Bag({
+  id,
+  colour,
+  content,
+  label,
+}: {
+  readonly id: string;
+  readonly colour: string;
+  readonly content: string;
+  readonly label: string;
+}) {
+  const edge = darken(colour, 0.3);
   return (
     <g>
+      <defs>
+        <linearGradient id={`${id}-paper`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor={darken(colour, 0.14)} />
+          <stop offset="0.32" stopColor={lighten(colour, 0.35)} />
+          <stop offset="0.7" stopColor={colour} />
+          <stop offset="1" stopColor={darken(colour, 0.2)} />
+        </linearGradient>
+      </defs>
       <path
-        d="M-20 -24 L20 -24 L24 26 Q0 32 -24 26 Z"
-        fill={colour}
-        stroke={darken(colour, 0.25)}
-        strokeWidth={1.6}
+        d="M-22 -18 Q-24 6 -25 28 Q0 33 25 28 Q24 6 22 -18 Z"
+        fill={`url(#${id}-paper)`}
+        stroke={edge}
+        strokeWidth={1.4}
+      />
+      <path d="M-15 -14 Q-17 8 -18 27" stroke={edge} strokeOpacity={0.25} strokeWidth={1.2} fill="none" />
+      <path d="M15 -14 Q17 8 18 27" stroke={edge} strokeOpacity={0.25} strokeWidth={1.2} fill="none" />
+      <ellipse cx={0} cy={-21} rx={22} ry={5} fill={darken(colour, 0.35)} />
+      <path
+        d="M-19 -21 Q-6 -32 2 -30 Q12 -29 19 -21 Z"
+        fill={content}
+        stroke={darken(content, 0.18)}
+        strokeWidth={1}
       />
       <path
-        d="M-20 -24 L-14 -30 L14 -30 L20 -24"
-        fill={lighten(colour, 0.2)}
-        stroke={darken(colour, 0.25)}
+        d="M-8 -26 Q-2 -29 4 -28"
+        stroke="#ffffff"
+        strokeOpacity={0.8}
         strokeWidth={1.6}
+        strokeLinecap="round"
+        fill="none"
       />
-      <rect x={-14} y={-6} width={28} height={16} rx={3} fill="#fffaf0" />
-      <text x={0} y={6} textAnchor="middle" fontSize={9} fontWeight={700} fill="#6b4232">
+      <path
+        d="M-24 -22 Q0 -17 24 -22 L23 -15 Q0 -10 -23 -15 Z"
+        fill={lighten(colour, 0.25)}
+        stroke={edge}
+        strokeWidth={1.2}
+      />
+      <rect x={-15} y={-5} width={30} height={19} rx={4} fill="#fffaf0" stroke={edge} strokeOpacity={0.4} />
+      <rect
+        x={-13}
+        y={-3}
+        width={26}
+        height={15}
+        rx={3}
+        fill="none"
+        stroke="#c86a24"
+        strokeOpacity={0.5}
+        strokeDasharray="2 1.6"
+        strokeWidth={0.8}
+      />
+      <text
+        x={0}
+        y={7.5}
+        textAnchor="middle"
+        fontSize={7.6}
+        fontWeight={800}
+        fill="#6b4232"
+        letterSpacing={0.4}
+      >
         {label}
       </text>
     </g>
@@ -30,16 +87,17 @@ function Bag({ colour, label }: { readonly colour: string; readonly label: strin
 }
 
 export function IngredientPack({ ingredient, size }: IngredientPackProps) {
+  const id = useSvgId("pack");
   const art = (() => {
     switch (ingredient.id) {
       case "flour":
-        return <Bag colour="#e8ddc6" label="FLOUR" />;
+        return <Bag id={id} colour="#e8ddc6" content={ingredient.colour} label="FLOUR" />;
       case "caster-sugar":
-        return <Bag colour="#c8d6ee" label="SUGAR" />;
+        return <Bag id={id} colour="#c8d6ee" content={ingredient.colour} label="SUGAR" />;
       case "icing-sugar":
-        return <Bag colour="#f2d5e0" label="ICING" />;
+        return <Bag id={id} colour="#f2d5e0" content={ingredient.colour} label="ICING" />;
       case "cocoa":
-        return <Bag colour="#8a5a42" label="COCOA" />;
+        return <Bag id={id} colour="#8a5a42" content={ingredient.colour} label="COCOA" />;
       case "butter":
         return (
           <g>

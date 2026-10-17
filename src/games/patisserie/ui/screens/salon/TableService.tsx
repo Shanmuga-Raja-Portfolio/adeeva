@@ -28,6 +28,7 @@ import { CloseSalonDialog } from "./CloseSalonDialog";
 import { StandPlating, type HeldItem } from "./StandPlating";
 import { TeaPourStation } from "./TeaPourStation";
 import { TeaTins } from "./TeaTins";
+import { HELPER_NOTE } from "../bake/stageNames";
 import "../bake/bake.css";
 import "../bake/weigh.css";
 import "../counter/counter.css";
@@ -287,7 +288,7 @@ export function TableService({ state, dispatch, onExit }: TableServiceProps) {
           </p>
           <ToggleSwitch
             label="Steady pot"
-            description="The pot stops by itself at the line. Counts up to 80%."
+            description={`The pot stops by itself at the line. ${HELPER_NOTE}`}
             checked={assist}
             onChange={setAssist}
           />

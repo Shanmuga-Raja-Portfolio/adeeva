@@ -4,6 +4,7 @@ export interface ShopCounterProps {
   readonly className?: string | undefined;
 }
 
+const VALANCE = Array.from({ length: 30 }, (_, index) => index * 40);
 const PANELS = Array.from({ length: 10 }, (_, index) => index * 124 + 14);
 const SLICES: readonly [number, string, string][] = [
   [272, "#f2c4c9", "#fff4f6"],
@@ -40,6 +41,16 @@ export function ShopCounter({ className }: ShopCounterProps) {
         <linearGradient id={`${id}-front`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#9a6544" />
           <stop offset="1" stopColor="#5d3a2a" />
+        </linearGradient>
+        <linearGradient id={`${id}-panel`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#3b2620" stopOpacity={0.28} />
+          <stop offset="0.3" stopColor="#3b2620" stopOpacity={0.08} />
+          <stop offset="1" stopColor="#fff1cf" stopOpacity={0.08} />
+        </linearGradient>
+        <linearGradient id={`${id}-brass`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fbe6a6" />
+          <stop offset="0.5" stopColor="#e2bd5c" />
+          <stop offset="1" stopColor="#b8902f" />
         </linearGradient>
         <linearGradient id={`${id}-top`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#e9c9a2" />
@@ -88,7 +99,7 @@ export function ShopCounter({ className }: ShopCounterProps) {
         <rect x={236} y={4} width={220} height={68} rx={8} fill={`url(#${id}-glass)`} />
         <rect x={236} y={4} width={220} height={68} rx={8} fill="none" stroke="#8a5a42" strokeWidth={4} />
       </g>
-      <g transform="translate(560 72)">
+      <g transform="translate(652 72)">
         <ellipse cx={0} cy={2} rx={54} ry={6} fill="#3b2620" opacity={0.22} />
         <path d="M-10 0 L-6 -16 H6 L10 0 Z" fill="#f3ece0" stroke="#cbbca6" />
         <ellipse cx={0} cy={-16} rx={46} ry={7} fill="#fbf8f2" stroke="#cbbca6" strokeWidth={1.4} />
@@ -113,7 +124,7 @@ export function ShopCounter({ className }: ShopCounterProps) {
         />
         <circle cx={0} cy={-110} r={5} fill="#c9b48a" />
       </g>
-      <g transform="translate(680 72)">
+      <g transform="translate(748 72)">
         <ellipse cx={0} cy={2} rx={22} ry={4} fill="#3b2620" opacity={0.22} />
         <path d="M-14 0 Q-18 -26 -10 -34 H10 Q18 -26 14 0 Z" fill="#c8d6ee" opacity={0.85} stroke="#8fa3c8" />
         {STEMS.map(([dx, dy, colour]) => (
@@ -129,7 +140,7 @@ export function ShopCounter({ className }: ShopCounterProps) {
           </g>
         ))}
       </g>
-      <g transform="translate(760 72)">
+      <g transform="translate(812 72)">
         <ellipse cx={0} cy={2} rx={34} ry={5} fill="#3b2620" opacity={0.22} />
         <ellipse cx={0} cy={-2} rx={32} ry={6} fill="#ffffff" stroke="#d8cbb5" />
         <path d="M-20 -4 L-16 -18 H16 L20 -4 Z" fill="#f4a259" />
@@ -202,7 +213,7 @@ export function ShopCounter({ className }: ShopCounterProps) {
         <rect x={-18} y={-48} width={36} height={8} rx={3} fill="#f4a259" />
         <circle cx={0} cy={-52} r={5} fill="#c86a24" />
       </g>
-      <g transform="translate(872 72)">
+      <g transform="translate(900 72)">
         <ellipse cx={0} cy={2} rx={46} ry={5} fill="#3b2620" opacity={0.22} />
         <path d="M0 0 V-74" stroke="#c9b48a" strokeWidth={3} />
         <ellipse cx={0} cy={-2} rx={44} ry={6} fill="#fbf8f2" stroke="#cbbca6" />
@@ -227,19 +238,73 @@ export function ShopCounter({ className }: ShopCounterProps) {
       <rect x={0} y={78} width={1200} height={6} fill="#3b2620" opacity={0.2} />
       <rect x={0} y={80} width={1200} height={80} fill={`url(#${id}-front)`} />
       {PANELS.map((x) => (
-        <rect
+        <g key={x}>
+          <rect x={x} y={92} width={100} height={56} rx={5} fill="#3b2620" opacity={0.18} />
+          <rect x={x + 3} y={95} width={94} height={50} rx={4} fill={`url(#${id}-panel)`} />
+          <path
+            d={`M${x + 3} 99 Q${x + 3} 95 ${x + 7} 95 H${x + 93}`}
+            stroke="#fff1cf"
+            strokeOpacity={0.35}
+            strokeWidth={2}
+            fill="none"
+          />
+          <path
+            d={`M${x + 97} 99 V141 Q${x + 97} 145 ${x + 93} 145 H${x + 7}`}
+            stroke="#2a1a14"
+            strokeOpacity={0.3}
+            strokeWidth={2}
+            fill="none"
+          />
+          {[22, 38, 54, 70].map((dx) => (
+            <path
+              key={dx}
+              d={`M${x + dx + 4} 102 V138`}
+              stroke="#2a1a14"
+              strokeOpacity={0.12}
+              strokeWidth={3}
+              strokeLinecap="round"
+            />
+          ))}
+          {[22, 38, 54, 70].map((dx) => (
+            <path
+              key={`${dx}-lit`}
+              d={`M${x + dx + 6} 102 V138`}
+              stroke="#fff1cf"
+              strokeOpacity={0.12}
+              strokeWidth={1.4}
+              strokeLinecap="round"
+            />
+          ))}
+        </g>
+      ))}
+      {VALANCE.map((x, index) => (
+        <path
           key={x}
-          x={x}
-          y={94}
-          width={100}
-          height={52}
-          rx={6}
-          fill="none"
-          stroke="#fff1cf"
-          strokeOpacity={0.18}
-          strokeWidth={3}
+          d={`M${x} 82 H${x + 40} V92 Q${x + 20} 112 ${x} 92 Z`}
+          fill={index % 2 === 0 ? "#f2c4c9" : "#fffaf0"}
+          stroke="#d58aa5"
+          strokeOpacity={0.5}
+          strokeWidth={1}
         />
       ))}
+      <g transform="translate(600 124)">
+        <ellipse cx={0} cy={3} rx={100} ry={22} fill="#2a1a14" opacity={0.3} />
+        <ellipse cx={0} cy={0} rx={98} ry={21} fill={`url(#${id}-brass)`} stroke="#8a6a2a" strokeWidth={2} />
+        <ellipse cx={0} cy={0} rx={88} ry={15} fill="none" stroke="#fff4cf" strokeWidth={1.2} opacity={0.8} />
+        <text
+          x={0}
+          y={5}
+          textAnchor="middle"
+          fontSize={14}
+          fontWeight={700}
+          fontFamily="var(--font-display)"
+          fill="#4a2c1e"
+        >
+          Baked fresh today
+        </text>
+      </g>
+      <rect x={0} y={150} width={1200} height={4} fill="#d9b45a" />
+      <rect x={0} y={150} width={1200} height={1.4} fill="#fff4cf" opacity={0.8} />
       <path d="M0 70 H1200" stroke="#fff6e8" strokeWidth={2} opacity={0.6} />
     </svg>
   );

@@ -4,7 +4,7 @@ import { ToggleSwitch } from "../../../../../ui/kit/ToggleSwitch";
 import { batchMix, batchName, productById, stirDone, stirHalfWidth } from "../../../core";
 import { useAssist } from "../../useAssist";
 import { StageFooter } from "./StageFooter";
-import { assistHint } from "./stageNames";
+import { assistHint, HELPER_NOTE } from "./stageNames";
 import type { StageProps } from "./stageProps";
 import { StirBowl } from "./StirBowl";
 import "./mix.css";
@@ -63,7 +63,7 @@ export function MixStage(props: StageProps) {
           </p>
           <ToggleSwitch
             label="Steady spoon"
-            description="A wider green zone. Counts up to 80%."
+            description={`A wider green zone. ${HELPER_NOTE}`}
             checked={assist}
             onChange={setAssist}
           />

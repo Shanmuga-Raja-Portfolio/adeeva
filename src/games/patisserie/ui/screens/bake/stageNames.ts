@@ -59,3 +59,4 @@ export function assistHint(helper: string): string {
   return `Stuck? Try the ${helper.toLowerCase()}. Switch it off again before your next try.`;
 }
 export const SAFETY_LINE = "Real ovens, mixers and knives: ask an adult first.";
+export const HELPER_NOTE = "With help, the best score is 80.";

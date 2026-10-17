@@ -26,6 +26,16 @@ describe("weighBanner", () => {
     expect(weighBanner({ ...base, pour: { ...pour, grams: 260 } }).tone).toBe("over");
   });
 
+  it("warns gently as the pour nears the green", () => {
+    const pour = { ...FRESH_POUR, holding: true, grams: 150 };
+    expect(weighBanner({ ...base, pour })).toEqual({
+      text: "Nearly there… let go soon!",
+      tone: "near",
+    });
+    expect(weighBanner({ ...base, pour: { ...pour, grams: 139 } }).tone).toBe("pouring");
+    expect(weighBanner({ ...base, pour, covered: true }).tone).toBe("pouring");
+  });
+
   it("keeps the green zone a secret on a covered scale", () => {
     const pour = { ...FRESH_POUR, holding: true, grams: 198 };
     expect(weighBanner({ ...base, pour, covered: true }).text).toBe("Pouring… stop near 200 g");

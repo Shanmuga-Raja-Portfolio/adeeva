@@ -209,3 +209,188 @@ Our screens won six pairs in the final round:
 - **Scoop & Weigh (lost all five rounds).** The reference kitchen has fire, an urgent "burning" alert and ingredient slots that tick off. Ours teaches the task better: a target band, a pour banner and big buttons. It still feels calm and static. It needs motion and stakes, such as a pour stream that grows, flour dust, a wobbling needle and a visible row of ingredients that fill as they are weighed.
 - **Bakery hub (won 2 of 5).** It flips with the critic. It wins on purpose and clarity, but loses on art against a lit 3D diorama: the cards below the hero are still dense.
 - **Art.** Our art wins only on piping, results and the showcase, against the flat pixel and upgrade-tree references. Against the 3D titles (Tiny Bakery, Lemon Cake), we win on clarity, not on looks.
+
+## Gap round — 2026-10-17
+
+### Method
+
+- **Same blind A/B as before, with a higher bar.** Each round compared eight of our screens with official store screenshots of the titles in `work/0013-research/references.md`, section "3. Patisserie Atelier - cakes and pastry": Tiny Bakery, Lemon Cake and Cookie's Bakery. The pairs are the same eight as in the first pass.
+- **Random labels.** Each pair was shown as A and B, with the sides picked at random.
+- **Fresh critics each round.** A new panel of three critics judged every round with no memory of earlier rounds. They scored art, typography, feedback, readability and touch, gave an outcome, and flagged any pair where ours was clearly worse.
+- **The bar was raised:** at least 85% of pairs won or tied, and no pair clearly worse.
+- **Our screenshots** came from `e2e/patisserie/qualityShots.spec.ts`. From round 2 on they were taken at 1280 x 720, the same shape as the store screenshots, instead of 1280 x 800.
+- **What stays out of the repo:** the reference screenshots belong to their owners. They were kept outside the repo, and nothing was traced, copied or imitated. Every change came from general craft: composition, hierarchy, colour, lighting, depth, texture, typography, feedback and spacing.
+
+### Round 1 — 7/8 won or tied (88%), 1 clearly worse — fail
+
+| Pair | Kind       | Reference       | Outcome | Clearly worse | Criteria ours won                                  |
+| ---- | ---------- | --------------- | ------- | ------------- | -------------------------------------------------- |
+| 1    | title      | Tiny Bakery     | win     | no            | typography, readability, touch                     |
+| 2    | hub        | Tiny Bakery     | win     | no            | typography, readability, touch                     |
+| 3    | hub        | Lemon Cake      | loss    | yes           | typography, readability, touch                     |
+| 4    | craft-step | Lemon Cake      | win     | no            | typography, readability, touch                     |
+| 5    | craft-step | Cookie's Bakery | win     | no            | art, typography, feedback, readability, touch      |
+| 6    | craft-step | Tiny Bakery     | win     | no            | typography, feedback, readability, touch           |
+| 7    | results    | Lemon Cake      | win     | no            | art, typography, feedback, readability, touch      |
+| 8    | showcase   | Cookie's Bakery | win     | no            | art, typography, feedback, readability (touch tie) |
+
+The share passed, but the salon hub was still clearly worse: "a static flat illustration and the lower half is a dashboard of text cards". Critics also said the title and bakery hub looked clipped.
+
+### Round 2 — 6/8 won or tied (75%), 1 clearly worse — fail
+
+| Pair | Kind       | Reference       | Outcome | Clearly worse | Criteria ours won                             |
+| ---- | ---------- | --------------- | ------- | ------------- | --------------------------------------------- |
+| 1    | title      | Tiny Bakery     | win     | no            | typography, readability, touch                |
+| 2    | hub        | Tiny Bakery     | win     | no            | typography, readability, touch                |
+| 3    | hub        | Lemon Cake      | loss    | yes           | typography, readability (touch tie)           |
+| 4    | craft-step | Lemon Cake      | loss    | no            | typography, readability, touch                |
+| 5    | craft-step | Cookie's Bakery | win     | no            | art, typography, feedback, readability, touch |
+| 6    | craft-step | Tiny Bakery     | win     | no            | typography, feedback, readability, touch      |
+| 7    | results    | Lemon Cake      | win     | no            | art, typography, feedback, readability, touch |
+| 8    | showcase   | Cookie's Bakery | win     | no            | art, typography, feedback, readability, touch |
+
+The salon hub now lived inside its scene, but "five overlaid cards" still buried it. The weigh step was "a small scene window boxed in by three columns of form UI".
+
+### Round 3 — 6/8 won or tied (75%), 0 clearly worse — fail
+
+| Pair | Kind       | Reference       | Outcome | Clearly worse | Criteria ours won                             |
+| ---- | ---------- | --------------- | ------- | ------------- | --------------------------------------------- |
+| 1    | title      | Tiny Bakery     | win     | no            | typography, readability, touch                |
+| 2    | hub        | Tiny Bakery     | win     | no            | typography, readability, touch                |
+| 3    | hub        | Lemon Cake      | loss    | no            | typography, readability, touch                |
+| 4    | craft-step | Lemon Cake      | loss    | no            | typography, readability, touch                |
+| 5    | craft-step | Cookie's Bakery | win     | no            | art, typography, feedback, readability, touch |
+| 6    | craft-step | Tiny Bakery     | win     | no            | typography, feedback, readability, touch      |
+| 7    | results    | Lemon Cake      | win     | no            | art, typography, feedback, readability, touch |
+| 8    | showcase   | Cookie's Bakery | win     | no            | art, typography, feedback, readability, touch |
+
+For the first time in either pass, no pair was clearly worse. The salon hub was "clear and well labelled but static and app-like". The weigh step was still "a dense, panel-heavy UI with duplicated instructions".
+
+### Round 4 — 6/8 won or tied (75%), 0 clearly worse — fail
+
+| Pair | Kind       | Reference       | Outcome | Clearly worse | Criteria ours won                             |
+| ---- | ---------- | --------------- | ------- | ------------- | --------------------------------------------- |
+| 1    | title      | Tiny Bakery     | win     | no            | typography, readability, touch                |
+| 2    | hub        | Tiny Bakery     | win     | no            | typography, feedback, readability, touch      |
+| 3    | hub        | Lemon Cake      | loss    | no            | typography, readability, touch                |
+| 4    | craft-step | Lemon Cake      | loss    | no            | typography, readability, touch                |
+| 5    | craft-step | Cookie's Bakery | win     | no            | art, typography, feedback, readability, touch |
+| 6    | craft-step | Tiny Bakery     | win     | no            | typography, feedback, readability, touch      |
+| 7    | results    | Lemon Cake      | win     | no            | art, typography, feedback, readability, touch |
+| 8    | showcase   | Cookie's Bakery | win     | no            | art, typography, feedback, readability, touch |
+
+The bakery hub won feedback for the first time. The salon figures were "stiff paper-doll figures". The weigh step was still "a static backdrop dominated by UI panels".
+
+### Round 5 — 7/8 won or tied (88%), 0 clearly worse — pass
+
+| Pair | Kind       | Reference       | Outcome | Clearly worse | Criteria ours won                             |
+| ---- | ---------- | --------------- | ------- | ------------- | --------------------------------------------- |
+| 1    | title      | Tiny Bakery     | win     | no            | typography, readability, touch                |
+| 2    | hub        | Tiny Bakery     | win     | no            | typography, feedback, readability, touch      |
+| 3    | hub        | Lemon Cake      | loss    | no            | typography, readability, touch                |
+| 4    | craft-step | Lemon Cake      | win     | no            | typography, readability, touch (feedback tie) |
+| 5    | craft-step | Cookie's Bakery | win     | no            | art, typography, feedback, readability, touch |
+| 6    | craft-step | Tiny Bakery     | win     | no            | typography, feedback, readability, touch      |
+| 7    | results    | Lemon Cake      | win     | no            | art, typography, feedback, readability, touch |
+| 8    | showcase   | Cookie's Bakery | win     | no            | art, typography, feedback, readability, touch |
+
+The weigh step won for the first time in either pass. The critics said its feedback was "as rich as" the reference's, "in a calmer way".
+
+### What changed between rounds
+
+#### Round 1 to round 2
+
+- **Screenshots** moved to 1280 x 720, so the title and hubs are no longer cut off mid-panel.
+- **Salon hub:**
+  - It became one full-height parlour scene.
+  - A three-tier cake stand stands in the middle, with a paper tag on each tier that counts what is on the stand.
+  - The bookings moved onto a dark chalkboard that lists each table, the guest and the treats they wish for.
+  - The season card sits in the top-left corner.
+  - The menu, orders and shop fold away behind one "Menu, orders and shop" button.
+- **Bakery hub:**
+  - It became one full-height shop scene, with a "Crumb & Comet" hanging sign, a striped awning and string lights.
+  - The customer stands at the counter with an order bubble.
+  - A pinned "Next order" card holds a big Start baking button.
+  - The order board, pantry and upgrades fold away behind one "Orders, pantry and upgrades" button.
+- **Scoop & Weigh:**
+  - The dial is bigger.
+  - A scoop tips a stream of flour into the bowl.
+  - The flour sack says how much is left in the pantry.
+  - A new "near" banner, "Nearly there… let go soon!", warns as the pour nears the green zone. `weighBanner.test.ts` covers it.
+
+#### Round 2 to round 3
+
+- **Both hubs:**
+  - The big day card shrank to a slim "Good morning" pill with an hours bar and a Today button.
+  - Day actions (Set up tables or Wash trays, End day) moved to a dock in the bottom-right corner.
+- **Salon hub:**
+  - The chalkboard stands on an easel, with "Guests" and "Treats they wish for" columns and a treat icon for each wish.
+  - Each tier tag shows a green count chip.
+  - A second laid table with guests fills the right side.
+- **Scoop & Weigh:**
+  - The dial fills the scene, and the pour buttons moved into the scene beside it.
+  - The order card folds to "6 wishes are on track", with a "See all 8 wishes" button.
+- **Toppings:**
+  - The tray shows all six toppings, each marked when it is still in the pantry.
+  - The order card folds to "Every wish ticked!".
+
+#### Round 3 to round 4
+
+- **Scoop & Weigh:**
+  - The order card folded into a small chip beside the step rail, so the kitchen scene fills the screen.
+  - The next ingredients (honey jar, sugar, butter) wait in a row on the bench.
+  - The flour sack sits on a shelf with a "1000 g left" tag.
+  - The scale helper moved into the pour card.
+- **Salon hub:**
+  - The baker stands closer and smiles.
+  - A dressed serving table with a teapot sits in front of her.
+  - A cat sleeps on a cushion by the tables.
+  - Each booking is a paper card with a numbered avatar.
+- **Bakery hub:** the baker waves, the customer leans in and smiles, and the counter shows a larger macaron case, cake dome and cupcake stand.
+- **Pipe and Toppings:** the order card folded into the same chip, so the bench and cake get the room.
+
+#### Round 4 to round 5
+
+- **Scoop & Weigh:**
+  - The main button reads "Hold to pour".
+  - A curtained window with a street view brightens the kitchen.
+  - A bead trail on the dial shows how far the pour has come.
+  - Puffs of flour rise from the bowl.
+  - The needle eases and wobbles on a spring. It holds still when reduced motion is on. The spring lives in `src/ui/kit/useSpring.ts`.
+- **Salon hub:**
+  - The baker carries a tea tray, using a new "carry" arm pose in `src/ui/art/avatar/ArmPose.tsx`.
+  - Seated guests react with heart and star bubbles.
+  - A brass "Comet Room" plaque hangs on the serving table.
+  - Each tier tag reads "6 left", with sparkles.
+- **Bakery hub:**
+  - The baker holds a cake.
+  - The customer's bubble is captioned "Iced Biscuit Set?".
+  - The counter gained a scalloped valance and a "Baked fresh today" plaque.
+
+#### Changes across the pass
+
+Rounds 2 to 5 also changed the other screens. Their final state:
+
+- **Title:** the save slot labels Coins and Reputation and shows a "Standard" badge. Each empty slot shows a small empty cake stand.
+- **Pipe the icing:** the piping bag sits on the cake, the bar reads "This line", and a "0 of 2 kept" chip counts finished lines.
+- **Toppings:** the rotate, scale and put-back tools sit in a floating toolbar that names the selected topping. Pantry toppings show a "Get" button.
+- **Results:** the gift box sits on a pink cushion, and the town line reads "The town loves elegant and playful bakes".
+- **Showcase:** a "Keep going" button sits beside a "Show 5 of 13" progress bar.
+
+### Final result
+
+**Passed in round 5: 7/8 won or tied (88%), none clearly worse.**
+
+| Round | Won or tied | Clearly worse | Pass |
+| ----- | ----------- | ------------- | ---- |
+| 1     | 7/8 (88%)   | 1             | no   |
+| 2     | 6/8 (75%)   | 1             | no   |
+| 3     | 6/8 (75%)   | 0             | no   |
+| 4     | 6/8 (75%)   | 0             | no   |
+| 5     | 7/8 (88%)   | 0             | yes  |
+
+### Remaining gap
+
+- **Salon hub (lost all five rounds, but not clearly worse since round 3).** The critics now call ours clearer and easier to read, but the reference café is busier and warmer, with many moving people. Ours is still a still picture, and its figures look stiff. The next step is life, not layout: guests who sip, chat and turn, staff who walk between tables, and steam and light that move.
+- **Scoop & Weigh (won only in round 5).** It now wins on clarity and ties on feedback, but the critics still prefer the reference's art and urgency. It could still lose to a harsher critic.
+- **Art against 3D titles.** Against Tiny Bakery and Lemon Cake, our art still loses on every hub, the title and the toppings step. We win those pairs on purpose, clarity and touch. Our art wins only against the pixel and upgrade-tree references (piping, results, showcase).

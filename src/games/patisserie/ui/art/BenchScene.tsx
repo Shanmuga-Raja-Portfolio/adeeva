@@ -1,8 +1,27 @@
 import { useSvgId } from "../../../../ui/art/useSvgId";
+import { BenchWindow } from "./BenchWindow";
+
+export type BenchDecor = "high" | "low" | "rail" | "window";
 
 export interface BenchSceneProps {
   readonly className?: string | undefined;
+  readonly decor?: BenchDecor | undefined;
 }
+
+interface DecorPlan {
+  readonly rail: readonly [number, number] | null;
+  readonly window: boolean;
+  readonly shelf: boolean;
+  readonly drop: number;
+  readonly props: boolean;
+}
+
+const PLANS: Readonly<Record<BenchDecor, DecorPlan>> = {
+  high: { rail: [118, 40], window: false, shelf: true, drop: 0, props: true },
+  low: { rail: [118, 40], window: false, shelf: true, drop: 170, props: true },
+  rail: { rail: [10, 40], window: false, shelf: false, drop: 160, props: false },
+  window: { rail: null, window: true, shelf: false, drop: 0, props: false },
+};
 
 const TILE_ROWS = Array.from({ length: 15 }, (_, index) => index);
 const PLANKS = [452, 486, 522, 560];
@@ -20,8 +39,9 @@ const BERRIES: readonly [number, number, string][] = [
   [720, 490, "#e4572e"],
 ];
 
-export function BenchScene({ className }: BenchSceneProps) {
+export function BenchScene({ className, decor = "high" }: BenchSceneProps) {
   const id = useSvgId("bench");
+  const plan = PLANS[decor];
   return (
     <svg
       className={className}
@@ -94,52 +114,77 @@ export function BenchScene({ className }: BenchSceneProps) {
         )}
       </g>
       <rect width={800} height={600} fill={`url(#${id}-sun)`} />
-      <path d="M40 0 H190 L520 450 H210 Z" fill={`url(#${id}-shaft)`} />
-      <g transform="translate(118 40)">
-        <rect x={3} y={6} width={150} height={8} rx={4} fill="#5a3220" opacity={0.18} />
-        <rect x={0} y={0} width={150} height={8} rx={4} fill="#b7794f" />
-        <g stroke="#8a6a52" strokeWidth={2}>
-          <path d="M28 8 V20 M74 8 V20 M120 8 V20" />
-        </g>
-        <path
-          d="M28 20 V52 M20 52 Q28 96 36 52 Z M22 60 Q28 84 34 60"
-          fill="none"
-          stroke="#9aa3b5"
-          strokeWidth={3}
-          strokeLinejoin="round"
-        />
-        <path d="M74 20 V70" stroke="#c9a27a" strokeWidth={5} strokeLinecap="round" />
-        <ellipse cx={74} cy={80} rx={14} ry={10} fill="#d7dbe4" stroke="#9aa3b5" strokeWidth={2} />
-        <path d="M120 20 V64" stroke="#7d5a43" strokeWidth={5} strokeLinecap="round" />
-        <rect x={110} y={62} width={20} height={28} rx={6} fill="#e9b872" stroke="#b8864a" strokeWidth={2} />
-      </g>
-      <g transform="translate(-58 0)">
-        <rect x={520} y={118} width={240} height={12} rx={4} fill="#b7794f" />
-        <rect x={524} y={128} width={240} height={14} rx={6} fill="#5a3220" opacity={0.2} />
-        <path d="M546 130 V150 L560 130 Z M734 130 V150 L720 130 Z" fill="#8a5a42" />
-        {JARS.map(([x, w, h, colour]) => (
-          <g key={x}>
-            <rect x={x} y={118 - h} width={w} height={h} rx={8} fill={colour} opacity={0.9} />
-            <rect x={x} y={118 - h} width={w} height={h} rx={8} fill={`url(#${id}-jar)`} />
-            <rect x={x - 2} y={112 - h} width={w + 4} height={8} rx={3} fill="#8a5a42" />
-            <rect x={x + 5} y={128 - h} width={w - 10} height={10} rx={2} fill="#fffaf0" opacity={0.9} />
+      {plan.window ? (
+        <g>
+          <g transform="translate(22 196) scale(0.86)">
+            <BenchWindow id={`${id}-window`} x={0} y={0} />
           </g>
-        ))}
-        <g transform="translate(722 118)">
-          <path d="M-16 0 L-12 -24 H12 L16 0 Z" fill="#c97d4a" />
-          <rect x={-14} y={-28} width={28} height={6} rx={2} fill="#b0683a" />
-          {[-40, -15, 10, 35].map((angle) => (
-            <ellipse
-              key={angle}
-              cx={0}
-              cy={-44}
-              rx={7}
-              ry={18}
-              fill={angle % 2 === 0 ? "#6f9a5c" : "#86b06f"}
-              transform={`rotate(${angle} 0 -28)`}
-            />
-          ))}
+          <path d="M30 206 H170 L560 440 H250 Z" fill={`url(#${id}-shaft)`} />
+          <path d="M60 240 H130 L420 440 H300 Z" fill={`url(#${id}-shaft)`} />
         </g>
+      ) : (
+        <path d="M40 0 H190 L520 450 H210 Z" fill={`url(#${id}-shaft)`} />
+      )}
+      <g transform={`translate(0 ${plan.drop})`}>
+        {plan.rail === null ? null : (
+          <g transform={`translate(${plan.rail[0]} ${plan.rail[1]})`}>
+            <rect x={3} y={6} width={150} height={8} rx={4} fill="#5a3220" opacity={0.18} />
+            <rect x={0} y={0} width={150} height={8} rx={4} fill="#b7794f" />
+            <g stroke="#8a6a52" strokeWidth={2}>
+              <path d="M28 8 V20 M74 8 V20 M120 8 V20" />
+            </g>
+            <path
+              d="M28 20 V52 M20 52 Q28 96 36 52 Z M22 60 Q28 84 34 60"
+              fill="none"
+              stroke="#9aa3b5"
+              strokeWidth={3}
+              strokeLinejoin="round"
+            />
+            <path d="M74 20 V70" stroke="#c9a27a" strokeWidth={5} strokeLinecap="round" />
+            <ellipse cx={74} cy={80} rx={14} ry={10} fill="#d7dbe4" stroke="#9aa3b5" strokeWidth={2} />
+            <path d="M120 20 V64" stroke="#7d5a43" strokeWidth={5} strokeLinecap="round" />
+            <rect
+              x={110}
+              y={62}
+              width={20}
+              height={28}
+              rx={6}
+              fill="#e9b872"
+              stroke="#b8864a"
+              strokeWidth={2}
+            />
+          </g>
+        )}
+        {plan.shelf ? (
+          <g transform="translate(-58 0)">
+            <rect x={520} y={118} width={240} height={12} rx={4} fill="#b7794f" />
+            <rect x={524} y={128} width={240} height={14} rx={6} fill="#5a3220" opacity={0.2} />
+            <path d="M546 130 V150 L560 130 Z M734 130 V150 L720 130 Z" fill="#8a5a42" />
+            {JARS.map(([x, w, h, colour]) => (
+              <g key={x}>
+                <rect x={x} y={118 - h} width={w} height={h} rx={8} fill={colour} opacity={0.9} />
+                <rect x={x} y={118 - h} width={w} height={h} rx={8} fill={`url(#${id}-jar)`} />
+                <rect x={x - 2} y={112 - h} width={w + 4} height={8} rx={3} fill="#8a5a42" />
+                <rect x={x + 5} y={128 - h} width={w - 10} height={10} rx={2} fill="#fffaf0" opacity={0.9} />
+              </g>
+            ))}
+            <g transform="translate(722 118)">
+              <path d="M-16 0 L-12 -24 H12 L16 0 Z" fill="#c97d4a" />
+              <rect x={-14} y={-28} width={28} height={6} rx={2} fill="#b0683a" />
+              {[-40, -15, 10, 35].map((angle) => (
+                <ellipse
+                  key={angle}
+                  cx={0}
+                  cy={-44}
+                  rx={7}
+                  ry={18}
+                  fill={angle % 2 === 0 ? "#6f9a5c" : "#86b06f"}
+                  transform={`rotate(${angle} 0 -28)`}
+                />
+              ))}
+            </g>
+          </g>
+        ) : null}
       </g>
       <ellipse cx={400} cy={430} rx={330} ry={150} fill={`url(#${id}-pool)`} />
       <path d="M0 440 H800 V600 H0 Z" fill={`url(#${id}-top)`} />
@@ -156,33 +201,46 @@ export function BenchScene({ className }: BenchSceneProps) {
       <rect x={0} y={436} width={800} height={8} fill="#e6bd8a" />
       <rect x={0} y={444} width={800} height={10} fill="#3b2620" opacity={0.12} />
       <ellipse cx={400} cy={500} rx={260} ry={46} fill="#fff6e0" opacity={0.25} />
-      <g transform="translate(112 470)">
-        <ellipse cx={34} cy={46} rx={44} ry={8} fill="#3b2620" opacity={0.18} />
-        <path
-          d="M4 44 Q-2 10 10 -8 L22 -18 H48 L58 -8 Q70 10 64 44 Z"
-          fill="#f2e6cf"
-          stroke="#c9b48a"
-          strokeWidth={2}
-        />
-        <path d="M22 -18 Q34 -26 48 -18" fill="none" stroke="#c9b48a" strokeWidth={2} />
-        <rect x={14} y={8} width={40} height={18} rx={3} fill="#fffaf0" stroke="#d8c7a6" />
-        <path d="M22 17 H46" stroke="#a46f55" strokeWidth={2.4} strokeLinecap="round" />
-      </g>
-      <g transform="translate(160 530) rotate(-8)">
-        <ellipse cx={60} cy={14} rx={74} ry={6} fill="#3b2620" opacity={0.14} />
-        <rect x={0} y={-8} width={120} height={18} rx={9} fill="#e3b986" stroke="#b8864a" strokeWidth={1.6} />
-        <rect x={-22} y={-4} width={26} height={10} rx={5} fill="#c58c56" />
-        <rect x={116} y={-4} width={26} height={10} rx={5} fill="#c58c56" />
-        <path d="M8 -3 H112" stroke="#fff3dc" strokeWidth={3} opacity={0.6} strokeLinecap="round" />
-      </g>
-      <g transform="translate(-56 0)">
-        <ellipse cx={712} cy={512} rx={46} ry={9} fill="#3b2620" opacity={0.16} />
-        <path d="M670 490 Q712 530 754 490 Z" fill="#ffffff" stroke="#c8d6ee" strokeWidth={2} />
-        <ellipse cx={712} cy={490} rx={42} ry={8} fill="#eef3fb" stroke="#c8d6ee" strokeWidth={2} />
-        {BERRIES.map(([x, y, colour]) => (
-          <circle key={`${x}-${y}`} cx={x} cy={y} r={6} fill={colour} />
-        ))}
-      </g>
+      {plan.props ? (
+        <>
+          <g transform="translate(112 470)">
+            <ellipse cx={34} cy={46} rx={44} ry={8} fill="#3b2620" opacity={0.18} />
+            <path
+              d="M4 44 Q-2 10 10 -8 L22 -18 H48 L58 -8 Q70 10 64 44 Z"
+              fill="#f2e6cf"
+              stroke="#c9b48a"
+              strokeWidth={2}
+            />
+            <path d="M22 -18 Q34 -26 48 -18" fill="none" stroke="#c9b48a" strokeWidth={2} />
+            <rect x={14} y={8} width={40} height={18} rx={3} fill="#fffaf0" stroke="#d8c7a6" />
+            <path d="M22 17 H46" stroke="#a46f55" strokeWidth={2.4} strokeLinecap="round" />
+          </g>
+          <g transform="translate(160 530) rotate(-8)">
+            <ellipse cx={60} cy={14} rx={74} ry={6} fill="#3b2620" opacity={0.14} />
+            <rect
+              x={0}
+              y={-8}
+              width={120}
+              height={18}
+              rx={9}
+              fill="#e3b986"
+              stroke="#b8864a"
+              strokeWidth={1.6}
+            />
+            <rect x={-22} y={-4} width={26} height={10} rx={5} fill="#c58c56" />
+            <rect x={116} y={-4} width={26} height={10} rx={5} fill="#c58c56" />
+            <path d="M8 -3 H112" stroke="#fff3dc" strokeWidth={3} opacity={0.6} strokeLinecap="round" />
+          </g>
+          <g transform="translate(-56 0)">
+            <ellipse cx={712} cy={512} rx={46} ry={9} fill="#3b2620" opacity={0.16} />
+            <path d="M670 490 Q712 530 754 490 Z" fill="#ffffff" stroke="#c8d6ee" strokeWidth={2} />
+            <ellipse cx={712} cy={490} rx={42} ry={8} fill="#eef3fb" stroke="#c8d6ee" strokeWidth={2} />
+            {BERRIES.map(([x, y, colour]) => (
+              <circle key={`${x}-${y}`} cx={x} cy={y} r={6} fill={colour} />
+            ))}
+          </g>
+        </>
+      ) : null}
       <rect x={0} y={582} width={800} height={18} fill={`url(#${id}-edge)`} />
       <rect width={800} height={600} fill={`url(#${id}-vignette)`} />
     </svg>

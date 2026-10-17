@@ -15,6 +15,16 @@
 .pa-pipe__list header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  font-size: var(--text-md);
+}
+
+.pa-pipe__count {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: #fff1cf;
+  font-weight: 800;
+  color: #7a5e0c;
 }
 
 .pa-pipe__list ul {
@@ -136,7 +146,7 @@
   font-size: var(--text-lg);
   font-weight: 700;
   text-align: center;
-  color: var(--pa-blueberry);
+  color: var(--pa-cocoa);
 }
 
 .pa-pipe-table__neat {
@@ -192,8 +202,22 @@
 
 @keyframes pa-march {
   to {
-    stroke-dashoffset: -0.54;
+    stroke-dashoffset: -0.72;
   }
+}
+
+.pa-pipe-table__svg {
+  overflow: visible;
+}
+
+.pa-pipe-table__neat .ad-meter__value {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: #b9662a;
+}
+
+.pa-pipe-table__neat {
+  justify-items: start;
 }
 
 .pa-pipe-table__start {
@@ -205,9 +229,12 @@
 .pa-pipe-table__actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--space-3);
-  width: min(560px, 100%);
+  padding: 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 250, 240, 0.86);
+  box-shadow: 0 8px 18px rgba(59, 38, 32, 0.25);
 }
 
 .pa-pipe-table__actions .ad-button {

@@ -106,8 +106,8 @@
 
 .pa-rail__step--upcoming .pa-rail__button {
   padding: 0 var(--space-2);
-  font-weight: 600;
-  color: var(--ink-faint);
+  font-weight: 700;
+  color: var(--ink-soft);
 }
 
 .pa-rail__step--upcoming .pa-rail__dot {
@@ -127,7 +127,7 @@
   border-radius: 999px;
   background: transparent;
   font: inherit;
-  font-size: var(--text-sm);
+  font-size: 1.0625rem;
   font-weight: 700;
   color: var(--ink-soft);
 }
@@ -175,7 +175,7 @@ button.pa-rail__button:hover {
 
 .pa-bake__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-columns: minmax(0, 1fr) 260px;
   gap: var(--space-4);
   align-items: start;
 }
@@ -210,6 +210,76 @@ button.pa-rail__button:hover {
 .pa-checklist__count {
   font-weight: 800;
   color: var(--pa-pistachio-deep);
+}
+
+.pa-checklist--all .pa-checklist__count {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, #8fc274, #5f8a43);
+  color: #ffffff;
+}
+
+.pa-checklist__cheer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 var(--space-2);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, #e7f1dc, #fff6d8);
+  border: 1.5px solid rgba(111, 145, 82, 0.4);
+  color: #3f6128;
+  font-weight: 800;
+  animation: pa-cheer-pop var(--duration-slow) var(--ease-out) both;
+}
+
+.pa-checklist__cheer svg {
+  color: #c9a227;
+}
+
+@keyframes pa-cheer-pop {
+  0% {
+    scale: 0.7;
+    opacity: 0;
+  }
+  70% {
+    scale: 1.06;
+    opacity: 1;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+.pa-checklist__ok {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 var(--space-2);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--pa-pistachio-soft);
+  color: #3f6128;
+  font-weight: 800;
+}
+
+.pa-checklist__toggle {
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 0 16px;
+  border: 1.5px solid rgba(200, 106, 36, 0.35);
+  border-radius: var(--radius-pill);
+  background: #fff6e8;
+  color: var(--pa-apricot-deep);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pa-checklist__toggle:focus-visible {
+  outline: none;
+  border-radius: 8px;
+  box-shadow: var(--focus-ring);
 }
 
 .pa-checklist__list {
@@ -319,18 +389,47 @@ button.pa-rail__button:hover {
 .pa-footer__status ul {
   margin: 0;
   padding-left: 1.1em;
-  color: var(--ink-soft);
+  color: var(--pa-cocoa-deep);
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.pa-footer__status {
+  font-size: var(--text-md);
+}
+
+.pa-footer__safety {
+  align-self: center;
+  margin-left: auto;
   font-size: var(--text-sm);
+  color: var(--pa-cocoa);
+}
+
+.pa-footer__safety svg {
+  color: var(--pa-blueberry);
 }
 
 .pa-footer__ready {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 6px 10px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, #e7f1dc, #fff6d8);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
   font-weight: 700;
-  color: var(--pa-pistachio-deep);
+  color: #3f6128;
+  animation: pa-cheer-pop var(--duration-slow) var(--ease-out) both;
+}
+
+.pa-footer__ready svg {
+  color: #c9a227;
 }
 
 .pa-root .pa-footer .ad-button.pa-footer__next:disabled {
-  background: repeating-linear-gradient(135deg, #efe9df 0 10px, #e8e1d5 10px 20px);
-  border: 2px dashed rgba(107, 66, 50, 0.35);
+  background: #f1ebe1;
+  border: 1.5px dashed rgba(107, 66, 50, 0.3);
   color: #6e5a50;
   box-shadow: none;
   text-shadow: none;

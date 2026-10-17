@@ -62,7 +62,7 @@ async function snap(page: Page, name: string, settled = true): Promise<void> {
 }
 
 async function restPointer(page: Page): Promise<void> {
-  await page.mouse.move(1279, 799);
+  await page.mouse.move(1279, 719);
 }
 
 async function traceSome(page: Page, share: number): Promise<void> {
@@ -89,7 +89,7 @@ async function traceSome(page: Page, share: number): Promise<void> {
 
 test.describe("quality screenshots", () => {
   test.skip(!process.env["QUALITY_SHOTS_DIR"], "Set QUALITY_SHOTS_DIR to capture quality screenshots");
-  test.use({ viewport: { width: 1280, height: 800 } });
+  test.use({ viewport: { width: 1280, height: 720 } });
 
   test("title", async ({ page }) => {
     await page.goto(PATISSERIE_URL);
@@ -119,7 +119,7 @@ test.describe("quality screenshots", () => {
     await page.waitForFunction(
       () => {
         const label = document.querySelector(".pa-dial")?.getAttribute("aria-label") ?? "";
-        return Number(/shows (\d+)/.exec(label)?.[1] ?? "0") >= 120;
+        return Number(/shows (\d+)/.exec(label)?.[1] ?? "0") >= 150;
       },
       undefined,
       { polling: "raf", timeout: 15_000 },

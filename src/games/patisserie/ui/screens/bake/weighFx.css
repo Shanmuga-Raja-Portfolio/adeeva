@@ -1,0 +1,378 @@
+.pa-pour__grain {
+  animation: pa-grain-fall 0.62s linear infinite;
+}
+
+.pa-pour__splash {
+  animation: pa-grain-hop 0.7s ease-out infinite;
+}
+
+.pa-pour__puff {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pa-puff 1.1s ease-in-out infinite alternate;
+}
+
+.pa-pour__cloud {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pa-cloud 1.4s ease-out infinite;
+}
+
+@keyframes pa-cloud {
+  0% {
+    transform: translateY(6px) scale(0.6);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-14px) scale(1.25);
+    opacity: 0;
+  }
+}
+
+.pa-dial__gap {
+  animation: pa-gap-run 0.6s linear infinite;
+}
+
+@keyframes pa-gap-run {
+  to {
+    stroke-dashoffset: -11;
+  }
+}
+
+.pa-pour__shine {
+  animation: pa-shine-run 0.5s linear infinite;
+}
+
+@keyframes pa-grain-fall {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(14px);
+    opacity: 0.2;
+  }
+}
+
+@keyframes pa-grain-hop {
+  0% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+}
+
+@keyframes pa-puff {
+  from {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+  to {
+    transform: scale(1.12);
+    opacity: 0.95;
+  }
+}
+
+@keyframes pa-shine-run {
+  to {
+    stroke-dashoffset: -19;
+  }
+}
+
+.pa-dial__needle {
+  will-change: transform;
+}
+
+.pa-dial__shake--on {
+  animation: pa-needle-shake 0.16s ease-in-out infinite alternate;
+}
+
+@keyframes pa-needle-shake {
+  from {
+    transform: rotate(-1.4deg);
+  }
+  to {
+    transform: rotate(1.4deg);
+  }
+}
+
+.pa-dial__rim--near {
+  stroke: #e0863e;
+  stroke-width: 6;
+  filter: drop-shadow(0 0 8px rgba(244, 162, 89, 0.95));
+  animation: pa-rim-pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes pa-rim-pulse {
+  to {
+    filter: drop-shadow(0 0 16px rgba(244, 162, 89, 1));
+  }
+}
+
+.pa-weigh-station__scene > .pa-weigh-station__banner--near {
+  background: linear-gradient(180deg, #f7c96b, #e9a23b);
+  color: #3b1d0c;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 4px 0 #b9772a,
+    0 0 0 6px rgba(247, 201, 107, 0.4),
+    0 12px 24px rgba(59, 38, 32, 0.22);
+}
+
+.pa-weigh-station--near .pa-weigh-station__banner {
+  animation:
+    pa-banner-pop var(--duration-base) var(--ease-out) both,
+    pa-urgent 0.6s ease-in-out 0.25s infinite alternate;
+}
+
+@keyframes pa-urgent {
+  to {
+    scale: 1.05;
+  }
+}
+
+.pa-weigh-station__scale {
+  position: relative;
+}
+
+.pa-weigh-station__scale .pa-dial {
+  overflow: visible;
+}
+
+.pa-weigh-station__scene > .pa-weigh-station__banner {
+  z-index: 3;
+}
+
+.pa-pour__stream {
+  filter: drop-shadow(2px 3px 2px rgba(59, 38, 32, 0.28));
+}
+
+.pa-weigh-burst {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  z-index: 2;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.pa-weigh-burst__glow {
+  position: absolute;
+  left: -170px;
+  top: -170px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 236, 160, 0.75), rgba(255, 236, 160, 0) 65%);
+  animation: pa-burst-glow 0.9s var(--ease-out) both;
+}
+
+.pa-weigh-burst__ray {
+  position: absolute;
+  left: -5px;
+  top: -168px;
+  width: 10px;
+  height: 46px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #ffe08a, rgba(255, 224, 138, 0));
+  transform-origin: 5px 168px;
+  animation: pa-burst-ray 0.8s var(--ease-out) both;
+}
+
+.pa-weigh-burst__spark {
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  rotate: 45deg;
+  box-shadow: 0 2px 4px rgba(59, 38, 32, 0.25);
+  animation: pa-burst-spark 0.9s var(--ease-out) both;
+}
+
+.pa-weigh-burst__stamp {
+  position: absolute;
+  left: 82px;
+  top: -190px;
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #8fc274, #4f8a36);
+  border: 4px solid #ffffff;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(59, 38, 32, 0.3);
+  animation: pa-burst-stamp 0.6s var(--ease-out) 0.15s both;
+}
+
+.pa-weigh-burst__stamp svg {
+  stroke-width: 3.4;
+}
+
+@keyframes pa-burst-glow {
+  from {
+    scale: 0.3;
+    opacity: 0;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+@keyframes pa-burst-ray {
+  from {
+    scale: 1 0.2;
+    opacity: 0;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+@keyframes pa-burst-spark {
+  from {
+    translate: 0 0;
+    opacity: 0;
+  }
+}
+
+@keyframes pa-burst-stamp {
+  0% {
+    scale: 0;
+    rotate: -30deg;
+  }
+  70% {
+    scale: 1.2;
+    rotate: 8deg;
+  }
+  100% {
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+
+.pa-weigh__item--done {
+  background: linear-gradient(90deg, #e7f1dc, #f4f9ee);
+  border-color: rgba(111, 145, 82, 0.35);
+}
+
+.pa-weigh__item--done .pa-weigh__grams {
+  color: #3f6128;
+}
+
+.pa-weigh__tick {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #8fc274, #5f8a43);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(63, 97, 40, 0.35);
+  animation: pa-tick-pop 0.5s var(--ease-out) both;
+}
+
+.pa-weigh__tick svg {
+  stroke-width: 3.2;
+}
+
+.pa-weigh__tick::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 3px dotted #f7c548;
+  opacity: 0;
+  animation: pa-tick-ring 0.7s var(--ease-out) both;
+}
+
+@keyframes pa-tick-pop {
+  0% {
+    scale: 0.2;
+  }
+  60% {
+    scale: 1.3;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes pa-tick-ring {
+  0% {
+    scale: 0.6;
+    opacity: 1;
+  }
+  100% {
+    scale: 1.6;
+    opacity: 0;
+  }
+}
+
+.pa-weigh-station__scene > .pa-weigh-lineup {
+  position: absolute;
+  left: 14px;
+  bottom: 18px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pa-weigh-lineup__item {
+  position: relative;
+  margin-right: -10px;
+  filter: drop-shadow(3px 6px 4px rgba(59, 38, 32, 0.28));
+}
+
+.pa-weigh-lineup__item:nth-child(even) {
+  translate: 0 8px;
+}
+
+.pa-weigh-lineup__item--done {
+  opacity: 0.72;
+  filter: saturate(0.6) drop-shadow(3px 6px 4px rgba(59, 38, 32, 0.2));
+}
+
+.pa-weigh-lineup__item svg {
+  display: block;
+}
+
+.pa-weigh-lineup__tick {
+  position: absolute;
+  right: 2px;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #8fc274, #5f8a43);
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  animation: pa-tick-pop 0.5s var(--ease-out) both;
+}
+
+.pa-weigh-lineup__tick svg {
+  stroke-width: 3.2;
+}

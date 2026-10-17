@@ -91,7 +91,7 @@ export function TitleScreen({
           </Button>
         </nav>
         <section className="pa-title__hero pa-doily">
-          <Wordmark tagline="Bake, pipe and box up treats at Crumb & Comet on Larkspur Street." />
+          <Wordmark tagline="Bake, pipe and box up treats on Larkspur Street." />
           <div className="pa-title__menu">
             {resume !== null && resume.kind === "ready" ? (
               <Button

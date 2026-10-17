@@ -16,10 +16,12 @@ import {
 import { useAssist } from "../../useAssist";
 import { PantryDialog } from "./PantryDialog";
 import { StageFooter } from "./StageFooter";
-import { assistHint, SAFETY_LINE } from "./stageNames";
+import { assistHint } from "./stageNames";
 import type { StageProps } from "./stageProps";
+import { WeighLineup } from "./WeighLineup";
 import { WeighStation } from "./WeighStation";
 import "./weigh.css";
+import "./weighFx.css";
 
 export function WeighStage(props: StageProps) {
   const { state, run, dispatch } = props;
@@ -49,6 +51,17 @@ export function WeighStage(props: StageProps) {
     );
   });
   const amount = mix.weighed.find((item) => item.ingredient === current);
+  const helper = (
+    <div className="pa-weigh__helper">
+      <ToggleSwitch
+        label="Scale helper"
+        description="Stops at the green. Best score: 80."
+        checked={assist}
+        onChange={setAssist}
+      />
+      {struggling && !assist ? <p className="pa-hint">{assistHint("Scale helper")}</p> : null}
+    </div>
+  );
   const nextMissing = (after: IngredientId) =>
     mix.weighed.find((item) => item.ingredient !== after && entry.weighs[item.ingredient] === undefined)
       ?.ingredient ?? null;
@@ -84,14 +97,22 @@ export function WeighStage(props: StageProps) {
                 <li key={item.ingredient}>
                   <button
                     type="button"
-                    className={
-                      item.ingredient === current ? "pa-weigh__item pa-weigh__item--active" : "pa-weigh__item"
-                    }
+                    className={[
+                      "pa-weigh__item",
+                      item.ingredient === current ? "pa-weigh__item--active" : "",
+                      record === undefined ? "" : "pa-weigh__item--done",
+                    ].join(" ")}
                     onClick={() => setPicked(item.ingredient)}
                     disabled={entry.committed}
                     aria-pressed={item.ingredient === current}
                   >
-                    <span className="pa-weigh__dot" style={{ background: ingredient.colour }} />
+                    {record === undefined ? (
+                      <span className="pa-weigh__dot" style={{ background: ingredient.colour }} />
+                    ) : (
+                      <span className="pa-weigh__tick" aria-label="Weighed">
+                        <Icon name="check" size={16} />
+                      </span>
+                    )}
                     <span>{ingredient.name}</span>
                     <span className="pa-weigh__grams">
                       {record === undefined
@@ -161,13 +182,6 @@ export function WeighStage(props: StageProps) {
               Into the bowl
             </Button>
           )}
-          <ToggleSwitch
-            label="Scale helper"
-            description="A stop line, and the pour stops by itself. Counts up to 80%."
-            checked={assist}
-            onChange={setAssist}
-          />
-          {struggling && !assist ? <p className="pa-hint">{assistHint("Scale helper")}</p> : null}
         </aside>
         <div className="pa-weigh__bench">
           {amount !== undefined && !entry.committed ? (
@@ -184,17 +198,25 @@ export function WeighStage(props: StageProps) {
               dispatch={dispatch}
               onKept={() => setPicked(nextMissing(amount.ingredient))}
               onNeedPantry={() => setPantryOpen(true)}
+              helper={helper}
+              lineup={
+                <WeighLineup
+                  items={mix.weighed.map((item) => item.ingredient)}
+                  done={mix.weighed
+                    .map((item) => item.ingredient)
+                    .filter((item) => entry.weighs[item] !== undefined)}
+                  current={amount.ingredient}
+                />
+              }
             />
           ) : (
             <div className="pa-weigh__bowl-done">
               <p>
                 {entry.committed ? "This batch is in the bowl. Lovely!" : "Pick an ingredient from the list."}
               </p>
+              {helper}
             </div>
           )}
-          <p className="pa-safety pa-safety--quiet">
-            <Icon name="shield" size={14} /> {SAFETY_LINE}
-          </p>
         </div>
       </div>
       <PantryDialog

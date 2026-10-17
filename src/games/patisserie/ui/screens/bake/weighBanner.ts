@@ -1,6 +1,8 @@
 import type { PourState } from "./weighPour";
 
-export type WeighBannerTone = "ready" | "pouring" | "green" | "over" | "done" | "great";
+export type WeighBannerTone = "ready" | "pouring" | "near" | "green" | "over" | "done" | "great";
+
+const NEAR_SHARE = 0.25;
 
 export interface WeighBannerInput {
   readonly pour: PourState;
@@ -34,6 +36,8 @@ export function weighBanner({
   if (pour.holding) {
     if (!covered && inZone) return { text: "In the green! Let go now!", tone: "green" };
     if (!covered && over) return { text: "Too much! Let go!", tone: "over" };
+    if (!covered && pour.grams >= target * (1 - band) - target * NEAR_SHARE)
+      return { text: "Nearly there… let go soon!", tone: "near" };
     return { text: `Pouring… stop near ${target} ${unit}`, tone: "pouring" };
   }
   if (pour.settleLeft > 0) return { text: "The scale keeps going after you let go!", tone: "pouring" };

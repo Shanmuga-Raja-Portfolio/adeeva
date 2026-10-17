@@ -207,3 +207,9 @@
 .pa-oven-pair__stop--deep {
   background: #e9b872;
 }
+
+@media (min-width: 1101px) {
+  .pa-oven-bench .pa-oven {
+    max-height: max(300px, calc(100dvh - 330px));
+  }
+}

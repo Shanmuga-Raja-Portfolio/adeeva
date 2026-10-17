@@ -1,0 +1,389 @@
+.pa-hub__plans {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  scroll-margin-top: 76px;
+}
+
+.pa-salon-hero {
+  position: relative;
+  height: clamp(560px, calc(100dvh - 94px), 780px);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  isolation: isolate;
+}
+
+.pa-salon-hero__view {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
+}
+
+.pa-salon-hero__stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100cqw, 187.5cqh);
+  aspect-ratio: 1200 / 640;
+  transform: translate(-50%, -50%);
+}
+
+.pa-salon-hero__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.pa-salon-hero__light {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 22% 36% at 30% 50%, rgba(255, 236, 190, 0.6), transparent 72%),
+    radial-gradient(ellipse 18% 26% at 62% 62%, rgba(255, 232, 186, 0.45), transparent 72%),
+    radial-gradient(ellipse 26% 34% at 52% 24%, rgba(255, 246, 214, 0.4), transparent 70%),
+    radial-gradient(ellipse 80% 75% at 45% 45%, transparent 60%, rgba(74, 38, 26, 0.3)),
+    linear-gradient(
+      180deg,
+      rgba(255, 214, 160, 0.12),
+      transparent 40%,
+      transparent 72%,
+      rgba(59, 38, 32, 0.26)
+    );
+}
+
+.pa-salon-hero__baker {
+  position: absolute;
+  left: 0;
+  bottom: -25%;
+  z-index: 2;
+  height: 100%;
+}
+
+.pa-salon-hero__baker svg {
+  position: relative;
+  height: 100%;
+  width: auto;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 10px 12px rgba(59, 38, 32, 0.28));
+  animation: pa-breathe 3.6s ease-in-out infinite alternate;
+}
+
+.pa-salon-stand {
+  position: absolute;
+  left: 2%;
+  bottom: 0.5%;
+  z-index: 2;
+  width: 44%;
+}
+
+.pa-salon-stand__tiers {
+  position: absolute;
+  left: 37%;
+  bottom: 64%;
+  width: 46%;
+  aspect-ratio: 320 / 360;
+  container-type: inline-size;
+  z-index: 1;
+}
+
+.pa-salon-stand__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 8px 10px rgba(59, 38, 32, 0.24));
+}
+
+.pa-salon-stand__glow {
+  position: absolute;
+  inset: -12% -22% -6%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 55%, rgba(255, 242, 201, 0.85), rgba(255, 242, 201, 0) 65%);
+}
+
+.pa-salon-stand__glint {
+  position: absolute;
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  background: #fffaf0;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  filter: drop-shadow(0 0 4px rgba(255, 214, 120, 0.95));
+  animation: pa-glint 2.4s ease-in-out infinite;
+}
+
+@keyframes pa-glint {
+  0%,
+  100% {
+    scale: 0.6;
+    opacity: 0.4;
+  }
+  50% {
+    scale: 1.1;
+    opacity: 1;
+  }
+}
+
+.pa-salon-stand__plate {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.pa-salon-stand__treat {
+  display: grid;
+  width: 15.5cqw;
+  height: 15.5cqw;
+  margin: 0 -1.8cqw;
+  filter: drop-shadow(0 4px 3px rgba(59, 38, 32, 0.32));
+}
+
+.pa-salon-stand__treat svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pa-salon-stand__treat:nth-child(even) {
+  transform: translateY(1.2cqw);
+}
+
+.pa-salon-stand__plate--ghost .pa-salon-stand__treat {
+  opacity: 0.32;
+  filter: grayscale(0.6);
+}
+
+.pa-salon-stand__table {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 12px rgba(42, 26, 20, 0.3));
+}
+
+.pa-salon-tag {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 4px 3px 22px;
+  white-space: nowrap;
+  transform: translateY(-50%) rotate(-3deg);
+  transform-origin: 0 50%;
+  filter: drop-shadow(0 4px 5px rgba(59, 38, 32, 0.28));
+}
+
+.pa-salon-tag::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #fffdf8, #f6e7cf);
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%);
+  border-radius: 0 999px 999px 0;
+}
+
+.pa-salon-tag::after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-top: -3.5px;
+  border-radius: 50%;
+  background: #c9a227;
+  box-shadow: 0 0 0 2px #fff4cf;
+}
+
+.pa-salon-tag__name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--pa-cocoa-deep);
+}
+
+.pa-salon-tag__stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, #d6eac3, #b5d39a);
+  color: #2f4d1d;
+  font-size: var(--text-md);
+  font-weight: 800;
+}
+
+.pa-salon-tag__later {
+  padding-right: 10px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.pa-salon-tag--empty::before {
+  background: linear-gradient(180deg, #fff8ec, #f3e2c6);
+}
+
+.pa-salon-tag__bake {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, #f6b06d, var(--pa-apricot) 50%, #e0863e);
+  box-shadow: 0 3px 0 #b8622a;
+  color: #3b1d0c;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pa-salon-tag__bake:disabled {
+  background: #efe4d6;
+  box-shadow: none;
+  color: var(--ink-soft);
+  cursor: not-allowed;
+}
+
+.pa-salon-tag__bake:focus-visible,
+.pa-salon-hero__plans:focus-visible {
+  outline: 3px solid var(--pa-blueberry);
+  outline-offset: 3px;
+}
+
+.pa-salon-hero__top {
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  right: calc(clamp(270px, 24%, 300px) + 40px);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.pa-salon-hero__top > * {
+  pointer-events: auto;
+}
+
+.pa-salon-hero__top > .pa-countdown {
+  background: rgba(255, 253, 247, 0.94);
+  box-shadow: 0 8px 18px rgba(59, 38, 32, 0.22);
+}
+
+.pa-salon-hero .pa-easel {
+  position: absolute;
+  top: 16px;
+  right: 2.4%;
+  bottom: 18px;
+  z-index: 2;
+  width: clamp(270px, 24%, 300px);
+}
+
+.pa-salon-hero__plans {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 18px 0 20px;
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 253, 247, 0.94);
+  box-shadow: 0 6px 16px rgba(59, 38, 32, 0.25);
+  color: var(--pa-cocoa-deep);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pa-salon-hero__plans:hover {
+  background: #ffffff;
+}
+
+.pa-salon-hero__chevron {
+  width: 10px;
+  height: 10px;
+  margin-top: -4px;
+  border-right: 3px solid currentColor;
+  border-bottom: 3px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.pa-salon-hero__actions {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  max-width: 62%;
+  padding: 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 250, 240, 0.86);
+  box-shadow: 0 10px 24px rgba(42, 26, 20, 0.3);
+}
+
+@media (max-width: 900px) {
+  .pa-salon-hero {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+  .pa-salon-hero__view {
+    position: relative;
+    inset: auto;
+    order: 1;
+    height: 420px;
+    margin: 0 calc(-1 * var(--space-3));
+  }
+  .pa-salon-hero__baker {
+    display: none;
+  }
+  .pa-salon-hero__top,
+  .pa-salon-hero .pa-easel,
+  .pa-salon-hero__plans,
+  .pa-salon-hero__actions {
+    position: relative;
+    inset: auto;
+    width: auto;
+    max-width: none;
+  }
+  .pa-salon-hero__top {
+    order: 0;
+    margin-bottom: var(--space-3);
+  }
+  .pa-salon-hero .pa-easel {
+    order: 2;
+  }
+  .pa-salon-hero__actions {
+    order: 3;
+    justify-content: stretch;
+    border-radius: var(--radius-lg);
+  }
+  .pa-salon-hero__plans {
+    order: 4;
+    align-self: flex-start;
+  }
+}

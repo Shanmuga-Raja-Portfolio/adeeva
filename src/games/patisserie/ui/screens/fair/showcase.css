@@ -109,8 +109,11 @@
       rgba(0, 0, 0, 0) 55%,
       rgba(0, 0, 0, 0.22)
     ),
-    linear-gradient(180deg, #e9c862 0%, #c9a227 45%, #8e6d12 100%);
-  box-shadow: 0 14px 18px rgba(59, 38, 32, 0.35);
+    linear-gradient(180deg, #fffaf0 0%, #efe4d2 55%, #d8c6a8 100%);
+  border-top: 4px solid #c9a227;
+  box-shadow:
+    inset 0 -6px 0 rgba(201, 162, 39, 0.55),
+    0 14px 18px rgba(59, 38, 32, 0.35);
   z-index: -1;
 }
 
@@ -122,8 +125,10 @@
   top: -22%;
   height: 44%;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 40% 35%, #fff4cf, #f0d27a 55%, #c9a227);
-  box-shadow: inset 0 -2px 0 rgba(142, 109, 18, 0.5);
+  background: radial-gradient(ellipse at 40% 35%, #ffffff, #f6eedf 60%, #e2d3b6);
+  box-shadow:
+    inset 0 -3px 0 #c9a227,
+    0 0 0 2px rgba(201, 162, 39, 0.6);
 }
 
 .pa-showcase__trolley::after {
@@ -194,11 +199,12 @@
   height: 3.4cqi;
   border-radius: 1cqi 1cqi 0 0;
   background:
-    repeating-linear-gradient(90deg, rgba(59, 38, 32, 0) 0 11.5%, rgba(59, 38, 32, 0.25) 11.5% 12%),
-    linear-gradient(180deg, #b7794f, #8a5a42 60%, #6b4232);
+    radial-gradient(circle at 50% 0, #fffaf0 0 0.7cqi, transparent 0.75cqi) 0 0 / 3cqi 1.4cqi repeat-x,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 30%),
+    linear-gradient(180deg, #f2c4c9, #e4a9bf 55%, #c9819f);
   box-shadow:
-    0 -3px 0 #d39a6a,
-    0 -8px 16px rgba(59, 38, 32, 0.25);
+    0 -4px 0 #fffaf0,
+    0 -10px 18px rgba(59, 38, 32, 0.28);
 }
 
 .pa-showcase__fan {
@@ -247,6 +253,29 @@
   box-shadow: 0 4px 10px rgba(59, 38, 32, 0.3);
   color: #d0587e;
   animation: pa-cheer var(--duration-slow) var(--ease-out) both;
+}
+
+.pa-showcase__cheer::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  bottom: -9px;
+  width: 14px;
+  height: 14px;
+  background: #fffdf7;
+  border-right: 3px solid currentColor;
+  border-bottom: 3px solid currentColor;
+  rotate: 45deg;
+  border-bottom-right-radius: 3px;
+}
+
+.pa-showcase__fan:last-child .pa-showcase__cheer {
+  right: 0;
+}
+
+.pa-showcase__cheer svg {
+  position: relative;
+  z-index: 1;
 }
 
 .pa-showcase__cheer--star {
@@ -406,7 +435,7 @@
   box-shadow: 0 6px 16px rgba(59, 38, 32, 0.3);
   color: #fff7e6;
   font-family: var(--font-display);
-  font-size: clamp(16px, 1.7cqi, 22px);
+  font-size: clamp(18px, 2cqi, 26px);
   font-weight: 700;
   text-align: center;
 }
@@ -420,22 +449,31 @@
 .pa-showcase__music {
   white-space: nowrap;
   font-size: var(--text-md);
-  padding: var(--space-2) var(--space-4);
-  border-radius: 999px;
-  background: var(--card);
-  font-weight: 700;
+  font-style: italic;
+  font-weight: 600;
   color: #5b3f7a;
-  box-shadow: var(--shadow-sm);
 }
 
 .pa-showcase__music--playing {
   animation: pa-bob-small 700ms ease-in-out infinite alternate;
 }
 
+.pa-showcase__step {
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--pa-cocoa-deep);
+}
+
+.pa-root .ad-button.pa-showcase__on {
+  min-width: 190px;
+}
+
 .pa-showcase__progress {
   position: relative;
   flex: 1;
-  height: 14px;
+  height: 20px;
   border-radius: 999px;
   background: rgba(59, 38, 32, 0.12);
   box-shadow: inset 0 1px 2px rgba(59, 38, 32, 0.15);

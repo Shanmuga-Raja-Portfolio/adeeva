@@ -21,6 +21,7 @@ import {
 } from "../../../core";
 import type { PlayView } from "../../patisserieRoute";
 import { GlasshouseBackdrop } from "../../art/GlasshouseBackdrop";
+import { daysAway } from "./daysAway";
 import { FairCard } from "./FairCard";
 import { MenuBoard } from "./MenuBoard";
 import { RibbonWall } from "./RibbonWall";
@@ -34,13 +35,6 @@ export interface SeasonPanelProps {
   readonly dispatch: (action: Action) => boolean;
   readonly once: (event: ClickLike, action: Action) => boolean;
   readonly onOpen: (view: PlayView) => void;
-}
-
-function daysAway(day: number, target: number): string {
-  const days = target - day;
-  if (days === 0) return "today";
-  if (days === 1) return "tomorrow";
-  return days > 0 ? `in ${days} days` : "done";
 }
 
 export function SeasonPanel({ state, dispatch, once, onOpen }: SeasonPanelProps) {

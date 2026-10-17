@@ -13,7 +13,8 @@ export type AvatarPose =
   | "present"
   | "point"
   | "chat"
-  | "talk";
+  | "talk"
+  | "carry";
 
 interface ArmBend {
   readonly shoulder: number;
@@ -39,6 +40,7 @@ const WAVE: ArmBend = { shoulder: 42, elbow: 138 };
 const OFFER: ArmBend = { shoulder: 30, elbow: 36 };
 const REACH: ArmBend = { shoulder: 62, elbow: 14 };
 const TALK: ArmBend = { shoulder: 22, elbow: 112 };
+const CARRY: ArmBend = { shoulder: 14, elbow: -90 };
 
 const POSES: Readonly<Record<Exclude<AvatarPose, "rest">, PoseAngles>> = {
   poised: { left: HAND_ON_HIP, right: RELAXED },
@@ -51,6 +53,7 @@ const POSES: Readonly<Record<Exclude<AvatarPose, "rest">, PoseAngles>> = {
   point: { left: SWAY, right: REACH },
   chat: { left: HAND_ON_HIP, right: TALK },
   talk: { left: SWAY, right: TALK },
+  carry: { left: CARRY, right: CARRY },
 };
 
 interface SideProps {

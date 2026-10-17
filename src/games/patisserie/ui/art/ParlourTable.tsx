@@ -5,6 +5,22 @@ export interface ParlourTableProps {
   readonly cloth: string;
   readonly clothShade: string;
   readonly teapot: string;
+  readonly reserved?: boolean | undefined;
+}
+
+function TentCard() {
+  return (
+    <g transform="translate(8 12)">
+      <ellipse cx={0} cy={2} rx={24} ry={4} fill="#3b2620" opacity={0.16} />
+      <path d="M-20 0 L-15 -30 H15 L20 0 Z" fill="#f4e6cf" />
+      <path d="M-19 0 L-14 -29 H14 L19 0 Z" fill="#fffaf0" stroke="#c9a227" strokeWidth={1.6} />
+      <path
+        d="M0 -8 C-8 -13 -7 -21 -3 -21 C-1.5 -21 0 -19.5 0 -18 C0 -19.5 1.5 -21 3 -21 C7 -21 8 -13 0 -8 Z"
+        fill="#e07a9b"
+      />
+      <path d="M-9 -4 H9" stroke="#8c4a6a" strokeWidth={1.6} strokeLinecap="round" opacity={0.6} />
+    </g>
+  );
 }
 
 function Chair({ side }: { readonly side: 1 | -1 }) {
@@ -31,7 +47,15 @@ function Chair({ side }: { readonly side: 1 | -1 }) {
   );
 }
 
-export function ParlourTable({ x, y, scale, cloth, clothShade, teapot }: ParlourTableProps) {
+export function ParlourTable({
+  x,
+  y,
+  scale,
+  cloth,
+  clothShade,
+  teapot,
+  reserved = false,
+}: ParlourTableProps) {
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`}>
       <ellipse cx={0} cy={82} rx={150} ry={16} fill="#3b2620" opacity={0.18} />
@@ -119,6 +143,7 @@ export function ParlourTable({ x, y, scale, cloth, clothShade, teapot }: Parlour
           <path d="M-8 -9 H8" stroke="#f2c4c9" strokeWidth={2} />
         </g>
       ))}
+      {reserved ? <TentCard /> : null}
     </g>
   );
 }

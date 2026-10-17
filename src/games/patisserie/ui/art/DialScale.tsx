@@ -1,5 +1,6 @@
 import { darken, lighten } from "../../../../ui/art/colourMix";
 import { useSvgId } from "../../../../ui/art/useSvgId";
+import { PourStream } from "./PourStream";
 
 export interface DialScaleProps {
   readonly grams: number;
@@ -10,6 +11,8 @@ export interface DialScaleProps {
   readonly pouring: boolean;
   readonly unit: string;
   readonly hideZone?: boolean | undefined;
+  readonly needleGrams?: number | undefined;
+  readonly near?: boolean | undefined;
 }
 
 const CX = 150;
@@ -30,12 +33,6 @@ function angleFor(grams: number, max: number): number {
 function at(angle: number, radius: number): [number, number] {
   const radians = (angle * Math.PI) / 180;
   return [CX + radius * Math.sin(radians), CY - radius * Math.cos(radians)];
-}
-
-function labelled(index: number, targetAngle: number, showTarget: boolean): boolean {
-  if (index === 0 || index === 10 || index % 2 === 1) return false;
-  const angle = -SWEEP + (2 * SWEEP * index) / 10;
-  return !showTarget || Math.abs(angle - targetAngle) > 24;
 }
 
 const SPECKS: readonly [number, number][] = [
@@ -87,56 +84,6 @@ function Mound({
   );
 }
 
-function PourStream({ colour, landing }: { readonly colour: string; readonly landing: number }) {
-  const edge = darken(colour, 0.28);
-  return (
-    <g className="pa-dial__stream">
-      <g transform="translate(234 -8) rotate(38)">
-        <path
-          d="M-26 -30 Q-30 10 -18 28 H18 Q30 10 26 -30 Z"
-          fill="#e8d3ad"
-          stroke="#a8875a"
-          strokeWidth={2}
-        />
-        <rect x={-26} y={-6} width={52} height={16} fill={colour} stroke={edge} strokeWidth={1.4} />
-        <path d="M-18 28 Q0 36 18 28" fill={colour} stroke="#a8875a" strokeWidth={2} />
-        <path d="M-16 -24 Q-20 6 -12 22" stroke="#ffffff" strokeWidth={3} opacity={0.45} fill="none" />
-      </g>
-      <path
-        d={`M226 24 Q182 28 160 ${landing - 30} L155 ${landing} L139 ${landing} Q158 ${landing - 40} 208 10 Z`}
-        fill={colour}
-        stroke={edge}
-        strokeWidth={1.6}
-        strokeLinejoin="round"
-      />
-      <path
-        d={`M212 18 Q174 28 155 ${landing - 28}`}
-        stroke={lighten(colour, 0.7)}
-        strokeWidth={2}
-        fill="none"
-      />
-      {[
-        [-22, -6, 3],
-        [18, -8, 2.6],
-        [-12, -16, 2],
-        [26, -18, 1.8],
-        [-30, -12, 1.6],
-        [8, -20, 2.2],
-      ].map(([dx = 0, dy = 0, r = 2]) => (
-        <circle
-          key={`${dx}-${dy}`}
-          cx={146 + dx}
-          cy={landing + dy}
-          r={r}
-          fill={colour}
-          stroke={edge}
-          strokeWidth={0.8}
-        />
-      ))}
-    </g>
-  );
-}
-
 function arc(from: number, to: number, radius: number): string {
   const [x1, y1] = at(from, radius);
   const [x2, y2] = at(to, radius);
@@ -153,21 +100,22 @@ export function DialScale({
   pouring,
   unit,
   hideZone = false,
+  needleGrams = grams,
+  near = false,
 }: DialScaleProps) {
   const id = useSvgId("dial");
   const max = niceMax(target);
   const low = angleFor(target * (1 - band), max);
   const high = angleFor(target * (1 + band), max);
-  const needle = angleFor(grams, max);
+  const needle = angleFor(needleGrams, max);
   const inZone = Math.abs(grams - target) <= target * band;
   const ticks = Array.from({ length: 11 }, (_, index) => index);
   const fill = Math.min(1, grams / (target * 1.6));
   const targetAngle = angleFor(target, max);
   const [stopX, stopY] = at(targetAngle, R - 30);
-  const [labelX, labelY] = at(targetAngle, R - 42);
-  const [flagX, flagY] = at(targetAngle, R + 9);
-  const [flagLeftX, flagLeftY] = at(targetAngle - 6, R + 22);
-  const [flagRightX, flagRightY] = at(targetAngle + 6, R + 22);
+  const [flagX, flagY] = at(targetAngle, R + 6);
+  const [flagLeftX, flagLeftY] = at(targetAngle - 8, R + 26);
+  const [flagRightX, flagRightY] = at(targetAngle + 8, R + 26);
   return (
     <svg
       viewBox="0 -44 300 384"
@@ -194,11 +142,33 @@ export function DialScale({
           <stop offset="0.45" stopColor="#3b2620" stopOpacity={0} />
           <stop offset="1" stopColor="#3b2620" stopOpacity={0.2} />
         </linearGradient>
+        <linearGradient id={`${id}-side`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#ffffff" stopOpacity={0.32} />
+          <stop offset="0.18" stopColor="#ffffff" stopOpacity={0.05} />
+          <stop offset="0.8" stopColor="#1c2350" stopOpacity={0} />
+          <stop offset="1" stopColor="#1c2350" stopOpacity={0.35} />
+        </linearGradient>
+        <radialGradient id={`${id}-shine`} cx="0.3" cy="0.2" r="0.6">
+          <stop offset="0" stopColor="#ffffff" stopOpacity={0.55} />
+          <stop offset="1" stopColor="#ffffff" stopOpacity={0} />
+        </radialGradient>
         <clipPath id={`${id}-bowl`}>
           <path d="M70 46 Q72 100 150 104 Q228 100 230 46 Z" />
         </clipPath>
       </defs>
+      <ellipse cx={150} cy={336} rx={112} ry={9} fill="#2a1a14" opacity={0.3} />
+      <rect x={70} y={318} width={30} height={16} rx={6} fill="#262d5e" />
+      <rect x={200} y={318} width={30} height={16} rx={6} fill="#262d5e" />
       <rect x={52} y={110} width={196} height={222} rx={34} fill={`url(#${id}-body)`} />
+      <rect x={52} y={110} width={196} height={222} rx={34} fill={`url(#${id}-side)`} />
+      <path
+        d="M66 140 Q64 220 70 300"
+        stroke="#ffffff"
+        strokeWidth={5}
+        strokeLinecap="round"
+        opacity={0.28}
+        fill="none"
+      />
       <rect x={60} y={104} width={180} height={14} rx={7} fill="#c9d0ea" />
       <path
         d="M70 46 Q72 100 150 104 Q228 100 230 46 Z"
@@ -217,8 +187,16 @@ export function DialScale({
       />
       <ellipse cx={150} cy={46} rx={80} ry={10} fill="none" stroke="#9aa6cf" strokeWidth={2} />
       <ellipse cx={150} cy={46} rx={80} ry={10} fill="#ffffff" opacity={0.25} />
-      {pouring ? <PourStream colour={colour} landing={moundPeak(fill) + 2} /> : null}
-      <circle cx={CX} cy={CY} r={R + 8} fill="#fffaf0" stroke="#2f3a78" strokeWidth={4} />
+      {pouring ? <PourStream id={id} colour={colour} landing={moundPeak(fill) + 2} /> : null}
+      <circle
+        cx={CX}
+        cy={CY}
+        r={R + 8}
+        fill="#fffaf0"
+        stroke="#2f3a78"
+        strokeWidth={4}
+        className={near ? "pa-dial__rim pa-dial__rim--near" : "pa-dial__rim"}
+      />
       <circle cx={CX} cy={CY} r={R} fill={`url(#${id}-face)`} />
       {hideZone ? (
         <path
@@ -241,16 +219,16 @@ export function DialScale({
         const angle = -SWEEP + (2 * SWEEP * index) / 10;
         const [x1, y1] = at(angle, R - 2);
         const [x2, y2] = at(angle, R - (index % 5 === 0 ? 24 : 14));
-        const [tx, ty] = at(angle, R - 36);
         return (
-          <g key={index}>
-            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#3b2620" strokeWidth={index % 5 === 0 ? 3 : 1.6} />
-            {labelled(index, targetAngle, !hideZone) ? (
-              <text x={tx} y={ty + 7} textAnchor="middle" fontSize={19} fontWeight={800} fill="#4a2c20">
-                {(max * index) / 10}
-              </text>
-            ) : null}
-          </g>
+          <line
+            key={index}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="#3b2620"
+            strokeWidth={index % 5 === 0 ? 3 : 1.6}
+          />
         );
       })}
       {hideZone ? null : (
@@ -262,21 +240,19 @@ export function DialScale({
             strokeWidth={2}
             strokeLinejoin="round"
           />
-          <text
-            x={labelX}
-            y={labelY + 6}
-            textAnchor="middle"
-            fontSize={17}
-            fontWeight={800}
-            fill="#3f7a2e"
-            stroke="#fffdf7"
-            strokeWidth={4}
-            paintOrder="stroke"
-          >
-            {target}
-          </text>
         </g>
       )}
+      {near && !hideZone && needle < low ? (
+        <path
+          d={arc(needle, low, R - 12)}
+          stroke="#f4a259"
+          strokeWidth={10}
+          strokeLinecap="round"
+          strokeDasharray="2 9"
+          fill="none"
+          className="pa-dial__gap"
+        />
+      ) : null}
       {stopLine ? (
         <g>
           <line
@@ -291,13 +267,37 @@ export function DialScale({
           <circle cx={stopX} cy={stopY} r={6} fill="#4b5aa6" />
         </g>
       ) : null}
+      {pouring
+        ? [7, 14].map((lag, index) => (
+            <path
+              key={lag}
+              d={`M${CX - 3} ${CY} L${CX} ${CY - R + 14} L${CX + 3} ${CY} Z`}
+              fill="#d9573a"
+              opacity={0.3 - index * 0.14}
+              transform={`rotate(${needle - lag} ${CX} ${CY})`}
+            />
+          ))
+        : null}
       <g
         style={{ transform: `rotate(${needle}deg)`, transformOrigin: `${CX}px ${CY}px` }}
         className="pa-dial__needle"
       >
-        <path d={`M${CX - 4} ${CY} L${CX} ${CY - R + 10} L${CX + 4} ${CY} Z`} fill="#d9573a" />
+        <g
+          className={pouring ? "pa-dial__shake pa-dial__shake--on" : "pa-dial__shake"}
+          style={{ transformOrigin: `${CX}px ${CY}px` }}
+        >
+          <path
+            d={`M${CX - 5} ${CY + 18} L${CX - 4} ${CY} L${CX} ${CY - R + 10} L${CX + 4} ${CY} L${CX + 5} ${CY + 18} Z`}
+            fill="#d9573a"
+            stroke="#a8341f"
+            strokeWidth={1}
+            strokeLinejoin="round"
+          />
+        </g>
       </g>
       <circle cx={CX} cy={CY} r={10} fill="#3b2620" />
+      <circle cx={CX - 3} cy={CY - 3} r={3} fill="#ffffff" opacity={0.5} />
+      <circle cx={CX} cy={CY} r={R} fill={`url(#${id}-shine)`} pointerEvents="none" />
       <rect
         x={78}
         y={CY + 40}

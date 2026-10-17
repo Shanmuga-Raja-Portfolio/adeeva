@@ -1,7 +1,9 @@
 import type { AvatarLook } from "../../../../engine/avatar";
 import { AvatarFigure } from "../../../../ui/art/avatar/Avatar";
+import type { AvatarPose } from "../../../../ui/art/avatar/ArmPose";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 import { ParlourCabinet } from "./ParlourCabinet";
+import { ParlourCat } from "./ParlourCat";
 import { ParlourTable } from "./ParlourTable";
 import { ParlourWindow } from "./ParlourWindow";
 
@@ -10,22 +12,95 @@ export interface CometRoomBackdropProps {
   readonly glow?: number | undefined;
   readonly daylight?: boolean | undefined;
   readonly guests?: readonly AvatarLook[] | undefined;
+  readonly layout?: "room" | "hub" | undefined;
 }
+
+interface TableSpot {
+  readonly x: number;
+  readonly y: number;
+  readonly scale: number;
+  readonly cloth: string;
+  readonly clothShade: string;
+  readonly teapot: string;
+}
+
+interface Seat {
+  readonly x: number;
+  readonly facing: 1 | -1;
+  readonly line: number;
+  readonly back: boolean;
+}
+
+interface RoomLayout {
+  readonly tables: readonly TableSpot[];
+  readonly seats: readonly Seat[];
+  readonly guestScale: number;
+  readonly cat: readonly [number, number] | null;
+  readonly lamps: readonly (readonly [number, number])[];
+  readonly palms: readonly (readonly [number, number, number])[];
+}
+
+const MINT_TABLE = { cloth: "#e7f1dc", clothShade: "#b9d3a0", teapot: "#a9c98b" };
+const PEACH_TABLE = { cloth: "#fde6cf", clothShade: "#f0c49c", teapot: "#9fd0ee" };
+const ROSE_TABLE = { cloth: "#f7dbe6", clothShade: "#e4a9bf", teapot: "#b9a7dc" };
+
+const LAYOUTS: Readonly<Record<"room" | "hub", RoomLayout>> = {
+  room: {
+    tables: [
+      { x: 400, y: 414, scale: 0.8, ...MINT_TABLE },
+      { x: 650, y: 418, scale: 0.8, ...PEACH_TABLE },
+      { x: 990, y: 414, scale: 0.8, ...ROSE_TABLE },
+    ],
+    seats: [
+      { x: 700, facing: 1, line: 416, back: true },
+      { x: 598, facing: -1, line: 416, back: true },
+      { x: 452, facing: -1, line: 416, back: true },
+    ],
+    guestScale: 0.34,
+    cat: null,
+    lamps: [
+      [400, 196],
+      [650, 186],
+      [990, 196],
+    ],
+    palms: [
+      [760, 372, 1.1],
+      [1150, 372, 1],
+    ],
+  },
+  hub: {
+    tables: [{ x: 742, y: 468, scale: 0.95, ...PEACH_TABLE }],
+    seats: [
+      { x: 796, facing: 1, line: 466, back: true },
+      { x: 688, facing: -1, line: 466, back: true },
+      { x: 858, facing: -1, line: 498, back: false },
+      { x: 612, facing: 1, line: 498, back: false },
+    ],
+    guestScale: 0.44,
+    cat: [600, 600],
+    lamps: [[742, 196]],
+    palms: [[1160, 384, 1]],
+  },
+};
 
 const STRIPES = Array.from({ length: 30 }, (_, index) => index);
 const PANELS = Array.from({ length: 12 }, (_, index) => index);
 const PLANKS = Array.from({ length: 16 }, (_, index) => index);
-const LAMPS: readonly [number, number][] = [
-  [400, 196],
-  [650, 186],
-  [990, 196],
+const MOTES: readonly (readonly [number, number, number])[] = [
+  [520, 380, 3],
+  [566, 452, 2.2],
+  [610, 400, 2.6],
+  [652, 488, 1.8],
+  [700, 420, 2.4],
+  [548, 520, 2],
+  [676, 352, 1.6],
 ];
-const GUEST_SCALE = 0.34;
-const GUEST_SPOTS: readonly [number, number][] = [
-  [700, 1],
-  [598, -1],
-  [452, -1],
+const RAYS: readonly (readonly [number, number, number])[] = [
+  [500, 26, 250],
+  [574, 40, 420],
+  [664, 30, 600],
 ];
+const GUEST_POSES: readonly AvatarPose[] = ["chat", "poised-right", "present", "poised"];
 const PENNANTS = Array.from({ length: 25 }, (_, index) => index);
 const PENNANT_COLOURS = ["#f2c4c9", "#b9a7dc", "#fff1cf", "#a9c98b", "#9fd0ee"];
 
@@ -64,6 +139,24 @@ function Pennants() {
   );
 }
 
+function Bulbs({ id }: { readonly id: string }) {
+  return (
+    <g>
+      {PENNANTS.slice(0, 24).map((index) => {
+        const x = index * 50 + 45;
+        const y = bunting(x) + 3;
+        return (
+          <g key={index}>
+            <circle cx={x} cy={y + 4} r={16} fill={`url(#${id}-bulb)`} />
+            <path d={`M${x} ${y - 3} V${y}`} stroke="#6b4232" strokeWidth={2} />
+            <circle cx={x} cy={y + 5} r={4.6} fill="#fff4c4" stroke="#e9b949" strokeWidth={1} />
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
 function PottedPalm({ x, y, scale }: { readonly x: number; readonly y: number; readonly scale: number }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`}>
@@ -83,21 +176,126 @@ function PottedPalm({ x, y, scale }: { readonly x: number; readonly y: number; r
   );
 }
 
-function SeatedGuests({ id, looks }: { readonly id: string; readonly looks: readonly AvatarLook[] }) {
+function ChairBack() {
   return (
-    <g clipPath={`url(#${id}-seat)`}>
-      {looks.slice(0, GUEST_SPOTS.length).map((look, index) => {
-        const [x, facing] = GUEST_SPOTS[index] ?? [600, 1];
-        const left = x - 200 * GUEST_SCALE * facing;
+    <g>
+      <path
+        d="M104 340 V236 Q104 160 200 158 Q296 160 296 236 V340"
+        fill="none"
+        stroke="#6b4232"
+        strokeWidth={18}
+        strokeLinecap="round"
+      />
+      <path
+        d="M104 340 V236 Q104 160 200 158 Q296 160 296 236 V340"
+        fill="none"
+        stroke="#a87452"
+        strokeWidth={8}
+        strokeLinecap="round"
+      />
+      <path d="M124 236 Q124 182 200 180 Q276 182 276 236 V330 H124 Z" fill="#d58aa5" />
+      <path
+        d="M140 230 Q142 196 200 194"
+        fill="none"
+        stroke="#f3b6cb"
+        strokeWidth={8}
+        strokeLinecap="round"
+      />
+    </g>
+  );
+}
+
+function SeatedGuests({
+  id,
+  looks,
+  room,
+}: {
+  readonly id: string;
+  readonly looks: readonly AvatarLook[];
+  readonly room: RoomLayout;
+}) {
+  const scale = room.guestScale;
+  return (
+    <g>
+      {looks.slice(0, room.seats.length).map((look, index) => {
+        const seat = room.seats[index];
+        if (seat === undefined) return null;
+        const left = seat.x - 200 * scale * seat.facing;
         return (
-          <g
-            key={index}
-            transform={`translate(${left} ${416 - 318 * GUEST_SCALE}) scale(${GUEST_SCALE * facing} ${GUEST_SCALE})`}
-          >
-            <AvatarFigure look={look} mood="delighted" pose={index === 0 ? "wave" : "graceful"} />
+          <g key={index} className={index % 2 === 0 ? "pa-guest-bob" : "pa-guest-bob pa-guest-bob--late"}>
+            <g
+              transform={`translate(${left} ${seat.line - 318 * scale}) scale(${scale * seat.facing} ${scale})`}
+              clipPath={`url(#${id}-seat)`}
+            >
+              {seat.back ? <ChairBack /> : null}
+              <AvatarFigure
+                look={look}
+                mood="delighted"
+                pose={GUEST_POSES[index % GUEST_POSES.length] ?? "graceful"}
+              />
+            </g>
           </g>
         );
       })}
+    </g>
+  );
+}
+
+const HEART = "M0 6 C-10 -1 -9 -10 -4 -10 C-2 -10 0 -8 0 -6 C0 -8 2 -10 4 -10 C9 -10 10 -1 0 6 Z";
+const STAR = "M0 -10 L3 -3 L10 -3 L4.5 1.5 L6.5 9 L0 4.5 L-6.5 9 L-4.5 1.5 L-10 -3 L-3 -3 Z";
+
+function Chatter({
+  x,
+  y,
+  flip,
+  shape,
+  tint,
+}: {
+  readonly x: number;
+  readonly y: number;
+  readonly flip: boolean;
+  readonly shape: string;
+  readonly tint: string;
+}) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <g className="pa-chatter">
+        <path
+          d={flip ? "M8 14 L18 28 L20 12 Z" : "M-8 14 L-18 28 L-20 12 Z"}
+          fill="#ffffff"
+          stroke="#e2d2c2"
+          strokeWidth={1.4}
+        />
+        <rect
+          x={-24}
+          y={-18}
+          width={48}
+          height={36}
+          rx={16}
+          fill="#ffffff"
+          stroke="#e2d2c2"
+          strokeWidth={1.4}
+        />
+        <path d={shape} fill={tint} transform="translate(0 1) scale(1.15)" />
+      </g>
+    </g>
+  );
+}
+
+function Motes() {
+  return (
+    <g className="pa-motes" fill="#fff8dc">
+      {MOTES.map(([x, y, r], index) => (
+        <circle
+          key={`${x}-${y}`}
+          cx={x}
+          cy={y}
+          r={r}
+          opacity={0.75}
+          className="pa-mote"
+          style={{ animationDelay: `${index * -0.9}s` }}
+        />
+      ))}
     </g>
   );
 }
@@ -141,8 +339,10 @@ export function CometRoomBackdrop({
   glow = 0.7,
   daylight = false,
   guests = [],
+  layout = "room",
 }: CometRoomBackdropProps) {
   const id = useSvgId("comet-room");
+  const room = LAYOUTS[layout];
   return (
     <svg
       className={className}
@@ -152,6 +352,15 @@ export function CometRoomBackdrop({
       focusable="false"
     >
       <defs>
+        <linearGradient id={`${id}-ray`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff8dc" stopOpacity={0.55} />
+          <stop offset="0.6" stopColor="#fff8dc" stopOpacity={0.18} />
+          <stop offset="1" stopColor="#fff8dc" stopOpacity={0} />
+        </linearGradient>
+        <radialGradient id={`${id}-bulb`}>
+          <stop offset="0" stopColor="#fff2b8" stopOpacity={0.95} />
+          <stop offset="1" stopColor="#ffd77a" stopOpacity={0} />
+        </radialGradient>
         <radialGradient id={`${id}-lamp`}>
           <stop offset="0" stopColor="#fff2c9" stopOpacity={0.85} />
           <stop offset="0.5" stopColor="#ffe3a8" stopOpacity={0.3} />
@@ -174,7 +383,7 @@ export function CometRoomBackdrop({
           <stop offset="1" stopColor="#3b2620" stopOpacity={0.28} />
         </radialGradient>
         <clipPath id={`${id}-seat`}>
-          <rect x={0} y={0} width={1200} height={418} />
+          <rect x={-200} y={-400} width={800} height={722} />
         </clipPath>
         <pattern id={`${id}-rug`} width="40" height="20" patternUnits="userSpaceOnUse">
           <rect width="40" height="20" fill="#c86f8f" />
@@ -238,17 +447,38 @@ export function CometRoomBackdrop({
         opacity={0.7}
       />
       <path d="M470 434 L730 434 L900 640 L330 640 Z" fill={`url(#${id}-beam)`} />
+      {daylight ? (
+        <g opacity={0.6}>
+          {RAYS.map(([top, width, foot]) => (
+            <path
+              key={top}
+              d={`M${top} 120 L${top + width} 120 L${foot + width * 2.4} 640 L${foot} 640 Z`}
+              fill={`url(#${id}-ray)`}
+            />
+          ))}
+        </g>
+      ) : null}
       <Pennants />
+      <Bulbs id={id} />
       <ParlourCabinet id={`${id}-cabinet`} x={30} y={168} />
-      <PottedPalm x={760} y={372} scale={1.1} />
-      <PottedPalm x={1150} y={372} scale={1} />
-      <SeatedGuests id={id} looks={guests} />
-      <ParlourTable x={400} y={414} scale={0.8} cloth="#e7f1dc" clothShade="#b9d3a0" teapot="#a9c98b" />
-      <ParlourTable x={650} y={418} scale={0.8} cloth="#fde6cf" clothShade="#f0c49c" teapot="#9fd0ee" />
-      <ParlourTable x={990} y={414} scale={0.8} cloth="#f7dbe6" clothShade="#e4a9bf" teapot="#b9a7dc" />
-      {LAMPS.map(([x, y]) => (
+      {room.palms.map(([x, y, scale]) => (
+        <PottedPalm key={x} x={x} y={y} scale={scale} />
+      ))}
+      <SeatedGuests id={id} looks={guests} room={room} />
+      {room.tables.map((table) => (
+        <ParlourTable key={table.x} {...table} reserved={layout === "hub" && guests.length > 0} />
+      ))}
+      {room.cat === null ? null : <ParlourCat x={room.cat[0]} y={room.cat[1]} />}
+      {room.lamps.map(([x, y]) => (
         <PendantLamp key={x} id={id} x={x} y={y} glow={glow} />
       ))}
+      {layout === "hub" ? <Motes /> : null}
+      {layout === "hub" && guests.length > 1 ? (
+        <g>
+          <Chatter x={640} y={316} flip shape={HEART} tint="#e07a9b" />
+          <Chatter x={848} y={306} flip={false} shape={STAR} tint="#e9b949" />
+        </g>
+      ) : null}
       <rect width={1200} height={640} fill={`url(#${id}-vignette)`} />
     </svg>
   );

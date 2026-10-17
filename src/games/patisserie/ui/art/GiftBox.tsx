@@ -124,8 +124,8 @@ export function GiftBox({ ribbon, children }: GiftBoxProps) {
             <stop offset="1" stopColor="#ecd0a2" />
           </linearGradient>
         </defs>
-        <path d="M104 272 H356 L316 302 H64 Z" fill={`url(#${id}-inside)`} />
-        <path d="M104 272 H356 L350 278 H110 Z" fill="#3b2620" opacity={0.12} />
+        <path d="M104 232 H356 L316 262 H64 Z" fill={`url(#${id}-inside)`} />
+        <path d="M104 232 H356 L350 238 H110 Z" fill="#3b2620" opacity={0.12} />
       </svg>
       <div className="pa-gift__bake">{children}</div>
       <svg viewBox="0 0 400 400" className="pa-gift__box" aria-hidden="true" focusable="false">
@@ -141,27 +141,27 @@ export function GiftBox({ ribbon, children }: GiftBoxProps) {
         </defs>
         <ellipse cx={212} cy={392} rx={176} ry={10} fill="#3b2620" opacity={0.18} />
         <path
-          d="M316 302 L356 272 V362 L316 388 Z"
+          d="M316 262 L356 232 V362 L316 388 Z"
           fill={`url(#${id}-side)`}
           stroke="#d2ad78"
           strokeWidth={2}
         />
-        <path d="M64 302 H316 V388 H64 Z" fill={`url(#${id}-front)`} stroke="#e2c08e" strokeWidth={3} />
-        <path d="M66 304 H314" stroke="#ffffff" strokeWidth={3} opacity={0.8} />
-        <path d="M64 302 H316 L356 272" fill="none" stroke="#d9b47c" strokeWidth={3} strokeLinejoin="round" />
-        <rect x={176} y={302} width={28} height={86} fill={ribbon} />
-        <rect x={176} y={302} width={8} height={86} fill={lighten(ribbon, 0.35)} opacity={0.6} />
-        <path d="M330 292 L342 283 V371 L330 379 Z" fill={deep} />
-        <path d="M64 352 H316" stroke={ribbon} strokeWidth={14} opacity={0.9} />
-        <path d="M316 352 L356 326" stroke={deep} strokeWidth={14} />
-        <g transform="translate(110 372)">
+        <path d="M64 262 H316 V388 H64 Z" fill={`url(#${id}-front)`} stroke="#e2c08e" strokeWidth={3} />
+        <path d="M66 264 H314" stroke="#ffffff" strokeWidth={3} opacity={0.8} />
+        <path d="M64 262 H316 L356 232" fill="none" stroke="#d9b47c" strokeWidth={3} strokeLinejoin="round" />
+        <rect x={176} y={262} width={28} height={126} fill={ribbon} />
+        <rect x={176} y={262} width={8} height={126} fill={lighten(ribbon, 0.35)} opacity={0.6} />
+        <path d="M330 252 L342 243 V371 L330 379 Z" fill={deep} />
+        <path d="M64 330 H316" stroke={ribbon} strokeWidth={14} opacity={0.9} />
+        <path d="M316 330 L356 304" stroke={deep} strokeWidth={14} />
+        <g transform="translate(104 296)">
           <path d="M0 -12 A12 12 0 1 0 8 9 A9 9 0 1 1 0 -12 Z" fill="#e2b93b" />
           <path
             d="M10 -12 l1.5 3.2 3.5 0.5 -2.5 2.4 0.6 3.5 -3.1 -1.7 -3.1 1.7 0.6 -3.5 -2.5 -2.4 3.5 -0.5 Z"
             fill="#4b5aa6"
           />
         </g>
-        <g transform="translate(190 352)">
+        <g transform="translate(190 330)">
           <path
             d="M0 0 C-44 -40 -70 4 -4 6 Z M0 0 C44 -40 70 4 4 6 Z"
             fill={ribbon}

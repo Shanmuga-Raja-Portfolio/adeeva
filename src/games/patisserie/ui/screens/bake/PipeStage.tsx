@@ -8,7 +8,7 @@ import { TableTop } from "../../art/TableTop";
 import { useAssist } from "../../useAssist";
 import { PipeTable } from "./PipeTable";
 import { StageFooter } from "./StageFooter";
-import { assistHint } from "./stageNames";
+import { assistHint, HELPER_NOTE } from "./stageNames";
 import type { StageProps } from "./stageProps";
 import "./pipe.css";
 
@@ -33,8 +33,8 @@ export function PipeStage(props: StageProps) {
         <aside className="pa-pipe__list pa-doily">
           <header>
             <strong>Icing lines</strong>
-            <span className="pa-muted">
-              {done}/{paths.length} piped
+            <span className="pa-pipe__count">
+              {done} of {paths.length} kept
             </span>
           </header>
           <ul>
@@ -67,7 +67,7 @@ export function PipeStage(props: StageProps) {
           </ul>
           <ToggleSwitch
             label="Guide dots"
-            description="The bag snaps to the line. Counts up to 80%."
+            description={`The bag snaps to the line. ${HELPER_NOTE}`}
             checked={assist}
             onChange={setAssist}
           />

@@ -1,0 +1,110 @@
+.pa-steam {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: pa-steam-rise 2.8s ease-in-out infinite;
+}
+
+.pa-steam--late {
+  animation-delay: -1.4s;
+}
+
+@keyframes pa-steam-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scaleY(0.7);
+  }
+  40% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scaleY(1.1) skewX(-8deg);
+  }
+}
+
+.pa-mote {
+  transform-box: fill-box;
+  animation: pa-mote-drift 7s ease-in-out infinite alternate;
+}
+
+@keyframes pa-mote-drift {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(14px, -26px);
+    opacity: 0.3;
+  }
+}
+
+.pa-guest-bob {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: pa-guest-bob 3.2s ease-in-out infinite alternate;
+}
+
+.pa-guest-bob--late {
+  animation-delay: -1.6s;
+}
+
+@keyframes pa-guest-bob {
+  to {
+    transform: translateY(-3px) rotate(0.8deg);
+  }
+}
+
+.pa-parlour-cat__body {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: pa-cat-breathe 2.6s ease-in-out infinite alternate;
+}
+
+@keyframes pa-cat-breathe {
+  to {
+    transform: scale(1.03, 1.06);
+  }
+}
+
+.pa-parlour-cat__zzz {
+  animation: pa-cat-zzz 3s ease-in-out infinite;
+}
+
+@keyframes pa-cat-zzz {
+  0% {
+    opacity: 0;
+    transform: translate(0, 6px);
+  }
+  30%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(6px, -8px);
+  }
+}
+
+.pa-chatter {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: pa-chatter 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes pa-chatter {
+  to {
+    transform: translateY(-4px) rotate(-3deg);
+  }
+}
+
+:root[data-motion="reduced"] .pa-root .pa-chatter,
+:root[data-motion="reduced"] .pa-root .pa-steam,
+:root[data-motion="reduced"] .pa-root .pa-mote,
+:root[data-motion="reduced"] .pa-root .pa-guest-bob,
+:root[data-motion="reduced"] .pa-root .pa-parlour-cat__body,
+:root[data-motion="reduced"] .pa-root .pa-parlour-cat__zzz {
+  animation: none;
+}

@@ -16,6 +16,7 @@ import {
   pipeAccuracy,
   type Action,
 } from "../../../core";
+import { PipingBag } from "../../art/PipingBag";
 import { PipeSurface } from "../../art/PipeSurface";
 import { snapToPath } from "./snapToPath";
 
@@ -138,7 +139,7 @@ export function PipeTable({
     <div className="pa-pipe-table">
       <div className="pa-pipe-table__stats" aria-live="polite">
         <Meter
-          label="How far you have piped"
+          label="This line"
           value={Math.round(covered * 100)}
           valueText={`${Math.round(covered * 100)}%`}
         />
@@ -194,7 +195,8 @@ export function PipeTable({
             d={pathData(path.points, path.closed)}
             fill="none"
             stroke="#ffffff"
-            strokeWidth={0.5}
+            strokeWidth={0.8}
+            strokeOpacity={0.85}
             strokeLinejoin="round"
             strokeLinecap="round"
           />
@@ -202,8 +204,8 @@ export function PipeTable({
             d={pathData(path.points, path.closed)}
             fill="none"
             stroke="#2f3c86"
-            strokeWidth={0.3}
-            strokeDasharray="0.02 0.52"
+            strokeWidth={0.46}
+            strokeDasharray="0.02 0.7"
             strokeLinecap="round"
             className={reducedMotion ? undefined : "pa-pipe-table__march"}
           />
@@ -241,6 +243,7 @@ export function PipeTable({
               className={reducedMotion ? undefined : "pa-pipe-table__start"}
             />
           ) : null}
+          <PipingBag at={samples[samples.length - 1] ?? start} icing={icing} squeezing={held} />
         </svg>
       </div>
       <div className="pa-pipe-table__actions">

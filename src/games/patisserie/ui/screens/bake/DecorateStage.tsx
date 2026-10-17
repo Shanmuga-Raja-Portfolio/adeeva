@@ -50,6 +50,7 @@ interface TrayDrag {
 const DROP_SPOT = { x: 200, y: 190 } as const;
 const MOVE_THRESHOLD = 6;
 const KEY_NUDGE = 8;
+const PANTRY_PEEK = 5;
 const NUDGES: Readonly<Record<string, { readonly x: number; readonly y: number }>> = {
   ArrowLeft: { x: -KEY_NUDGE, y: 0 },
   ArrowRight: { x: KEY_NUDGE, y: 0 },
@@ -276,35 +277,32 @@ export function DecorateStage(props: StageProps) {
               </button>
             );
           })}
+          {soldOut.slice(0, PANTRY_PEEK).map((topping) => (
+            <button
+              key={topping.id}
+              type="button"
+              className="pa-topping-tile pa-topping-tile--pantry"
+              onClick={() => setPantryOpen(true)}
+              aria-label={`Get ${topping.name} from the pantry`}
+            >
+              <span className="pa-topping-tile__plate" aria-hidden="true">
+                <ToppingBadge toppingId={topping.id} size={54} />
+              </span>
+              <span className="pa-topping-tile__name">{topping.name}</span>
+              <span className="pa-topping-tile__get" aria-hidden="true">
+                <Icon name="bag" size={14} /> Get
+              </span>
+            </button>
+          ))}
         </div>
-        {soldOut.length > 0 ? (
-          <p className="pa-decorate__out">
-            <Icon name="bag" size={16} /> {soldOut.length} more{" "}
-            {soldOut.length === 1 ? "topping waits" : "toppings wait"} in the pantry.
-          </p>
-        ) : null}
-        {required.length > 0 ? (
-          <ul className="pa-decorate__wants">
-            {required.map((requirement) => {
-              const placed = run.toppings.filter((entry) => entry.toppingId === requirement.topping).length;
-              return (
-                <li
-                  key={requirement.topping}
-                  className={placed >= requirement.count ? "pa-decorate__want--met" : undefined}
-                >
-                  {toppingById(requirement.topping).name}: {Math.min(placed, requirement.count)}/
-                  {requirement.count}
-                </li>
-              );
-            })}
-          </ul>
-        ) : null}
         <Button variant="secondary" size="sm" icon="bag" onClick={() => setPantryOpen(true)}>
-          Quick pantry trip
+          {soldOut.length > PANTRY_PEEK
+            ? `${soldOut.length - PANTRY_PEEK} more in the pantry`
+            : "Visit the pantry"}
         </Button>
       </aside>
       <div className="pa-decorate__cake" ref={cakeRef} onPointerDown={() => setSelectedId(null)}>
-        <BenchScene className="pa-bench-scene" />
+        <BenchScene className="pa-bench-scene" decor="low" />
         <BakePreview
           look={look}
           title="Your bake with toppings"
@@ -345,6 +343,10 @@ export function DecorateStage(props: StageProps) {
             className="pa-decorate__controls"
             aria-label={`${toppingById(selected.toppingId).name} controls`}
           >
+            <span className="pa-decorate__picked" aria-hidden="true">
+              <ToppingBadge toppingId={selected.toppingId} size={34} />
+              {toppingById(selected.toppingId).name}
+            </span>
             <Button
               variant="secondary"
               size="sm"

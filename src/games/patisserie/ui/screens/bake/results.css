@@ -87,9 +87,27 @@
   animation: pa-glow 2.4s ease-in-out infinite alternate;
 }
 
+.pa-gift::after {
+  content: "";
+  position: absolute;
+  left: -8%;
+  right: -6%;
+  bottom: 0;
+  height: 15%;
+  z-index: 0;
+  border-radius: 50% 50% 10px 10px / 70% 70% 10px 10px;
+  background:
+    radial-gradient(ellipse 60% 70% at 50% 20%, rgba(255, 255, 255, 0.7), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(228, 169, 191, 0.18) 0 14px, transparent 14px 28px),
+    linear-gradient(180deg, #fdeef3, #f2c9d6);
+  box-shadow:
+    inset 0 -6px 0 rgba(201, 120, 150, 0.35),
+    0 14px 24px rgba(59, 38, 32, 0.18);
+}
+
 .pa-gift__bake {
   position: absolute;
-  inset: 2% 4% 8% 0;
+  inset: 0 6% 18% 2%;
   z-index: 2;
   animation: pa-rise-out 1.1s var(--ease-out) 0.5s both;
 }
@@ -113,7 +131,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 38%;
+  top: 28%;
   z-index: 4;
   width: 100%;
   animation: pa-lid 1.2s var(--ease-out) 0.2s both;
@@ -202,6 +220,13 @@
   color: var(--pa-apricot-deep);
 }
 
+.pa-results__outof {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--pa-cocoa);
+}
+
 .pa-results__rewards {
   width: 100%;
   padding: var(--space-3) var(--space-4);
@@ -223,6 +248,9 @@
 .pa-results__rewards li {
   display: flex;
   justify-content: space-between;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--pa-cocoa-deep);
 }
 
 .pa-results__totals {

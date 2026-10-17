@@ -1,7 +1,7 @@
 import type { AvatarLook } from "../../../../../engine/avatar";
 import { colourById } from "../../../../../engine/palette";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
-import { clientById, offersFor, type Brief, type GameState } from "../../../core";
+import { clientById, offersFor, productById, type Brief, type GameState } from "../../../core";
 import { BakePreview } from "../../art/BakePreview";
 import type { BakeLook } from "../../art/bakeLook";
 
@@ -49,12 +49,13 @@ export function CounterCustomer({ state }: CounterCustomerProps) {
       {look !== null ? (
         <div className="pa-customer__wish">
           <BakePreview look={look} title={null} className="pa-customer__treat" />
+          <span className="pa-customer__ask">{productById(look.productId).name}?</span>
           <span className="pa-customer__dot pa-customer__dot--big" />
           <span className="pa-customer__dot" />
         </div>
       ) : null}
       <div className="pa-customer__figure">
-        <Avatar variant="full" look={visit.look} mood="happy" pose="graceful" title={visit.name} />
+        <Avatar variant="full" look={visit.look} mood="happy" pose="poised" title={visit.name} />
       </div>
     </div>
   );

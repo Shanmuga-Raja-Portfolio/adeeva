@@ -13,7 +13,7 @@ import { useAssist } from "../../useAssist";
 import { OvenBench } from "./OvenBench";
 import { OvenPair, type OvenPairTier } from "./OvenPair";
 import { StageFooter } from "./StageFooter";
-import { assistHint, SAFETY_LINE } from "./stageNames";
+import { assistHint, HELPER_NOTE } from "./stageNames";
 import type { StageProps } from "./stageProps";
 import "./oven.css";
 
@@ -96,17 +96,14 @@ export function BakeStage(props: StageProps) {
       <div className="pa-bake-stage__help">
         <ToggleSwitch
           label="Oven helper"
-          description="Sets the heat, turns the tray and rings at golden. Counts up to 80%."
+          description={`Sets the heat, turns the tray and rings at golden. ${HELPER_NOTE}`}
           checked={assist}
           onChange={setAssist}
           disabled={baking}
         />
         {assist ? null : <p className="pa-hint">{assistHint("Oven helper")}</p>}
-        <p className="pa-safety">
-          <Icon name="shield" size={16} /> {SAFETY_LINE}
-        </p>
       </div>
-      <StageFooter {...props} ready="Out of the oven and cooling. Lovely!" />
+      <StageFooter {...props} ready="Out of the oven and cooling. Lovely!" safety />
     </div>
   );
 }

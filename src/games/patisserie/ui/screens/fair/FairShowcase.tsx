@@ -1,3 +1,4 @@
+import type { AvatarLook } from "../../../../../engine/avatar";
 import { useMemo, type CSSProperties } from "react";
 import { colourById } from "../../../../../engine/palette";
 import { useSettings } from "../../../../../studio/SettingsContext";
@@ -35,13 +36,17 @@ const SPARKLES = Array.from({ length: 16 }, (_, index) => index);
 const STAR_PATH = "M0 -7 Q1.2 -1.2 7 0 Q1.2 1.2 0 7 Q-1.2 1.2 -7 0 Q-1.2 -1.2 0 -7 Z";
 const BURST_PATH =
   "M0 -8 L1.6 -2.4 L5.7 -5.7 L2.4 -1.6 L8 0 L2.4 1.6 L5.7 5.7 L1.6 2.4 L0 8 L-1.6 2.4 L-5.7 5.7 L-2.4 1.6 L-8 0 L-2.4 -1.6 L-5.7 -5.7 L-1.6 -2.4 Z";
-const CHEERS: readonly (IconName | null)[] = ["heart", null, "star", "sparkle", null, "heart", "star", null];
-const CROWD_POSES = ["cheer", "wave", "present", "wave", "cheer", "graceful-right"] as const;
+const CHEERS: readonly IconName[] = ["heart", "star", "sparkle", "heart", "star"];
+const CROWD_POSES = ["cheer", "poised", "chat", "present", "poised-right", "graceful"] as const;
 const CROWD_SIZES = [1, 0.9, 1.08, 0.95, 1.04, 0.92];
 
 function restSpot(position: number, count: number): number {
   if (position === count - 1) return 50;
   return REST_SPOTS[position] ?? 50;
+}
+
+function lookalike(one: AvatarLook, other: AvatarLook): boolean {
+  return one.hairStyle === other.hairStyle && one.hairColour === other.hairColour;
 }
 
 function caption(step: RevealStep, plates: readonly ShowPlateView[], theme: FairThemeDef): string {
@@ -99,7 +104,7 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
       const client = clientById(id);
       return client === undefined ? [] : [{ name: client.guestName, look: client.look }];
     }),
-  ];
+  ].filter((member, at, all) => all.findIndex((other) => lookalike(other.look, member.look)) === at);
   return (
     <>
       <div className="pa-showcase__stage" data-step={step.kind} data-plate={step.slot}>
@@ -161,11 +166,11 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
               <svg className="pa-showcase__sparkles" viewBox="-100 -100 200 200" aria-hidden="true">
                 {SPARKLES.map((index) => {
                   const angle = -Math.PI / 2 + ((index * 137.5) % 360) * (Math.PI / 180);
-                  const radius = [30, 46, 38, 58][index % 4] ?? 40;
+                  const radius = [62, 76, 68, 84][index % 4] ?? 70;
                   const reach = radius + (14 + (index % 5) * 9) * sparkle;
                   const size = [1.25, 0.4, 0.8, 0.3, 0.55][index % 5] ?? 1;
                   const x = (Math.cos(angle) * reach).toFixed(1);
-                  const y = (Math.sin(angle) * reach * 0.85).toFixed(1);
+                  const y = (Math.sin(angle) * reach * 0.72 - 18).toFixed(1);
                   if (index % 4 === 3)
                     return (
                       <circle key={index} cx={x} cy={y} r={2.2} fill="#ffffff" opacity={1 - sparkle * 0.3} />
@@ -197,7 +202,8 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
         >
           <span className="pa-showcase__bench" />
           {members.map((member, at) => {
-            const cheer = CHEERS[at % CHEERS.length] ?? null;
+            const underCake = Math.abs(at - (members.length - 1) / 2) < 1.5;
+            const cheer = underCake ? null : (CHEERS[at % CHEERS.length] ?? null);
             const pose = {
               animationDelay: `${(at % 4) * 120}ms`,
               "--lean": `${((at % 3) - 1) * 4}deg`,
@@ -291,6 +297,9 @@ export function FairShowcase({ theme, result, plates, visitors, skippable, onDon
         >
           <span aria-hidden="true">♪</span> Music: {music.name}
         </span>
+        <span className="pa-showcase__step" aria-hidden="true">
+          Show {Math.min(index + 1, steps.length)} of {steps.length}
+        </span>
         <span
           className="pa-showcase__progress"
           role="progressbar"
@@ -307,6 +316,10 @@ export function FairShowcase({ theme, result, plates, visitors, skippable, onDon
         {canSkip ? (
           <Button variant="secondary" size="sm" onClick={onDone} data-testid="skip-showcase">
             Skip to the ribbons ›
+          </Button>
+        ) : step?.kind === "reveal" ? (
+          <Button size="lg" onClick={next} data-testid="showcase-on" className="pa-showcase__on">
+            Keep going ›
           </Button>
         ) : null}
       </div>

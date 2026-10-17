@@ -167,8 +167,8 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
             <span className="pa-results__number" aria-label={`Score ${evaluation.score} out of 100`}>
               {score}
             </span>
-            <span className="pa-muted">/ 100</span>
-            <StarRating stars={evaluation.stars} size={30} />
+            <span className="pa-results__outof">/ 100</span>
+            <StarRating stars={evaluation.stars} size={40} />
           </div>
           <div className="pa-results__rewards" style={delay(2)}>
             <ul>
@@ -176,7 +176,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
                 <li key={line.label}>
                   <span>
                     {line.label === "Trend bonus" && reward.trendMatches.length > 0
-                      ? `Town favourite: ${reward.trendMatches.join(", ")}`
+                      ? `The town loves ${reward.trendMatches.join(" and ")} bakes`
                       : line.label}
                   </span>
                   <strong>{signed(line.amount)} coins</strong>

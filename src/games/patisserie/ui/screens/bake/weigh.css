@@ -1,6 +1,6 @@
 .pa-weigh__layout {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: 250px minmax(0, 1fr);
   gap: var(--space-4);
   align-items: start;
 }
@@ -28,15 +28,18 @@
 .pa-weigh__item {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
   width: 100%;
   min-height: var(--tap);
   padding: 0 var(--space-3);
   border-radius: var(--radius-md);
   border: 2px solid transparent;
-  background: var(--paper-deep);
+  background: #fbf3e4;
+  box-shadow: inset 0 0 0 1.5px rgba(107, 66, 50, 0.14);
   font: inherit;
+  font-weight: 700;
+  color: var(--pa-cocoa-deep);
   text-align: left;
   cursor: pointer;
 }
@@ -52,16 +55,17 @@
 }
 
 .pa-weigh__dot {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 1px solid rgba(59, 38, 32, 0.3);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1.5px rgba(59, 38, 32, 0.35);
 }
 
 .pa-weigh__grams {
   font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--ink-soft);
+  font-weight: 800;
+  color: var(--pa-cocoa);
 }
 
 .pa-eggs__head {
@@ -208,17 +212,22 @@
 .pa-weigh-station__scene {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  grid-template-areas: "scale target";
+  grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.9fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "scale banner"
+    "scale target"
+    "scale controls";
   column-gap: var(--space-4);
+  row-gap: 10px;
   align-items: end;
-  min-height: 392px;
-  padding: 68px var(--space-4) 10px;
+  min-height: clamp(400px, calc(100dvh - 240px), 600px);
+  padding: 14px var(--space-4) 10px;
 }
 
 .pa-weigh-station__scene > .pa-bench-scene {
   bottom: auto;
-  height: calc(100% + 96px);
+  height: calc(100% + 40px);
 }
 
 .pa-weigh-station__scene > :not(.pa-bench-scene),
@@ -228,17 +237,15 @@
 }
 
 .pa-weigh-station__scene > .pa-weigh-station__banner {
-  position: absolute;
-  top: 14px;
-  left: 50%;
-  translate: -50% 0;
-  width: max-content;
-  max-width: calc(100% - 32px);
+  grid-area: banner;
+  align-self: start;
   margin: 0;
-  padding: 10px 26px;
-  border-radius: var(--radius-pill);
+  padding: 10px 18px;
+  border-radius: 20px;
   font-family: var(--font-display);
-  font-size: clamp(18px, 1.8vw, 24px);
+  font-size: clamp(18px, 1.5vw, 20px);
+  line-height: 1.25;
+  text-wrap: balance;
   font-weight: 700;
   text-align: center;
   color: #ffffff;
@@ -250,15 +257,15 @@
   animation: pa-banner-pop var(--duration-base) var(--ease-out) both;
 }
 
-.pa-weigh-station__banner--pouring {
+.pa-weigh-station__scene > .pa-weigh-station__banner--pouring {
   background: linear-gradient(180deg, #f6b06d, #e0863e);
   box-shadow:
     0 4px 0 #b9662a,
     0 12px 24px rgba(59, 38, 32, 0.22);
 }
 
-.pa-weigh-station__banner--green,
-.pa-weigh-station__banner--great {
+.pa-weigh-station__scene > .pa-weigh-station__banner--green,
+.pa-weigh-station__scene > .pa-weigh-station__banner--great {
   background: linear-gradient(180deg, #7fb35c, #4f8a36);
   box-shadow:
     0 4px 0 #3a6a25,
@@ -266,14 +273,14 @@
     0 12px 24px rgba(59, 38, 32, 0.22);
 }
 
-.pa-weigh-station__banner--over {
+.pa-weigh-station__scene > .pa-weigh-station__banner--over {
   background: linear-gradient(180deg, #e9735a, #c94f3a);
   box-shadow:
     0 4px 0 #9a3626,
     0 12px 24px rgba(59, 38, 32, 0.22);
 }
 
-.pa-weigh-station__banner--done {
+.pa-weigh-station__scene > .pa-weigh-station__banner--done {
   background: rgba(255, 253, 247, 0.96);
   color: var(--pa-cocoa);
   text-shadow: none;
@@ -299,7 +306,9 @@
 .pa-weigh-station__scale {
   grid-area: scale;
   justify-self: end;
-  width: min(100%, 262px);
+  margin-right: 4px;
+  align-self: end;
+  width: min(100%, 380px);
 }
 
 .pa-dial {
@@ -314,16 +323,49 @@
 
 .pa-weigh-station__target {
   grid-area: target;
-  justify-self: start;
+  position: relative;
+  justify-self: center;
+  align-self: center;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  margin-bottom: 4px;
+  align-items: flex-end;
+  gap: var(--space-3);
+  padding: 0 18px 16px;
+}
+
+.pa-weigh-station__shelf {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #c58c56 0 40%, #9a6438 40% 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 230, 190, 0.6),
+    0 10px 14px rgba(59, 38, 32, 0.22);
+}
+
+.pa-weigh-station__shelf::before,
+.pa-weigh-station__shelf::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  width: 14px;
+  height: 26px;
+  background: linear-gradient(135deg, #8a5a32 50%, transparent 50%);
+}
+
+.pa-weigh-station__shelf::before {
+  left: 18px;
+}
+
+.pa-weigh-station__shelf::after {
+  right: 18px;
 }
 
 .pa-weigh-station__pack {
   position: relative;
+  z-index: 1;
   display: block;
 }
 
@@ -349,25 +391,28 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 8px 18px;
-  border-radius: var(--radius-md);
-  background: #fffdf7;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  padding: 8px 14px 8px 22px;
+  border-radius: 6px 14px 14px 6px;
+  background: linear-gradient(180deg, #fff8e8, #f6e4c4);
   box-shadow:
-    0 3px 0 rgba(107, 66, 50, 0.16),
-    0 10px 20px rgba(59, 38, 32, 0.16);
-  text-align: center;
+    0 2px 0 rgba(107, 66, 50, 0.18),
+    0 8px 14px rgba(59, 38, 32, 0.16);
+  rotate: -3deg;
 }
 
 .pa-weigh-station__tag::before {
   content: "";
   position: absolute;
-  bottom: -7px;
-  left: 50%;
-  width: 14px;
-  height: 14px;
-  transform: translateX(-50%) rotate(45deg);
-  background: #fffdf7;
+  left: 8px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: #e4caa0;
+  box-shadow: inset 0 1px 2px rgba(59, 38, 32, 0.4);
 }
 
 .pa-weigh-station__tag strong {
@@ -389,18 +434,16 @@
 }
 
 .pa-weigh-station__controls {
+  grid-area: controls;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: linear-gradient(180deg, rgba(255, 253, 247, 0.97), rgba(250, 240, 222, 0.97));
-  border-top: 2px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 -8px 20px rgba(59, 38, 32, 0.14);
-}
-
-.pa-weigh-station__controls .pa-pour-pad {
-  flex: 1 1 240px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 253, 247, 0.96), rgba(250, 240, 222, 0.96));
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 26px rgba(59, 38, 32, 0.22);
 }
 
 .pa-pour-pad {
@@ -409,32 +452,49 @@
   justify-content: center;
   gap: var(--space-3);
   min-height: 72px;
-  padding: 0 var(--space-5);
-  border: none;
-  border-radius: 28px;
-  background: linear-gradient(180deg, #f6b06d, #e0863e);
-  color: #3b1d0c;
+  padding: 0 var(--space-4);
+  border: 3px solid #e0a35f;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 255, 255, 0.9), transparent 70%),
+    linear-gradient(180deg, #fff6e2, #f7e1bc);
+  color: var(--pa-cocoa-deep);
   font: inherit;
   font-family: var(--font-display);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: 700;
   cursor: pointer;
   user-select: none;
   touch-action: none;
-  box-shadow: 0 6px 0 #b9662a;
-  transition: transform var(--duration-fast) var(--ease-out);
+  box-shadow: 0 6px 0 #d0955a;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.pa-pour-pad__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
 }
 
 .pa-pour-pad:focus-visible {
   outline: none;
   box-shadow:
-    0 6px 0 #b9662a,
+    0 6px 0 #d0955a,
     var(--focus-ring);
 }
 
 .pa-pour-pad--pouring {
   transform: translateY(4px);
-  box-shadow: 0 2px 0 #b9662a;
+  border-color: #e0863e;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 255, 255, 0.7), transparent 70%),
+    linear-gradient(180deg, #fde3c2, #f6c58c);
+  box-shadow:
+    0 2px 0 #d0955a,
+    0 0 0 6px rgba(244, 162, 89, 0.3);
 }
 
 .pa-pour-pad--piece {
@@ -447,22 +507,35 @@
 }
 
 .pa-pour-pad__scoop {
+  position: relative;
   width: 40px;
-  height: 26px;
-  border-radius: 0 0 22px 22px;
-  background: #c9d0ea;
-  border: 3px solid #2f3a78;
-  transform: rotate(-20deg);
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid #e0863e;
+  background: radial-gradient(circle, #e0863e 0 30%, #fff6e2 32%);
+  box-shadow: 0 0 0 4px rgba(224, 134, 62, 0.18);
 }
 
 .pa-pour-pad--pouring .pa-pour-pad__scoop {
-  transform: rotate(-60deg);
+  background: radial-gradient(circle, #ffffff 0 22%, #e0863e 24%);
+  box-shadow: 0 0 0 8px rgba(224, 134, 62, 0.3);
+  animation: pa-hold-ring 0.7s ease-in-out infinite alternate;
+}
+
+@keyframes pa-hold-ring {
+  to {
+    box-shadow: 0 0 0 12px rgba(224, 134, 62, 0.12);
+  }
 }
 
 .pa-weigh-station__row {
   display: flex;
-  flex-wrap: wrap;
   gap: var(--space-2);
+}
+
+.pa-weigh-station__row .ad-button {
+  flex: 1 1 0;
+  padding: 0 12px;
 }
 
 .pa-scoop-back {
@@ -485,6 +558,34 @@
   min-height: 52px;
 }
 
+.pa-weigh-station__pack svg {
+  transition: transform var(--duration-base) var(--ease-out);
+  transform-origin: 50% 90%;
+}
+
+.pa-weigh-station__pack--open svg {
+  transform: rotate(-12deg) translateY(-6px);
+}
+
+.pa-weigh__helper .ad-toggle {
+  gap: var(--space-3);
+  padding: 4px 4px 0 8px;
+}
+
+.pa-weigh__helper .ad-toggle__label {
+  font-weight: 800;
+}
+
+.pa-weigh__helper .pa-hint {
+  margin: 4px 8px 0;
+}
+
+.pa-weigh__bowl-done .pa-weigh__helper {
+  width: min(100%, 340px);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+}
+
 .pa-weigh-station__empty {
   margin: 0 var(--space-4) var(--space-3);
   padding: var(--space-2) var(--space-3);
@@ -498,9 +599,12 @@
   }
   .pa-weigh-station__scene {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
     grid-template-areas:
+      "banner"
       "scale"
-      "target";
+      "target"
+      "controls";
     row-gap: var(--space-3);
   }
 
@@ -513,5 +617,37 @@
 @media (max-width: 760px) {
   .pa-weigh__layout {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1101px) and (max-height: 820px) {
+  .pa-weigh__list {
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+  }
+  .pa-weigh__list ul {
+    gap: 4px;
+  }
+  .pa-egg {
+    width: 54px;
+    height: 56px;
+  }
+  .pa-egg span {
+    width: 34px;
+    height: 44px;
+  }
+  .pa-weigh-station__scene {
+    min-height: 0;
+    height: max(400px, calc(100dvh - 232px));
+  }
+  .pa-weigh-station__scale {
+    width: min(100%, 380px, calc((100dvh - 296px) * 0.78));
+  }
+  .pa-weigh-station__pack svg {
+    width: 104px;
+    height: 104px;
+  }
+  .pa-pour-pad {
+    min-height: 64px;
   }
 }

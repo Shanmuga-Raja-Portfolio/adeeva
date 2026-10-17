@@ -3,14 +3,15 @@ import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { useDispatchOnce } from "../../../../../ui/kit/useDispatchOnce";
 import { canAdvance, leaveHours, runKind, stagesFor } from "../../../core";
-import { ADVANCE_LABELS } from "./stageNames";
+import { ADVANCE_LABELS, SAFETY_LINE } from "./stageNames";
 import type { StageProps } from "./stageProps";
 
 export interface StageFooterProps extends StageProps {
   readonly ready?: string | undefined;
+  readonly safety?: boolean | undefined;
 }
 
-export function StageFooter({ state, run, dispatch, onExit, ready }: StageFooterProps) {
+export function StageFooter({ state, run, dispatch, onExit, ready, safety = false }: StageFooterProps) {
   const once = useDispatchOnce(state, dispatch);
   const stages = stagesFor(runKind(run));
   const next = stages[stages.indexOf(run.stage) + 1];
@@ -41,11 +42,18 @@ export function StageFooter({ state, run, dispatch, onExit, ready }: StageFooter
               ))}
             </ul>
           ) : (
-            <span className="pa-footer__ready">{ready ?? "All set for the next step."}</span>
+            <span className="pa-footer__ready">
+              <Icon name="sparkle" size={22} /> {ready ?? "All set for the next step."}
+            </span>
           )}
         </div>
+        {safety ? (
+          <p className="pa-safety pa-footer__safety">
+            <Icon name="shield" size={18} /> {SAFETY_LINE}
+          </p>
+        ) : null}
         <Button
-          size="lg"
+          size={check.ok ? "lg" : "md"}
           onClick={(event) => once(event, { type: "goToStage", stage: next })}
           icon={check.ok ? undefined : "lock"}
           disabled={!check.ok}

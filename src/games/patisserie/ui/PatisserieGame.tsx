@@ -21,6 +21,7 @@ import { SettingsDialog } from "./screens/settings/SettingsDialog";
 import { TitleScreen } from "./screens/title/TitleScreen";
 import { AssistProvider } from "./useAssist";
 import "./theme.css";
+import "./ambient.css";
 
 const BakeFlow = lazy(() =>
   import("./screens/bake/BakeFlow").then((module) => ({ default: module.BakeFlow })),

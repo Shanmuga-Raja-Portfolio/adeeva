@@ -3,7 +3,8 @@ import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { StatChip } from "../../../../../ui/kit/StatChip";
-import { difficultyById } from "../../../core";
+import { careerById, difficultyById } from "../../../core";
+import { EmptyStand } from "../../art/EmptyStand";
 import type { SlotRead } from "../../patisserieSlots";
 
 export interface SaveSlotCardProps {
@@ -19,7 +20,10 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
     return (
       <article className="pa-slot pa-slot--empty" data-testid={`slot-${read.slot}`}>
         <span className="ad-eyebrow">{label}</span>
-        <p className="pa-slot__empty">An empty cake stand, waiting for a story.</p>
+        <div className="pa-slot__blank">
+          <EmptyStand className="pa-slot__stand" />
+          <p className="pa-slot__empty">An empty cake stand, ready for a new bakery.</p>
+        </div>
         <Button variant="secondary" icon="sparkle" onClick={onNewGame}>
           Start here
         </Button>
@@ -55,15 +59,18 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
         <Avatar look={state.profile.look} size={56} title={`${state.profile.name}'s portrait`} />
         <div>
           <span className="ad-eyebrow">{label}</span>
-          <h3 className="pa-slot__name">{state.profile.name}</h3>
-          <span className="pa-muted">Corner Baker · {difficultyById(state.profile.difficulty).name}</span>
+          <h3 className="pa-slot__name">
+            {state.profile.name}{" "}
+            <span className="pa-slot__level">{difficultyById(state.profile.difficulty).name}</span>
+          </h3>
+          <span className="pa-slot__career">{careerById(state.career).name}</span>
           <span className="pa-slot__day">
             Day {state.calendar.day}, {weekdayName(state.calendar.day)}
           </span>
         </div>
         <div className="pa-slot__stats">
-          <StatChip kind="coins" value={state.coins} />
-          <StatChip kind="reputation" value={state.reputation} />
+          <StatChip kind="coins" value={state.coins} showLabel />
+          <StatChip kind="reputation" value={state.reputation} showLabel />
         </div>
       </div>
       <div className="pa-slot__actions">

@@ -1,5 +1,7 @@
-import { useRef, useState, type PointerEvent } from "react";
+import { useRef, useState, type PointerEvent, type ReactNode } from "react";
+import { useSettings } from "../../../../../studio/SettingsContext";
 import { Button } from "../../../../../ui/kit/Button";
+import { useSpring, type SpringFeel } from "../../../../../ui/kit/useSpring";
 import { TICK_SECONDS, useTickLoop } from "../../../../../ui/kit/useTickLoop";
 import type { IngredientDef } from "../../../content/ingredient";
 import {
@@ -14,6 +16,7 @@ import { BenchScene } from "../../art/BenchScene";
 import { DialScale } from "../../art/DialScale";
 import { IngredientPack } from "../../art/IngredientPack";
 import { weighBanner } from "./weighBanner";
+import { WeighBurst } from "./WeighBurst";
 import { FRESH_POUR, pourTick, releasePour, settled, startPour, type PourState } from "./weighPour";
 
 export interface WeighStationProps {
@@ -28,7 +31,11 @@ export interface WeighStationProps {
   readonly dispatch: (action: Action) => boolean;
   readonly onKept: () => void;
   readonly onNeedPantry: () => void;
+  readonly helper: ReactNode;
+  readonly lineup: ReactNode;
 }
+
+const NEEDLE: SpringFeel = { stiffness: 150, damping: 8, rest: 0.2 };
 
 function verdict(accuracy: number): string {
   if (accuracy >= 0.99) return "Spot on!";
@@ -49,6 +56,8 @@ export function WeighStation({
   dispatch,
   onKept,
   onNeedPantry,
+  helper,
+  lineup,
 }: WeighStationProps) {
   const [pour, setPour] = useState<PourState>(() =>
     stored === undefined
@@ -56,6 +65,8 @@ export function WeighStation({
       : { ...FRESH_POUR, grams: stored.grams, actions: stored.actions, helped: stored.assisted },
   );
   const pourRef = useRef(pour);
+  const { reducedMotion } = useSettings();
+  const needleGrams = useSpring(pour.grams, reducedMotion, NEEDLE);
   const setup = { target, stock, pourDifficulty: ingredient.pourDifficulty, assisted };
   const moving = pour.holding || pour.settleLeft > 0;
   const update = (next: PourState) => {
@@ -119,9 +130,14 @@ export function WeighStation({
     great: accuracy >= 0.99,
   });
   return (
-    <div className="pa-weigh-station" data-testid="weigh-station" data-ingredient={ingredient.id}>
+    <div
+      className={`pa-weigh-station pa-weigh-station--${banner.tone}`}
+      data-testid="weigh-station"
+      data-ingredient={ingredient.id}
+    >
       <div className="pa-weigh-station__scene">
-        <BenchScene className="pa-bench-scene" />
+        <BenchScene className="pa-bench-scene" decor="window" />
+        {lineup}
         <p
           key={banner.tone}
           className={`pa-weigh-station__banner pa-weigh-station__banner--${banner.tone}`}
@@ -139,66 +155,75 @@ export function WeighStation({
             pouring={pour.holding}
             unit={unit}
             hideZone={covered && (moving || pour.actions === 0)}
+            needleGrams={needleGrams}
+            near={banner.tone === "near"}
           />
+          {banner.tone === "great" ? <WeighBurst /> : null}
         </div>
         <div className="pa-weigh-station__target">
+          <span
+            className={
+              pour.holding ? "pa-weigh-station__pack pa-weigh-station__pack--open" : "pa-weigh-station__pack"
+            }
+          >
+            <IngredientPack ingredient={ingredient} size={128} />
+          </span>
           <div className="pa-weigh-station__tag">
             <strong>{ingredient.name}</strong>
             <span>
-              Aim for{" "}
               <b>
-                {target} {unit}
-              </b>
+                {stock} {unit}
+              </b>{" "}
+              left
             </span>
           </div>
-          <span className="pa-weigh-station__pack">
-            <IngredientPack ingredient={ingredient} size={104} />
-          </span>
+          <span className="pa-weigh-station__shelf" aria-hidden="true" />
         </div>
-      </div>
-      <div className="pa-weigh-station__controls">
-        {ingredient.mode === "pour" ? (
-          <button
-            type="button"
-            className={pour.holding ? "pa-pour-pad pa-pour-pad--pouring" : "pa-pour-pad"}
-            onPointerDown={press}
-            onPointerUp={lift}
-            onPointerCancel={lift}
-            onBlur={lift}
-            onKeyDown={(event) => {
-              if ((event.key === " " || event.key === "Enter") && !event.repeat)
-                update(startPour(pourRef.current));
-            }}
-            onKeyUp={(event) => {
-              if (event.key === " " || event.key === "Enter") lift();
-            }}
-            data-testid="pour-pad"
-          >
-            <span className="pa-pour-pad__scoop" aria-hidden="true" />
-            {pour.holding ? "Pouring…" : "Hold to pour"}
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="pa-pour-pad pa-pour-pad--piece"
-            onClick={addPiece}
-            data-testid="piece-pad"
-          >
-            {ingredient.id === "butter" ? "Add a 25 g slice" : "Add a drop"}
-          </button>
-        )}
-        <div className="pa-weigh-station__row">
-          <Button
-            variant="secondary"
-            onClick={scoopBack}
-            disabled={pour.grams <= 0 || moving}
-            className="pa-scoop-back"
-          >
-            Scoop back
-          </Button>
-          <Button onClick={keep} disabled={!canKeep} className="pa-keep-weigh" data-testid="keep-weigh">
-            Keep {grams} {unit}
-          </Button>
+        <div className="pa-weigh-station__controls">
+          {ingredient.mode === "pour" ? (
+            <button
+              type="button"
+              className={pour.holding ? "pa-pour-pad pa-pour-pad--pouring" : "pa-pour-pad"}
+              onPointerDown={press}
+              onPointerUp={lift}
+              onPointerCancel={lift}
+              onBlur={lift}
+              onKeyDown={(event) => {
+                if ((event.key === " " || event.key === "Enter") && !event.repeat)
+                  update(startPour(pourRef.current));
+              }}
+              onKeyUp={(event) => {
+                if (event.key === " " || event.key === "Enter") lift();
+              }}
+              data-testid="pour-pad"
+            >
+              <span className="pa-pour-pad__scoop" aria-hidden="true" />
+              <span className="pa-pour-pad__text">Hold to pour</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="pa-pour-pad pa-pour-pad--piece"
+              onClick={addPiece}
+              data-testid="piece-pad"
+            >
+              {ingredient.id === "butter" ? "Add a 25 g slice" : "Add a drop"}
+            </button>
+          )}
+          <div className="pa-weigh-station__row">
+            <Button
+              variant="secondary"
+              onClick={scoopBack}
+              disabled={pour.grams <= 0 || moving}
+              className="pa-scoop-back"
+            >
+              Scoop back
+            </Button>
+            <Button onClick={keep} disabled={!canKeep} className="pa-keep-weigh" data-testid="keep-weigh">
+              Keep {grams} {unit}
+            </Button>
+          </div>
+          {helper}
         </div>
       </div>
       {pour.emptied ? (
