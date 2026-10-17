@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { ExtraId } from "../../content/extra";
 
 const OUTLINE = "#2f2622";
@@ -14,6 +15,40 @@ function Brass({ r }: { r: number }) {
       <circle r={r} fill="#d9a92b" stroke={OUTLINE} strokeWidth={2} />
       <circle r={r * 0.55} cx={-r * 0.25} cy={-r * 0.25} fill="#f7dc7a" />
       <circle r={r * 0.18} cx={-r * 0.35} cy={-r * 0.4} fill="#fff6d0" />
+    </g>
+  );
+}
+
+function Stencil({ d }: { readonly d: string }) {
+  return (
+    <g>
+      <path d={d} fill="#f2c230" opacity={0.92} stroke="#b9860f" strokeWidth={1} strokeLinejoin="round" />
+      <path
+        d={d}
+        fill="none"
+        stroke="#fff3c4"
+        strokeWidth={0.8}
+        opacity={0.6}
+        transform="translate(-0.6 -0.6)"
+      />
+    </g>
+  );
+}
+
+function Carving({ d, children }: { readonly d: string; readonly children?: ReactNode }) {
+  return (
+    <g strokeLinejoin="round">
+      <path d={d} fill="#2f1d12" opacity={0.28} />
+      <path
+        d={d}
+        fill="none"
+        stroke="#fff8e6"
+        strokeWidth={1.6}
+        opacity={0.55}
+        transform="translate(0.9 1.1)"
+      />
+      <path d={d} fill="none" stroke={OUTLINE} strokeWidth={2.2} />
+      {children}
     </g>
   );
 }
@@ -112,20 +147,13 @@ export function ExtraArt({ extraId, woodHex, plaque }: ExtraArtProps) {
       );
     case "star-stencil":
       return (
-        <path
-          d="M0 -13 L3.8 -4 L13 -4 L5.6 2 L8.4 11.5 L0 6 L-8.4 11.5 L-5.6 2 L-13 -4 L-3.8 -4 Z"
-          fill="#f2c230"
-          stroke={OUTLINE}
-          strokeWidth={1.6}
-          strokeLinejoin="round"
-        />
+        <Stencil d="M0 -13 L3.8 -4 L13 -4 L5.6 2 L8.4 11.5 L0 6 L-8.4 11.5 L-5.6 2 L-13 -4 L-3.8 -4 Z" />
       );
     case "leaf-carving":
       return (
-        <g>
-          <path d="M-14 6 Q-6 -14 14 -10 Q10 8 -14 6 Z" fill="none" stroke={OUTLINE} strokeWidth={2.4} />
+        <Carving d="M-14 6 Q-6 -14 14 -10 Q10 8 -14 6 Z">
           <path d="M-12 5 Q0 -2 12 -9" fill="none" stroke={OUTLINE} strokeWidth={1.4} />
-        </g>
+        </Carving>
       );
     case "cup-handle":
       return (
@@ -186,31 +214,16 @@ export function ExtraArt({ extraId, woodHex, plaque }: ExtraArtProps) {
       );
     case "heart-carving":
       return (
-        <path
-          d="M0 12 C-16 2 -14 -12 -6 -12 C-2 -12 0 -8 0 -6 C0 -8 2 -12 6 -12 C14 -12 16 2 0 12 Z"
-          fill="none"
-          stroke={OUTLINE}
-          strokeWidth={2.4}
-          strokeLinejoin="round"
-        />
+        <Carving d="M0 12 C-16 2 -14 -12 -6 -12 C-2 -12 0 -8 0 -6 C0 -8 2 -12 6 -12 C14 -12 16 2 0 12 Z" />
       );
     case "moon-stencil":
-      return (
-        <path
-          d="M4 -13 A13 13 0 1 0 4 13 A10 10 0 1 1 4 -13 Z"
-          fill="#f2c230"
-          stroke={OUTLINE}
-          strokeWidth={1.6}
-          strokeLinejoin="round"
-        />
-      );
+      return <Stencil d="M4 -13 A13 13 0 1 0 4 13 A10 10 0 1 1 4 -13 Z" />;
     case "bird-carving":
       return (
-        <g fill="none" stroke={OUTLINE} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M-14 4 Q-8 -8 4 -6 Q10 -12 14 -8 Q10 -4 10 0 Q6 10 -6 8 Z" />
-          <path d="M-4 0 Q2 -2 6 2" />
-          <circle cx={9} cy={-7} r={0.8} fill={OUTLINE} />
-        </g>
+        <Carving d="M-14 4 Q-8 -8 4 -6 Q10 -12 14 -8 Q10 -4 10 0 Q6 10 -6 8 Z">
+          <path d="M-4 0 Q2 -2 6 2" fill="none" stroke={OUTLINE} strokeWidth={1.6} strokeLinecap="round" />
+          <circle cx={9} cy={-7} r={0.9} fill={OUTLINE} />
+        </Carving>
       );
   }
 }

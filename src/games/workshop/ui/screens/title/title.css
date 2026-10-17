@@ -27,13 +27,13 @@
 .ww-title__content {
   position: relative;
   z-index: 1;
-  width: min(1120px, 100%);
+  width: min(1240px, 100%);
   margin: 0 auto;
-  padding: var(--space-4) var(--space-5) var(--space-6);
+  padding: var(--space-3) var(--space-5) var(--space-5);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(20px, 4vh, 40px);
+  gap: clamp(12px, 2.4vh, 28px);
 }
 
 .ww-title__nav {
@@ -41,12 +41,12 @@
 }
 
 .ww-title__hero {
-  margin-top: clamp(28px, 9vh, 100px);
+  margin-top: clamp(0px, 2vh, 24px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
-  padding: 44px clamp(24px, 5vw, 64px) var(--space-5);
+  gap: var(--space-3);
+  padding: 36px clamp(24px, 4vw, 52px) var(--space-4);
   text-align: center;
   animation: ad-rise var(--duration-slow) var(--ease-out) both;
 }
@@ -95,7 +95,7 @@
 }
 
 .ww-wordmark__line {
-  font-size: clamp(44px, 7vw, 80px);
+  font-size: clamp(44px, 6vw, 70px);
   letter-spacing: 0.02em;
   text-shadow:
     0 3px 0 var(--ww-safety),
@@ -188,9 +188,16 @@
 }
 
 .ww-title__slots-heading {
-  text-align: center;
+  justify-self: center;
+  width: fit-content;
+  margin: 0 auto var(--space-3);
+  padding: 4px var(--space-4);
+  border-radius: 999px;
+  border: 2px solid var(--ww-outline);
+  background: linear-gradient(180deg, #8f5a26, #744717);
+  box-shadow: 0 3px 0 rgba(47, 38, 34, 0.6);
   font-size: var(--text-lg);
-  color: var(--ww-slate-deep);
+  color: #fffaf1;
 }
 
 .ww-title__slot-row {
@@ -203,8 +210,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
+  gap: 6px;
+  padding: var(--space-3) var(--space-4);
   border-radius: 10px;
   background: rgba(255, 250, 241, 0.96);
   border: 2px dashed rgba(47, 38, 34, 0.35);
@@ -244,8 +251,20 @@
 }
 
 .ww-slot__actions {
-  margin-top: auto;
   justify-content: flex-end;
+}
+
+.ww-slot__foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+}
+
+.ww-slot--empty .ad-button {
+  margin-top: auto;
 }
 
 .ww-slot__warning {
@@ -296,7 +315,7 @@
 
 .ww-title__piece {
   width: 100%;
-  max-width: 260px;
+  max-width: 300px;
   height: auto;
   justify-self: center;
   filter: drop-shadow(0 12px 12px rgba(47, 38, 34, 0.3));
@@ -316,4 +335,14 @@
   .ww-title__slot-row {
     grid-template-columns: 1fr;
   }
+}
+
+.ww-slot .ad-stat-chip {
+  min-height: 34px;
+  padding: 0 12px 0 4px;
+}
+
+.ww-slot .ad-stat-chip__badge {
+  width: 26px;
+  height: 26px;
 }

@@ -55,24 +55,40 @@
 
 .ww-results__confetti span {
   position: absolute;
-  top: -12px;
-  left: calc(var(--i) * 5.5%);
+  top: calc(84% + var(--land) * 1%);
+  left: calc(2% + var(--i) * 5.4%);
   width: 10px;
   height: 14px;
   border-radius: 2px;
   background: hsl(calc(var(--i) * 47), 75%, 62%);
+  transform: rotate(calc(var(--i) * 67deg));
   animation: ww-confetti 2.4s ease-in calc(0.6s + var(--i) * 0.07s) both;
 }
 
 @keyframes ww-confetti {
   from {
-    transform: translateY(0) rotate(0);
-    opacity: 1;
+    top: -14px;
+    transform: rotate(0);
   }
+}
+
+.ww-results__burst {
+  transform-box: view-box;
+  transform-origin: 420px 330px;
+  animation: ww-burst 14s linear infinite;
+}
+
+@keyframes ww-burst {
   to {
-    transform: translateY(520px) rotate(540deg);
-    opacity: 0;
+    transform: rotate(360deg);
   }
+}
+
+.ww-results__left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
 }
 
 .ww-results__verdict {
@@ -107,10 +123,15 @@
 }
 
 .ww-results__kid-line {
-  padding: 4px 8px;
-  border-radius: 6px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
   background: var(--ww-forest-soft);
-  font-size: var(--text-sm);
+  font-size: 15px;
+  line-height: 1.25;
   animation: ad-rise var(--duration-base) var(--ease-out) calc(0.9s + var(--reveal) * 0.08s) both;
 }
 
@@ -179,7 +200,7 @@
 
 .ww-results__details {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
 }
 

@@ -9,6 +9,7 @@ import { DesignStage } from "./design/DesignStage";
 import { FinishStage } from "./finish/FinishStage";
 import { JoinStage } from "./join/JoinStage";
 import { LayoutStage } from "./layout/LayoutStage";
+import { MakerCorner } from "./MakerCorner";
 import { ResultsStage } from "./results/ResultsStage";
 import { ReviewStage } from "./review/ReviewStage";
 import { SandStage } from "./sand/SandStage";
@@ -79,7 +80,10 @@ export function BuildFlow({ state, dispatch, onExit }: BuildFlowProps) {
         <section className="ww-build__stage" key={run.stage} aria-label={`${run.stage} step`}>
           <StageView state={state} run={run} dispatch={dispatch} onExit={onExit} />
         </section>
-        <BriefChecklist state={state} run={run} />
+        <div className="ww-build__side">
+          <BriefChecklist state={state} run={run} />
+          <MakerCorner run={run} />
+        </div>
       </div>
     </main>
   );

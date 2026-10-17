@@ -63,9 +63,9 @@
   border-radius: 999px;
   background: transparent;
   font: inherit;
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-weight: 700;
-  color: var(--ink-faint);
+  color: #75655a;
 }
 
 button.ww-rail__button {
@@ -80,15 +80,17 @@ button.ww-rail__button:hover {
 .ww-rail__dot {
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
   border: 2px solid currentColor;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .ww-rail__step--current .ww-rail__button {
   color: var(--ww-outline);
+  background: rgba(242, 194, 48, 0.22);
+  box-shadow: inset 0 0 0 2px rgba(201, 154, 18, 0.45);
 }
 
 .ww-rail__step--current .ww-rail__dot {
@@ -115,9 +117,15 @@ button.ww-rail__button:hover {
   animation: ad-rise var(--duration-base) var(--ease-out) both;
 }
 
-.ww-checklist {
+.ww-build__side {
   position: sticky;
   top: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ww-checklist {
   padding: var(--space-4) var(--space-3) var(--space-3);
   background:
     repeating-linear-gradient(180deg, transparent 0 25px, rgba(74, 99, 120, 0.14) 25px 26px), #fffdf3;
@@ -267,7 +275,7 @@ button.ww-rail__button:hover {
   .ww-build__body {
     grid-template-columns: 1fr;
   }
-  .ww-checklist {
+  .ww-build__side {
     position: static;
   }
   .ww-build-header {
@@ -277,4 +285,85 @@ button.ww-rail__button:hover {
     grid-column: 1 / -1;
     justify-content: flex-start;
   }
+}
+
+.ww-corner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background:
+    radial-gradient(circle at 12px 12px, rgba(110, 82, 50, 0.22) 2px, transparent 2.4px) 0 0 / 22px 22px,
+    linear-gradient(180deg, #f3e3c6, #ead3ad);
+}
+
+.ww-corner__head {
+  display: grid;
+  line-height: 1.2;
+}
+
+.ww-corner__head strong {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--ww-slate-deep);
+}
+
+.ww-corner__sketch {
+  border-radius: 8px;
+  border: 2px solid rgba(47, 38, 34, 0.45);
+  background:
+    repeating-linear-gradient(0deg, rgba(74, 99, 120, 0.12) 0 1px, transparent 1px 16px),
+    repeating-linear-gradient(90deg, rgba(74, 99, 120, 0.12) 0 1px, transparent 1px 16px), #fbfdff;
+  box-shadow: 0 3px 6px rgba(47, 38, 34, 0.18);
+  transform: rotate(-1.2deg);
+}
+
+.ww-corner__piece {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ww-corner__progress {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 4px;
+}
+
+.ww-corner__dot {
+  height: 10px;
+  border-radius: 3px;
+  border: 1.5px solid rgba(47, 38, 34, 0.45);
+  background: #fffdf8;
+}
+
+.ww-corner__dot--done {
+  background: var(--ww-forest);
+  border-color: var(--ww-forest);
+}
+
+.ww-corner__dot--now {
+  background: var(--ww-safety);
+  border-color: var(--ww-outline);
+}
+
+.ww-corner__tip {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2);
+  align-items: start;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.92);
+  border: 2px solid rgba(47, 38, 34, 0.18);
+  font-weight: 700;
+  font-size: var(--text-md);
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.ww-corner__tip svg {
+  color: var(--ww-safety-deep);
+  margin-top: 2px;
 }

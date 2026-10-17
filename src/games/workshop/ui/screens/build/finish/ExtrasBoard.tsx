@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } f
 import { clampPose, poseOf } from "../../../../../../engine/placedPose";
 import { clientToSvg } from "../../../../../../ui/kit/clientToSvg";
 import { Button } from "../../../../../../ui/kit/Button";
+import { Icon } from "../../../../../../ui/kit/IconSet";
 import { EXTRAS, type ExtraId } from "../../../../content/extra";
 import type { WoodId } from "../../../../content/wood";
 import {
@@ -14,6 +15,7 @@ import {
   type CommissionRun,
 } from "../../../../core";
 import { ExtraArt } from "../../../art/ExtraArt";
+import { PaintCorner } from "../../../art/PaintCorner";
 import { PiecePreview } from "../../../art/PiecePreview";
 import type { PieceLook } from "../../../art/pieceLook";
 import { woodLook } from "../../../art/woodLook";
@@ -187,6 +189,7 @@ export function ExtrasBoard({ run, woodId, look, piece, coins, dispatch, onHint 
           }}
           title="Your piece with its finish"
           className="ww-extras__art"
+          backdrop={<PaintCorner paint={look.frame.kind === "paint" ? look.frame.hex : null} />}
         >
           {onPiece.map((placed) => (
             <circle
@@ -222,36 +225,22 @@ export function ExtrasBoard({ run, woodId, look, piece, coins, dispatch, onHint 
         </PiecePreview>
         {chosen !== undefined ? (
           <div className="ww-extras__controls" role="group" aria-label="Adjust the chosen extra">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => adjust({ rotation: -EXTRA_ROTATION_STEP })}
-              aria-label="Turn left"
-            >
-              ⟲
+            <Button variant="secondary" size="sm" onClick={() => adjust({ rotation: -EXTRA_ROTATION_STEP })}>
+              <span aria-hidden="true">⟲</span> Turn left
             </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => adjust({ rotation: EXTRA_ROTATION_STEP })}
-              aria-label="Turn right"
-            >
-              ⟳
+            <Button variant="secondary" size="sm" onClick={() => adjust({ rotation: EXTRA_ROTATION_STEP })}>
+              <span aria-hidden="true">⟳</span> Turn right
             </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => adjust({ scale: -0.25 })}
-              aria-label="Smaller"
-            >
-              −
+            <Button variant="secondary" size="sm" onClick={() => adjust({ scale: -0.25 })}>
+              <span aria-hidden="true">−</span> Smaller
             </Button>
-            <Button variant="secondary" size="sm" onClick={() => adjust({ scale: 0.25 })} aria-label="Bigger">
-              +
+            <Button variant="secondary" size="sm" onClick={() => adjust({ scale: 0.25 })}>
+              <span aria-hidden="true">+</span> Bigger
             </Button>
             <Button
               variant="ghost"
               size="sm"
+              icon="back"
               onClick={() => dispatch({ type: "removeExtra", placedId: chosen.id }) && setSelected(null)}
             >
               Back to the tin
@@ -260,7 +249,10 @@ export function ExtrasBoard({ run, woodId, look, piece, coins, dispatch, onHint 
         ) : null}
       </div>
       <div className="ww-extras__tin" aria-label="Knobs and extras tin">
-        <h3 className="ww-extras__title">Knobs &amp; extras</h3>
+        <header className="ww-extras__head">
+          <h3 className="ww-extras__title">Knobs &amp; extras</h3>
+          <span className="ww-extras__lead">Drag one onto your piece</span>
+        </header>
         <ul>
           {EXTRAS.filter((extra) => extraFits(run, extra.id, piece)).map((extra) => {
             const tally = tallies.find((entry) => entry.extra === extra.id);
@@ -298,7 +290,9 @@ export function ExtrasBoard({ run, woodId, look, piece, coins, dispatch, onHint 
                     />
                   </svg>
                   <span className="ww-extras__name">{extra.name}</span>
-                  <span className="ww-extras__price">{extra.price}</span>
+                  <span className="ww-extras__price">
+                    <Icon name="coin" size={14} /> {extra.price}
+                  </span>
                   {tally !== undefined ? (
                     <span className="ww-extras__need">
                       {Math.min(tally.placed, tally.needed)}/{tally.needed}

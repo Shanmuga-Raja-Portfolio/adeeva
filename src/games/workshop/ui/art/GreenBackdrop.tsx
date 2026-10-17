@@ -94,6 +94,74 @@ function SmallStall({ x, colour }: { x: number; colour: string }) {
   );
 }
 
+const FAR_FOLK: readonly (readonly [number, number, string])[] = [
+  [190, 372, "#c0574a"],
+  [228, 380, "#4a6378"],
+  [960, 376, "#3f6b4f"],
+  [1000, 370, "#d9a42b"],
+  [1036, 382, "#b9a7dc"],
+  [36, 384, "#f07f63"],
+  [1160, 378, "#4a6378"],
+];
+
+function FarCrowd() {
+  return (
+    <g opacity={0.8}>
+      {FAR_FOLK.map(([x, y, colour]) => (
+        <g key={x} transform={`translate(${x} ${y})`}>
+          <path d="M-12 40 Q-12 10 0 10 Q12 10 12 40 Z" fill={colour} stroke="#5a4636" strokeWidth={1.5} />
+          <circle cy={0} r={9} fill="#e8c3a0" stroke="#5a4636" strokeWidth={1.5} />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+function BoothStage({ id, glow }: { readonly id: string; readonly glow: number }) {
+  return (
+    <g>
+      <defs>
+        <linearGradient id={`${id}-deck`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#d9a76a" />
+          <stop offset="1" stopColor="#b98247" />
+        </linearGradient>
+        <radialGradient id={`${id}-pool`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#fff3c4" stopOpacity={0.75} />
+          <stop offset="1" stopColor="#fff3c4" stopOpacity={0} />
+        </radialGradient>
+      </defs>
+      <path
+        d="M232 500 H968 L1010 560 H190 Z"
+        fill={`url(#${id}-deck)`}
+        stroke={OUTLINE}
+        strokeWidth={4}
+        strokeLinejoin="round"
+      />
+      <g stroke="#9c6a37" strokeWidth={2} opacity={0.7}>
+        <path d="M222 515 H978 M210 530 H990 M200 545 H1000" />
+        <path d="M400 500 L380 560 M600 500 V560 M800 500 L820 560" />
+      </g>
+      <path
+        d="M190 560 H1010 V590 H190 Z"
+        fill="#8f5a26"
+        stroke={OUTLINE}
+        strokeWidth={4}
+        strokeLinejoin="round"
+      />
+      <path
+        d="M190 560 q34 26 68 0 q34 26 68 0 q34 26 68 0 q34 26 68 0 q34 26 68 0 q34 26 68 0 q34 26 68 0 q34 26 68 0 q34 26 68 0 q34 26 68 0 q34 26 68 0 q34 26 68 0"
+        fill="#c0574a"
+        stroke={OUTLINE}
+        strokeWidth={2.5}
+      />
+      <path d="M380 506 H820 L846 552 H354 Z" fill="#4a6378" opacity={0.85} />
+      <path d="M392 512 H808 M372 546 H828" stroke="#f2c230" strokeWidth={3} strokeDasharray="10 8" />
+      <ellipse cx={420} cy={526} rx={190} ry={30} fill={`url(#${id}-pool)`} opacity={0.5 + 0.5 * glow} />
+      <ellipse cx={780} cy={526} rx={190} ry={30} fill={`url(#${id}-pool)`} opacity={0.5 + 0.5 * glow} />
+    </g>
+  );
+}
+
 export function GreenBackdrop({ className, backdrop, sky, awning, glow }: GreenBackdropProps) {
   const id = useSvgId("ww-green");
   return (
@@ -118,6 +186,7 @@ export function GreenBackdrop({ className, backdrop, sky, awning, glow }: GreenB
       <circle cx={1040} cy={90} r={46} fill="#fff3b0" opacity={0.9} />
       <path d="M0 330 Q200 260 420 320 T840 300 T1200 310 V640 H0 Z" fill="#9cc98a" />
       <path d="M0 380 Q300 330 600 370 T1200 360 V640 H0 Z" fill="#7fb36e" />
+      <FarCrowd />
       <SmallStall x={110} colour="#f2c230" />
       <SmallStall x={1090} colour="#9fd0ee" />
       <g stroke={OUTLINE} strokeWidth={4} strokeLinejoin="round">
@@ -154,14 +223,8 @@ export function GreenBackdrop({ className, backdrop, sky, awning, glow }: GreenB
       </text>
       {backdrop === "bunting" ? <Bunting y={200} from={310} to={890} /> : null}
       {backdrop === "lantern-string" ? <Lanterns glow={glow} /> : null}
-      <path
-        d="M260 520 H940 L970 560 H230 Z"
-        fill="#c99662"
-        stroke={OUTLINE}
-        strokeWidth={4}
-        strokeLinejoin="round"
-      />
-      <path d="M0 560 H1200 V640 H0 Z" fill="#6aa35c" />
+      <BoothStage id={id} glow={glow} />
+      <path d="M0 586 H1200 V640 H0 Z" fill="#6aa35c" />
       <g fill="#4f8a5b">
         {[60, 180, 330, 470, 760, 880, 1020, 1140].map((x) => (
           <path key={x} d={`M${x} 600 l6 -18 l6 18 l6 -14 l6 14 Z`} />

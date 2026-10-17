@@ -64,27 +64,29 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
           <span className="ww-muted">
             {careerById(state.career).name} · {difficultyById(state.profile.difficulty).name}
           </span>
+          <p className="ww-slot__day">
+            Day {state.calendar.day}, {weekdayName(state.calendar.day)}
+          </p>
         </div>
       </div>
-      <p className="ww-slot__day">
-        Day {state.calendar.day}, {weekdayName(state.calendar.day)}
-      </p>
-      <div className="ww-slot__stats">
-        <StatChip kind="coins" value={state.coins} />
-        <StatChip kind="reputation" value={state.reputation} />
-      </div>
-      <div className="ww-slot__actions">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onNewGame}
-          aria-label={`Start a new game in slot ${read.slot}`}
-        >
-          New game
-        </Button>
-        <Button size="sm" onClick={onLoad} aria-label={`Load slot ${read.slot}`}>
-          Load
-        </Button>
+      <div className="ww-slot__foot">
+        <div className="ww-slot__stats">
+          <StatChip kind="coins" value={state.coins} />
+          <StatChip kind="reputation" value={state.reputation} />
+        </div>
+        <div className="ww-slot__actions">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onNewGame}
+            aria-label={`Start a new game in slot ${read.slot}`}
+          >
+            New game
+          </Button>
+          <Button size="sm" onClick={onLoad} aria-label={`Load slot ${read.slot}`}>
+            Load
+          </Button>
+        </div>
       </div>
     </article>
   );

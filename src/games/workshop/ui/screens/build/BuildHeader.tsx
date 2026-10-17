@@ -43,7 +43,7 @@ export function BuildHeader({ state, run, dispatch, onExit }: StageProps) {
         </h1>
       </div>
       <div className="ww-build-header__stats">
-        <StatChip kind="day" value={state.calendar.day} />
+        <StatChip kind="day" value={`Day ${state.calendar.day}`} />
         <span data-testid="bench-hours">
           <StatChip kind="hours" value={`${state.calendar.hoursLeft} h`} />
         </span>

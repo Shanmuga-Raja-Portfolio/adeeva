@@ -1,15 +1,3 @@
-.ww-hero--showroom .ww-hero__figure {
-  display: flex;
-  align-items: flex-end;
-  gap: 0;
-}
-
-.ww-hero__figure .ww-hero__ren {
-  height: 82%;
-  margin-left: -36px;
-  animation: ww-pop var(--duration-slow) var(--ease-out) both;
-}
-
 .ww-ribbon {
   display: flex;
   flex-wrap: wrap;
@@ -290,15 +278,5 @@
   }
   .ww-rail-hooks {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 900px) {
-  .ww-hero--showroom {
-    background: #d5e0c2;
-  }
-  .ww-hero--showroom .ww-hero__backdrop {
-    height: 300px;
-    bottom: auto;
   }
 }

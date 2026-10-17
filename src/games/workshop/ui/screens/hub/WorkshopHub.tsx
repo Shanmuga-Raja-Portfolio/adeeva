@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ColourId } from "../../../../../engine/palette";
 import { useToast } from "../../../../../studio/ToastContext";
-import { Button } from "../../../../../ui/kit/Button";
 import { Card } from "../../../../../ui/kit/Card";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { useDispatchOnce, type ClickLike } from "../../../../../ui/kit/useDispatchOnce";
@@ -34,10 +33,10 @@ import { BoardRack } from "./BoardRack";
 import { daySummary, type DayEndKind } from "./daySummary";
 import { DayTransition } from "./DayTransition";
 import { DecorPanel } from "./DecorPanel";
+import { DoorBoard } from "./DoorBoard";
 import { HubHero } from "./HubHero";
 import { HubTopBar } from "./HubTopBar";
 import { JobCard } from "./JobCard";
-import { OfferNote } from "./OfferNote";
 import { RenCard } from "./RenCard";
 import { RosetteRailCard } from "./RosetteRailCard";
 import { SeasonCard } from "./SeasonCard";
@@ -46,6 +45,7 @@ import { ShowroomFloorCard } from "./ShowroomFloorCard";
 import { ShowroomOfferCard } from "./ShowroomOfferCard";
 import { TrendsBoard } from "./TrendsBoard";
 import { UpgradesPanel } from "./UpgradesPanel";
+import "./hero.css";
 import "./hub.css";
 import "./showroom.css";
 
@@ -58,8 +58,6 @@ interface WorkshopHubProps {
   readonly onOpenSettings: () => void;
   readonly onExitToTitle: () => void;
 }
-
-const TILTS = [-2.4, 1.8, -1.2, 2.6];
 
 function benchTitle(run: CommissionRun): string {
   if (run.purpose.kind === "set") return setTemplateById(run.purpose.templateId).name;
@@ -84,6 +82,7 @@ export function WorkshopHub({
   const once = useDispatchOnce(state, dispatch);
   const [ending, setEnding] = useState<{ readonly from: GameState; readonly kind: DayEndKind } | null>(null);
   const [settingAside, setSettingAside] = useState(false);
+  const desk = useRef<HTMLDivElement>(null);
   const offers = offersFor(state);
   const run = state.activeRun;
   const onBench = run !== null && run.stage !== "done" ? run : null;
@@ -126,6 +125,12 @@ export function WorkshopHub({
   const openShowroom = (event: ClickLike) => {
     once(event, { type: "openShowroom" });
   };
+  const toDesk = () => {
+    const calm =
+      document.documentElement.dataset["motion"] === "reduced" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    desk.current?.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+  };
   const setAside = () => {
     setSettingAside(false);
     if (dispatch({ type: "setAside" })) toast("The piece is set aside. Your workbench is clear.", "info");
@@ -136,96 +141,71 @@ export function WorkshopHub({
       <div className="ww-hub__content" inert={overlayOpen}>
         <HubTopBar state={state} onOpenSettings={onOpenSettings} onExit={onExitToTitle} />
         <main className="ww-hub__main">
-          <HubHero
-            state={state}
-            onWorkShift={(event) => endDay(event, "shift")}
-            onEndDay={(event) => endDay(event, "rest")}
-          />
-          <CoachBubble show={coachOn(state) && onBench === null} text={coachLine(state)} />
           <BenchTourCard state={state} dispatch={dispatch} />
           <ShowroomOfferCard state={state} onOpen={openShowroom} />
-          {state.career === "showroom" ? (
-            <ShowroomFloorCard state={state} dispatch={dispatch} onArrange={onOpenFloor} />
-          ) : null}
-          <div className="ww-hub__grid">
-            <section className="ww-door" aria-labelledby="ww-door-title">
-              <header className="ww-door__header">
-                <h2 id="ww-door-title">Notes on the door</h2>
-                <span className="ww-muted">
-                  {offers.length === 0 ? "All caught up" : `${offers.length} pinned up`}
-                </span>
-              </header>
-              {offers.length === 0 ? (
-                <p className="ww-door__empty">New notes get pinned up overnight. Buzz brings more of them.</p>
-              ) : (
-                <div className="ww-door__notes">
-                  {offers.map((view, index) => (
-                    <OfferNote
-                      key={view.offer.id}
-                      state={state}
-                      view={view}
-                      tilt={TILTS[index % TILTS.length] ?? 0}
-                      onAccept={(event) => accept(event, view.offer.id, view.client.id)}
-                      onDecline={(event) => decline(event, view.offer.id)}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
-            <div className="ww-hub__column">
-              {onBench !== null ? (
+          <div className="ww-hub__stage">
+            <HubHero
+              state={state}
+              benchTitle={onBench === null ? null : benchTitle(onBench)}
+              setAsideReason={setAsideIssue(state) ?? undefined}
+              onOpenBench={onOpenBuild}
+              onSetAside={() => setSettingAside(true)}
+              onWorkShift={(event) => endDay(event, "shift")}
+              onEndDay={(event) => endDay(event, "rest")}
+            />
+            <div className="ww-hub__door">
+              <DoorBoard state={state} offers={offers} onAccept={accept} onDecline={decline} />
+            </div>
+          </div>
+          <CoachBubble show={coachOn(state) && onBench === null} text={coachLine(state)} />
+          <button type="button" className="ww-hub__more" onClick={toDesk}>
+            <span className="ww-hub__more-arrow" aria-hidden="true">
+              ↓
+            </span>
+            {state.career === "showroom"
+              ? "Your showroom floor, jobs and more"
+              : "Your jobs, upgrades and more"}
+          </button>
+          <div className="ww-hub__desk" ref={desk}>
+            {state.career === "showroom" ? (
+              <ShowroomFloorCard state={state} dispatch={dispatch} onArrange={onOpenFloor} />
+            ) : null}
+            <div className="ww-hub__grid">
+              <div className="ww-hub__column">
                 <Card
-                  tone="gold"
-                  eyebrow="On the workbench"
-                  title={benchTitle(onBench)}
+                  title="Your jobs"
+                  eyebrow={`${state.gigs.active.length} of ${MAX_ACTIVE_GIGS} on the go`}
                   className="ww-hub-card"
                 >
-                  <div className="ww-hub__bench">
-                    <Button onClick={onOpenBuild} icon="sparkle">
-                      Back to the workbench
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSettingAside(true)}
-                      disabledReason={setAsideIssue(state) ?? undefined}
-                    >
-                      Set aside
-                    </Button>
-                  </div>
+                  {state.gigs.active.length === 0 ? (
+                    <p className="ww-muted">Accept a note from the door to start building.</p>
+                  ) : (
+                    <div className="ww-hub__stack">
+                      {state.gigs.active.map((gig) => (
+                        <JobCard
+                          key={gig.id}
+                          state={state}
+                          gig={gig}
+                          onStart={(event) => start(event, gig.id)}
+                          onContinue={onOpenBuild}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </Card>
-              ) : null}
-              <Card
-                title="Your jobs"
-                eyebrow={`${state.gigs.active.length} of ${MAX_ACTIVE_GIGS} on the go`}
-                className="ww-hub-card"
-              >
-                {state.gigs.active.length === 0 ? (
-                  <p className="ww-muted">Accept a note from the door to start building.</p>
-                ) : (
-                  <div className="ww-hub__stack">
-                    {state.gigs.active.map((gig) => (
-                      <JobCard
-                        key={gig.id}
-                        state={state}
-                        gig={gig}
-                        onStart={(event) => start(event, gig.id)}
-                        onContinue={onOpenBuild}
-                      />
-                    ))}
-                  </div>
-                )}
-              </Card>
-              <SetTemplatesCard state={state} onStart={startSet} />
-              <BoardRack state={state} />
-            </div>
-            <div className="ww-hub__column">
-              <SeasonCard state={state} onTheme={chooseTheme} onRest={rest} onFair={onOpenFair} />
-              <RenCard state={state} dispatch={dispatch} />
-              <RosetteRailCard state={state} />
-              <TrendsBoard state={state} />
-              <UpgradesPanel state={state} onBuy={buyUpgrade} />
-              <DecorPanel state={state} onBuy={buyDecor} />
+                <SetTemplatesCard state={state} onStart={startSet} />
+                <BoardRack state={state} />
+              </div>
+              <div className="ww-hub__column">
+                <SeasonCard state={state} onTheme={chooseTheme} onRest={rest} onFair={onOpenFair} />
+                <RenCard state={state} dispatch={dispatch} />
+                <RosetteRailCard state={state} />
+                <TrendsBoard state={state} />
+              </div>
+              <div className="ww-hub__column">
+                <UpgradesPanel state={state} onBuy={buyUpgrade} />
+                <DecorPanel state={state} onBuy={buyDecor} />
+              </div>
             </div>
           </div>
           <p className="ww-safety ww-hub__safety">

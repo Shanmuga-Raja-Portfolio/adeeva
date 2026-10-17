@@ -114,7 +114,30 @@ function Cafe() {
         >
           Corner Cup
         </text>
-        <path d="M520 140 H670 M520 170 H640" stroke="#fff6de" strokeWidth={3} strokeDasharray="10 6" />
+        <path d="M500 124 H690" stroke="#fff6de" strokeOpacity={0.5} strokeWidth={2} />
+        <text
+          x={595}
+          y={154}
+          textAnchor="middle"
+          fill="#fff6de"
+          fontSize={19}
+          fontFamily='"Rockwell", "Roboto Slab", Georgia, serif'
+          stroke="none"
+        >
+          Warm scones · 2 coins
+        </text>
+        <text
+          x={595}
+          y={186}
+          textAnchor="middle"
+          fill="#ffe08a"
+          fontSize={19}
+          fontFamily='"Rockwell", "Roboto Slab", Georgia, serif'
+          stroke="none"
+        >
+          Cocoa with cream
+        </text>
+        <path d="M672 196 q8 -8 16 0 q-8 8 -16 0 Z" fill="#f07f63" stroke="none" />
       </g>
       <rect x={0} y={420} width={800} height={100} fill="#b97f43" />
       <g opacity={0.5}>

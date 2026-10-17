@@ -80,8 +80,47 @@
   box-shadow: 0 2px 0 rgba(47, 38, 34, 0.55);
 }
 
+.ww-root .ad-button--ghost:not(:disabled) {
+  background: linear-gradient(180deg, #fffdf8, #f6ead6);
+  border: 2px solid rgba(47, 38, 34, 0.38);
+  color: var(--ww-slate-deep);
+  font-weight: 700;
+  box-shadow: 0 2px 0 rgba(47, 38, 34, 0.32);
+}
+
+.ww-root .ad-button--ghost:hover:not(:disabled) {
+  background: linear-gradient(180deg, #fffaf0, #f3dcc0);
+  border-color: var(--ww-outline);
+  color: var(--ww-outline);
+}
+
+.ww-root .ad-button:disabled {
+  background: repeating-linear-gradient(135deg, #f4ead9 0 8px, #efe2cc 8px 16px);
+  border: 2px dashed rgba(47, 38, 34, 0.32);
+  color: #6f5e52;
+  opacity: 1;
+}
+
+.ww-root .ad-button-reason {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
 .ww-root .ad-button--sm {
   min-height: var(--tap);
+}
+
+.ww-root .ad-stat-chip {
+  background: linear-gradient(180deg, #fffdf8, #f7ecda);
+  border: 2px solid rgba(47, 38, 34, 0.16);
+  box-shadow: 0 2px 0 rgba(47, 38, 34, 0.14);
+}
+
+.ww-root .ad-stat-chip__label {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink-soft);
 }
 
 .ww-root .ad-card {
@@ -272,4 +311,20 @@
 .ww-set-preview svg {
   width: 100%;
   height: auto;
+}
+
+.ww-piece__sheen {
+  pointer-events: none;
+}
+
+.ww-piece__sheen * {
+  stroke: none;
+}
+
+.ww-piece__sheen :not([fill*="sheen"]) {
+  fill: none;
+}
+
+.ww-piece__extras {
+  filter: drop-shadow(0 1.5px 1px rgba(47, 38, 34, 0.38));
 }

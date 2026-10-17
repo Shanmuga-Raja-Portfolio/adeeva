@@ -28,6 +28,7 @@ import { PaddedTrolley } from "../../art/PaddedTrolley";
 import { floorLooks, type PieceLook } from "../../art/pieceLook";
 import { PiecePreview } from "../../art/PiecePreview";
 import { PanelFlips } from "../../../../../ui/show/PanelFlips";
+import { FairCrowd } from "./FairCrowd";
 import { PANEL_LOOKS } from "./panelLooks";
 import { REVEAL_TIMINGS } from "./revealSteps";
 import { restX, revealedSlots, revealSteps, type RevealStep } from "../../../../../ui/show/revealSteps";
@@ -45,6 +46,16 @@ export interface BoothRevealProps {
 }
 
 const SPARKLES = Array.from({ length: 10 }, (_, index) => index);
+
+const SCENE_LABELS: Readonly<Record<RevealStep["kind"], string>> = {
+  title: "Welcome",
+  lights: "Lights up",
+  glide: "Here it comes",
+  wait: "Lift the sheet",
+  reveal: "The reveal",
+  finale: "Finale",
+  panels: "The panels",
+};
 
 function PieceOnStage({
   look,
@@ -181,7 +192,11 @@ function StepView({ steps, index, reduced, onNext, theme, result, set, looks, sk
             className="ww-reveal__piece ww-reveal__piece--rest"
             style={{ left: `${restX(slot, count)}%` }}
           >
+            <span className="ww-reveal__halo" aria-hidden="true" />
             <PieceOnStage look={look} sheet={false} lift={1} dressed sparkle={0} />
+            <span className="ww-reveal__plate">
+              {productById(set.pieces[pieceIndex ?? 0]?.productId ?? "birdhouse").name}
+            </span>
           </div>
         );
       })}
@@ -220,21 +235,7 @@ function StepView({ steps, index, reduced, onNext, theme, result, set, looks, sk
           <PetalFall t={leaves} colours={palette} width={1200} height={640} shape="leaf" />
         </svg>
       ) : null}
-      <div
-        className={clapping ? "ww-reveal__crowd ww-reveal__crowd--clap" : "ww-reveal__crowd"}
-        aria-hidden="true"
-      >
-        {crowd.map((member, at) => (
-          <span key={member.name} style={{ animationDelay: `${(at % 4) * 120}ms` }}>
-            <Avatar
-              look={member.look}
-              mood={clapping ? "delighted" : "happy"}
-              size={58}
-              title={member.name}
-            />
-          </span>
-        ))}
-      </div>
+      <FairCrowd members={crowd} clapping={clapping} />
       {step.kind === "finale" && visitor !== undefined ? (
         <p className="ww-reveal__bubble" role="status">
           <strong>{visitor.name}:</strong> “What a lovely {setTemplateById(set.templateId).name}! It would
@@ -264,7 +265,10 @@ function StepView({ steps, index, reduced, onNext, theme, result, set, looks, sk
         />
       ) : null}
       {step.kind === "title" || step.kind === "panels" ? null : (
-        <p className="ww-reveal__caption" aria-live="polite">
+        <p
+          className={step.kind === "finale" ? "ww-reveal__caption ad-visually-hidden" : "ww-reveal__caption"}
+          aria-live="polite"
+        >
           {caption(step, currentName, theme)}
         </p>
       )}
@@ -307,11 +311,17 @@ export function BoothReveal({ theme, result, set, showroom, upgrades, replay, on
         <span className={reducedMotion ? "ww-reveal__music" : "ww-reveal__music ww-reveal__music--playing"}>
           ♪ {music.name}
         </span>
-        <ol className="ww-reveal__pips" aria-label="Reveal progress">
-          {steps.map((_, at) => (
-            <li key={at} className={at === index ? "is-active" : at < index ? "is-done" : ""} />
-          ))}
-        </ol>
+        <div className="ww-reveal__progress">
+          <span className="ww-reveal__scene-label">
+            Scene {Math.min(index + 1, steps.length)} of {steps.length}
+            {step === undefined ? "" : ` · ${SCENE_LABELS[step.kind]}`}
+          </span>
+          <ol className="ww-reveal__pips" aria-label="Reveal progress">
+            {steps.map((_, at) => (
+              <li key={at} className={at === index ? "is-active" : at < index ? "is-done" : ""} />
+            ))}
+          </ol>
+        </div>
         {canSkip ? (
           <Button variant="secondary" size="sm" onClick={onDone} data-testid="skip-reveal">
             Skip to the rosettes ›

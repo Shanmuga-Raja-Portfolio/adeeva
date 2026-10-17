@@ -1,12 +1,28 @@
+import type { ReactNode } from "react";
+import type { AvatarLook } from "../../../../engine/avatar";
 import { colourById } from "../../../../engine/palette";
+import { AvatarFigure } from "../../../../ui/art/avatar/Avatar";
+import { DOLL_VIEWBOX } from "../../../../ui/art/avatar/Croquis";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 import type { OwnedDecor } from "../../core";
+import { LeaningBoards, Shavings, SleepyCat, StreetDog, WallClock, WallShelf } from "./GarageProps";
+import { SceneGlow } from "./SceneGlow";
 
 interface GarageBackdropProps {
   readonly className?: string | undefined;
   readonly decor?: readonly OwnedDecor[] | undefined;
   readonly evening?: boolean | undefined;
+  readonly hour?: number | undefined;
+  readonly lively?: boolean | undefined;
+  readonly children?: ReactNode;
 }
+
+const NEIGHBOUR: AvatarLook = {
+  skinTone: "chestnut",
+  hairStyle: "curly-puff",
+  hairColour: "black",
+  outfit: "dungarees",
+};
 
 const OUTLINE = "#2f2622";
 
@@ -61,7 +77,14 @@ function Tools({ outlines }: { outlines: boolean }) {
   );
 }
 
-export function GarageBackdrop({ className, decor = [], evening = false }: GarageBackdropProps) {
+export function GarageBackdrop({
+  className,
+  decor = [],
+  evening = false,
+  hour = 9,
+  lively = false,
+  children,
+}: GarageBackdropProps) {
   const id = useSvgId("ww-garage");
   const doorPaint = decor.find((entry) => entry.id === "door-paint")?.paint ?? null;
   const doorHex = doorPaint === null ? "#8fa3b3" : colourById(doorPaint).hex;
@@ -99,21 +122,39 @@ export function GarageBackdrop({ className, decor = [], evening = false }: Garag
         <PegHoles id={`${id}-peg`} />
       </defs>
       <rect width={1200} height={700} fill={`url(#${id}-wall)`} />
-      <g stroke="#cfae84" strokeWidth={2} opacity={0.55}>
-        <path d="M0 60 H1200 M0 64 H1200" />
-        <path d="M480 0 V60 M960 0 V60" />
+      <g stroke="#dcbf94" strokeWidth={2} opacity={0.5}>
+        {[480, 560, 640, 720, 800, 880, 960, 1040, 1120].map((x) => (
+          <path key={x} d={`M${x} 0 V600`} />
+        ))}
       </g>
+      <WallShelf />
       <rect x={40} y={100} width={400} height={540} rx={6} fill="#6f5a4a" stroke={OUTLINE} strokeWidth={4} />
       <rect x={64} y={124} width={352} height={516} fill={`url(#${id}-sky)`} />
       <g>
-        <circle cx={340} cy={210} r={36} fill={evening ? "#ffcf7a" : "#fff3b0"} opacity={0.95} />
-        <path d="M64 520 Q160 470 260 500 T416 486 V640 H64 Z" fill="#8cbf7a" />
-        <path d="M64 560 Q200 520 416 548 V640 H64 Z" fill="#6aa35c" />
-        <rect x={136} y={360} width={18} height={150} fill="#7a5233" />
-        <circle cx={145} cy={340} r={62} fill="#4f8a5b" stroke={OUTLINE} strokeWidth={3} />
-        <circle cx={110} cy={372} r={38} fill="#5f9b66" stroke={OUTLINE} strokeWidth={3} />
-        <path d="M240 600 h150 v-60 l-75 -50 l-75 50 Z" fill="#e8d2b4" stroke={OUTLINE} strokeWidth={3} />
-        <rect x={300} y={560} width={30} height={40} fill="#c0392b" stroke={OUTLINE} strokeWidth={2} />
+        <circle cx={340} cy={250} r={54} fill={evening ? "#ffcf7a" : "#fff3b0"} opacity={0.35} />
+        <circle cx={340} cy={250} r={34} fill={evening ? "#ffcf7a" : "#fff3b0"} opacity={0.95} />
+        <path d="M64 470 Q150 430 240 452 T416 440 V640 H64 Z" fill="#b5d6a4" />
+        <path d="M64 520 Q160 480 260 506 T416 494 V640 H64 Z" fill="#8cbf7a" />
+        <g stroke="#7a8f6f" strokeWidth={2}>
+          <path d="M330 470 h70 v-40 l-35 -28 l-35 28 Z" fill="#f1e2c8" />
+          <rect x={356} y={444} width={16} height={26} fill="#c0574a" />
+          <rect x={338} y={438} width={12} height={10} fill="#bfe2f2" />
+        </g>
+        <rect x={96} y={380} width={16} height={150} fill="#7a5233" />
+        <circle cx={104} cy={350} r={58} fill="#4f8a5b" stroke="#3d5f45" strokeWidth={3} />
+        <circle cx={140} cy={384} r={34} fill="#5f9b66" stroke="#3d5f45" strokeWidth={3} />
+        <circle cx={86} cy={330} r={18} fill="#6fae74" opacity={0.7} />
+        <path d="M64 572 H416 V640 H64 Z" fill="#d8d2c4" />
+        <path d="M64 572 H416" stroke="#b5ad9c" strokeWidth={3} />
+        <path d="M150 572 l-16 68 M260 572 l-6 68 M370 572 l6 68" stroke="#c4bcac" strokeWidth={2} />
+        {lively ? (
+          <>
+            <svg x={160} y={400} width={96} height={192} viewBox={DOLL_VIEWBOX}>
+              <AvatarFigure look={NEIGHBOUR} pose="wave" />
+            </svg>
+            <StreetDog />
+          </>
+        ) : null}
       </g>
       <g stroke={OUTLINE} strokeWidth={3}>
         {[0, 1, 2, 3].map((slat) => (
@@ -134,13 +175,14 @@ export function GarageBackdrop({ className, decor = [], evening = false }: Garag
         strokeWidth={4}
       />
       <Tools outlines={outlines} />
+      <WallClock hour={hour} />
+      <LeaningBoards />
       <rect x={0} y={600} width={1200} height={100} fill={`url(#${id}-floor)`} />
       <path d="M0 600 H1200" stroke={OUTLINE} strokeWidth={3} />
-      <g fill="#f0d9ad">
-        <ellipse cx={700} cy={630} rx={70} ry={8} opacity={0.8} />
-        <ellipse cx={900} cy={656} rx={40} ry={5} opacity={0.7} />
-        <ellipse cx={560} cy={670} rx={30} ry={4} opacity={0.6} />
+      <g stroke="#b3a48d" strokeWidth={2} opacity={0.6}>
+        <path d="M0 640 H1200 M300 600 L180 700 M700 600 L720 700 M1060 600 L1180 700" />
       </g>
+      <ellipse cx={830} cy={622} rx={360} ry={18} fill="#2f2622" opacity={0.16} />
       <g stroke={OUTLINE} strokeWidth={4} strokeLinejoin="round">
         <rect x={500} y={440} width={660} height={36} rx={6} fill="#b97f43" />
         <path d="M500 452 H1160" stroke="#8f5a26" strokeWidth={2} />
@@ -152,12 +194,17 @@ export function GarageBackdrop({ className, decor = [], evening = false }: Garag
         <rect x={640} y={418} width={240} height={22} rx={3} fill="#e7b777" />
         <path d="M650 428 Q720 422 790 430 T870 426" stroke="#b07a3f" strokeWidth={2} fill="none" />
         <path d="M940 440 l18 -54 h36 l18 54 Z" fill="#d4774f" />
+        <rect x={510} y={424} width={46} height={16} rx={3} fill="#4a6378" />
+        <rect x={500} y={414} width={16} height={36} rx={3} fill="#33475a" />
       </g>
       <g fill="#4f8a5b" stroke={OUTLINE} strokeWidth={2.5}>
         <path d="M976 388 C960 352 940 344 922 348 C944 356 958 368 972 392 Z" />
         <path d="M976 388 C990 350 1012 342 1030 348 C1008 356 994 370 980 392 Z" />
         <path d="M976 390 C972 360 980 334 994 320 C988 346 984 366 980 392 Z" />
       </g>
+      {children}
+      <Shavings />
+      {lively ? <SleepyCat /> : null}
       {lamp ? (
         <g>
           <polygon points="760,90 600,440 920,440" fill={`url(#${id}-lamp)`} />
@@ -167,6 +214,12 @@ export function GarageBackdrop({ className, decor = [], evening = false }: Garag
         </g>
       ) : null}
       {evening ? <rect width={1200} height={700} fill="#3b2a4a" opacity={0.18} /> : null}
+      <SceneGlow
+        id={`${id}-glow`}
+        warmth={evening ? "#ffc37a" : "#fff1c4"}
+        from={[416, 230]}
+        evening={evening}
+      />
     </svg>
   );
 }

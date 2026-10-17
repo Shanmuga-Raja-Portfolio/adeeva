@@ -101,14 +101,6 @@ export function SandStage(props: StageProps) {
             onRub={rub}
           />
           <div className="ww-sand__status">
-            <Button
-              variant="ghost"
-              className="ww-big-button"
-              onClick={() => dispatch({ type: "resetSurface", surfaceId: surface.id })}
-              disabled={record.strokes === 0}
-            >
-              Start this surface again
-            </Button>
             <Meter
               label="Smoothness"
               tone="sage"
@@ -131,6 +123,14 @@ export function SandStage(props: StageProps) {
                       ? HINTS.sandAlong
                       : "Rub until the dust is gone."}
             </p>
+            <Button
+              variant="ghost"
+              className="ww-big-button"
+              onClick={() => dispatch({ type: "resetSurface", surfaceId: surface.id })}
+              disabled={record.strokes === 0}
+            >
+              Start this surface again
+            </Button>
           </div>
         </div>
       ) : null}

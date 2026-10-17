@@ -53,33 +53,84 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
   return (
     <div className={reducedMotion ? "ww-results ww-results--still" : "ww-results"} data-testid="results">
       <section className="ww-results__hero">
-        <div className="ww-results__scene">
-          <DeliveryScene
-            scene={client.scene}
-            label={`${client.name}'s new ${productName} in its new home`}
-            className="ww-results__backdrop"
-          >
-            <svg x={230} y={190} width={380} height={285} viewBox="0 0 400 300" className="ww-results__piece">
-              <PiecePreview look={look} title={null} threeQuarter />
-            </svg>
-            <svg
-              x={40}
-              y={150}
-              width={180}
-              height={360}
-              viewBox={DOLL_VIEWBOX}
-              className="ww-results__client"
+        <div className="ww-results__left">
+          <div className="ww-results__scene">
+            <DeliveryScene
+              scene={client.scene}
+              label={`${client.name}'s new ${productName} in its new home`}
+              className="ww-results__backdrop"
             >
-              <AvatarFigure look={client.look} mood={happy ? "delighted" : "thinking"} />
-            </svg>
-          </DeliveryScene>
-          {happy && !reducedMotion ? (
-            <div className="ww-results__confetti" aria-hidden="true">
-              {Array.from({ length: 18 }, (_, index) => (
-                <span key={index} style={{ "--i": index } as CSSProperties} />
+              {happy ? (
+                <g className="ww-results__burst" aria-hidden="true">
+                  {Array.from({ length: 12 }, (_, ray) => (
+                    <path
+                      key={ray}
+                      d="M0 0 L-22 -230 L22 -230 Z"
+                      fill="#fff3b0"
+                      opacity={ray % 2 === 0 ? 0.55 : 0.3}
+                      transform={`translate(420 330) rotate(${ray * 30})`}
+                    />
+                  ))}
+                  <circle cx={420} cy={330} r={120} fill="#fffaf0" opacity={0.35} />
+                </g>
+              ) : null}
+              <svg
+                x={230}
+                y={190}
+                width={380}
+                height={285}
+                viewBox="0 0 400 300"
+                className="ww-results__piece"
+              >
+                <PiecePreview look={look} title={null} threeQuarter />
+              </svg>
+              <svg
+                x={40}
+                y={150}
+                width={180}
+                height={360}
+                viewBox={DOLL_VIEWBOX}
+                className="ww-results__client"
+              >
+                <AvatarFigure
+                  look={client.look}
+                  mood={happy ? "delighted" : "thinking"}
+                  pose={happy ? "cheer" : "rest"}
+                />
+              </svg>
+            </DeliveryScene>
+            {happy ? (
+              <div className="ww-results__confetti" aria-hidden="true">
+                {Array.from({ length: 18 }, (_, index) => (
+                  <span key={index} style={{ "--i": index, "--land": (index * 7) % 11 } as CSSProperties} />
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <div className="ww-results__panel ww-paper">
+            <h2>How it measured up</h2>
+            <ul className="ww-results__criteria">
+              {evaluation.criteria.map((criterion) => (
+                <li
+                  key={criterion.id}
+                  className={
+                    criterion.passed
+                      ? "ww-criterion ww-criterion--passed"
+                      : "ww-criterion ww-criterion--missed"
+                  }
+                >
+                  <span className="ww-criterion__mark" aria-hidden="true">
+                    {criterion.passed ? <Icon name="check" size={16} /> : "•"}
+                  </span>
+                  <span>
+                    <strong>{criterion.label}</strong>
+                    <span className="ww-muted"> {criterion.detail}</span>
+                  </span>
+                  <span className="ad-visually-hidden">{criterion.passed ? "passed" : "missed"}</span>
+                </li>
               ))}
-            </div>
-          ) : null}
+            </ul>
+          </div>
         </div>
         <div className="ww-results__verdict ww-paper ww-tape">
           <span className="ad-eyebrow">
@@ -98,7 +149,10 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
                 }
                 style={reveal(index)}
               >
-                <strong>{line.label}:</strong> {line.verdict}
+                <Icon name={line.good ? "check" : "sparkle"} size={14} />
+                <span>
+                  <strong>{line.label}:</strong> {line.verdict}
+                </span>
               </li>
             ))}
           </ul>
@@ -141,28 +195,6 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
         </div>
       </section>
       <section className="ww-results__details">
-        <div className="ww-results__panel ww-paper">
-          <h2>How it measured up</h2>
-          <ul className="ww-results__criteria">
-            {evaluation.criteria.map((criterion) => (
-              <li
-                key={criterion.id}
-                className={
-                  criterion.passed ? "ww-criterion ww-criterion--passed" : "ww-criterion ww-criterion--missed"
-                }
-              >
-                <span className="ww-criterion__mark" aria-hidden="true">
-                  {criterion.passed ? <Icon name="check" size={16} /> : "•"}
-                </span>
-                <span>
-                  <strong>{criterion.label}</strong>
-                  <span className="ww-muted"> {criterion.detail}</span>
-                </span>
-                <span className="ad-visually-hidden">{criterion.passed ? "passed" : "missed"}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
         <div className="ww-results__panel ww-paper">
           <h2>Maker skills · quality {quality.quality}</h2>
           <Meter label="Sawing" value={Math.round(quality.saw * 100)} valueText={percent(quality.saw)} />

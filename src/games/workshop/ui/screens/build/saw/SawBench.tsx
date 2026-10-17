@@ -40,6 +40,7 @@ interface SawBenchProps {
 const MARGIN = 6;
 const MAX_SPECKS = 16;
 const MIN_SAMPLE_GAP_CM = 0.2;
+const MAX_HEIGHT_PX = 400;
 
 function spacedSamples(from: Point | undefined, points: readonly Point[]): Point[] {
   const kept: Point[] = [];
@@ -92,10 +93,10 @@ export function SawBench({
   const minX = Math.max(-MARGIN, Math.min(...xs) - MARGIN);
   const minY = Math.max(-MARGIN, Math.min(...ys) - MARGIN);
   const maxX = Math.min(size.width + MARGIN, Math.max(...xs) + MARGIN);
-  const maxY = Math.min(size.height + MARGIN, Math.max(...ys) + MARGIN) + 4;
+  const maxY = Math.min(size.height + MARGIN, Math.max(...ys) + MARGIN) + 9;
   const viewWidth = maxX - minX;
   const viewHeight = maxY - minY;
-  const pxPerCm = clamp(containerWidth / viewWidth, 6, 16);
+  const pxPerCm = clamp(Math.min(containerWidth / viewWidth, MAX_HEIGHT_PX / viewHeight), 6, 16);
   const coverage = cut === undefined ? 0 : pathCoverage(cut, samples, tolerance);
   const rideDone = useRef(onRideDone);
   const openCuts = useRef<readonly SawCut[]>([]);
@@ -228,13 +229,23 @@ export function SawBench({
         aria-label={`Saw the ${part.name}. Follow the pencil line from the green dot.`}
       >
         <g className="ww-saw-bench__horses" aria-hidden="true">
-          <rect x={minX + viewWidth * 0.12} y={maxY - 5} width={3} height={6} fill="#8f5a26" />
-          <rect x={maxX - viewWidth * 0.12 - 3} y={maxY - 5} width={3} height={6} fill="#8f5a26" />
+          <path
+            d={`M${minX + viewWidth * 0.12} ${maxY - 9} l-2.4 9.4 h2.4 l1.6 -6 l1.6 6 h2.4 l-2.4 -9.4 Z`}
+            fill="#8f5a26"
+            stroke="#2f2622"
+            strokeWidth={0.3}
+          />
+          <path
+            d={`M${maxX - viewWidth * 0.12 - 3} ${maxY - 9} l-2.4 9.4 h2.4 l1.6 -6 l1.6 6 h2.4 l-2.4 -9.4 Z`}
+            fill="#8f5a26"
+            stroke="#2f2622"
+            strokeWidth={0.3}
+          />
           <rect
             x={minX + viewWidth * 0.08}
-            y={maxY - 6}
+            y={maxY - 10}
             width={viewWidth * 0.84}
-            height={1.6}
+            height={1.8}
             rx={0.4}
             fill="#b97f43"
           />
@@ -274,7 +285,7 @@ export function SawBench({
           </g>
         ) : null}
         <SawdustBurst specks={specks} />
-        {saw !== null ? <SawSprite x={saw.x} y={saw.y} angle={saw.angle} scale={0.3} busy={sawing} /> : null}
+        {saw !== null ? <SawSprite x={saw.x} y={saw.y} angle={saw.angle} scale={0.44} busy={sawing} /> : null}
       </svg>
       <div className="ww-saw-bench__progress" aria-hidden="true">
         <span style={{ width: `${Math.round(coverage * 100)}%` }} />

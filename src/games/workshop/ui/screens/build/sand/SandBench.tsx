@@ -8,12 +8,13 @@ import {
   applyStrokes,
   MAX_PASSES,
   SAND_CANVAS,
-  SAND_COLUMNS,
   SAND_ROWS,
   sandStrokes,
   settleDrag,
   type SandRecord,
 } from "../../../../core";
+import { DustLayer } from "./DustLayer";
+import { SandingBlock } from "../../../art/SandingBlock";
 import { woodLook } from "../../../art/woodLook";
 import { WoodPattern } from "../../../art/WoodPattern";
 
@@ -26,7 +27,6 @@ interface SandBenchProps {
   readonly onRub: (points: readonly Point[], stillRubbing: boolean) => void;
 }
 
-const CELL_W = SAND_CANVAS.width / SAND_COLUMNS;
 const CELL_H = SAND_CANVAS.height / SAND_ROWS;
 const MIN_POINT_GAP = 1;
 
@@ -136,18 +136,15 @@ export function SandBench({ woodId, record, angleLimit, assisted, seed, onRub }:
     >
       <defs>
         <WoodPattern id={`${id}-wood`} look={look} seed={seed} tile={40} />
-        <pattern id={`${id}-dust`} patternUnits="userSpaceOnUse" width={16} height={16}>
-          <rect width={16} height={16} fill="#e9dcc2" />
-          {Array.from({ length: 7 }, (_, index) => (
-            <circle
-              key={index}
-              cx={seededUnit(seed, index) * 16}
-              cy={seededUnit(seed, index + 20) * 16}
-              r={0.6 + seededUnit(seed, index + 40) * 1.2}
-              fill={index % 2 === 0 ? "#cdb995" : "#f7efdf"}
-            />
-          ))}
-        </pattern>
+        <linearGradient id={`${id}-light`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fffdf2" stopOpacity={0.2} />
+          <stop offset="0.3" stopColor="#fffdf2" stopOpacity={0.06} />
+          <stop offset="1" stopColor="#2f1d12" stopOpacity={0.2} />
+        </linearGradient>
+        <linearGradient id={`${id}-bench`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#a8723f" />
+          <stop offset="1" stopColor="#7a4a22" />
+        </linearGradient>
       </defs>
       <rect
         x={-8}
@@ -155,8 +152,20 @@ export function SandBench({ woodId, record, angleLimit, assisted, seed, onRub }:
         width={SAND_CANVAS.width + 16}
         height={SAND_CANVAS.height + 16}
         rx={10}
-        fill="#8f5a26"
+        fill={`url(#${id}-bench)`}
       />
+      <rect
+        x={-8}
+        y={-8}
+        width={SAND_CANVAS.width + 16}
+        height={SAND_CANVAS.height + 16}
+        rx={10}
+        fill="none"
+        stroke="#2f2622"
+        strokeOpacity={0.5}
+        strokeWidth={1.5}
+      />
+      <rect x={2} y={4} width={SAND_CANVAS.width} height={SAND_CANVAS.height} fill="#2f2622" opacity={0.28} />
       <rect
         width={SAND_CANVAS.width}
         height={SAND_CANVAS.height}
@@ -164,26 +173,8 @@ export function SandBench({ woodId, record, angleLimit, assisted, seed, onRub }:
         stroke="#2f2622"
         strokeWidth={1.5}
       />
-      {shown.passes.map((passes, cell) => {
-        const x = (cell % SAND_COLUMNS) * CELL_W;
-        const y = Math.floor(cell / SAND_COLUMNS) * CELL_H;
-        return (
-          <g key={cell}>
-            <rect
-              x={x}
-              y={y}
-              width={CELL_W}
-              height={CELL_H}
-              fill={`url(#${id}-dust)`}
-              opacity={((MAX_PASSES - passes) / MAX_PASSES) * 0.92}
-              className="ww-sand-bench__dust"
-            />
-            {passes >= MAX_PASSES ? (
-              <rect x={x} y={y} width={CELL_W} height={CELL_H} fill="#ffffff" opacity={0.16} />
-            ) : null}
-          </g>
-        );
-      })}
+      <rect width={SAND_CANVAS.width} height={SAND_CANVAS.height} fill={`url(#${id}-light)`} />
+      <DustLayer id={`${id}-dust`} passes={shown.passes} seed={seed} />
       {record.across > 0
         ? Array.from({ length: Math.min(12, record.across) }, (_, index) => (
             <path
@@ -207,36 +198,15 @@ export function SandBench({ woodId, record, angleLimit, assisted, seed, onRub }:
           strokeDasharray="8 5"
         />
       ) : null}
-      {block !== null && rubbing ? (
-        <g
-          transform={`translate(${block[0]} ${block[1]})`}
-          className="ww-sand-bench__block"
-          pointerEvents="none"
-        >
-          <rect
-            x={-26}
-            y={-16}
-            width={52}
-            height={32}
-            rx={6}
-            fill="#c0392b"
-            stroke="#2f2622"
-            strokeWidth={2}
-          />
-          <rect
-            x={-26}
-            y={8}
-            width={52}
-            height={8}
-            rx={2}
-            fill="#e9c896"
-            stroke="#2f2622"
-            strokeWidth={1.5}
-          />
-          <path d="M-18 -8 H18" stroke="#ffffff" strokeOpacity={0.6} strokeWidth={2} strokeLinecap="round" />
-        </g>
-      ) : null}
-      <path d="M8 -3 H72 M64 -6 L72 -3 L64 0" stroke="#f6e7c4" strokeWidth={1.4} fill="none" />
+      {block !== null && rubbing ? <SandingBlock x={block[0]} y={block[1]} /> : null}
+      <path
+        d="M14 -3 H96 M88 -6.5 L96 -3 L88 0.5 M22 -6.5 L14 -3 L22 0.5"
+        stroke="#fff3cf"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
     </svg>
   );
 }

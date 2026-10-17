@@ -1,11 +1,13 @@
 import type { AvatarLook } from "../../../../engine/avatar";
 import { AvatarFigure } from "../../../../ui/art/avatar/Avatar";
 import type { AvatarMood } from "../../../../ui/art/avatar/AvatarFace";
+import type { AvatarPose } from "../../../../ui/art/avatar/ArmPose";
 import { DOLL_VIEWBOX } from "../../../../ui/art/avatar/Croquis";
 
 interface WorkshopAvatarProps {
   readonly look: AvatarLook;
   readonly mood?: AvatarMood | undefined;
+  readonly pose?: AvatarPose | undefined;
   readonly title: string;
   readonly className?: string | undefined;
 }
@@ -48,12 +50,20 @@ function Goggles() {
   );
 }
 
-export function WorkshopAvatar({ look, mood = "happy", title, className }: WorkshopAvatarProps) {
+export function WorkshopApron() {
   return (
-    <svg className={className} viewBox={DOLL_VIEWBOX} role="img" aria-label={title}>
-      <AvatarFigure look={look} mood={mood} />
+    <>
       <Apron />
       <Goggles />
+    </>
+  );
+}
+
+export function WorkshopAvatar({ look, mood = "happy", pose, title, className }: WorkshopAvatarProps) {
+  return (
+    <svg className={className} viewBox={DOLL_VIEWBOX} role="img" aria-label={title}>
+      <AvatarFigure look={look} mood={mood} pose={pose} />
+      <WorkshopApron />
     </svg>
   );
 }

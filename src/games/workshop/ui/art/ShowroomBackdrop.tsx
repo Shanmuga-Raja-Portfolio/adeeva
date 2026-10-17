@@ -1,11 +1,13 @@
+import type { ReactNode } from "react";
 import { colourById } from "../../../../engine/palette";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 import { FAIR_THEME_IDS, type FairThemeId } from "../../content/fairTheme";
 import type { RosetteId } from "../../content/rosette";
-import type { FloorSet, OwnedDecor } from "../../core";
+import { setTemplateById, type FloorSet, type OwnedDecor } from "../../core";
 import { floorLooks } from "./pieceLook";
 import { PiecePreview } from "./PiecePreview";
 import { RosetteArt } from "./RosetteArt";
+import { SceneGlow } from "./SceneGlow";
 
 interface ShowroomBackdropProps {
   readonly className?: string | undefined;
@@ -14,14 +16,16 @@ interface ShowroomBackdropProps {
   readonly rail?: Readonly<Partial<Record<FairThemeId, RosetteId>>> | undefined;
   readonly evening?: boolean | undefined;
   readonly floorFocus?: boolean | undefined;
+  readonly plaques?: boolean | undefined;
+  readonly children?: ReactNode;
 }
 
 const OUTLINE = "#2f2622";
 const RUG_COLOURS = ["#c0574a", "#4a6378", "#3f6b4f"];
 const RUG_SPOTS: readonly { cx: number; cy: number; width: number; scale: number }[] = [
-  { cx: 610, cy: 660, width: 340, scale: 1 },
-  { cx: 650, cy: 540, width: 260, scale: 0.8 },
-  { cx: 1010, cy: 650, width: 280, scale: 0.9 },
+  { cx: 500, cy: 652, width: 380, scale: 1 },
+  { cx: 800, cy: 548, width: 300, scale: 0.82 },
+  { cx: 1010, cy: 660, width: 290, scale: 0.92 },
 ];
 
 function Fern({ x }: { x: number }) {
@@ -51,6 +55,75 @@ function RockingHorse() {
   );
 }
 
+function FloorPlaque({ x, y, name }: { readonly x: number; readonly y: number; readonly name: string }) {
+  const width = name.length * 11 + 30;
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <rect x={-width / 2 + 3} y={1} width={width} height={30} rx={8} fill={OUTLINE} opacity={0.3} />
+      <rect
+        x={-width / 2}
+        y={-2}
+        width={width}
+        height={30}
+        rx={8}
+        fill="#fffaf0"
+        stroke={OUTLINE}
+        strokeWidth={2.5}
+      />
+      <text
+        y={19}
+        textAnchor="middle"
+        fontSize={18}
+        fontWeight={700}
+        fontFamily='"Rockwell", "Roboto Slab", Georgia, serif'
+        fill="#33475a"
+      >
+        {name}
+      </text>
+    </g>
+  );
+}
+
+function WallDressing() {
+  return (
+    <g>
+      <rect y={384} width={1200} height={86} fill="#b9c7a2" opacity={0.75} />
+      <path d="M0 384 H1200" stroke="#8f9e7a" strokeWidth={6} />
+      <g stroke="#9fae88" strokeWidth={3} fill="none">
+        {[480, 600, 720, 840].map((x) => (
+          <rect key={x} x={x} y={398} width={100} height={58} rx={4} />
+        ))}
+      </g>
+      <g stroke={OUTLINE} strokeWidth={3}>
+        <rect x={470} y={226} width={104} height={84} rx={3} fill="#c58a4a" />
+        <rect x={480} y={236} width={84} height={64} fill="#f6e7c4" />
+        <path d="M480 286 Q510 258 532 276 T564 270 V300 H480 Z" fill="#9cb59a" strokeWidth={2} />
+        <circle cx={546} cy={254} r={8} fill="#f2c230" strokeWidth={2} />
+        <rect x={592} y={250} width={64} height={78} rx={3} fill="#4a6378" />
+        <rect x={600} y={258} width={48} height={62} fill="#f2e6cf" />
+        <path d="M614 306 q10 -30 20 0 Z" fill="#c0574a" strokeWidth={2} />
+      </g>
+      {[640, 800].map((x) => (
+        <g key={x}>
+          <path d={`M${x} 0 V104`} stroke={OUTLINE} strokeWidth={3} />
+          <polygon
+            points={`${x - 26},140 ${x + 26},140 ${x + 150},470 ${x - 150},470`}
+            fill="#fff1c4"
+            opacity={0.16}
+          />
+          <path
+            d={`M${x - 30} 140 Q${x - 30} 104 ${x} 104 Q${x + 30} 104 ${x + 30} 140 Z`}
+            fill="#3f6b4f"
+            stroke={OUTLINE}
+            strokeWidth={3}
+          />
+          <ellipse cx={x} cy={142} rx={12} ry={6} fill="#fff1b8" stroke={OUTLINE} strokeWidth={2} />
+        </g>
+      ))}
+    </g>
+  );
+}
+
 export function ShowroomBackdrop({
   className,
   decor = [],
@@ -58,6 +131,8 @@ export function ShowroomBackdrop({
   rail = {},
   evening = false,
   floorFocus = false,
+  plaques = false,
+  children,
 }: ShowroomBackdropProps) {
   const id = useSvgId("ww-showroom");
   const signPaint = decor.find((entry) => entry.id === "shop-sign")?.paint ?? null;
@@ -92,6 +167,7 @@ export function ShowroomBackdrop({
           <line key={x} x1={x} y1={0} x2={x} y2={470} />
         ))}
       </g>
+      <WallDressing />
       <rect x={40} y={70} width={400} height={56} rx={8} fill={signHex} stroke={OUTLINE} strokeWidth={4} />
       <text
         x={240}
@@ -174,7 +250,7 @@ export function ShowroomBackdrop({
           const looks = floorLooks(set);
           const rug = RUG_SPOTS[set.bay] ?? RUG_SPOTS[0];
           if (rug === undefined) return null;
-          const each = Math.min(250 * rug.scale, (rug.width * 1.35) / Math.max(1, looks.length));
+          const each = Math.min(360 * rug.scale, (rug.width * 1.7) / Math.max(1, looks.length));
           const start = rug.cx - (each * looks.length) / 2;
           return (
             <g key={set.setId}>
@@ -192,18 +268,28 @@ export function ShowroomBackdrop({
                 <svg
                   key={index}
                   x={start + index * each}
-                  y={rug.cy + 12 - each / 1.2}
+                  y={rug.cy + 6 - (each / 1.2) * 0.85}
                   width={each}
                   height={each / 1.2}
-                  viewBox="50 30 300 250"
+                  viewBox="0 0 300 250"
                 >
                   <PiecePreview look={look} title={null} showExtras />
                 </svg>
               ))}
+              {plaques ? (
+                <FloorPlaque x={rug.cx} y={rug.cy + 2} name={setTemplateById(set.templateId).name} />
+              ) : null}
             </g>
           );
         })}
+      {children}
       {evening ? <rect width={1200} height={700} fill="#3b2a4a" opacity={0.18} /> : null}
+      <SceneGlow
+        id={`${id}-glow`}
+        warmth={evening ? "#ffc37a" : "#fff1c4"}
+        from={[420, 170]}
+        evening={evening}
+      />
     </svg>
   );
 }

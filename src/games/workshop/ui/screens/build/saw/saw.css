@@ -14,7 +14,7 @@
   background: #fff3c4;
   border: 2px dashed var(--ww-safety-deep);
   font-weight: 700;
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
 }
 
 .ww-saw__parts {
@@ -84,6 +84,7 @@
 
 .ww-saw-bench__svg {
   max-width: none;
+  overflow: visible;
   touch-action: none;
   cursor: crosshair;
   border-radius: 8px;
