@@ -1,0 +1,147 @@
+name: Preview
+
+# Cloudflare Access must cover *.maker-studio.pages.dev (and maker-studio.pages.dev) before
+# the first preview is deployed: every preview URL is public otherwise.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  WRANGLER_VERSION: 4.151.1
+
+jobs:
+  build:
+    name: build
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      ready: ${{ steps.gate.outputs.ready }}
+    steps:
+      - name: Check the Cloudflare secrets
+        id: gate
+        env:
+          HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+          HAS_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+        run: |
+          if [ "$HAS_TOKEN" = "true" ] && [ "$HAS_ACCOUNT" = "true" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Preview skipped::CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID is not set for this run, so no preview is deployed."
+          fi
+      - if: steps.gate.outputs.ready == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - if: steps.gate.outputs.ready == 'true'
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - if: steps.gate.outputs.ready == 'true'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - if: steps.gate.outputs.ready == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.gate.outputs.ready == 'true'
+        run: pnpm build
+      - if: steps.gate.outputs.ready == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: preview-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 3
+
+  deploy:
+    name: deploy
+    needs: build
+    if: needs.build.outputs.ready == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+      alias: ${{ steps.deploy.outputs.alias }}
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: preview-dist
+          path: dist
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Name the preview branch
+        id: branch
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          name=$(printf '%s' "$HEAD_REF" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-28 | sed -E 's/-+$//')
+          if [ -z "$name" ] || [ "$name" = "main" ]; then
+            name="pr-${PR_NUMBER}"
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+      - name: Deploy the preview
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: "false"
+          WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-output.json
+          BRANCH: ${{ steps.branch.outputs.name }}
+          COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: |
+          npx --yes "wrangler@${WRANGLER_VERSION}" pages deploy dist \
+            --project-name maker-studio --branch "$BRANCH" \
+            --commit-hash "$COMMIT" --commit-message "Preview of ${BRANCH}"
+          url=$(jq -r 'select(.type == "pages-deploy-detailed") | .url // empty' "$WRANGLER_OUTPUT_FILE_PATH" | tail -n 1)
+          alias=$(jq -r 'select(.type == "pages-deploy-detailed") | .alias // empty' "$WRANGLER_OUTPUT_FILE_PATH" | tail -n 1)
+          if [ -z "$url" ]; then
+            echo "::error::wrangler did not report a deployment URL"
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "alias=$alias" >> "$GITHUB_OUTPUT"
+
+  comment:
+    name: comment
+    needs: deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          PREVIEW_URL: ${{ needs.deploy.outputs.url }}
+          PREVIEW_ALIAS: ${{ needs.deploy.outputs.alias }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        with:
+          script: |
+            const marker = "<!-- maker-studio-preview -->";
+            const { PREVIEW_URL, PREVIEW_ALIAS, HEAD_SHA } = process.env;
+            const lines = [
+              marker,
+              "**Preview** (behind Cloudflare Access)",
+              "",
+              `- This commit (${HEAD_SHA.slice(0, 7)}): ${PREVIEW_URL}`,
+            ];
+            if (PREVIEW_ALIAS) lines.push(`- Latest for this branch: ${PREVIEW_ALIAS}`);
+            const body = lines.join("\n");
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number, per_page: 100 });
+            const mine = comments.find((c) => c.user?.type === "Bot" && c.body?.startsWith(marker));
+            if (mine) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: mine.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
