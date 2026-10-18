@@ -47,6 +47,11 @@ Next:
     - service-worker safety (scope, cache versioning, no caching of opaque or third-party responses, update integrity);
     - a dependency audit, licence check and secret scan (git history included);
     - an OWASP ZAP baseline scan and a manual pen-test pass against the local preview and then the live address, including Cloudflare Access bypass attempts (direct asset URLs, preview URLs, cached service worker);
+    - review tools Shan chose (no Aikido):
+      - **Alibaba Open Code Review** (`alibaba/open-code-review`, Apache-2.0) over the release diff, run on the cheap MiniMax API or a small local model;
+      - **Claude Code Review** (`/code-review ultra`), which only Shan can start because it is billed;
+      - **Strix** (`usestrix/strix`, Apache-2.0, Docker sandbox) as AI pen-test agents against our own preview and live address only, alongside OWASP ZAP;
+      - small local models (Ollama) and MiniMax for mundane, repetitive checks. API keys are Shan's and never printed;
     - a security report in `work/` with findings and fixes.
 11. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, a drift sweep, and a closing report.
 12. ⬜ **Deploy with Shan:** Shan creates the hosting account, we push and deploy together, then Shan invites the kids, friends and relatives.
