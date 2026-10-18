@@ -14,9 +14,6 @@ concurrency:
   group: preview-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
-env:
-  WRANGLER_VERSION: 4.151.1
-
 jobs:
   build:
     name: build
@@ -71,6 +68,10 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
       alias: ${{ steps.deploy.outputs.alias }}
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/deploy
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: preview-dist
@@ -78,6 +79,8 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
+      - name: Install wrangler from its lockfile
+        run: npm ci --prefix .github/deploy --ignore-scripts --no-audit --no-fund
       - name: Name the preview branch
         id: branch
         env:
@@ -99,9 +102,14 @@ jobs:
           BRANCH: ${{ steps.branch.outputs.name }}
           COMMIT: ${{ github.event.pull_request.head.sha }}
         run: |
-          npx --yes "wrangler@${WRANGLER_VERSION}" pages deploy dist \
+          .github/deploy/node_modules/.bin/wrangler pages deploy dist \
             --project-name maker-studio --branch "$BRANCH" \
             --commit-hash "$COMMIT" --commit-message "Preview of ${BRANCH}"
+          environment=$(jq -r 'select(.type == "pages-deploy-detailed") | .environment // empty' "$WRANGLER_OUTPUT_FILE_PATH" | tail -n 1)
+          if [ "$environment" != "preview" ]; then
+            echo "::error::Cloudflare made a ${environment:-unknown} deployment from ${BRANCH}, not a preview. Check the project's production branch."
+            exit 1
+          fi
           url=$(jq -r 'select(.type == "pages-deploy-detailed") | .url // empty' "$WRANGLER_OUTPUT_FILE_PATH" | tail -n 1)
           alias=$(jq -r 'select(.type == "pages-deploy-detailed") | .alias // empty' "$WRANGLER_OUTPUT_FILE_PATH" | tail -n 1)
           if [ -z "$url" ]; then
@@ -139,7 +147,7 @@ jobs:
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
             const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number, per_page: 100 });
-            const mine = comments.find((c) => c.user?.type === "Bot" && c.body?.startsWith(marker));
+            const mine = comments.find((c) => c.user?.login === "github-actions[bot]" && c.body?.startsWith(marker));
             if (mine) {
               await github.rest.issues.updateComment({ owner, repo, comment_id: mine.id, body });
             } else {

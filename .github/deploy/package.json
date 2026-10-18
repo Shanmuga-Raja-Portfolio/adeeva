@@ -1,0 +1,8 @@
+{
+  "name": "maker-studio-deploy",
+  "private": true,
+  "license": "UNLICENSED",
+  "dependencies": {
+    "wrangler": "4.151.1"
+  }
+}
