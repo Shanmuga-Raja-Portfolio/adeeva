@@ -1,9 +1,11 @@
+import { darken, lighten } from "../../../../ui/art/colourMix";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 
 export interface StallBackdropProps {
   readonly className?: string | undefined;
   readonly dusk?: boolean | undefined;
   readonly view?: string | undefined;
+  readonly crowd?: boolean | undefined;
 }
 
 const LANTERNS: readonly (readonly [number, number, string])[] = [
@@ -21,15 +23,15 @@ const LANTERNS: readonly (readonly [number, number, string])[] = [
 
 const FLAGS = ["#f08a3c", "#8fcfb2", "#3f5d84", "#f6d36b", "#e57a8f", "#8fcfb2", "#f08a3c", "#3f5d84"];
 
-const HOUSES: readonly (readonly [number, number, number, string])[] = [
-  [-20, 150, 130, "#e7c9a0"],
-  [100, 120, 110, "#dcbfa0"],
-  [200, 170, 120, "#e9d3b0"],
-  [330, 140, 100, "#d9c09c"],
-  [820, 150, 110, "#e3c49b"],
-  [920, 120, 130, "#ddc3a6"],
-  [1040, 160, 100, "#e9d3b0"],
-  [1130, 130, 170, "#dcbfa0"],
+const HOUSES: readonly (readonly [number, number, number, string, string])[] = [
+  [-20, 150, 130, "#e9a988", "#5f8fa8"],
+  [100, 118, 110, "#a9cdb6", "#c8604a"],
+  [200, 170, 120, "#f1d08a", "#4f7f6a"],
+  [330, 140, 100, "#d6aed0", "#3f5d84"],
+  [820, 150, 110, "#9fc3dc", "#d9774f"],
+  [920, 118, 130, "#efb9a6", "#4f7f6a"],
+  [1040, 160, 100, "#f3d79c", "#8a5fa8"],
+  [1130, 130, 170, "#b5d2a2", "#c8604a"],
 ];
 
 const TREES: readonly (readonly [number, number, number])[] = [
@@ -42,43 +44,111 @@ const TREES: readonly (readonly [number, number, number])[] = [
 
 const GOODS = ["#e57a8f", "#f6d36b", "#7b7fd1", "#8fcfb2", "#f08a3c"];
 
+function Window({
+  x,
+  y,
+  shutter,
+  dusk,
+  box,
+}: {
+  readonly x: number;
+  readonly y: number;
+  readonly shutter: string;
+  readonly dusk: boolean;
+  readonly box: boolean;
+}) {
+  return (
+    <g>
+      <rect x={x - 6} y={y} width={6} height={24} rx={1} fill={dusk ? darken(shutter, 0.4) : shutter} />
+      <rect x={x + 16} y={y} width={6} height={24} rx={1} fill={dusk ? darken(shutter, 0.4) : shutter} />
+      <rect x={x} y={y} width={16} height={24} rx={1.5} fill={dusk ? "#ffd98a" : "#4f6f88"} />
+      <path
+        d={`M${x + 1} ${y + 22} L${x + 15} ${y + 2}`}
+        stroke="#ffffff"
+        strokeWidth={3}
+        opacity={dusk ? 0.2 : 0.32}
+      />
+      <path d={`M${x + 8} ${y} V${y + 24} M${x} ${y + 11} H${x + 16}`} stroke="#fff8ea" strokeWidth={1.6} />
+      <rect x={x} y={y} width={16} height={24} rx={1.5} fill="none" stroke="#fff8ea" strokeWidth={2} />
+      <rect x={x - 3} y={y + 24} width={22} height={3} rx={1} fill="#fff4e2" />
+      {box ? (
+        <g>
+          <rect x={x - 2} y={y + 27} width={20} height={6} rx={1.5} fill="#8a5a3a" />
+          <circle cx={x + 2} cy={y + 26} r={2.6} fill="#e5566e" />
+          <circle cx={x + 8} cy={y + 25} r={2.8} fill="#ffd27a" />
+          <circle cx={x + 14} cy={y + 26} r={2.6} fill="#e5566e" />
+          <circle cx={x + 5} cy={y + 28} r={2.2} fill="#5f9a5a" />
+          <circle cx={x + 11} cy={y + 28} r={2.2} fill="#5f9a5a" />
+        </g>
+      ) : null}
+    </g>
+  );
+}
+
 function House({
   x,
   top,
   width,
   colour,
+  shutter,
   dusk,
 }: {
   readonly x: number;
   readonly top: number;
   readonly width: number;
   readonly colour: string;
+  readonly shutter: string;
   readonly dusk: boolean;
 }) {
-  const rows = [top + 34, top + 74];
-  const cols = Array.from({ length: Math.floor((width - 20) / 34) }, (_, index) => x + 18 + index * 34);
+  const rows = [top + 30, top + 72];
+  const cols = Array.from({ length: Math.floor((width - 20) / 38) }, (_, index) => x + 20 + index * 38);
+  const wall = dusk ? "#4a4868" : colour;
+  const roof = dusk ? "#3a3654" : darken(colour, 0.42);
+  const tiles = Array.from({ length: 4 }, (_, index) => top - 26 + index * 7);
   return (
     <g>
-      <rect x={x} y={top} width={width} height={330 - top} fill={dusk ? "#4a4868" : colour} />
+      <rect x={x} y={top} width={width} height={330 - top} fill={wall} />
+      <rect x={x + width - 16} y={top} width={16} height={330 - top} fill={darken(wall, 0.14)} />
+      <rect x={x} y={top} width={width} height={10} fill="#2a1b10" opacity={0.18} />
       <path
-        d={`M${x - 8} ${top + 2} L${x + width / 2} ${top - 34} L${x + width + 8} ${top + 2} Z`}
-        fill={dusk ? "#3a3654" : "#b8826a"}
+        d={`M${x - 10} ${top + 2} L${x + width / 2} ${top - 36} L${x + width + 10} ${top + 2} Z`}
+        fill={roof}
       />
-      <rect x={x + width * 0.7} y={top - 40} width={12} height={26} fill={dusk ? "#3a3654" : "#9a6a54"} />
-      {rows.flatMap((y) =>
-        cols.map((cx) => (
-          <rect
-            key={`${cx}-${y}`}
-            x={cx}
-            y={y}
-            width={16}
-            height={22}
-            rx={2}
-            fill={dusk ? "#ffd98a" : "#f8f1e4"}
-            stroke={dusk ? "#2c2a44" : "#b79a6e"}
-            strokeWidth={2}
-            opacity={dusk ? 0.9 : 0.95}
+      <path
+        d={`M${x + width / 2} ${top - 36} L${x + width + 10} ${top + 2} L${x + width / 2 + 8} ${top + 2} Z`}
+        fill="#2a1b10"
+        opacity={0.18}
+      />
+      {tiles.map((y) => {
+        const spread = ((y - (top - 36)) / 38) * (width / 2 + 10);
+        return (
+          <path
+            key={y}
+            d={`M${x + width / 2 - spread} ${y} H${x + width / 2 + spread}`}
+            stroke={lighten(roof, 0.18)}
+            strokeWidth={1.4}
+            opacity={0.6}
           />
+        );
+      })}
+      <path d={`M${x - 10} ${top + 2} H${x + width + 10}`} stroke={lighten(roof, 0.3)} strokeWidth={2.5} />
+      <rect
+        x={x + width * 0.7}
+        y={top - 42}
+        width={12}
+        height={26}
+        fill={dusk ? "#3a3654" : darken(roof, 0.1)}
+      />
+      <rect
+        x={x + width * 0.7 - 2}
+        y={top - 44}
+        width={16}
+        height={5}
+        fill={dusk ? "#3a3654" : darken(roof, 0.2)}
+      />
+      {rows.flatMap((y, row) =>
+        cols.map((cx, col) => (
+          <Window key={`${cx}-${y}`} x={cx} y={y} shutter={shutter} dusk={dusk} box={(row + col) % 2 === 1} />
         )),
       )}
     </g>
@@ -165,7 +235,12 @@ function Passerby({
   );
 }
 
-export function StallBackdrop({ className, dusk = false, view = "0 0 1280 720" }: StallBackdropProps) {
+export function StallBackdrop({
+  className,
+  dusk = false,
+  view = "0 0 1280 720",
+  crowd = true,
+}: StallBackdropProps) {
   const id = useSvgId("stall-backdrop");
   return (
     <svg
@@ -177,8 +252,8 @@ export function StallBackdrop({ className, dusk = false, view = "0 0 1280 720" }
     >
       <defs>
         <linearGradient id={`${id}-sky`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor={dusk ? "#2c4466" : "#a9d8e6"} />
-          <stop offset="0.5" stopColor={dusk ? "#7b6a8e" : "#f3ead2"} />
+          <stop offset="0" stopColor={dusk ? "#2c4466" : "#86c3e0"} />
+          <stop offset="0.5" stopColor={dusk ? "#7b6a8e" : "#d9ecec"} />
           <stop offset="1" stopColor={dusk ? "#e7a87a" : "#f8d8a8"} />
         </linearGradient>
         <linearGradient id={`${id}-ground`} x1="0" y1="0" x2="0" y2="1">
@@ -187,7 +262,7 @@ export function StallBackdrop({ className, dusk = false, view = "0 0 1280 720" }
         </linearGradient>
         <linearGradient id={`${id}-haze`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#fff4dc" stopOpacity={0} />
-          <stop offset="1" stopColor={dusk ? "#e7a87a" : "#fff1d6"} stopOpacity={0.6} />
+          <stop offset="1" stopColor={dusk ? "#e7a87a" : "#fff1d6"} stopOpacity={0.14} />
         </linearGradient>
         <radialGradient id={`${id}-glow`}>
           <stop offset="0" stopColor="#fff3c4" stopOpacity={0.9} />
@@ -214,8 +289,8 @@ export function StallBackdrop({ className, dusk = false, view = "0 0 1280 720" }
         <ellipse cx={290} cy={52} rx={44} ry={18} />
         <ellipse cx={760} cy={40} rx={80} ry={14} />
       </g>
-      {HOUSES.map(([x, top, width, colour]) => (
-        <House key={x} x={x} top={top} width={width} colour={colour} dusk={dusk} />
+      {HOUSES.map(([x, top, width, colour, shutter]) => (
+        <House key={x} x={x} top={top} width={width} colour={colour} shutter={shutter} dusk={dusk} />
       ))}
       <g>
         <rect x={590} y={70} width={100} height={260} fill={dusk ? "#43405f" : "#d9b98e"} />
@@ -225,9 +300,11 @@ export function StallBackdrop({ className, dusk = false, view = "0 0 1280 720" }
       </g>
       {TREES.map(([x, y, r]) => (
         <g key={x}>
-          <rect x={x - 5} y={y + r * 0.4} width={10} height={60} fill="#8a6a4a" />
-          <circle cx={x} cy={y} r={r} fill={dusk ? "#3f5a4e" : "#8fbf8a"} />
-          <circle cx={x - r * 0.3} cy={y - r * 0.3} r={r * 0.55} fill={dusk ? "#4c6b5c" : "#a8d3a0"} />
+          <rect x={x - 5} y={y + r * 0.4} width={10} height={60} fill="#7a5634" />
+          <circle cx={x} cy={y} r={r} fill={dusk ? "#3f5a4e" : "#6fa56c"} />
+          <circle cx={x + r * 0.25} cy={y + r * 0.25} r={r * 0.7} fill={dusk ? "#344c42" : "#5a8f58"} />
+          <circle cx={x - r * 0.3} cy={y - r * 0.3} r={r * 0.55} fill={dusk ? "#4c6b5c" : "#9cd08e"} />
+          <circle cx={x - r * 0.42} cy={y - r * 0.42} r={r * 0.22} fill={dusk ? "#56786a" : "#c4e6a8"} />
         </g>
       ))}
       <rect y={0} width={1280} height={340} fill={`url(#${id}-haze)`} />
@@ -247,10 +324,14 @@ export function StallBackdrop({ className, dusk = false, view = "0 0 1280 720" }
       <rect y={500} width={1280} height={220} fill={`url(#${id}-cobble)`} />
       <ellipse cx={640} cy={560} rx={560} ry={110} fill={`url(#${id}-pool)`} />
       <path d="M0 500 L1280 500" stroke="#a88a5e" strokeWidth={3} />
-      <Passerby x={300} y={512} scale={0.9} body="#9bb7a2" hair="#3d2516" />
-      <Passerby x={372} y={508} scale={0.8} body="#d9a28b" hair="#a0522d" />
-      <Passerby x={900} y={510} scale={0.86} body="#b7a8cf" hair="#1f1a1a" />
-      <Passerby x={980} y={514} scale={0.92} body="#7a8fb0" hair="#d9a441" />
+      {crowd ? (
+        <g>
+          <Passerby x={300} y={512} scale={0.9} body="#9bb7a2" hair="#3d2516" />
+          <Passerby x={372} y={508} scale={0.8} body="#d9a28b" hair="#a0522d" />
+          <Passerby x={900} y={510} scale={0.86} body="#b7a8cf" hair="#1f1a1a" />
+          <Passerby x={980} y={514} scale={0.92} body="#7a8fb0" hair="#d9a441" />
+        </g>
+      ) : null}
       <path d="M-20 200 Q300 260 640 214 T1300 206" fill="none" stroke="#a07a52" strokeWidth={2} />
       {Array.from({ length: 26 }, (_, index) => {
         const x = -10 + index * 52;

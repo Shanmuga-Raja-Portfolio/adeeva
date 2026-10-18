@@ -14,7 +14,11 @@ export type AvatarPose =
   | "point"
   | "chat"
   | "talk"
-  | "carry";
+  | "tray"
+  | "clasp"
+  | "carry"
+  | "carry-right"
+  | "browse";
 
 interface ArmBend {
   readonly shoulder: number;
@@ -40,7 +44,11 @@ const WAVE: ArmBend = { shoulder: 42, elbow: 138 };
 const OFFER: ArmBend = { shoulder: 30, elbow: 36 };
 const REACH: ArmBend = { shoulder: 62, elbow: 14 };
 const TALK: ArmBend = { shoulder: 22, elbow: 112 };
-const CARRY: ArmBend = { shoulder: 14, elbow: -90 };
+const TRAY: ArmBend = { shoulder: 14, elbow: -90 };
+const CLASP: ArmBend = { shoulder: 5, elbow: -44 };
+const HOLD: ArmBend = { shoulder: 4, elbow: -6 };
+const BROWSE: ArmBend = { shoulder: 48, elbow: -36 };
+const HAND = { x: 113, y: 432 };
 
 const POSES: Readonly<Record<Exclude<AvatarPose, "rest">, PoseAngles>> = {
   poised: { left: HAND_ON_HIP, right: RELAXED },
@@ -53,8 +61,28 @@ const POSES: Readonly<Record<Exclude<AvatarPose, "rest">, PoseAngles>> = {
   point: { left: SWAY, right: REACH },
   chat: { left: HAND_ON_HIP, right: TALK },
   talk: { left: SWAY, right: TALK },
-  carry: { left: CARRY, right: CARRY },
+  tray: { left: TRAY, right: TRAY },
+  clasp: { left: CLASP, right: CLASP },
+  carry: { left: HOLD, right: TALK },
+  "carry-right": { left: TALK, right: HOLD },
+  browse: { left: CLASP, right: BROWSE },
 };
+
+function turn(x: number, y: number, cx: number, cy: number, degrees: number): readonly [number, number] {
+  const angle = (degrees * Math.PI) / 180;
+  const dx = x - cx;
+  const dy = y - cy;
+  return [cx + dx * Math.cos(angle) - dy * Math.sin(angle), cy + dx * Math.sin(angle) + dy * Math.cos(angle)];
+}
+
+export function handPoint(pose: AvatarPose, side: "left" | "right"): readonly [number, number] {
+  const sign = side === "left" ? 1 : -1;
+  const mirror = (x: number) => (side === "left" ? x : DOLL_WIDTH - x);
+  if (pose === "rest") return [mirror(HAND.x), HAND.y];
+  const bend = POSES[pose][side];
+  const [fx, fy] = turn(mirror(HAND.x), HAND.y, mirror(ELBOW.x), ELBOW.y, sign * bend.elbow);
+  return turn(fx, fy, mirror(SHOULDER.x), SHOULDER.y, sign * bend.shoulder);
+}
 
 interface SideProps {
   readonly side: "left" | "right";

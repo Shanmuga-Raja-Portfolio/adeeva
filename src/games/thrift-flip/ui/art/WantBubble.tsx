@@ -10,6 +10,7 @@ export interface WantBubbleProps {
   readonly tail: "left" | "right";
   readonly scale?: number | undefined;
   readonly delay?: number | undefined;
+  readonly badge?: boolean | undefined;
 }
 
 const TAILS = {
@@ -17,7 +18,7 @@ const TAILS = {
   right: "M30 18 L46 40 L12 26",
 } as const;
 
-export function WantBubble({ x, y, recipeId, tail, scale = 1, delay = 0 }: WantBubbleProps) {
+export function WantBubble({ x, y, recipeId, tail, scale = 1, delay = 0, badge = true }: WantBubbleProps) {
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`}>
       <g className="tf-alert" style={{ animationDelay: `${delay}ms` }}>
@@ -51,9 +52,13 @@ export function WantBubble({ x, y, recipeId, tail, scale = 1, delay = 0 }: WantB
             />
           </svg>
         )}
-        <circle cx={36} cy={-34} r={13} fill="#f08a3c" stroke="#fffaf0" strokeWidth={3} />
-        <path d="M36 -41 V-33" stroke="#fffaf0" strokeWidth={3.5} strokeLinecap="round" />
-        <circle cx={36} cy={-27.5} r={2.1} fill="#fffaf0" />
+        {badge ? (
+          <g>
+            <circle cx={42} cy={-38} r={12} fill="#f08a3c" stroke="#fffaf0" strokeWidth={3} />
+            <path d="M42 -44.5 V-37" stroke="#fffaf0" strokeWidth={3.5} strokeLinecap="round" />
+            <circle cx={42} cy={-31.5} r={2.1} fill="#fffaf0" />
+          </g>
+        ) : null}
       </g>
     </g>
   );

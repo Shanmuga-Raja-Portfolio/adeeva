@@ -1,6 +1,7 @@
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { canGoBack, type Action, type FlipRun, type GameState } from "../../../core";
 import { craftStages, STAGE_LABELS } from "./stageNames";
+import "./rail.css";
 
 export interface StageRailProps {
   readonly state: GameState;

@@ -134,7 +134,7 @@ export function BakerFigure({ look, name, held, className }: BakerFigureProps) {
   const id = useSvgId("baker");
   return (
     <svg className={className} viewBox={DOLL_VIEWBOX} role="img" aria-label={name}>
-      <AvatarFigure look={look} mood="delighted" pose="carry" />
+      <AvatarFigure look={look} mood="delighted" pose="tray" />
       {held === "cake" ? <HeldCake id={id} /> : <HeldTea id={id} />}
     </svg>
   );

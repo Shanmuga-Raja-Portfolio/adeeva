@@ -6,6 +6,7 @@ import { Icon } from "../../../../../../ui/kit/IconSet";
 import { clientToSvg, type SvgPoint } from "../../../../../../ui/kit/clientToSvg";
 import { HINTS } from "../../../../content/hint";
 import {
+  checklist,
   findById,
   FINISH_CANVAS,
   FINISH_ROTATION_STEP,
@@ -28,6 +29,7 @@ import { StageFooter } from "../StageFooter";
 import type { StageProps } from "../stageProps";
 import { FinishDrawer } from "./FinishDrawer";
 import { poseOf, samePose, snapPose } from "./finishPose";
+import { PoseButtons } from "./PoseButtons";
 import "./finish.css";
 
 type Gesture = "move" | "rotate" | "scale";
@@ -53,6 +55,7 @@ interface TrayDrag {
 }
 
 const CENTRE = FINISH_CANVAS / 2;
+const ZOOM = "34 30 332 332";
 
 function itemName(item: FinishItem | FinishRequest): string {
   if (item.kind === "trim") return trimById(item.trimId).name;
@@ -203,6 +206,7 @@ export function FinishStage(props: StageProps) {
             title="Your flip with its finishing touches"
             className="tf-finish__svg"
             svgRef={svgRef}
+            view={ZOOM}
             base={
               runKind(run) !== "flip" && main !== null ? (
                 <g transform="translate(60 25)">
@@ -323,40 +327,12 @@ export function FinishStage(props: StageProps) {
                 Back to stock
               </Button>
             </div>
-            <div className="tf-finish__buttons">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => adjust(active, { rotation: active.rotation - FINISH_ROTATION_STEP })}
-                aria-label="Turn left"
-              >
-                ↺ Left
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => adjust(active, { rotation: active.rotation + FINISH_ROTATION_STEP })}
-                aria-label="Turn right"
-              >
-                ↻ Right
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => adjust(active, { scale: active.scale - 0.25 })}
-                aria-label="Smaller"
-              >
-                − Smaller
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => adjust(active, { scale: active.scale + 0.25 })}
-                aria-label="Bigger"
-              >
-                + Bigger
-              </Button>
-            </div>
+            <PoseButtons
+              onTurnLeft={() => adjust(active, { rotation: active.rotation - FINISH_ROTATION_STEP })}
+              onTurnRight={() => adjust(active, { rotation: active.rotation + FINISH_ROTATION_STEP })}
+              onSmaller={() => adjust(active, { scale: active.scale - 0.25 })}
+              onBigger={() => adjust(active, { scale: active.scale + 0.25 })}
+            />
           </div>
         ) : null}
       </div>
@@ -376,7 +352,14 @@ export function FinishStage(props: StageProps) {
             document.body,
           )
         : null}
-      <StageFooter {...props} hint="Looking wonderful! Take a final look." />
+      <StageFooter
+        {...props}
+        hint={
+          checklist(props.state).some((item) => item.status === "unmet")
+            ? "A wish is still open. Check the list, or take a final look."
+            : "Looking wonderful! Take a final look."
+        }
+      />
     </div>
   );
 }

@@ -117,9 +117,6 @@ export function FindArt({
         <clipPath id={`${id}-clip`}>
           <path d={outline} />
         </clipPath>
-        <filter id={`${id}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="3" stdDeviation="2.4" floodColor="#3b2a1c" floodOpacity="0.25" />
-        </filter>
       </defs>
       <path
         d="M60 3 q8 0 8 7 q0 5 -8 8 v6"
@@ -128,9 +125,8 @@ export function FindArt({
         strokeWidth={2}
         strokeLinecap="round"
       />
-      <g filter={`url(#${id}-shadow)`}>
-        <path d={outline} fill={fabricFill(`${id}-fabric`)} stroke={look.deep} strokeWidth={1.2} />
-      </g>
+      <path d={outline} fill="#3b2a1c" opacity={0.16} transform="translate(1.5 3.5)" />
+      <path d={outline} fill={fabricFill(`${id}-fabric`)} stroke={look.deep} strokeWidth={1.2} />
       <g clipPath={`url(#${id}-clip)`}>
         <path d={outline} fill={fabricSheenFill(`${id}-fabric`)} />
         {details(find.shape, look.stitch, darken(look.base, 0.4))}
@@ -138,15 +134,22 @@ export function FindArt({
           <rect x={0} y={0} width={120} height={150} fill="#f5ecd8" opacity={0.28} />
         ) : null}
         {grade !== "like-new" ? (
-          <ellipse
-            cx={46}
-            cy={96}
-            rx={9}
-            ry={6.5}
-            fill="#7a5a36"
-            opacity={0.28}
-            transform="rotate(-18 46 96)"
-          />
+          <g transform="rotate(-18 46 96)">
+            <path
+              d="M37 95 q-1 -7 7 -8 q6 -2 9 3 q5 2 3 7 q1 6 -6 6 q-4 3 -8 0 q-6 0 -5 -8 Z"
+              fill="#8a5a2b"
+              opacity={0.42}
+            />
+            <path
+              d="M37 95 q-1 -7 7 -8 q6 -2 9 3 q5 2 3 7 q1 6 -6 6 q-4 3 -8 0 q-6 0 -5 -8 Z"
+              fill="none"
+              stroke="#5c3517"
+              strokeWidth={0.9}
+              opacity={0.45}
+            />
+            <circle cx={59} cy={88} r={1.3} fill="#6b4423" opacity={0.5} />
+            <circle cx={34} cy={103} r={1} fill="#6b4423" opacity={0.45} />
+          </g>
         ) : null}
         {grade === "tired" ? (
           <g>

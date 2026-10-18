@@ -1,11 +1,10 @@
 .tf-hero {
   position: relative;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
   overflow: hidden;
   isolation: isolate;
+  min-height: 0;
   border-radius: 24px;
-  background: var(--card);
+  background: #3b2a1c;
   border: 4px solid #9a7048;
   box-shadow:
     0 2px 0 #7a5634,
@@ -14,10 +13,11 @@
 }
 
 .tf-hero__scene {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  min-height: 0;
 }
 
 .tf-alert {
@@ -42,58 +42,44 @@
   }
 }
 
-.tf-hero__bar {
-  position: relative;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-areas:
-    "clock text"
-    "clock actions";
-  align-items: center;
-  gap: var(--space-2) var(--space-5);
-  padding: var(--space-3) var(--space-5) var(--space-3);
-  background:
-    repeating-linear-gradient(100deg, rgba(160, 122, 82, 0.05) 0 2px, transparent 2px 7px),
-    linear-gradient(180deg, #fffaf0, #fbefdc);
-}
-
-.tf-hero__bar::before {
-  content: "";
-  position: absolute;
-  inset: -12px 0 auto;
-  height: 12px;
-  background: linear-gradient(180deg, #d9b083, #a87c50 70%, #8a6340);
-  box-shadow: 0 3px 6px rgba(91, 58, 30, 0.25);
-}
-
-.tf-hero--stall .tf-hero__bar {
-  background:
-    repeating-linear-gradient(90deg, rgba(240, 138, 60, 0.16) 0 28px, rgba(255, 244, 226, 0.6) 28px 56px),
-    var(--card);
-}
-
 .tf-hero__board {
   position: absolute;
-  top: 18px;
-  left: 22px;
-  z-index: 1;
+  top: 14px;
+  left: 16px;
+  z-index: 3;
   display: grid;
-  justify-items: center;
-  min-width: 128px;
-  padding: var(--space-3) var(--space-4);
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    "place place"
+    "date clock"
+    "notes notes";
+  align-items: center;
+  gap: 6px var(--space-4);
+  padding: 8px var(--space-4) 8px;
   border-radius: 12px;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.06), transparent 50%), var(--tf-chalk);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.09), transparent 55%),
+    radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.05), transparent 40%), var(--tf-chalk);
   border: 6px solid #a07a52;
   box-shadow:
-    inset 0 2px 6px rgba(0, 0, 0, 0.4),
-    0 10px 18px rgba(59, 42, 28, 0.35);
-  transform: rotate(-2deg);
+    inset 0 2px 6px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 12px 20px rgba(32, 22, 14, 0.4);
+  transform: rotate(-1.2deg);
+}
+
+.tf-hero__date {
+  grid-area: date;
+  display: grid;
+  justify-items: center;
+  padding-right: var(--space-4);
+  border-right: 2px dashed rgba(246, 242, 228, 0.3);
 }
 
 .tf-hero__week {
-  font-size: var(--text-xs);
-  letter-spacing: 0.08em;
-  opacity: 0.85;
+  font-size: var(--text-sm);
+  letter-spacing: 0.06em;
+  opacity: 0.92;
 }
 
 .tf-hero__day {
@@ -102,22 +88,25 @@
 }
 
 .tf-hero__weekday {
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
 }
 
 .tf-hero__clock {
   grid-area: clock;
-  align-self: stretch;
   display: grid;
-  align-content: center;
-  gap: var(--space-1);
-  padding-right: var(--space-5);
-  border-right: 2px dashed rgba(160, 122, 82, 0.35);
+  justify-items: start;
+  gap: 8px;
 }
 
-.tf-hero__text {
-  grid-area: text;
-  min-width: 0;
+.tf-hero__clock strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+}
+
+.tf-hero__clock strong > svg {
+  color: #ffd27a;
 }
 
 .tf-hero__hours {
@@ -126,92 +115,329 @@
 }
 
 .tf-hero__hour {
-  width: 12px;
-  height: 22px;
-  border-radius: 4px;
-  background: var(--paper-edge);
+  width: 10px;
+  height: 18px;
+  border-radius: 3px;
+  background: rgba(246, 242, 228, 0.2);
 }
 
 .tf-hero__hour--on {
-  background: linear-gradient(180deg, #f6b04e, var(--tf-tangerine));
-  box-shadow: 0 1px 0 var(--tf-tangerine-deep);
+  background: linear-gradient(180deg, #ffd27a, var(--tf-tangerine));
+  box-shadow: 0 0 6px rgba(246, 176, 78, 0.55);
 }
 
-.tf-hero__clock strong {
-  display: inline-flex;
+.tf-hero__notes {
+  grid-area: notes;
+  position: relative;
+  min-width: 0;
+  padding-top: 6px;
+  border-top: 2px dashed rgba(246, 242, 228, 0.3);
+}
+
+.tf-hero__notes summary {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  font-family: var(--font-display);
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-size: var(--text-md);
+  line-height: 1.2;
+  list-style: none;
+  cursor: pointer;
 }
 
-.tf-hero__text h2 {
-  margin: 0 0 var(--space-1);
-  font-size: var(--text-xl);
-  color: var(--tf-denim-deep);
+.tf-hero__notes summary::-webkit-details-marker {
+  display: none;
 }
 
-.tf-hero__text p {
-  margin: 0;
+.tf-hero__notes summary > svg {
+  flex: none;
+  color: #ffd27a;
+}
+
+.tf-hero__notes summary:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tf-hero__notes summary:focus-visible {
+  outline: 3px solid #ffd27a;
+  outline-offset: 2px;
+}
+
+.tf-hero__fact {
+  display: grid;
+  line-height: 1.15;
+}
+
+.tf-hero__fact small {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffd27a;
+}
+
+.tf-hero__more {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.25);
+  font-size: 16px;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.tf-hero__notes[open] .tf-hero__more {
+  transform: rotate(180deg);
 }
 
 .tf-hero__facts {
   list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-5);
+  margin: 4px 0 2px;
+  padding: 0 6px;
+  display: grid;
+  gap: 6px;
 }
 
 .tf-hero__facts li {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: var(--space-2);
-  color: var(--tf-denim-deep);
+  gap: 8px;
+  font-size: var(--text-md);
+  line-height: 1.25;
 }
 
 .tf-hero__facts li > svg {
-  box-sizing: content-box;
   flex: none;
-  padding: 6px;
-  border-radius: 50%;
-  background: #fde4cf;
+  color: #ffd27a;
+}
+
+.tf-hero__pinboard {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  z-index: 2;
+  display: grid;
+  width: 330px;
+}
+
+.tf-hero--boutique .tf-hero__pinboard {
+  top: 34px;
+}
+
+.tf-hero__desk {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 6px 10px 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 50%),
+    linear-gradient(180deg, #fffaf0, #f3e2c4);
+  box-shadow:
+    inset 0 0 0 2px rgba(160, 122, 82, 0.35),
+    0 12px 22px rgba(32, 22, 14, 0.4);
+  color: var(--tf-denim-deep);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tf-hero__desk:hover {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent 50%),
+    linear-gradient(180deg, #fffdf6, #f7e9d0);
+}
+
+.tf-hero__desk:focus-visible {
+  outline: 3px solid #ffd27a;
+  outline-offset: 3px;
+}
+
+.tf-hero__desk > svg {
+  flex: none;
   color: var(--tf-tangerine-deep);
 }
 
-.tf-hero__facts span {
+.tf-hero__desk > span:not(.tf-hero__desk-arrow) {
   display: grid;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
-.tf-hero__facts small {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: #6b5235;
+.tf-hero__desk strong {
+  font-family: var(--font-display);
+  font-size: 18px;
 }
 
-.tf-hero__facts strong {
+.tf-hero__desk-arrow {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--tf-denim-deep);
+  color: #fff;
+  font-weight: 800;
+}
+
+.tf-hero__bar {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  pointer-events: none;
+}
+
+.tf-hero__bar > * {
+  pointer-events: auto;
+}
+
+.tf-hero__text {
+  min-width: 0;
+  max-width: 440px;
+  padding: 10px 18px 12px;
+  border-radius: 12px;
+  background: radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.1), transparent 60%), var(--tf-chalk);
+  border: 4px solid #a07a52;
+  box-shadow: 0 10px 18px rgba(32, 22, 14, 0.38);
+  color: var(--tf-chalk-ink);
+}
+
+.tf-hero__text--sign {
+  grid-area: place;
+  max-width: none;
+  margin: -2px 0 2px;
+  padding: 0 0 6px;
+  border: 0;
+  border-bottom: 2px dashed rgba(246, 242, 228, 0.3);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.tf-hero__text--sign h2 {
+  font-size: 19px;
+}
+
+.tf-hero__text h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.15;
+  color: #fff6e4;
+}
+
+.tf-hero__text h2 > svg {
+  flex: none;
+  color: #ffd27a;
+}
+
+.tf-hero__text h2 + p {
+  margin-top: 4px;
+}
+
+.tf-hero__text p {
+  margin: 0;
   font-size: var(--text-md);
-  white-space: nowrap;
+  line-height: 1.35;
+  color: #f1ead6;
 }
 
 .tf-hero__actions {
-  grid-area: actions;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
   justify-content: flex-end;
+  align-items: center;
+  margin-left: auto;
+  padding: 8px;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 50%),
+    linear-gradient(180deg, #fffaf0, #f3e2c4);
+  box-shadow:
+    inset 0 0 0 2px rgba(160, 122, 82, 0.35),
+    0 14px 26px rgba(32, 22, 14, 0.4);
+}
+
+.tf-hero__shift {
+  gap: 10px;
+  text-align: left;
+}
+
+.tf-hero__shift-text {
+  display: grid;
+  line-height: 1.1;
+}
+
+.tf-hero__shift-text small {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5b4630;
+}
+
+.tf-hero__shift-pay {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 9px 3px 5px;
+  border-radius: 999px;
+  background: #fff1c9;
+  box-shadow: inset 0 0 0 1.5px rgba(184, 132, 30, 0.35);
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: #7a5310;
 }
 
 @media (max-width: 1180px) {
   .tf-hero {
-    grid-template-rows: 360px auto;
+    display: grid;
+    grid-template-rows: 380px auto auto;
+    overflow: visible;
+    background: var(--card);
+  }
+
+  .tf-hero__scene {
+    position: relative;
+    grid-row: 1;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .tf-hero__board {
+    transform: rotate(-1.2deg) scale(0.8);
+    transform-origin: top left;
+  }
+
+  .tf-hero__pinboard {
+    position: static;
+    grid-row: 3;
+    width: auto;
+    padding: var(--space-3);
+  }
+
+  .tf-hero__bar {
+    position: static;
+    grid-row: 2;
+    flex-wrap: wrap;
+    padding: var(--space-3);
   }
 }
 
 @media (max-width: 760px) {
   .tf-hero {
-    grid-template-rows: 240px auto;
+    grid-template-rows: 260px auto auto;
   }
 
   .tf-hero__board {
@@ -223,19 +449,17 @@
   }
 
   .tf-hero__bar {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "clock"
-      "text"
-      "actions";
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .tf-hero__clock {
-    padding-right: 0;
-    border-right: 0;
+  .tf-hero__text {
+    max-width: none;
   }
 
   .tf-hero__actions {
     justify-content: flex-start;
+    margin-left: 0;
+    border-radius: 20px;
   }
 }

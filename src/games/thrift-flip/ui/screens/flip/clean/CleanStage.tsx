@@ -19,6 +19,7 @@ import type { StageProps } from "../stageProps";
 import { StainScrubber } from "./StainScrubber";
 import { SoapDish, WashTub } from "../../../art/WashKit";
 import "../workbench.css";
+import "./clean.css";
 
 interface StainEntry {
   readonly owned: OwnedFind;
@@ -40,30 +41,19 @@ export function CleanStage(props: StageProps) {
   const current = pickedOpen ?? firstOpen ?? picked ?? stains[0];
   const done = stains.filter((entry) => isStainDone(state, run, entry.owned, entry.stain)).length;
 
+  const shares = stains.map((entry) =>
+    run.soaked
+      ? 1
+      : clearedCells(state, entry.owned, entry.stain, stainWork(run, entry.owned.id, entry.stain)) /
+        Math.max(1, entry.stain.cells),
+  );
+
   return (
     <div className="tf-workbench tf-workbench--clean">
       <div className="tf-workbench__top">
-        <p className="tf-hint">
-          <Icon name="sparkle" size={18} />
-          {HINTS.clean}
-        </p>
-        <AssistSwitch
-          label="Assist soak"
-          detail="Soaks all stains. Scores a bit less."
-          checked={settings.assistClean}
-          onChange={(assistClean) => updateSettings({ assistClean })}
-        />
-      </div>
-      <div className="tf-workbench__row">
         <div className="tf-workbench__lines" role="tablist" aria-label="Stains">
           {stains.map((entry, index) => {
             const finished = isStainDone(state, run, entry.owned, entry.stain);
-            const cleared = clearedCells(
-              state,
-              entry.owned,
-              entry.stain,
-              stainWork(run, entry.owned.id, entry.stain),
-            );
             return (
               <button
                 key={entry.key}
@@ -74,23 +64,19 @@ export function CleanStage(props: StageProps) {
                 onClick={() => setChosen(entry.key)}
                 data-stain-chip={index}
               >
-                {finished ? <Icon name="check" size={14} /> : null}
-                {run.finds.length > 1 ? `${findById(entry.owned.findId).name} · ` : ""}Stain {index + 1} ·{" "}
-                {run.soaked ? "soaked" : `${cleared}/${entry.stain.cells}`}
+                {finished ? <Icon name="check" size={16} /> : null}
+                {run.finds.length > 1 ? `${findById(entry.owned.findId).name} · ` : ""}Stain {index + 1}
               </button>
             );
           })}
         </div>
-        <div className="tf-workbench__tally">
-          <div
-            className="tf-progress tf-progress--mint"
-            aria-label={`${done} of ${stains.length} stains done`}
-          >
-            <span style={{ width: `${(100 * done) / Math.max(1, stains.length)}%` }} />
-          </div>
-          <span>
-            {done}/{stains.length} stains done
-          </span>
+        <div className="tf-workbench__assist">
+          <AssistSwitch
+            label="Assist soak"
+            detail="Soaks all stains. Scores a bit less."
+            checked={settings.assistClean}
+            onChange={(assistClean) => updateSettings({ assistClean })}
+          />
           {settings.assistClean && !run.soaked ? (
             <Button icon="sparkle" onClick={() => dispatch({ type: "soakStains" })} data-testid="soak">
               Soak it
@@ -101,6 +87,29 @@ export function CleanStage(props: StageProps) {
       <div className="tf-workbench__table tf-workbench__table--wash">
         <WashTub className="tf-wash tf-wash--tub" />
         <SoapDish className="tf-wash tf-wash--soap" />
+        <p className="tf-bench-caption">
+          <Icon name="sparkle" size={20} />
+          <span>{HINTS.clean}</span>
+        </p>
+        <div className="tf-wash-progress">
+          <span>
+            <strong>
+              {done} of {stains.length}
+            </strong>{" "}
+            stains clean
+          </span>
+          <div className="tf-wash-segments" aria-label={`${done} of ${stains.length} stains done`}>
+            {shares.map((share, index) => (
+              <span key={stains[index]?.key ?? index} className="tf-progress tf-progress--mint">
+                <span style={{ width: `${Math.round(100 * share)}%` }} />
+              </span>
+            ))}
+          </div>
+        </div>
+        <p className="tf-safety tf-wash-safety">
+          <Icon name="shield" size={16} />
+          {HINTS.safety}
+        </p>
         {run.soaked ? (
           <div className="tf-soaked" role="status">
             <span className="tf-soaked__tub" aria-hidden="true">
@@ -131,10 +140,6 @@ export function CleanStage(props: StageProps) {
           />
         ) : null}
       </div>
-      <p className="tf-safety">
-        <Icon name="shield" size={18} />
-        {HINTS.safety}
-      </p>
       <StageFooter {...props} hint="Fresh and clean! Time to lay out the pieces." />
     </div>
   );

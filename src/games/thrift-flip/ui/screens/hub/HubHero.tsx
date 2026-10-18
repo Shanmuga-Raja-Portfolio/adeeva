@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon, type IconName } from "../../../../../ui/kit/IconSet";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
@@ -14,6 +15,7 @@ import {
   seasonDay,
   seasonTheme,
   signById,
+  stallDayIssue,
   stallHeldToday,
   todaysSwapDay,
   weekEndDay,
@@ -31,6 +33,9 @@ export interface HubHeroProps {
   readonly onOpenStall: () => void;
   readonly onOpenHall: () => void;
   readonly onOpenShowcase: () => void;
+  readonly onOpenFlip: () => void;
+  readonly onOpenDesk: () => void;
+  readonly board: ReactNode;
 }
 
 interface Fact {
@@ -43,23 +48,22 @@ function inDays(count: number): string {
   return count === 1 ? "tomorrow" : `in ${count} days`;
 }
 
-function sellDayFacts(state: GameState): readonly Fact[] {
+function sellDayFacts(state: GameState, sellDay: boolean): readonly Fact[] {
   const { day } = state.calendar;
   const career = careerOf(state);
   const rent = weeklyBill(state);
   const until = weekEndDay(day) - day;
-  const selling: Fact = {
-    icon: "calendar",
-    label: "Next selling day",
-    value: `${career.sellDayName}, ${inDays(until)}`,
-  };
-  if (rent > 0) return [selling, { icon: "coin", label: career.rentName, value: `${rent} coins` }];
+  const selling: readonly Fact[] = sellDay
+    ? []
+    : [{ icon: "calendar", label: "Next selling day", value: `${career.sellDayName} is ${inDays(until)}` }];
+  if (rent > 0)
+    return [...selling, { icon: "coin", label: career.rentName, value: `${career.rentName} ${rent}` }];
   const welcome = state.boutique !== null && state.profile.difficulty !== "relaxed";
   return [
-    selling,
+    ...selling,
     welcome
-      ? { icon: "coin", label: "Mrs. Pell's welcome week", value: "No rent!" }
-      : { icon: "coin", label: career.rentName, value: "None on Relaxed" },
+      ? { icon: "coin", label: "Mrs. Pell's welcome week", value: "No rent this week!" }
+      : { icon: "coin", label: career.rentName, value: `No ${career.rentName.toLowerCase()}` },
   ];
 }
 
@@ -79,19 +83,39 @@ function seasonFacts(state: GameState): readonly Fact[] {
   return value === null ? [] : [{ icon: "sparkle", label: "Coming up", value }];
 }
 
-function Facts({ facts }: { readonly facts: readonly Fact[] }) {
+function WeekNotes({ season, facts }: { readonly season: string | null; readonly facts: readonly Fact[] }) {
+  const [first, ...rest] = facts;
+  if (first === undefined) return null;
   return (
-    <ul className="tf-hero__facts">
-      {facts.map((fact) => (
-        <li key={fact.label}>
-          <Icon name={fact.icon} size={20} />
-          <span>
-            <small>{fact.label}</small>
-            <strong>{fact.value}</strong>
-          </span>
-        </li>
-      ))}
-    </ul>
+    <details className="tf-hero__notes">
+      <summary className="tf-chalk" title={first.label}>
+        <Icon name={first.icon} size={20} />
+        <span className="tf-hero__fact">
+          <small>{first.label}</small>
+          <span>{first.value}</span>
+        </span>
+        <span className="tf-hero__more" aria-hidden="true">
+          ▾
+        </span>
+      </summary>
+      <ul className="tf-hero__facts tf-chalk">
+        {season === null ? null : (
+          <li className="tf-hero__season">
+            <Icon name="sparkle" size={18} />
+            <span>{season}</span>
+          </li>
+        )}
+        {rest.map((fact) => (
+          <li key={fact.label} title={fact.label}>
+            <Icon name={fact.icon} size={18} />
+            <span className="tf-hero__fact">
+              <small>{fact.label}</small>
+              <span>{fact.value}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }
 
@@ -102,6 +126,9 @@ export function HubHero({
   onOpenStall,
   onOpenHall,
   onOpenShowcase,
+  onOpenFlip,
+  onOpenDesk,
+  board,
 }: HubHeroProps) {
   const { day, hoursLeft } = state.calendar;
   const career = careerOf(state);
@@ -116,6 +143,10 @@ export function HubHero({
   const showDay = boutique !== null && isShowcaseDay(state);
   const showOpen = showDay && boutique.season.showcase === null;
   const place = boutique === null ? career.placeName : signById(boutique.signId).name;
+  const run = state.activeRun;
+  const bench = run !== null && run.stage !== "done" && !(sellDay && !held) && !swapToday && !showOpen;
+  const calm = (sellDay && !held) || swapToday || showOpen || bench;
+  const plain = !sellDay && !swapToday;
   return (
     <section
       className={["tf-hero", sellDay ? "tf-hero--stall" : "", boutique === null ? "" : "tf-hero--boutique"]
@@ -125,20 +156,25 @@ export function HubHero({
     >
       <HubScene state={state} className="tf-hero__scene" />
       <div className="tf-hero__board">
-        <span className="tf-hero__week tf-chalk">
-          {boutique === null ? `Week ${weekNumber(day)}` : `Season ${boutique.season.number}`}
-        </span>
-        <strong className="tf-hero__day tf-chalk">Day {day}</strong>
-        <span className="tf-hero__weekday tf-chalk">{stallDayName(day, state.profile.career)}</span>
-        {season === null ? null : (
-          <span className="tf-hero__season tf-chalk">
-            {season.name} · {seasonDay(state)}/{SEASON_LENGTH_DAYS}
+        {plain ? (
+          <div className="tf-hero__text tf-hero__text--sign">
+            <h2>
+              <Icon name="home" size={18} />
+              {place}
+            </h2>
+          </div>
+        ) : null}
+        <div className="tf-hero__date">
+          <span className="tf-hero__week tf-chalk">
+            {boutique === null ? `Week ${weekNumber(day)}` : `Season ${boutique.season.number}`}
           </span>
-        )}
-      </div>
-      <div className="tf-hero__bar">
+          <strong className="tf-hero__day tf-chalk">Day {day}</strong>
+          <span className="tf-hero__weekday tf-chalk">{stallDayName(day, state.profile.career)}</span>
+        </div>
         <div className="tf-hero__clock" aria-label={`${hoursLeft} of ${BASE_DAY_HOURS} hours left today`}>
-          <span className="ad-eyebrow">Hours left</span>
+          <strong className="tf-chalk">
+            <Icon name="clock" size={18} /> {hoursLeft} h left
+          </strong>
           <span className="tf-hero__hours" aria-hidden="true">
             {Array.from({ length: BASE_DAY_HOURS }, (_, index) => (
               <span
@@ -147,46 +183,59 @@ export function HubHero({
               />
             ))}
           </span>
-          <strong>
-            <Icon name="clock" size={16} /> {hoursLeft} h
-          </strong>
         </div>
-        <div className="tf-hero__text">
-          {sellDay ? (
-            <>
-              <h2>
-                {held
-                  ? boutique === null
-                    ? "The stall is packed up"
-                    : "The till is closed for today"
-                  : `It's ${career.sellDayName}!`}
-              </h2>
-              <p className="ad-muted">
-                {held
-                  ? rent === 0
-                    ? "Rest up! A new week starts tomorrow."
-                    : `${career.rentName} of ${rent} coins is paid when the day ends.`
-                  : boutique === null
-                    ? "Hang your own pieces, write fair price tags and open the awning."
-                    : "Write fair price tags for the seasonal rack and ring the bell."}
-              </p>
-            </>
-          ) : swapToday ? (
-            <>
-              <h2>Swap &amp; Mend is on today</h2>
-              <p className="ad-muted">
-                {hallOpen
-                  ? "The hall is open. Tables, tea and a queue of loved things."
-                  : "Open the hall to mend for neighbours and swap finds. No coins today."}
-              </p>
-            </>
-          ) : (
-            <>
-              <h2>{place}</h2>
-              <Facts facts={[...sellDayFacts(state), ...seasonFacts(state)]} />
-            </>
-          )}
-        </div>
+        <WeekNotes
+          season={
+            season === null ? null : `${season.name} · day ${seasonDay(state)} of ${SEASON_LENGTH_DAYS}`
+          }
+          facts={[...sellDayFacts(state, sellDay), ...seasonFacts(state)]}
+        />
+      </div>
+      <div className="tf-hero__pinboard">{board}</div>
+      <div className="tf-hero__bar">
+        {plain ? (
+          <button type="button" className="tf-hero__desk" onClick={onOpenDesk}>
+            <Icon name="hanger" size={22} />
+            <span>
+              <strong>Orders &amp; stockroom</strong>
+            </span>
+            <span className="tf-hero__desk-arrow" aria-hidden="true">
+              ↓
+            </span>
+          </button>
+        ) : (
+          <div className="tf-hero__text">
+            {sellDay ? (
+              <>
+                <h2>
+                  {held
+                    ? boutique === null
+                      ? "The stall is packed up"
+                      : "The till is closed for today"
+                    : `It's ${career.sellDayName}!`}
+                </h2>
+                <p className="ad-muted">
+                  {held
+                    ? rent === 0
+                      ? "Rest up! A new week starts tomorrow."
+                      : `${career.rentName} of ${rent} coins is paid when the day ends.`
+                    : boutique === null
+                      ? "Hang your own pieces, write fair price tags and open the awning."
+                      : "Write fair price tags for the seasonal rack and ring the bell."}
+                </p>
+              </>
+            ) : (
+              <>
+                <h2>Swap &amp; Mend is on today</h2>
+                <p className="ad-muted">
+                  {hallOpen
+                    ? "The hall is open. Tables, tea and a queue of loved things."
+                    : "Open the hall to mend for neighbours and swap finds. No coins today."}
+                </p>
+              </>
+            )}
+          </div>
+        )}
         <div className="tf-hero__actions">
           {sellDay && !held ? (
             <Button size="lg" icon="bag" onClick={onOpenStall} data-testid="open-stall">
@@ -209,20 +258,38 @@ export function HubHero({
               {showOpen ? "Plan the Showcase" : "See the Showcase"}
             </Button>
           ) : null}
+          {bench ? (
+            <Button
+              size="lg"
+              icon="scissors"
+              onClick={onOpenFlip}
+              disabledReason={stallDayIssue(day) ?? undefined}
+              data-testid="hub-bench"
+            >
+              Back to the bench
+            </Button>
+          ) : null}
           {sellDay || swapToday ? null : (
             <Button
               variant="secondary"
               onClick={onWorkShift}
               disabledReason={shift.ok ? undefined : shift.reasons[0]}
               data-testid="work-shift"
+              className="tf-hero__shift"
             >
-              {career.shiftName} · +{career.shiftPay}
+              <span className="tf-hero__shift-text">
+                <strong>Work a shift</strong>
+                <small>{career.shiftName}</small>
+              </span>
+              <span className="tf-hero__shift-pay" title={`Earns ${career.shiftPay} coins`}>
+                <Icon name="coin" size={16} />+{career.shiftPay}
+              </span>
             </Button>
           )}
           <Button
-            variant={(sellDay && !held) || swapToday || showOpen ? "ghost" : "primary"}
-            size={(sellDay && !held) || swapToday || showOpen ? "md" : "lg"}
-            icon={(sellDay && !held) || swapToday || showOpen ? undefined : "clock"}
+            variant={calm ? "ghost" : "primary"}
+            size={calm ? "md" : "lg"}
+            icon={calm ? undefined : "clock"}
             onClick={onEndDay}
             data-testid="end-day"
           >

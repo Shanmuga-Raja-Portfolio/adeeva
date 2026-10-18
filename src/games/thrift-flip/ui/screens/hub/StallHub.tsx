@@ -15,7 +15,6 @@ import {
   type Action,
   type GameState,
 } from "../../../core";
-import { Bunting } from "../../art/Bunting";
 import { SetAsideDialog } from "../flip/SetAsideDialog";
 import { StoryOverlay } from "../story/StoryOverlay";
 import { CrowdPanel } from "./CrowdPanel";
@@ -24,7 +23,7 @@ import { DayTransition } from "./DayTransition";
 import { GigCard } from "./GigCard";
 import { HubHero } from "./HubHero";
 import { HubTopBar } from "./HubTopBar";
-import { OfferTag } from "./OfferTag";
+import { OrderBoard } from "./OrderBoard";
 import { RackPanel } from "./RackPanel";
 import { ResultsLog } from "./ResultsLog";
 import { StockPanel } from "./StockPanel";
@@ -34,7 +33,6 @@ import { LarkspurCard } from "../boutique/LarkspurCard";
 import { SeasonPanel } from "../boutique/SeasonPanel";
 import { WindowCard } from "../boutique/WindowCard";
 import "./hub.css";
-import "./board.css";
 import "../boutique/boutique.css";
 
 export interface StallHubProps {
@@ -48,8 +46,6 @@ export interface StallHubProps {
   readonly onOpenSettings: () => void;
   readonly onExitToTitle: () => void;
 }
-
-const TILTS = [-2.5, 1.8, -1.2, 2.4];
 
 interface DayEnding {
   readonly from: GameState;
@@ -155,52 +151,11 @@ export function StallHub({
               onOpenStall={onOpenStall}
               onOpenHall={onOpenHall}
               onOpenShowcase={onOpenShowcase}
+              onOpenFlip={onOpenFlip}
+              onOpenDesk={toDesk}
+              board={<OrderBoard state={state} offers={offers} onAccept={accept} onDecline={decline} />}
             />
-            <section className="tf-board" aria-labelledby="tf-board-title">
-              <Bunting className="tf-board__bunting" />
-              <header className="tf-board__head">
-                <h2 id="tf-board-title">Order board</h2>
-                <span className="tf-board__count">
-                  {offers.length === 0
-                    ? "All caught up"
-                    : `${offers.length} new ${offers.length === 1 ? "request" : "requests"}`}
-                </span>
-              </header>
-              {offers.length === 0 ? (
-                <div className="tf-empty">
-                  <Icon name="heart" size={28} />
-                  <p>No requests right now. Regulars pin new ones overnight, and buzz brings more.</p>
-                </div>
-              ) : (
-                <div className="tf-board__tags">
-                  {offers.map((view, index) => (
-                    <OfferTag
-                      key={view.offer.id}
-                      state={state}
-                      view={view}
-                      tilt={TILTS[index % TILTS.length] ?? 0}
-                      onAccept={(event) => accept(event, view.offer.id)}
-                      onDecline={(event) => decline(event, view.offer.id)}
-                    />
-                  ))}
-                </div>
-              )}
-              {offers.length > 1 ? (
-                <div className="tf-board__more" aria-hidden="true">
-                  <span>
-                    <Icon name="bag" size={16} />
-                    {offers.length} requests pinned · scroll the board
-                  </span>
-                </div>
-              ) : null}
-            </section>
           </div>
-          <button type="button" className="tf-hub__more" onClick={toDesk}>
-            <span className="tf-hub__more-arrow" aria-hidden="true">
-              ↓
-            </span>
-            Your orders, stockroom and more
-          </button>
           <div className="tf-hub__grid" ref={desk}>
             <div className="tf-hub__column">
               <Card

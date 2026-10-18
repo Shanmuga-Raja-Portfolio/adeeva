@@ -24,13 +24,13 @@ export function FinishArt({ item, x, y, rotation, scale, selected = false }: Fin
       <g>
         {small ? (
           <g transform={`translate(${x} ${y}) scale(${scale})`}>
-            <circle r={Math.max(extent.width, extent.height) * 0.78} fill="#fffaf0" opacity={0.7} />
+            <circle r={Math.max(extent.width, extent.height) * 0.82} fill="#fffaf0" opacity={0.92} />
             <circle
-              r={Math.max(extent.width, extent.height) * 0.78}
+              r={Math.max(extent.width, extent.height) * 0.82}
               fill="none"
               stroke="#3b2a1c"
-              strokeOpacity={0.35}
-              strokeWidth={1.4}
+              strokeOpacity={0.45}
+              strokeWidth={1.6}
             />
           </g>
         ) : null}

@@ -16,7 +16,9 @@ export interface ProductPreviewProps {
   readonly title: string;
   readonly className?: string | undefined;
   readonly svgRef?: Ref<SVGSVGElement> | undefined;
+  readonly view?: string | undefined;
   readonly base?: ReactNode;
+  readonly bare?: boolean | undefined;
   readonly children?: ReactNode;
 }
 
@@ -125,7 +127,9 @@ export function ProductPreview({
   title,
   className,
   svgRef,
+  view = `0 0 ${FINISH_CANVAS} ${FINISH_CANVAS}`,
   base,
+  bare = false,
   children,
 }: ProductPreviewProps) {
   const id = useSvgId("product");
@@ -133,18 +137,14 @@ export function ProductPreview({
   const look = cloth === null ? null : fabricLook(cloth);
   const fill = cloth === null ? "#efe4cf" : fabricFill(`${id}-fabric`);
   return (
-    <svg
-      ref={svgRef}
-      className={className}
-      viewBox={`0 0 ${FINISH_CANVAS} ${FINISH_CANVAS}`}
-      role="img"
-      aria-label={title}
-    >
+    <svg ref={svgRef} className={className} viewBox={view} role="img" aria-label={title}>
       <defs>
         {cloth !== null ? <FabricPattern id={`${id}-fabric`} fabric={cloth} tile={34} /> : null}
-        <filter id={`${id}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="6" stdDeviation="6" floodColor="#3b2a1c" floodOpacity="0.22" />
-        </filter>
+        {shape.bodies.map((body, index) => (
+          <clipPath key={body} id={`${id}-clip-${index}`}>
+            <path d={body} fillRule="evenodd" />
+          </clipPath>
+        ))}
         <linearGradient id={`${id}-light`} x1="0.1" y1="0" x2="0.9" y2="1">
           <stop offset="0" stopColor="#ffffff" stopOpacity={0.34} />
           <stop offset="0.42" stopColor="#ffffff" stopOpacity={0.04} />
@@ -162,8 +162,9 @@ export function ProductPreview({
       {shape.mount === "stand" || shape.mount === "stool" || shape.mount === "peg" ? (
         <MountArt mount={shape.mount} />
       ) : null}
-      {(shape.backing ?? []).map((card) => (
-        <g key={card} filter={`url(#${id}-shadow)`}>
+      {(bare ? [] : (shape.backing ?? [])).map((card) => (
+        <g key={card}>
+          <path d={card} fill="#3b2a1c" opacity={0.14} transform="translate(2 7)" />
           <path d={card} fill="#fff8ec" stroke="#c9b48c" strokeWidth={3} />
           <path
             d={card}
@@ -175,7 +176,12 @@ export function ProductPreview({
           />
         </g>
       ))}
-      <g filter={`url(#${id}-shadow)`}>
+      <g opacity={0.16} transform="translate(3 8)">
+        {shape.bodies.map((body) => (
+          <path key={`shadow-${body}`} d={body} fill="#3b2a1c" fillRule="evenodd" />
+        ))}
+      </g>
+      <g>
         {shape.bodies.map((body) => (
           <path
             key={body}
@@ -198,6 +204,21 @@ export function ProductPreview({
             <g key={`light-${body}`}>
               <path d={body} fill={`url(#${id}-light)`} fillRule="evenodd" />
               <path d={body} fill={`url(#${id}-puff)`} fillRule="evenodd" />
+            </g>
+          ))
+        : null}
+      {cloth !== null
+        ? shape.bodies.map((body, index) => (
+            <g key={`volume-${body}`} clipPath={`url(#${id}-clip-${index})`} fill="none">
+              <path d={body} stroke="#2b1a10" strokeOpacity={0.16} strokeWidth={28} />
+              <path d={body} stroke="#2b1a10" strokeOpacity={0.12} strokeWidth={10} />
+              <path
+                d={body}
+                stroke="#ffffff"
+                strokeOpacity={0.22}
+                strokeWidth={8}
+                transform="translate(-4 -5)"
+              />
             </g>
           ))
         : null}

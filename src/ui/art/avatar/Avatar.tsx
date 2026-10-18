@@ -23,9 +23,14 @@ export interface AvatarFigureProps {
   garment?: AvatarGarment | undefined;
   accessory?: AccessoryId | null | undefined;
   pose?: AvatarPose | undefined;
+  headTilt?: number | undefined;
 }
 
 const headTransform = "translate(200 81) scale(1.08)";
+
+function tiltedHead(tilt: number): string {
+  return tilt === 0 ? headTransform : `rotate(${tilt} 200 168) ${headTransform}`;
+}
 
 export function skinHex(look: AvatarLook): string {
   return SKIN_TONES.find((tone) => tone.id === look.skinTone)?.hex ?? "#c58c5c";
@@ -35,8 +40,16 @@ function hairHex(look: AvatarLook): string {
   return HAIR_COLOURS.find((colour) => colour.id === look.hairColour)?.hex ?? "#3d2516";
 }
 
-export function AvatarFigure({ look, mood = "happy", garment, accessory, pose = "rest" }: AvatarFigureProps) {
+export function AvatarFigure({
+  look,
+  mood = "happy",
+  garment,
+  accessory,
+  pose = "rest",
+  headTilt = 0,
+}: AvatarFigureProps) {
   const idBase = useSvgId("avatar");
+  const head = tiltedHead(headTilt);
   const skin = skinHex(look);
   const hair = hairHex(look);
   const faceGradient = `${idBase}-face`;
@@ -50,7 +63,7 @@ export function AvatarFigure({ look, mood = "happy", garment, accessory, pose = 
         </radialGradient>
       </defs>
       {garment ? garment.defs(idBase) : <AvatarOutfitDefs outfit={look.outfit} idBase={idBase} />}
-      <g transform={headTransform}>
+      <g transform={head}>
         <AvatarHairBack style={look.hairStyle} colour={hair} />
       </g>
       <CroquisBody skinTone={skin} head="none" shoes={garment?.shoes} />
@@ -60,7 +73,7 @@ export function AvatarFigure({ look, mood = "happy", garment, accessory, pose = 
         {garment ? garment.sleeves(idBase) : <AvatarOutfitSleeves outfit={look.outfit} idBase={idBase} />}
       </PosedArms>
       {garment?.overlay ? garment.overlay(idBase) : null}
-      <g transform={headTransform}>
+      <g transform={head}>
         <AvatarFace skin={skin} hair={hair} mood={mood} gradientId={faceGradient} />
         <AvatarHairFront style={look.hairStyle} colour={hair} />
         {accessory ? <AvatarAccessory accessory={accessory} /> : null}

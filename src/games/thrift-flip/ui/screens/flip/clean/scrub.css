@@ -1,0 +1,107 @@
+.tf-scrub {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+}
+
+.tf-scrub__svg {
+  display: block;
+  width: min(100%, 460px);
+  aspect-ratio: 1;
+  height: auto;
+  max-height: 44vh;
+  border-radius: 18px;
+  touch-action: none;
+  cursor: crosshair;
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.4) inset,
+    0 10px 22px rgba(59, 42, 28, 0.3);
+}
+
+.tf-gauge__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  width: min(100%, 420px);
+  font-size: 17px;
+  font-weight: 800;
+  color: #1f4d3a;
+}
+
+.tf-gauge__label strong {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  color: var(--tf-denim-deep);
+}
+
+.tf-gauge__label span:last-child {
+  color: #9a2c18;
+}
+
+.tf-gauge {
+  position: relative;
+  margin-top: 8px;
+  width: min(100%, 420px);
+  height: 24px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, #f5b5a3, #e9765c);
+  box-shadow: inset 0 2px 3px rgba(59, 42, 28, 0.25);
+}
+
+.tf-gauge__gentle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, #d5efe3, var(--tf-mint));
+}
+
+.tf-gauge__needle {
+  position: absolute;
+  top: -6px;
+  width: 6px;
+  height: 36px;
+  margin-left: -3px;
+  border-radius: 3px;
+  background: var(--tf-denim-deep);
+  box-shadow: 0 0 0 2px #fffaf0;
+  transition: left 90ms linear;
+}
+
+.tf-gauge__needle::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  margin-left: -8px;
+  border: 8px solid transparent;
+  border-top: 9px solid var(--tf-denim-deep);
+  border-bottom: 0;
+}
+
+.tf-gauge__needle--harsh,
+.tf-gauge__needle--harsh::before {
+  background: #a52a17;
+}
+
+.tf-gauge__needle--harsh::before {
+  background: none;
+  border-top-color: #a52a17;
+}
+
+.tf-scrub__tip {
+  margin: 0;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 250, 240, 0.95);
+  font-size: var(--text-md);
+  font-weight: 800;
+  color: var(--tf-mint-deep);
+  box-shadow: 0 3px 8px rgba(59, 42, 28, 0.14);
+}
+
+.tf-scrub__tip--harsh {
+  background: #fff1ec;
+  color: #8f2a1a;
+}

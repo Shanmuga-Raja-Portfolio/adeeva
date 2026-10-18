@@ -40,6 +40,11 @@ export function StoryCardArt({ piece, card, className }: StoryCardArtProps) {
       </div>
       <figcaption>
         <strong>{name}</strong>
+        {card.findId === null ? null : (
+          <small className="tf-story-card__from">
+            The {findById(card.findId).name.toLowerCase()} it came from:
+          </small>
+        )}
         <span>{card.line}</span>
       </figcaption>
     </figure>

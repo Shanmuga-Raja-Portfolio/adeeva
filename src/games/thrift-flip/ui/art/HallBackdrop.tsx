@@ -182,6 +182,21 @@ export function HallBackdrop({
           <stop offset="0.5" stopColor="#8a3346" />
           <stop offset="1" stopColor="#5a1f2e" />
         </linearGradient>
+        <linearGradient id={`${id}-beam`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff4d6" stopOpacity={0.34} />
+          <stop offset="1" stopColor="#fff4d6" stopOpacity={0} />
+        </linearGradient>
+        <radialGradient id={`${id}-pool`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#fff2cc" stopOpacity={0.55} />
+          <stop offset="0.6" stopColor="#fff2cc" stopOpacity={0.2} />
+          <stop offset="1" stopColor="#fff2cc" stopOpacity={0} />
+        </radialGradient>
+        <linearGradient id={`${id}-sides`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#1b1020" stopOpacity={0.32} />
+          <stop offset="0.3" stopColor="#1b1020" stopOpacity={0} />
+          <stop offset="0.7" stopColor="#1b1020" stopOpacity={0} />
+          <stop offset="1" stopColor="#1b1020" stopOpacity={0.32} />
+        </linearGradient>
         <radialGradient id={`${id}-spot`} cx="0.5" cy="0.55" r="0.5">
           <stop offset="0" stopColor="#fff6dc" stopOpacity={0.55} />
           <stop offset="1" stopColor="#fff6dc" stopOpacity={0} />
@@ -314,6 +329,12 @@ export function HallBackdrop({
         <use href={`#${audienceOf}`} />
       )}
       <rect width={W} height={H} fill={tint} opacity={light === "spotlight" ? 0.32 : 0.1} />
+      <rect width={W} height={H} fill={`url(#${id}-sides)`} />
+      <path
+        d={`M${W / 2 - 70} 0 L${W / 2 + 70} 0 L${W / 2 + 330} ${H} L${W / 2 - 330} ${H} Z`}
+        fill={`url(#${id}-beam)`}
+      />
+      <ellipse cx={W / 2} cy={H - 120} rx={340} ry={120} fill={`url(#${id}-pool)`} />
       <rect width={W} height={H} fill={`url(#${id}-vignette)`} />
       {light === "spotlight" ? <rect width={W} height={H} fill={`url(#${id}-spot)`} /> : null}
     </svg>

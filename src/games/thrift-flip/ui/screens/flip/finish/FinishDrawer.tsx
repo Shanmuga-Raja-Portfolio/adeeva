@@ -29,14 +29,14 @@ export interface FinishDrawerProps {
 }
 
 const PLATES: Readonly<Record<TrimId, string>> = {
-  button: "#b9cbe3",
-  bow: "#fff0c4",
-  lace: "#c9b8ea",
-  "flower-applique": "#d6f0e2",
-  "sequin-patch": "#dfe2f4",
-  "ribbon-belt": "#fde0c8",
-  pearl: "#b7c6dc",
-  "star-applique": "#e6defa",
+  button: "#8fa9cc",
+  bow: "#f0cf78",
+  lace: "#a08ccf",
+  "flower-applique": "#9fd3b8",
+  "sequin-patch": "#a9afd8",
+  "ribbon-belt": "#f0b48c",
+  pearl: "#7f93b3",
+  "star-applique": "#b6a6e6",
 };
 
 function plate(trimId: TrimId): CSSProperties {
@@ -156,7 +156,7 @@ export function FinishDrawer({
                   aria-label={`Saved ${trimById(trimId).name}`}
                   {...chipProps({ kind: "trim", trimId, source: "saved" })}
                 >
-                  <TrimBadge trimId={trimId} size={50} />
+                  <TrimBadge trimId={trimId} size={42} />
                   <span>{trimById(trimId).name}</span>
                   <small>
                     <Icon name="heart" size={12} /> {availableSavedTrims(state, trimId)} saved · free
@@ -181,7 +181,7 @@ export function FinishDrawer({
                 disabled={trimById(trimId).price > state.coins}
                 {...chipProps({ kind: "trim", trimId, source: "new" })}
               >
-                <TrimBadge trimId={trimId} size={50} />
+                <TrimBadge trimId={trimId} size={42} />
                 <span>{trimById(trimId).name}</span>
                 <small>
                   <Icon name="coin" size={16} /> {trimById(trimId).price}

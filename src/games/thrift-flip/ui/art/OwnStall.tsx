@@ -13,11 +13,6 @@ const STALL_ROOF = 34;
 export function OwnStallDefs({ id }: { readonly id: string }) {
   return (
     <>
-      <linearGradient id={`${id}-canvas`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor="#b98f63" />
-        <stop offset="0.3" stopColor="#f3e2c4" />
-        <stop offset="1" stopColor="#e2c79c" />
-      </linearGradient>
       <linearGradient id={`${id}-awning`} x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stopColor="#ffffff" stopOpacity={0.35} />
         <stop offset="0.6" stopColor="#ffffff" stopOpacity={0} />
@@ -28,13 +23,33 @@ export function OwnStallDefs({ id }: { readonly id: string }) {
         <stop offset="0.5" stopColor="#9a7048" />
         <stop offset="1" stopColor="#6b4a2b" />
       </linearGradient>
+      <linearGradient id={`${id}-quiltshade`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#3b2a1c" stopOpacity={0.42} />
+        <stop offset="0.28" stopColor="#3b2a1c" stopOpacity={0.08} />
+        <stop offset="0.7" stopColor="#fff4dc" stopOpacity={0.12} />
+        <stop offset="1" stopColor="#3b2a1c" stopOpacity={0.2} />
+      </linearGradient>
+      <pattern id={`${id}-quilt`} width={64} height={64} patternUnits="userSpaceOnUse">
+        <rect width={32} height={32} fill="#f3dcc0" />
+        <rect x={32} width={32} height={32} fill="#cfe6d8" />
+        <rect y={32} width={32} height={32} fill="#e9cfe0" />
+        <rect x={32} y={32} width={32} height={32} fill="#f6e6b8" />
+        <circle cx={16} cy={16} r={3} fill="#e8b48f" opacity={0.6} />
+        <circle cx={48} cy={48} r={3} fill="#e0c06e" opacity={0.6} />
+        <path d="M44 8 l8 8 M52 8 l-8 8" stroke="#9cc7b0" strokeWidth={1.4} />
+        <path d="M8 40 h16 M8 46 h16 M8 52 h16" stroke="#d3a8c2" strokeWidth={1.4} />
+        <path
+          d="M2 0 V64 M34 0 V64 M0 2 H64 M0 34 H64"
+          stroke="#a07a52"
+          strokeWidth={1}
+          strokeDasharray="3 3"
+          opacity={0.45}
+        />
+      </pattern>
       <pattern id={`${id}-folds`} width={46} height={400} patternUnits="userSpaceOnUse">
         <rect width={20} height={400} fill="#ffffff" opacity={0.18} />
         <rect x={38} width={8} height={400} fill="#8a6a4a" opacity={0.1} />
       </pattern>
-      <filter id={`${id}-soft`} x="-10%" y="-20%" width="120%" height="160%">
-        <feDropShadow dx={0} dy={6} stdDeviation={5} floodColor="#5b3a1e" floodOpacity={0.28} />
-      </filter>
     </>
   );
 }
@@ -47,8 +62,9 @@ export function OwnStall({ id, sign, left, right, floor, rail, bareHooks }: OwnS
   const top = STALL_ROOF + 46;
   return (
     <g>
-      <rect x={left} y={top} width={width} height={floor - top} fill={`url(#${id}-canvas)`} />
+      <rect x={left} y={top} width={width} height={floor - top} fill={`url(#${id}-quilt)`} />
       <rect x={left} y={top} width={width} height={floor - top} fill={`url(#${id}-folds)`} />
+      <rect x={left} y={top} width={width} height={floor - top} fill={`url(#${id}-quiltshade)`} />
       <rect x={left} y={top} width={width} height={22} fill="#5b3a1e" opacity={0.16} />
       {[left - 6, right - 8].map((x) => (
         <rect
@@ -61,7 +77,12 @@ export function OwnStall({ id, sign, left, right, floor, rail, bareHooks }: OwnS
           fill={`url(#${id}-post)`}
         />
       ))}
-      <g filter={`url(#${id}-soft)`}>
+      <path
+        d={`M${left - 20} ${top + 4} H${right + 20} V${top + 22} Q${centre} ${top + 34} ${left - 20} ${top + 22} Z`}
+        fill="#5b3a1e"
+        opacity={0.18}
+      />
+      <g>
         {Array.from({ length: stripes }, (_, index) => {
           const x = left - 20 + index * stripe;
           return (

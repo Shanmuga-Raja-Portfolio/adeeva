@@ -142,7 +142,7 @@ async function openBench(page: Page, state: GameState): Promise<void> {
 
 test.describe("quality screenshots", () => {
   test.skip(!process.env["QUALITY_SHOTS_DIR"], "Set QUALITY_SHOTS_DIR to capture quality screenshots");
-  test.use({ viewport: { width: 1280, height: 800 } });
+  test.use({ viewport: { width: 1280, height: 720 } });
 
   test("title", async ({ page }) => {
     await page.goto(THRIFT_URL);

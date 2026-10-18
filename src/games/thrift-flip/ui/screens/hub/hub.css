@@ -12,7 +12,7 @@
 }
 
 .tf-hub-top__awning {
-  height: 20px;
+  height: 14px;
 }
 
 .tf-hub-top__row {
@@ -20,11 +20,11 @@
   grid-template-columns: auto auto 1fr auto;
   align-items: center;
   gap: var(--space-4);
-  padding: var(--space-1) var(--space-5) var(--space-2);
+  padding: 2px var(--space-5) 6px;
 }
 
 .tf-hub-top .ad-stat-chip__label {
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-weight: 700;
   color: var(--tf-denim-deep);
 }
@@ -71,73 +71,21 @@
   gap: var(--space-1);
 }
 
-.tf-hub-top__icon {
-  width: 44px;
-  min-width: 44px;
-  padding: 0;
-  justify-content: center;
-}
-
 .tf-hub__main {
   width: min(1320px, 100%);
   margin: 0 auto;
-  padding: var(--space-3) var(--space-5) var(--space-7);
+  padding: var(--space-2) var(--space-5) var(--space-7);
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-7);
 }
 
 .tf-hub__stage {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
-  gap: var(--space-4);
-  align-items: stretch;
-  height: clamp(560px, calc(100dvh - 168px), 820px);
-}
-
-.tf-hub__more {
-  justify-self: center;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-top: calc(var(--space-6) * -1 + 6px);
-  min-height: 44px;
-  padding: 6px 20px 6px 14px;
-  border: 0;
-  border-radius: 0 0 18px 18px;
-  cursor: pointer;
-  background: linear-gradient(180deg, #9a7048, #87603b);
-  color: #fff4e2;
-  font-family: var(--font-display);
-  font-size: var(--text-md);
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 6px 12px rgba(91, 58, 30, 0.25);
-}
-
-.tf-hub__more:hover {
-  background: linear-gradient(180deg, #a87c50, #8f673f);
-}
-
-.tf-hub__more:focus-visible {
-  outline: 3px solid var(--focus-ring, #3f5d84);
-  outline-offset: 3px;
-}
-
-.tf-hub__more-arrow {
-  display: inline-grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: rgba(255, 244, 226, 0.2);
-  animation: tf-alert-bob 2.4s ease-in-out infinite;
+  height: clamp(540px, calc(100dvh - 118px), 860px);
 }
 
 .tf-hub__grid {
-  scroll-margin-top: 120px;
-}
-
-.tf-hub__grid {
+  scroll-margin-top: 96px;
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-6) var(--space-5);
@@ -211,53 +159,6 @@
 .tf-hub .tf-hub-card .ad-card__eyebrow {
   font-size: var(--text-sm);
   letter-spacing: 0.06em;
-}
-
-.tf-offer .tf-tag {
-  width: 100%;
-}
-
-.tf-offer .tf-tag__body {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.tf-offer__head {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.tf-offer__name {
-  margin: 0;
-  font-size: var(--text-lg);
-}
-
-.tf-offer__relation {
-  font-size: var(--text-sm);
-  color: var(--tf-kraft-ink);
-}
-
-.tf-offer__request {
-  margin: 0;
-  font-style: italic;
-}
-
-.tf-offer__make {
-  margin: 0;
-  font-size: var(--text-sm);
-}
-
-.tf-offer__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-2);
-}
-
-.tf-offer__expires {
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--tf-denim-deep);
 }
 
 .tf-facts {
@@ -595,10 +496,6 @@
   .tf-hub__stage {
     grid-template-columns: 1fr;
     height: auto;
-  }
-
-  .tf-hub__more {
-    display: none;
   }
 
   .tf-hub__grid {

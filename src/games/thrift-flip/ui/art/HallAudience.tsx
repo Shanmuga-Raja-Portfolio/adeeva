@@ -30,17 +30,17 @@ const LOOKS: readonly AvatarLook[] = [
 ];
 
 const POSES: readonly AvatarPose[] = [
-  "rest",
-  "cheer",
+  "clasp",
   "chat",
-  "wave",
   "graceful",
-  "poised-right",
-  "cheer",
-  "point",
-  "graceful-right",
-  "poised",
   "wave",
+  "clasp",
+  "rest",
+  "graceful-right",
+  "cheer",
+  "clasp",
+  "point",
+  "carry",
 ];
 
 function standingHeight(floor: number): number {
@@ -106,7 +106,7 @@ function SeatedRow({
   return (
     <g>
       {xs.map((x, seatIndex) => {
-        const pick = index * 7 + seatIndex * 3 + (mirror ? 5 : 0);
+        const pick = index * 7 + seatIndex * 3 + (mirror ? 6 : 0);
         const base = LOOKS[pick % LOOKS.length];
         if (base === undefined) return null;
         const look: AvatarLook = {

@@ -35,8 +35,8 @@ export function FlipHeader(props: StageProps) {
         <h1>{stageTitle(run)}</h1>
       </div>
       <div className="tf-flip-header__stats">
-        <StatChip kind="day" value={state.calendar.day} />
-        <StatChip kind="hours" value={`${state.calendar.hoursLeft} h`} />
+        <StatChip kind="day" value={`Day ${state.calendar.day}`} />
+        <StatChip kind="hours" value={`${state.calendar.hoursLeft} h left`} />
         <span className="tf-flip-header__coins">
           <StatChip kind="coins" value={state.coins} />
         </span>

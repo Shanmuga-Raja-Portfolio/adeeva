@@ -1,7 +1,6 @@
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
-import { StatChip } from "../../../../../ui/kit/StatChip";
 import { difficultyById, signById } from "../../../core";
 import { PriceTag } from "../../art/PriceTag";
 import type { SlotRead } from "../../thriftSlots";
@@ -31,7 +30,7 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
             />
           </svg>
           <span className="ad-eyebrow">{label}</span>
-          <p className="tf-slot__empty-text">An empty hanger, waiting for a story.</p>
+          <p className="tf-slot__empty-text">Empty</p>
           <Button variant="secondary" size="sm" onClick={onNewGame}>
             Start here
           </Button>
@@ -66,11 +65,11 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
   const { state } = read;
   return (
     <article className="tf-slot tf-slot--ready" data-testid={`slot-${read.slot}`}>
-      <PriceTag tone="cream" tilt={read.slot % 2 === 0 ? 1 : -1}>
+      <PriceTag tone="cream" tilt={0}>
         <div className="tf-slot__head">
           <Avatar
             look={state.profile.look}
-            size={60}
+            size={54}
             frameColour="#fde4cf"
             title={`${state.profile.name}'s portrait`}
           />
@@ -78,33 +77,43 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
             <span className="ad-eyebrow">{label}</span>
             <h3 className="tf-slot__name">{state.profile.name}</h3>
             <span className="tf-slot__meta">
-              Day {state.calendar.day}, {stallDayName(state.calendar.day, state.profile.career)} ·{" "}
-              {difficultyById(state.profile.difficulty).name}
+              Day {state.calendar.day}, {stallDayName(state.calendar.day, state.profile.career)}
             </span>
-            <span className="tf-slot__place" data-testid="slot-place">
-              <Icon name={state.boutique === null ? "bag" : "home"} size={14} />
-              {state.boutique === null
-                ? "Market stall"
-                : `Boutique · ${signById(state.boutique.signId).name}`}
+            <span className="tf-slot__badges">
+              <span className="tf-slot__place" data-testid="slot-place">
+                <Icon name={state.boutique === null ? "bag" : "home"} size={14} />
+                {state.boutique === null
+                  ? "Market stall"
+                  : `Boutique · ${signById(state.boutique.signId).name}`}
+              </span>
+              <span className="tf-slot__level">{difficultyById(state.profile.difficulty).name}</span>
             </span>
-          </div>
-          <div className="tf-slot__stats">
-            <StatChip kind="coins" value={state.coins} />
-            <StatChip kind="reputation" value={state.reputation} />
           </div>
         </div>
-        <div className="tf-slot__actions">
-          <Button
-            variant="secondary"
-            onClick={onNewGame}
-            aria-label={`Start a new game in slot ${read.slot}`}
-          >
-            Start over
-          </Button>
+        <div className="tf-slot__foot">
+          <div className="tf-slot__stats">
+            <span>
+              <Icon name="coin" size={18} />
+              <strong>{state.coins}</strong> coins
+            </span>
+            <span>
+              <Icon name="star" size={18} />
+              <strong>{state.reputation}</strong> reputation
+            </span>
+          </div>
           <Button icon="hanger" onClick={onLoad} aria-label={`Load slot ${read.slot}`}>
             Load
           </Button>
         </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="tf-slot__restart"
+          onClick={onNewGame}
+          aria-label={`Start a new game in slot ${read.slot}`}
+        >
+          Start over
+        </Button>
       </PriceTag>
     </article>
   );

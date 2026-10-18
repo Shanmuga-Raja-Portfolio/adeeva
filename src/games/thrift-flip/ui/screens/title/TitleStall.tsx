@@ -60,7 +60,19 @@ export function TitleStall({ owner }: TitleStallProps) {
       {SHOPPER === undefined ? null : (
         <SceneFigure
           look={SHOPPER}
-          spot={{ x: 48, feet: 456, size: 300, pose: "point", lean: 3, flip: false, far: false }}
+          spot={{
+            x: 52,
+            feet: 456,
+            size: 318,
+            pose: "carry",
+            lean: 2.5,
+            flip: false,
+            far: false,
+            build: 1.12,
+            bag: "#e57a8f",
+            tilt: 6,
+            mood: "delighted",
+          }}
           name="A happy shopper"
           delay={0}
         />
@@ -68,7 +80,18 @@ export function TitleStall({ owner }: TitleStallProps) {
       {owner === null ? null : (
         <SceneFigure
           look={owner.look}
-          spot={{ x: 596, feet: 460, size: 320, pose: "wave", lean: -2.5, flip: true, far: false }}
+          spot={{
+            x: 596,
+            feet: 460,
+            size: 334,
+            pose: "wave",
+            lean: -2.5,
+            flip: true,
+            far: false,
+            build: 1.1,
+            tilt: -6,
+            mood: "delighted",
+          }}
           name={owner.name}
           delay={700}
         />

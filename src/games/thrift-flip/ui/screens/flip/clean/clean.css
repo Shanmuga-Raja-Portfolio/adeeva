@@ -1,0 +1,182 @@
+.tf-workbench--clean .tf-workbench__top {
+  flex-wrap: nowrap;
+}
+
+.tf-workbench__assist {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tf-workbench__table--wash {
+  display: grid;
+  grid-template-columns: auto minmax(260px, 320px);
+  grid-template-rows: 1fr auto auto auto auto auto auto 1fr;
+  grid-template-areas:
+    "swatch ."
+    "swatch caption"
+    "swatch label"
+    "swatch gauge"
+    "swatch tip"
+    "swatch progress"
+    "swatch safety"
+    "swatch .";
+  justify-content: center;
+  align-items: center;
+  column-gap: var(--space-6);
+  row-gap: var(--space-2);
+  min-height: 300px;
+  padding: var(--space-3) var(--space-5) var(--space-3) 190px;
+  overflow: hidden;
+}
+
+.tf-workbench--clean .tf-scrub {
+  display: contents;
+}
+
+.tf-workbench--clean .tf-scrub__svg,
+.tf-workbench--clean .tf-soaked {
+  grid-area: swatch;
+  position: relative;
+  z-index: 1;
+}
+
+.tf-workbench--clean .tf-scrub__svg {
+  width: auto;
+  height: clamp(280px, calc(100dvh - 344px), 500px);
+  max-height: none;
+}
+
+.tf-workbench--clean .tf-bench-caption {
+  grid-area: caption;
+  margin-bottom: var(--space-2);
+}
+
+.tf-workbench--clean .tf-gauge__label {
+  grid-area: label;
+}
+
+.tf-workbench--clean .tf-gauge {
+  grid-area: gauge;
+}
+
+.tf-workbench--clean .tf-scrub__tip {
+  grid-area: tip;
+  justify-self: start;
+}
+
+.tf-wash-progress {
+  grid-area: progress;
+  display: grid;
+  gap: 6px;
+  margin-top: var(--space-3);
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(255, 250, 240, 0.92);
+  box-shadow: 0 4px 10px rgba(59, 42, 28, 0.16);
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--tf-denim-deep);
+}
+
+.tf-wash-progress strong {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--tf-mint-deep);
+}
+
+.tf-wash-segments {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
+.tf-wash-progress .tf-progress {
+  height: 14px;
+  box-shadow: inset 0 1px 3px rgba(59, 42, 28, 0.25);
+}
+
+.tf-workbench--clean .tf-wash-safety {
+  grid-area: safety;
+  justify-self: start;
+  align-items: center;
+  margin-top: var(--space-2);
+  padding: 4px 12px 4px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(59, 42, 28, 0.55);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff6e4;
+}
+
+.tf-workbench--clean .tf-wash-safety svg {
+  color: #ffd27a;
+}
+
+.tf-wash {
+  position: absolute;
+  height: auto;
+  pointer-events: none;
+}
+
+.tf-wash--tub {
+  left: max(16px, calc(50% - 520px));
+  bottom: 30px;
+  width: clamp(120px, 15%, 190px);
+}
+
+.tf-wash--soap {
+  left: max(70px, calc(50% - 452px));
+  bottom: 14px;
+  z-index: 2;
+  width: clamp(80px, 9%, 120px);
+}
+
+.tf-soaked {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  border-radius: 18px;
+  background: rgba(255, 248, 236, 0.92);
+  text-align: center;
+}
+
+.tf-soaked__tub {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #ffffff, var(--tf-mint));
+  color: var(--tf-mint-deep);
+  animation: tf-pop 600ms var(--ease-out) both;
+}
+
+@media (max-width: 1100px) {
+  .tf-workbench__table--wash {
+    padding-left: var(--space-5);
+  }
+
+  .tf-wash {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .tf-workbench--clean .tf-workbench__top {
+    flex-wrap: wrap;
+  }
+
+  .tf-workbench__table--wash {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas: none;
+  }
+
+  .tf-workbench__table--wash > *,
+  .tf-workbench--clean .tf-scrub > * {
+    grid-area: auto;
+  }
+}

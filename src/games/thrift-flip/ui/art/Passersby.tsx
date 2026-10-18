@@ -1,3 +1,5 @@
+import { darken, lighten } from "../../../../ui/art/colourMix";
+
 export interface PasserbyProps {
   readonly walkers: readonly Walker[];
 }
@@ -27,6 +29,21 @@ export function Passersby({ walkers }: PasserbyProps) {
             <path d="M-4 0 L-12 -46 M8 0 L2 -46" stroke="#4b3d4f" strokeWidth={8} strokeLinecap="round" />
             <path d="M-12 1 h-10 M8 1 h10" stroke="#3b2a1c" strokeWidth={5} strokeLinecap="round" />
             <path d="M-21 -40 Q-23 -90 0 -94 Q22 -90 20 -40 Z" fill={walker.coat} />
+            <path d="M4 -93 Q22 -90 20 -40 L6 -40 Q12 -70 4 -93 Z" fill={darken(walker.coat, 0.16)} />
+            <path
+              d="M-16 -82 Q-14 -88 -6 -90"
+              fill="none"
+              stroke={lighten(walker.coat, 0.35)}
+              strokeWidth={3}
+              strokeLinecap="round"
+            />
+            <path
+              d="M-7 -92 L0 -80 L7 -92"
+              fill="none"
+              stroke={darken(walker.coat, 0.3)}
+              strokeWidth={2.5}
+              strokeLinejoin="round"
+            />
             <path d="M-21 -40 Q-10 -36 0 -40 Q10 -36 20 -40" fill="none" stroke="#00000022" strokeWidth={3} />
             <path
               d="M14 -84 Q30 -70 26 -52"
@@ -43,6 +60,7 @@ export function Passersby({ walkers }: PasserbyProps) {
               strokeLinecap="round"
             />
             <path d="M18 -62 L38 -60 L40 -30 L16 -30 Z" fill={walker.bag} />
+            <path d="M30 -61 L38 -60 L40 -30 L31 -30 Z" fill={darken(walker.bag, 0.18)} />
             <path d="M22 -60 Q28 -74 34 -60" fill="none" stroke={walker.bag} strokeWidth={3} />
             <rect x={-5} y={-104} width={10} height={12} rx={4} fill={SKINS[index % SKINS.length]} />
             <circle cx={0} cy={-114} r={15} fill={SKINS[index % SKINS.length]} />
@@ -50,7 +68,8 @@ export function Passersby({ walkers }: PasserbyProps) {
               d="M-16 -114 Q-16 -132 0 -132 Q17 -132 16 -112 Q8 -122 -2 -120 Q-10 -118 -16 -114 Z"
               fill={walker.hair}
             />
-            <circle cx={6} cy={-114} r={1.8} fill="#2b2230" />
+            <circle cx={6} cy={-114} r={2} fill="#2b2230" />
+            <circle cx={9} cy={-108} r={3} fill="#e57a8f" opacity={0.35} />
           </g>
         </g>
       ))}

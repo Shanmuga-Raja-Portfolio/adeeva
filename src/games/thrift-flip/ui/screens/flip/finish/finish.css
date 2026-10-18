@@ -7,15 +7,29 @@
 
 .tf-finish > .tf-footer {
   grid-column: 1 / -1;
+  margin-top: 0;
 }
 
 .tf-finish__preview {
+  position: relative;
   display: grid;
-  gap: var(--space-2);
+}
+
+.tf-finish__preview > .tf-hint {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  z-index: 1;
+  justify-content: center;
+  background: rgba(255, 250, 240, 0.94);
+  box-shadow: 0 4px 10px rgba(59, 42, 28, 0.18);
+  font-size: var(--text-md);
+  pointer-events: none;
 }
 
 .tf-finish__stage {
-  padding: var(--space-3);
+  padding: 52px var(--space-3) var(--space-2);
   border-radius: 24px;
   background:
     radial-gradient(ellipse 60% 45% at 50% 38%, rgba(255, 252, 240, 0.95), transparent 70%),
@@ -34,7 +48,7 @@
   display: block;
   width: 100%;
   height: auto;
-  max-height: 62vh;
+  max-height: max(300px, calc(100dvh - 360px));
   touch-action: none;
 }
 
@@ -110,8 +124,8 @@
   display: grid;
   justify-items: center;
   gap: 2px;
-  min-height: 88px;
-  padding: 6px var(--space-2);
+  min-height: 76px;
+  padding: 5px var(--space-2);
   border-radius: 16px;
   border: 2px solid var(--paper-edge);
   background: linear-gradient(180deg, #fffaf0, var(--tf-cream));
@@ -139,23 +153,33 @@
   box-sizing: content-box;
   padding: 3px;
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 30%, #ffffff, var(--tf-plate, #e9d4b2) 70%);
+  background:
+    radial-gradient(circle at 36% 28%, rgba(255, 255, 255, 0.65), transparent 48%), var(--tf-plate, #d9c2a0);
   box-shadow:
-    inset 0 -2px 4px rgba(59, 42, 28, 0.2),
+    inset 0 -3px 5px rgba(43, 26, 16, 0.28),
     0 0 0 2px #fffaf0,
     0 3px 6px rgba(59, 42, 28, 0.25);
+}
+
+.tf-chip > span {
+  display: grid;
+  place-items: center;
+  min-height: 2.4em;
+  line-height: 1.2;
 }
 
 .tf-chip small {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 1px 8px;
+  gap: 4px;
+  padding: 2px 10px 2px 6px;
   border-radius: var(--radius-pill);
   background: #fff3c4;
-  font-size: var(--text-sm);
+  box-shadow: inset 0 0 0 1.5px rgba(184, 132, 30, 0.35);
+  font-family: var(--font-display);
+  font-size: 17px;
   font-weight: 800;
-  color: #7a5a10;
+  color: #6b4c0c;
 }
 
 .tf-chip--saved {
@@ -229,11 +253,44 @@
   gap: 6px;
 }
 
-.tf-finish__buttons .ad-button {
+.tf-pose {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 0 6px;
+  gap: 4px;
+  min-height: 46px;
+  padding: 2px 6px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff, #f4ead8);
+  box-shadow:
+    inset 0 0 0 2px rgba(63, 93, 132, 0.35),
+    0 3px 0 rgba(63, 93, 132, 0.25);
+  font: inherit;
   font-size: var(--text-sm);
-  white-space: nowrap;
+  font-weight: 800;
+  color: var(--tf-denim-deep);
+  cursor: pointer;
+}
+
+.tf-pose:hover {
+  background: #eef3fb;
+}
+
+.tf-pose:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 0 0 2px rgba(63, 93, 132, 0.45);
+}
+
+.tf-pose:focus-visible {
+  outline: 3px solid var(--tf-tangerine);
+  outline-offset: 2px;
+}
+
+.tf-pose__glyph {
+  flex: none;
+  width: 28px;
+  height: 28px;
 }
 
 .tf-finish__ghost {

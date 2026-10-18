@@ -72,14 +72,17 @@ export function checklist(state: GameState): ChecklistItem[] {
     const placed = placedForRequirement(run, requirement);
     items.push({
       id: `finish-${requirementKey(requirement)}`,
-      label: `${requirementName(requirement)} ${Math.min(placed, requirement.count)}/${requirement.count}`,
+      label:
+        placed >= requirement.count
+          ? `${requirementName(requirement)}: all ${requirement.count} on`
+          : `Add ${requirement.count - placed} more ${requirementName(requirement)}`,
       status: placed >= requirement.count ? "met" : finishing ? "unmet" : "pending",
     });
   }
   const spend = flipSpend(run);
   items.push({
     id: "budget",
-    label: `Budget ${spend}/${brief.budget} coins`,
+    label: `Spent ${spend} of ${brief.budget} coins`,
     status: spend <= brief.budget ? "met" : "unmet",
   });
   items.push({
@@ -93,14 +96,18 @@ export function checklist(state: GameState): ChecklistItem[] {
   const quality = flipQuality(state, run).quality;
   items.push({
     id: "quality",
-    label: built ? `Quality ${quality}/${brief.minQuality}` : `Quality at least ${brief.minQuality}`,
+    label: built
+      ? `Well made: ${quality} (needs ${brief.minQuality})`
+      : `Well made: ${brief.minQuality} or more`,
     status: built ? (quality >= brief.minQuality ? "met" : "unmet") : "pending",
   });
   if (brief.minLeaves > 0) {
     const leaves = leavesOf(run, state.upgrades.includes("sharp-ripper")).leaves;
     items.push({
       id: "leaves",
-      label: run.cutDone ? `Leaves ${leaves}/${brief.minLeaves}` : `Leaves at least ${brief.minLeaves}`,
+      label: run.cutDone
+        ? `Leaves ${leaves}, needs ${brief.minLeaves}`
+        : `Leaves at least ${brief.minLeaves}`,
       status: run.cutDone ? (leaves >= brief.minLeaves ? "met" : "unmet") : "pending",
     });
   }

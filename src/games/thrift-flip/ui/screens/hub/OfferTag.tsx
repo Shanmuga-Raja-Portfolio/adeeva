@@ -1,53 +1,72 @@
+import type { CSSProperties } from "react";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { Button } from "../../../../../ui/kit/Button";
+import { Icon } from "../../../../../ui/kit/IconSet";
 import type { ClickLike } from "../../../../../ui/kit/useDispatchOnce";
 import { offerAcceptIssue, type GameState, type OfferView } from "../../../core";
-import { PriceTag } from "../../art/PriceTag";
-import { BriefFacts, finishList, recipeList, requestLine, ticketBadge } from "./briefFacts";
+import { recipeList, ticketBadge } from "./briefFacts";
 
 export interface OfferTagProps {
   readonly state: GameState;
   readonly view: OfferView;
   readonly tilt: number;
+  readonly paper: string;
+  readonly open: boolean;
+  readonly detailsId: string;
+  readonly onToggle: () => void;
   readonly onAccept: (event: ClickLike) => void;
-  readonly onDecline: (event: ClickLike) => void;
 }
 
-export function OfferTag({ state, view, tilt, onAccept, onDecline }: OfferTagProps) {
+export function noteTone(view: OfferView): string {
+  if (ticketBadge(view.offer.brief) !== null) return "tf-note--ticket";
+  return view.client.traitGate === undefined ? "" : "tf-note--mint";
+}
+
+export function OfferTag({ state, view, tilt, paper, open, detailsId, onToggle, onAccept }: OfferTagProps) {
   const { offer, client } = view;
+  const { brief } = offer;
   const issue = offerAcceptIssue(state, offer.id);
-  const badge = ticketBadge(offer.brief);
+  const style = { "--tf-tilt": `${tilt}deg`, "--tf-paper": paper } as CSSProperties;
   return (
     <article
-      className={badge === null ? "tf-offer" : "tf-offer tf-offer--ticket"}
+      className={["tf-offer", "tf-note", open ? "tf-note--open" : "", noteTone(view)]
+        .filter((name) => name.length > 0)
+        .join(" ")}
+      style={style}
       data-testid="offer-tag"
       data-client={client.id}
-      data-kind={offer.brief.kind}
+      data-kind={brief.kind}
     >
-      <PriceTag tilt={tilt} tone={client.traitGate === undefined ? "kraft" : "mint"}>
-        {badge === null ? null : <span className="tf-offer__badge">{badge} · no coins needed</span>}
-        <header className="tf-offer__head">
-          <Avatar look={client.look} size={52} frameColour="#e2f4ea" title={client.name} />
-          <div>
-            <h3 className="tf-offer__name">{client.name}</h3>
-            <span className="tf-offer__relation">{client.relation}</span>
-          </div>
-        </header>
-        <p className="tf-offer__request">“{requestLine(offer.brief, client)}”</p>
-        <p className="tf-offer__make">
-          <strong>{recipeList(offer.brief)}</strong> · {finishList(offer.brief)}
-        </p>
-        <BriefFacts brief={offer.brief} />
-        <div className="tf-offer__actions">
-          <Button variant="ghost" size="sm" onClick={onDecline}>
-            Pass
-          </Button>
-          <Button size="sm" onClick={onAccept} disabledReason={issue ?? undefined}>
-            Accept
-          </Button>
-        </div>
-        <span className="tf-offer__expires">Offer open until day {offer.expiresDay}</span>
-      </PriceTag>
+      <span className="tf-note__pin" aria-hidden="true" />
+      <button
+        type="button"
+        className="tf-offer__head"
+        aria-expanded={open}
+        aria-controls={open ? detailsId : undefined}
+        aria-label={`${client.name} wants ${recipeList(brief)}. Read the note`}
+        onClick={onToggle}
+      >
+        <Avatar look={client.look} size={44} frameColour="#e2f4ea" title={client.name} />
+        <span className="tf-offer__who">
+          <span className="tf-offer__name">{client.name}</span>
+          <span className="tf-offer__make">{recipeList(brief)}</span>
+          <span className="tf-note__facts">
+            <span title="What they pay you">
+              <Icon name="coin" size={15} />
+              <strong>{brief.fee}</strong>
+            </span>
+            <span title="Due day">
+              <Icon name="calendar" size={15} />
+              <strong>Day {brief.deadlineDay}</strong>
+            </span>
+          </span>
+        </span>
+      </button>
+      {open ? null : (
+        <Button size="sm" className="tf-offer__accept" onClick={onAccept} disabledReason={issue ?? undefined}>
+          Accept
+        </Button>
+      )}
     </article>
   );
 }

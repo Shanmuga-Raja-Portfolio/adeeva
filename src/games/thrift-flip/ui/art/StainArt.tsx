@@ -14,7 +14,7 @@ function blob(stain: Stain, seed: number): string {
   const points = 9;
   const corners = Array.from({ length: points }, (_, index) => {
     const angle = (index / points) * Math.PI * 2;
-    const wobble = 0.74 + seededUnit(seed, index) * 0.26;
+    const wobble = 0.62 + seededUnit(seed, index) * 0.4;
     return [
       stain.cx + Math.cos(angle) * stain.radius * wobble,
       stain.cy + Math.sin(angle) * stain.radius * wobble,
@@ -46,10 +46,10 @@ export function StainArt({ stain, seed, cleanShares, scrubbing, reducedMotion }:
     <g className="tf-stain" data-stain={stain.id}>
       <defs>
         <radialGradient id={`${id}-tea`} cx="0.45" cy="0.45" r="0.6">
-          <stop offset="0" stopColor="#b98450" stopOpacity={0.42} />
-          <stop offset="0.7" stopColor="#9a6634" stopOpacity={0.62} />
-          <stop offset="0.92" stopColor="#7a4a22" stopOpacity={0.85} />
-          <stop offset="1" stopColor="#6b4423" stopOpacity={0.55} />
+          <stop offset="0" stopColor="#c48a4a" stopOpacity={0.34} />
+          <stop offset="0.55" stopColor="#ad6f34" stopOpacity={0.42} />
+          <stop offset="0.85" stopColor="#8a5222" stopOpacity={0.55} />
+          <stop offset="1" stopColor="#8a5222" stopOpacity={0.2} />
         </radialGradient>
         <radialGradient id={`${id}-suds`} cx="0.35" cy="0.3" r="0.75">
           <stop offset="0" stopColor="#ffffff" stopOpacity={0.95} />
@@ -96,19 +96,19 @@ export function StainArt({ stain, seed, cleanShares, scrubbing, reducedMotion }:
               cy={stain.cy + Math.sin(angle) * reach}
               rx={r}
               ry={r * 0.72}
-              fill="#5c3517"
-              opacity={0.22}
+              fill="#8a5a2b"
+              opacity={0.1}
             />
           );
         })}
-        <path d={shape} fill="none" stroke="#5c3517" strokeWidth={0.9} opacity={0.6} />
+        <path d={shape} fill="none" stroke="#7a4518" strokeWidth={0.6} opacity={0.38} />
         <path
           d={shape}
           fill="none"
-          stroke="#8a5a2b"
-          strokeWidth={1.4}
-          opacity={0.18}
-          transform={`translate(0.4 0.5)`}
+          stroke="#a06a34"
+          strokeWidth={1.6}
+          opacity={0.14}
+          transform={`translate(${stain.cx * 0.04} ${stain.cy * 0.04}) scale(0.96)`}
         />
         {Array.from({ length: 5 }, (_, index) => {
           const angle = seededUnit(numeric, index + 200) * Math.PI * 2;
@@ -119,8 +119,8 @@ export function StainArt({ stain, seed, cleanShares, scrubbing, reducedMotion }:
               cx={stain.cx + Math.cos(angle) * reach}
               cy={stain.cy + Math.sin(angle) * reach}
               r={0.25 + seededUnit(numeric, index + 240) * 0.45}
-              fill="#7a4e26"
-              opacity={0.6}
+              fill="#8a5222"
+              opacity={0.42}
             />
           );
         })}
@@ -136,13 +136,13 @@ export function StainArt({ stain, seed, cleanShares, scrubbing, reducedMotion }:
         </g>
       ) : null}
       {scrubbing && !reducedMotion
-        ? Array.from({ length: 7 }, (_, index) => (
+        ? Array.from({ length: 5 }, (_, index) => (
             <circle
               key={index}
               className="tf-bubble"
-              cx={stain.cx + (seededUnit(numeric, index + 40) - 0.5) * stain.radius * 1.6}
-              cy={stain.cy + (seededUnit(numeric, index + 80) - 0.5) * stain.radius * 1.4}
-              r={0.8 + seededUnit(numeric, index + 120) * 1.6}
+              cx={stain.cx + (seededUnit(numeric, index + 40) - 0.5) * stain.radius * 2.4}
+              cy={stain.cy + (seededUnit(numeric, index + 80) - 0.5) * stain.radius * 2.1}
+              r={0.6 + seededUnit(numeric, index + 120) * 1.1}
               fill={`url(#${id}-suds)`}
               style={{ animationDelay: `${index * 90}ms` }}
             />

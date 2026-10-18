@@ -20,7 +20,7 @@ export function BeforeAfter({ run, main, name }: BeforeAfterProps) {
         <span className="tf-split__label">Before</span>
         {find !== null && main !== null ? (
           <>
-            <FindArt find={find} grade={main.grade} size={230} />
+            <FindArt find={find} grade={main.grade} size={184} />
             <figcaption>
               {conditionById(main.grade).name} {find.name}
             </figcaption>
@@ -34,7 +34,7 @@ export function BeforeAfter({ run, main, name }: BeforeAfterProps) {
         <CelebrationBurst className="tf-split__burst" />
         <span className="tf-split__label">After</span>
         {ticket && find !== null ? (
-          <FindArt find={find} grade="like-new" size={240} mended title={`${find.name}, mended`} />
+          <FindArt find={find} grade="like-new" size={206} mended title={`${find.name}, mended`} />
         ) : (
           <ProductPreview
             design={run.design}
@@ -42,9 +42,13 @@ export function BeforeAfter({ run, main, name }: BeforeAfterProps) {
             finishes={run.finishes}
             title={name}
             className="tf-split__art"
+            view="40 36 320 320"
           />
         )}
-        <figcaption>{name}</figcaption>
+        <figcaption>
+          {name}
+          {ticket || find === null ? null : <small>Remade from the {find.name.toLowerCase()}</small>}
+        </figcaption>
       </figure>
     </div>
   );

@@ -55,7 +55,7 @@ export function TitleScreen({
 
   return (
     <main className="tf-title ad-screen">
-      <StallBackdrop className="tf-title__backdrop" />
+      <StallBackdrop className="tf-title__backdrop" crowd={false} />
       <div className="tf-title__veil" aria-hidden="true" />
       <Awning className="tf-title__awning" />
       <div className="tf-title__content">

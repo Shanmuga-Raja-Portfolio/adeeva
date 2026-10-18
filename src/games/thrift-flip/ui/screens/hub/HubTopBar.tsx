@@ -34,15 +34,9 @@ export function HubTopBar({ state, onOpenSettings, onExit }: HubTopBarProps) {
           <StatChip kind="buzz" value={state.buzz} showLabel />
         </div>
         <div className="tf-hub-top__actions">
-          <Button
-            variant="ghost"
-            size="sm"
-            icon="gear"
-            className="tf-hub-top__icon"
-            onClick={onOpenSettings}
-            aria-label="Settings"
-            title="Settings"
-          />
+          <Button variant="ghost" size="sm" icon="gear" onClick={onOpenSettings}>
+            Settings
+          </Button>
           <Button variant="ghost" size="sm" icon="home" onClick={onExit} data-testid="save-exit">
             Save & exit
           </Button>

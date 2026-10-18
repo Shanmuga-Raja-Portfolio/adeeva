@@ -90,6 +90,11 @@
   color: var(--tf-mint-deep);
 }
 
+.tf-leaf-meter__value small {
+  font-size: 0.7em;
+  opacity: 0.8;
+}
+
 .tf-stain__cell {
   transition: opacity 260ms var(--ease-out);
 }
@@ -97,7 +102,6 @@
 .tf-bubble {
   stroke: rgba(255, 255, 255, 0.95);
   stroke-width: 0.14;
-  filter: drop-shadow(0 0.15px 0.2px rgba(59, 42, 28, 0.35));
   transform-box: fill-box;
   transform-origin: center;
   animation: tf-float-up 900ms ease-out infinite;
@@ -158,8 +162,8 @@
   border-radius: var(--radius-pill);
   background: var(--tf-denim);
   color: var(--tf-cream);
-  font-size: max(var(--text-sm), 0.26em);
-  letter-spacing: 0.4em;
+  font-size: max(18px, 0.34em);
+  letter-spacing: 0.3em;
   text-transform: uppercase;
 }
 
@@ -176,7 +180,8 @@
 .tf-wordmark__tagline {
   margin: var(--space-3) 0 0;
   font-size: var(--text-lg);
-  color: var(--ink-soft);
+  font-weight: 700;
+  color: #5b4630;
 }
 
 .tf-wordmark--compact .tf-wordmark__word {
@@ -214,15 +219,9 @@
   animation: tf-idle 5.2s ease-in-out infinite;
 }
 
-.tf-figure--far {
-  filter: saturate(0.78) brightness(1.04) contrast(0.92);
-}
-
 .tf-passerby {
   transform-box: fill-box;
   transform-origin: 50% 100%;
-  opacity: 0.78;
-  filter: saturate(0.7);
   animation: tf-stroll 1.8s ease-in-out infinite;
 }
 

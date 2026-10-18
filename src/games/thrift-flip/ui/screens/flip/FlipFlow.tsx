@@ -5,6 +5,7 @@ import { Awning } from "../../art/Awning";
 import { BriefChecklist } from "./BriefChecklist";
 import { BriefStage } from "./BriefStage";
 import { ClientCorner } from "./ClientCorner";
+import { ClientPeek } from "./ClientPeek";
 import { CleanStage } from "./clean/CleanStage";
 import { CutStage } from "./cut/CutStage";
 import { DesignStage } from "./DesignStage";
@@ -25,6 +26,9 @@ export interface FlipFlowProps {
   readonly dispatch: (action: Action) => boolean;
   readonly onExit: () => void;
 }
+
+const HANDS_ON: ReadonlySet<FlipRun["stage"]> = new Set(["unpick", "clean", "layout", "cut", "sew"]);
+const CORNER: ReadonlySet<FlipRun["stage"]> = new Set(["design", "market"]);
 
 interface StageViewProps extends FlipFlowProps {
   readonly run: FlipRun;
@@ -71,19 +75,25 @@ export function FlipFlow({ state, dispatch, onExit }: FlipFlowProps) {
       </main>
     );
   }
+  const handsOn = HANDS_ON.has(run.stage);
   return (
     <main className="tf-flip ad-screen" data-stage={run.stage}>
       <Awning className="tf-flip__awning" />
       <FlipHeader state={state} run={run} dispatch={dispatch} onExit={onExit} />
-      <StageRail state={state} run={run} dispatch={dispatch} />
-      <div className="tf-flip__body">
+      <div className="tf-flip__railrow">
+        <StageRail state={state} run={run} dispatch={dispatch} />
+        {handsOn ? <ClientPeek state={state} run={run} /> : null}
+      </div>
+      <div className={handsOn ? "tf-flip__body tf-flip__body--wide" : "tf-flip__body"}>
         <section className="tf-flip__stage" key={run.stage} aria-label={`${run.stage} step`}>
           <StageView state={state} run={run} dispatch={dispatch} onExit={onExit} />
         </section>
-        <div className="tf-flip__side">
-          <ClientCorner state={state} run={run} />
-          <BriefChecklist state={state} run={run} />
-        </div>
+        {handsOn ? null : (
+          <div className="tf-flip__side">
+            {CORNER.has(run.stage) ? <ClientCorner state={state} run={run} /> : null}
+            <BriefChecklist state={state} run={run} />
+          </div>
+        )}
       </div>
     </main>
   );

@@ -11,6 +11,7 @@ import { Awning } from "../../../art/Awning";
 import { QUALITY_LABELS, QUALITY_ORDER } from "../qualityTerms";
 import type { StageProps } from "../stageProps";
 import { BeforeAfter } from "./BeforeAfter";
+import { criterionIcon } from "./criterionIcon";
 import "./results.css";
 
 function runName(run: FlipRun): string {
@@ -54,13 +55,17 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
       <div className="tf-results__grid">
         <BeforeAfter run={run} main={mainFind(run)} name={name} />
         <section className="tf-results__score" aria-label="Score">
-          <span className="tf-results__score-label" aria-hidden="true">
-            Your score
-          </span>
-          <span className="tf-results__number" aria-label={`Score ${evaluation.score} out of 100`}>
-            {score}
-          </span>
-          <StarRating stars={evaluation.stars} size={30} />
+          <div className="tf-results__badge">
+            <span className="tf-results__number" aria-label={`Score ${evaluation.score} out of 100`}>
+              {score}
+            </span>
+            <div className="tf-results__badge-side">
+              <span className="tf-results__score-label" aria-hidden="true">
+                Your score
+              </span>
+              <StarRating stars={evaluation.stars} size={34} />
+            </div>
+          </div>
           {ticket ? (
             <TagPill tone="sage">
               <Icon name="heart" size={12} /> Things saved +1
@@ -68,7 +73,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
           ) : (
             <div className="tf-results__leaves">
               <span>Kind to the planet</span>
-              <LeafMeter leaves={evaluation.leaves.leaves} size={34} />
+              <LeafMeter leaves={evaluation.leaves.leaves} size={30} />
             </div>
           )}
           {reward?.leafPick === true ? (
@@ -81,7 +86,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
               <Avatar
                 look={client.look}
                 mood={happy ? "delighted" : "thinking"}
-                size={64}
+                size={56}
                 frameColour="#e2f4ea"
                 title={client.name}
               />
@@ -102,28 +107,58 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
           {reward !== null ? (
             <div className="tf-results__totals">
               <span className="tf-results__total tf-results__total--coins">
-                <Icon name="coin" size={20} /> {reward.coins >= 0 ? "+" : ""}
-                {reward.coins}
+                <Icon name="coin" size={22} /> {reward.coins >= 0 ? "+" : ""}
+                {reward.coins} <small>coins</small>
               </span>
               <span className="tf-results__total tf-results__total--rep">
-                <Icon name="star" size={20} /> {reward.reputation >= 0 ? "+" : ""}
-                {reward.reputation}
+                <Icon name="star" size={22} /> {reward.reputation >= 0 ? "+" : ""}
+                {reward.reputation} <small>reputation</small>
               </span>
               <span className="tf-results__total tf-results__total--buzz">
-                <Icon name="megaphone" size={20} /> +{reward.buzz}
+                <Icon name="megaphone" size={22} /> +{reward.buzz} <small>buzz</small>
               </span>
             </div>
           ) : null}
-          <Button size="lg" icon="home" onClick={onExit} data-testid="results-exit">
+          <Button
+            size="lg"
+            icon="home"
+            block
+            onClick={onExit}
+            className="tf-results__exit"
+            data-testid="results-exit"
+          >
             {boutique ? "Back to the shop" : "Back to the stall"}
           </Button>
         </section>
         <section className="tf-results__details" aria-label="How it went">
-          <h2 className="tf-results__report">
-            {evaluation.criteria.length > 0
-              ? `${evaluation.criteria.filter((criterion) => criterion.passed).length} of ${evaluation.criteria.length} wishes met`
-              : "How your piece came out"}
-          </h2>
+          <div className="tf-results__report-row">
+            <h2 className="tf-results__report">
+              {evaluation.criteria.length > 0
+                ? `${evaluation.criteria.filter((criterion) => criterion.passed).length} of ${evaluation.criteria.length} wishes met`
+                : "How your piece came out"}
+            </h2>
+            {reward !== null && reward.lines.length > 0 ? (
+              <details className="tf-results__reward">
+                <summary>
+                  <Icon name="coin" size={18} /> How you earned it
+                  <span className="tf-results__chevron" aria-hidden="true">
+                    ▾
+                  </span>
+                </summary>
+                <ul>
+                  {reward.lines.map((line) => (
+                    <li key={line.label}>
+                      <span>{line.label}</span>
+                      <strong>
+                        {line.amount >= 0 ? "+" : ""}
+                        {line.amount}
+                      </strong>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ) : null}
+          </div>
           {evaluation.criteria.length > 0 ? (
             <ul className="tf-results__criteria">
               {evaluation.criteria.map((criterion) => (
@@ -134,11 +169,13 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
                   }
                 >
                   <span className="tf-criterion__mark" aria-hidden="true">
-                    {criterion.passed ? <Icon name="check" size={16} /> : "!"}
+                    {criterion.passed ? <Icon name={criterionIcon(criterion.id)} size={16} /> : "!"}
                   </span>
                   <span>
                     <strong>{criterion.label}</strong>
-                    <small>{criterion.detail}</small>
+                    <small className={criterion.passed ? "ad-visually-hidden" : undefined}>
+                      {criterion.detail}
+                    </small>
                   </span>
                 </li>
               ))}
@@ -164,21 +201,6 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
               {evaluation.feedback.map((line) => (
                 <p key={line}>{line}</p>
               ))}
-            </div>
-          ) : null}
-          {reward !== null ? (
-            <div className="tf-results__reward">
-              <ul>
-                {reward.lines.map((line) => (
-                  <li key={line.label}>
-                    <span>{line.label}</span>
-                    <strong>
-                      {line.amount >= 0 ? "+" : ""}
-                      {line.amount}
-                    </strong>
-                  </li>
-                ))}
-              </ul>
             </div>
           ) : null}
         </section>

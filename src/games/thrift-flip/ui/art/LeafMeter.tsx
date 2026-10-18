@@ -49,7 +49,10 @@ export function LeafMeter({ leaves, size = 28, label = "Leaves" }: LeafMeterProp
           </svg>
         );
       })}
-      <strong className="tf-leaf-meter__value">{value}</strong>
+      <strong className="tf-leaf-meter__value">
+        {value}
+        <small>/100</small>
+      </strong>
     </span>
   );
 }

@@ -20,7 +20,7 @@ interface Bit {
   readonly depth: "far" | "mid" | "near";
 }
 
-const BITS: readonly Bit[] = Array.from({ length: 34 }, (_, index) => {
+const BITS: readonly Bit[] = Array.from({ length: 52 }, (_, index) => {
   const ring = 0.55 + seededUnit(SEED, index * 5) * 0.45;
   const angle = seededUnit(SEED, index * 5 + 1) * Math.PI * 2;
   const pick = seededUnit(SEED, index * 5 + 2);
@@ -90,12 +90,6 @@ export function CelebrationBurst({ className }: CelebrationBurstProps) {
           <stop offset="0.45" stopColor="#fff3c4" stopOpacity={0.75} />
           <stop offset="1" stopColor="#fff3c4" stopOpacity={0} />
         </radialGradient>
-        <filter id={`${id}-far`} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation={1.4} />
-        </filter>
-        <filter id={`${id}-near`} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation={2.2} />
-        </filter>
         <linearGradient id={`${id}-trail`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#ffffff" stopOpacity={0} />
           <stop offset="1" stopColor="#ffffff" stopOpacity={0.7} />
@@ -117,8 +111,7 @@ export function CelebrationBurst({ className }: CelebrationBurstProps) {
         <g
           key={index}
           transform={`translate(${bit.x.toFixed(1)} ${bit.y.toFixed(1)})`}
-          filter={bit.depth === "mid" ? undefined : `url(#${id}-${bit.depth})`}
-          opacity={bit.depth === "far" ? 0.6 : bit.depth === "near" ? 0.85 : 1}
+          opacity={bit.depth === "far" ? 0.55 : 1}
         >
           <g className="tf-burst-art__bit" style={{ animationDelay: `${bit.delay}s` }}>
             <rect

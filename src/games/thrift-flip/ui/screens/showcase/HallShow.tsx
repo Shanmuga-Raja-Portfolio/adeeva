@@ -56,6 +56,7 @@ function pieceArt(piece: RackPiece) {
       finishes={piece.finishes}
       title={recipeById(piece.recipeId).name}
       base={null}
+      bare
     />
   );
 }
@@ -74,9 +75,12 @@ function wornOrHeld(piece: RackPiece) {
       </svg>
     );
   return (
-    <svg x={86} y={206} width={250} height={250} viewBox="0 0 400 400">
-      {pieceArt(piece)}
-    </svg>
+    <g transform="rotate(-6 300 400)">
+      <ellipse cx={300} cy={560} rx={110} ry={18} fill="#2a1b10" opacity={0.12} />
+      <svg x={150} y={236} width={300} height={300} viewBox="0 0 400 400">
+        {pieceArt(piece)}
+      </svg>
+    </g>
   );
 }
 

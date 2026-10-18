@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { useDispatchOnce, type ClickLike } from "../../../../../ui/kit/useDispatchOnce";
@@ -8,9 +9,10 @@ import type { StageProps } from "./stageProps";
 export interface StageFooterProps extends StageProps {
   readonly before?: readonly Action[] | undefined;
   readonly hint?: string | undefined;
+  readonly status?: ReactNode;
 }
 
-export function StageFooter({ state, run, dispatch, onExit, before = [], hint }: StageFooterProps) {
+export function StageFooter({ state, run, dispatch, onExit, before = [], hint, status }: StageFooterProps) {
   const once = useDispatchOnce(state, dispatch);
   const next = runStageAfter(run, run.stage);
   if (next === null || next === "done") return null;
@@ -36,7 +38,9 @@ export function StageFooter({ state, run, dispatch, onExit, before = [], hint }:
       ) : null}
       <div className="tf-footer__row">
         <div className="tf-footer__status" aria-live="polite">
-          {otherReasons.length > 0 ? (
+          {status !== undefined ? (
+            status
+          ) : otherReasons.length > 0 ? (
             <ul className="tf-footer__reasons">
               {otherReasons.slice(0, 3).map((reason) => (
                 <li key={reason}>{reason}</li>
@@ -49,6 +53,7 @@ export function StageFooter({ state, run, dispatch, onExit, before = [], hint }:
         </div>
         <Button
           size="lg"
+          icon={check.ok ? undefined : "lock"}
           onClick={advance}
           disabled={!check.ok}
           disabledReason={check.ok ? undefined : check.reasons[0]}
