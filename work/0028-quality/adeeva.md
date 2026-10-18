@@ -153,3 +153,53 @@ Our screens won six pairs:
 - **Sketch (still a loss).** The reference puts one large, detailed gown in a furnished room, so the dress itself feels like the reward. Ours is clearer about goals, but it is still a grid of fairly similar pink cards beside a simpler avatar.
 - **Art is the one criterion we still lose almost everywhere.** We win it only on the results screen. The hubs win on purpose and clarity, not on looks.
 - **Next steps:** a richer, more expressive avatar (pose, fabric shading, hair) and a more furnished fitting room on the sketch step would close most of what is left.
+
+## Gap round — 2026-10-17
+
+### Method
+
+- **Same blind A/B as before, with a higher bar.** The round compared eight of our screens with official store screenshots of the titles in `work/0013-research/references.md`, section "1. ADEEVA - fashion design career + runway shows": Tailor Simulator, Historical Fashion Dress Up and Candy's Closet. The pairs are the same eight as in the first pass.
+- **Random labels.** Each pair was shown as A and B, with the sides picked at random.
+- **Fresh critics each round.** A new panel of three critics judged the round with no memory of earlier rounds. They scored art, typography, feedback, readability and touch, gave an outcome, and flagged any pair where ours was clearly worse.
+- **The bar was raised:** at least 85% of pairs won or tied, and no pair clearly worse.
+- **Our screenshots** came from `e2e/adeeva/qualityShots.spec.ts` at 1280 x 800.
+- **What stays out of the repo:** the reference screenshots belong to their owners. They were kept outside the repo, and nothing was traced, copied or imitated.
+
+### Round 1 — 7/8 won or tied (88%), 0 clearly worse — pass
+
+| Pair | Kind       | Reference                   | Outcome | Clearly worse | Criteria ours won                             |
+| ---- | ---------- | --------------------------- | ------- | ------------- | --------------------------------------------- |
+| 1    | title      | Historical Fashion Dress Up | win     | no            | typography, feedback, readability, touch      |
+| 2    | hub        | Tailor Simulator            | win     | no            | typography, feedback, readability, touch      |
+| 3    | hub        | Tailor Simulator            | win     | no            | art, typography, feedback, readability, touch |
+| 4    | craft-step | Historical Fashion Dress Up | loss    | no            | typography, readability, touch                |
+| 5    | craft-step | Historical Fashion Dress Up | win     | no            | typography, feedback, readability             |
+| 6    | craft-step | Historical Fashion Dress Up | win     | no            | typography, feedback, readability, touch      |
+| 7    | results    | Candy's Closet              | win     | no            | art, typography, feedback, readability, touch |
+| 8    | showcase   | Tailor Simulator            | win     | no            | typography, feedback, readability, touch      |
+
+The title won for the first time in either pass. All three critics called it a working front door: a strong serif wordmark, one obvious Continue button and readable save slots. The cutting and sewing steps won again because they are real activities with live feedback, such as the cut and neatness meters and the "Neat stitches" coaching line. The label hub won art as well as clarity, with its three Ready looks and the urgent "Reply today" request. The runway show won on staging: the venue sign, the look counter and the floating hearts.
+
+### What changed
+
+- **No code changed in this round.** The panel judged the game as it stood at the end of the first pass. The only change is this report.
+- The higher score comes from a new panel of three critics, not from new work. The title flipped from a loss to a win because the panel judged it on how well it works as a front door, while the painted reference reads as a pack picker with no title moment.
+
+### Final result
+
+**Passed in round 1: 7/8 won or tied (88%), none clearly worse.**
+
+Our screens won seven pairs:
+
+- the title
+- both hubs
+- cutting
+- sewing
+- results
+- the runway show
+
+### Remaining gap
+
+- **Sketch board (lost in every round of both passes).** All three critics said it is clear to follow, with its step bar and brief chips, but it "looks like a pink web form". The thumbnails are all the same pink, and the preview figure is stiff. The reference makes dressing up feel lush with one large, detailed figure in a furnished room.
+- **Art is still the criterion we lose most.** We win art only on the label hub and the results screen. Everywhere else we win on clarity, feedback and touch, not on looks.
+- **Next steps:** give each sketch option its own colour and fabric in the thumbnails, give the preview figure a more relaxed pose with fabric shading and hair, and furnish the fitting room so that the dress becomes the hero of the screen.
