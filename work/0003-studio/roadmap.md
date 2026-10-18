@@ -36,7 +36,8 @@ Research done (reference only): `work/0013-research/references.md` and `work/001
     - ADEEVA: the title and sketch screens.
 12. ⬜ **Shared art pass:** lighting, texture and depth in `src/ui/art` and the kit, because art is the criterion we lose most often. Every game is then re-judged blind against the 85% bar.
 13. ⬜ **Interior Challenging economy:** on seed 2 the home earns 0.79× the loft, and the bot scores Gold where about 76 was the target.
-14. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, and a closing report.
+14. ⬜ **Family release (stage 1):** the kids play on a Windows PC, a Chromebook and an Android handheld, and saves stay on each device. Make Maker Studio an installable offline web app (PWA): a manifest, icons, offline caching and relative asset paths. Test it at Android-handheld size (small landscape screen, touch, gamepad buttons if present) and on the Chromebook (touchpad and keyboard). Hosting must be HTTPS, and Shan creates that account. A Tauri desktop app for the PC is optional. Stages 2 (a private playtest with trusted families, with feedback gathered outside the game) and 3 (public, itch.io first) wait for Shan.
+15. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, and a closing report.
 
 ## Waiting for Shan (do together, one by one)
 
