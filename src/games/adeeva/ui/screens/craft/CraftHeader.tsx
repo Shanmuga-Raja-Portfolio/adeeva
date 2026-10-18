@@ -30,15 +30,15 @@ export function CraftHeader({ state, run, dispatch, onExit }: CraftHeaderProps) 
     onExit();
   };
   return (
-    <header className="ad-craft-header">
-      <Button variant="ghost" onClick={onExit} className="ad-craft-header__exit">
+    <header className="ad-craft-header ad-pinned-head">
+      <Button variant="ghost" onClick={onExit} className="ad-craft-header__exit ad-pinned-head__back">
         <span aria-hidden="true">←</span> Back to studio
       </Button>
-      <div className="ad-craft-header__title">
+      <div className="ad-craft-header__title ad-pinned-head__title">
         <span className="ad-eyebrow">{runOwner(run)}</span>
         <h1>{STAGE_TITLES[run.stage]}</h1>
       </div>
-      <div className="ad-craft-header__stats">
+      <div className="ad-craft-header__stats ad-pinned-head__stats">
         <StatChip kind="day" value={state.calendar.day} />
         <StatChip kind="hours" value={`${state.calendar.hoursLeft} h`} />
         <StatChip kind="coins" value={state.coins} />

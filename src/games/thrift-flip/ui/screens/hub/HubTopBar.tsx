@@ -13,7 +13,7 @@ export interface HubTopBarProps {
 
 export function HubTopBar({ state, onOpenSettings, onExit }: HubTopBarProps) {
   return (
-    <header className="tf-hub-top">
+    <header className="tf-hub-top ad-pinned-head">
       <Awning className="tf-hub-top__awning" />
       <div className="tf-hub-top__row">
         <Wordmark compact />

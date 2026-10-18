@@ -273,3 +273,9 @@
   font-weight: 600;
   color: var(--ink);
 }
+
+@media (max-height: 480px) {
+  .ad-trace__mat {
+    max-height: calc(var(--work-max-h) - 56px);
+  }
+}

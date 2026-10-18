@@ -33,6 +33,7 @@ import "../bake/bake.css";
 import "../bake/weigh.css";
 import "../counter/counter.css";
 import "./salon.css";
+import "./compact.css";
 
 export interface TableServiceProps {
   readonly state: GameState;

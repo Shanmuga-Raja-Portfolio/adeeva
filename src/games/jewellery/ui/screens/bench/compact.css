@@ -1,0 +1,51 @@
+@media (max-height: 480px) {
+  .jb-station,
+  .jb-station.jb-station--wide {
+    grid-template-columns: minmax(7.5rem, 9rem) minmax(0, 1fr) minmax(9rem, 11rem);
+    grid-template-areas:
+      "stats scene tools"
+      "hint hint hint";
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .jb-station.jb-station--wide > .jb-tools {
+    flex-direction: column;
+    align-self: end;
+  }
+
+  .jb-station.jb-station--wide > .jb-tools .ad-button {
+    width: 100%;
+  }
+
+  .jb-stats > .jb-stat {
+    min-width: 0;
+    padding: 6px 10px 8px;
+  }
+
+  .jb-stats .jb-stat__value {
+    font-size: 1.375rem;
+  }
+
+  .jb-station > .jb-loupe {
+    width: min(100%, calc(var(--work-max-h) - 64px));
+    min-width: 0;
+  }
+
+  .jb-lamp-bench__scene {
+    padding: var(--space-2);
+  }
+
+  .jb-lamp-bench__svg {
+    max-height: calc(var(--work-max-h) - 88px);
+  }
+
+  .jb-design__preview,
+  .jb-display__stage {
+    top: var(--space-2);
+  }
+
+  .jb-design__piece,
+  .jb-display__piece {
+    max-height: calc(var(--work-max-h) - 96px);
+  }
+}

@@ -27,11 +27,11 @@ export function BakeHeader({ state, run, dispatch, onExit }: StageProps) {
     onExit();
   };
   return (
-    <header className="pa-bake-header">
-      <Button variant="ghost" icon="back" onClick={onExit}>
+    <header className="pa-bake-header ad-pinned-head">
+      <Button variant="ghost" icon="back" onClick={onExit} className="ad-pinned-head__back">
         Back to the shop
       </Button>
-      <div className="pa-bake-header__title">
+      <div className="pa-bake-header__title ad-pinned-head__title">
         <span className="ad-eyebrow">
           {client !== undefined && run.brief !== null
             ? `For ${client.name} · ${run.brief.occasion}`
@@ -51,7 +51,7 @@ export function BakeHeader({ state, run, dispatch, onExit }: StageProps) {
                 : STAGE_TITLES[run.stage]}
         </h1>
       </div>
-      <div className="pa-bake-header__stats">
+      <div className="pa-bake-header__stats ad-pinned-head__stats">
         <StatChip kind="day" value={state.calendar.day} />
         <span data-testid="bench-hours">
           <StatChip kind="hours" value={`${state.calendar.hoursLeft} h`} />

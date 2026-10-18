@@ -20,6 +20,7 @@ import { StageRail } from "./StageRail";
 import { WeighStage } from "./WeighStage";
 import "./bake.css";
 import "./orderPeek.css";
+import "./compact.css";
 
 export interface BakeFlowProps {
   readonly state: GameState;

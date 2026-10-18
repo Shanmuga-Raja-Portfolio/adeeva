@@ -1,0 +1,71 @@
+@media (max-height: 480px), (max-width: 480px) {
+  .pa-counter {
+    gap: var(--space-2);
+  }
+
+  .pa-counter__top {
+    position: static;
+    padding-top: var(--space-1);
+    padding-bottom: var(--space-1);
+  }
+
+  .pa-counter__top h1 {
+    font-size: 1.125rem;
+  }
+
+  .pa-counter__earned {
+    padding: 2px var(--space-3);
+    font-size: var(--text-lg);
+  }
+
+  .pa-counter__window {
+    height: 56px;
+    border-width: 6px;
+  }
+
+  .pa-counter__street {
+    height: 22px;
+  }
+
+  .pa-counter__sun {
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+  }
+
+  .pa-counter__cards {
+    grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+    gap: var(--space-2);
+  }
+
+  .pa-card {
+    gap: 4px;
+    padding: var(--space-3) var(--space-2) var(--space-2);
+  }
+
+  .pa-card__wants {
+    min-height: 0;
+  }
+
+  .pa-card__box {
+    min-height: 56px;
+  }
+
+  .pa-counter__glass {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-2);
+    padding: var(--space-2);
+  }
+
+  .pa-counter__tray {
+    padding: 4px var(--space-2);
+  }
+
+  .pa-treat {
+    width: 48px;
+    height: 48px;
+  }
+}

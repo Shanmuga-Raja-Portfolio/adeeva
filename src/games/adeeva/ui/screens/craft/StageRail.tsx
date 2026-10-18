@@ -11,7 +11,7 @@ export interface StageRailProps {
 export function StageRail({ state, run, dispatch }: StageRailProps) {
   const currentIndex = CRAFT_STAGES.findIndex((stage) => stage === run.stage);
   return (
-    <nav className="ad-stage-rail" aria-label="Dressmaking steps">
+    <nav className="ad-stage-rail ad-step-rail" aria-label="Dressmaking steps">
       <ol>
         {CRAFT_STAGES.map((stage, index) => {
           const done = index < currentIndex;

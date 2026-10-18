@@ -15,9 +15,9 @@ export interface HubTopBarProps {
 export function HubTopBar({ state, onOpenSettings, onExit }: HubTopBarProps) {
   const { calendar } = state;
   return (
-    <header className="ck-bar">
+    <header className="ck-bar ad-pinned-head">
       <Wordmark compact heading={false} />
-      <div className="ck-bar__stats">
+      <div className="ck-bar__stats ad-pinned-head__stats">
         <div className="ck-bar__tray">
           <span data-testid="stat-day">
             <StatChip kind="day" value={`Day ${calendar.day} · ${weekdayName(calendar.day).slice(0, 3)}`} />

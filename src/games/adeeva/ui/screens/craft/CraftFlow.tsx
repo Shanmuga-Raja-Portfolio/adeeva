@@ -14,6 +14,7 @@ import { SketchStage } from "./SketchStage";
 import { StageRail } from "./StageRail";
 import "./craftControls.css";
 import "./craftLayout.css";
+import "./compact.css";
 
 const STRIP_BRIEF_STAGES: readonly DressRun["stage"][] = ["cut", "sew"];
 

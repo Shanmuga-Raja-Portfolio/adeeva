@@ -36,11 +36,17 @@ export function MakeoverHeader({
     onExit();
   };
   return (
-    <header className="is-makeover-header">
-      <Button variant="ghost" icon="back" onClick={onExit} data-testid="makeover-back">
+    <header className="is-makeover-header ad-pinned-head">
+      <Button
+        variant="ghost"
+        icon="back"
+        onClick={onExit}
+        data-testid="makeover-back"
+        className="ad-pinned-head__back"
+      >
         {home === null ? "Back to the loft" : "Back to the home"}
       </Button>
-      <div className="is-makeover-header__title">
+      <div className="is-makeover-header__title ad-pinned-head__title">
         <span className="ad-eyebrow">
           {home === null
             ? `For ${client?.name ?? "a neighbour"} · ${roomById(run.brief.roomId).name}`
@@ -48,7 +54,7 @@ export function MakeoverHeader({
         </span>
         <h1>{home !== null && run.stage === "shop" ? "Larkspur Supply Yard" : STAGE_TITLES[run.stage]}</h1>
       </div>
-      <div className="is-makeover-header__stats">
+      <div className="is-makeover-header__stats ad-pinned-head__stats">
         <StatChip kind="day" value={state.calendar.day} />
         <span data-testid="makeover-hours">
           <StatChip kind="hours" value={`${state.calendar.hoursLeft} h`} />

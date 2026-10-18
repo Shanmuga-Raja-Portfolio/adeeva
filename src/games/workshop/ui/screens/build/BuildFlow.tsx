@@ -20,6 +20,7 @@ import { StageRail } from "./StageRail";
 import { TimberStage } from "./timber/TimberStage";
 import "./build.css";
 import "./set/set.css";
+import "./compact.css";
 
 interface BuildFlowProps {
   readonly state: GameState;

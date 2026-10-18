@@ -1,0 +1,44 @@
+@media (max-height: 480px), (max-width: 480px) {
+  .tf-stall__awning {
+    height: 28px;
+  }
+
+  .tf-stall__content {
+    gap: var(--space-3);
+    padding-top: var(--space-1);
+  }
+
+  .tf-stall__head h1 {
+    font-size: 1.625rem;
+  }
+
+  .tf-stall__rack,
+  .tf-stall__result {
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
+
+  .tf-stall__pieces {
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+  }
+
+  .tf-price {
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    justify-items: stretch;
+  }
+
+  .tf-price__hanger,
+  .tf-price__art {
+    width: 96px;
+  }
+
+  .tf-price__art {
+    height: 96px;
+  }
+
+  .tf-stall .tf-shoppers {
+    max-width: 320px;
+  }
+}

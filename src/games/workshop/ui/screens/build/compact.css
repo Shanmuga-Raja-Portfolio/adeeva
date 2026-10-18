@@ -1,0 +1,232 @@
+@media (max-height: 480px) {
+  .ww-build {
+    gap: var(--space-2);
+  }
+
+  .ww-saw__table,
+  .ww-join__table,
+  .ww-sand__table {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(11rem, 15rem);
+    grid-template-areas:
+      "bench head"
+      "bench side"
+      "bench foot";
+    grid-template-rows: auto auto 1fr;
+    align-items: start;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .ww-saw__head,
+  .ww-join__head,
+  .ww-sand__head {
+    grid-area: head;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+  }
+
+  .ww-saw-bench,
+  .ww-join-bench,
+  .ww-sand-bench {
+    grid-area: bench;
+  }
+
+  .ww-saw__controls,
+  .ww-join__foot,
+  .ww-sand__status {
+    grid-area: foot;
+  }
+
+  .ww-join__work {
+    display: contents;
+  }
+
+  .ww-join__preview,
+  .ww-join__work > :not(.ww-join-bench) {
+    grid-area: side;
+  }
+
+  .ww-saw-bench__svg {
+    max-width: 100%;
+    max-height: calc(var(--work-max-h) - 24px);
+  }
+
+  .ww-sand-bench {
+    width: 100%;
+    max-height: calc(var(--work-max-h) - 24px);
+  }
+
+  .ww-join-bench__svg {
+    width: 100%;
+    max-height: calc(var(--work-max-h) - 96px);
+  }
+
+  .ww-join-bench {
+    gap: var(--space-2);
+  }
+
+  .ww-sand__status {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .ww-build__side {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .ww-corner__piece {
+    max-height: 200px;
+  }
+
+  .ww-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 18rem);
+    align-items: start;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .ww-layout > :not(.ww-layout__bench, .ww-tray) {
+    grid-column: 1 / -1;
+  }
+
+  .ww-layout__bench {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "tools canvas"
+      "faces faces"
+      "message message";
+    align-items: start;
+    gap: var(--space-2);
+    padding: var(--space-2);
+  }
+
+  .ww-layout__tools {
+    grid-area: tools;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ww-layout__buttons {
+    flex-direction: column;
+  }
+
+  .ww-layout__faces {
+    grid-area: faces;
+  }
+
+  .ww-layout__canvas {
+    grid-area: canvas;
+    max-height: calc(var(--work-max-h) - 64px);
+  }
+
+  .ww-layout__message {
+    grid-area: message;
+    padding: 4px 10px;
+  }
+
+  .ww-tray {
+    max-height: var(--work-max-h);
+    overflow-y: auto;
+  }
+
+  .ww-extras {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 19rem);
+  }
+
+  .ww-extras__art {
+    max-height: calc(var(--work-max-h) - 72px);
+  }
+
+  .ww-extras__tin {
+    max-height: var(--work-max-h);
+    overflow-y: auto;
+    padding: var(--space-2);
+  }
+
+  .ww-extras__tin ul {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ww-extras__item {
+    min-height: 60px;
+  }
+
+  .ww-extras__item > svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+@media (max-height: 480px), (max-width: 480px) {
+  .ww-join__preview figcaption {
+    display: none;
+  }
+
+  .ww-join__preview svg {
+    max-height: 96px;
+  }
+
+  .ww-layout__legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .ww-tray__title {
+    margin: 0 0 var(--space-1);
+    font-size: var(--text-md);
+  }
+
+  .ww-tray__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .ww-tray__part {
+    flex: 1 1 auto;
+    min-width: 0;
+    grid-template-columns: 32px auto;
+    min-height: 48px;
+    padding: 4px 6px;
+  }
+
+  .ww-tray__part svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .ww-tray__size {
+    display: none;
+  }
+
+  .ww-tray__name {
+    white-space: nowrap;
+    font-size: var(--text-sm);
+  }
+
+  .ww-tray__turn {
+    width: 44px;
+    min-height: 44px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ww-layout__canvas {
+    max-height: 46dvh;
+  }
+
+  .ww-layout {
+    gap: var(--space-2);
+  }
+}

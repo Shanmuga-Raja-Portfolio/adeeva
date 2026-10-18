@@ -19,6 +19,7 @@ import { TreatIcon } from "../../art/TreatIcon";
 import { SunsetDialog } from "./SunsetDialog";
 import { useCounterClock } from "./useCounterClock";
 import "./counter.css";
+import "./compact.css";
 
 export interface CounterDayProps {
   readonly state: GameState;

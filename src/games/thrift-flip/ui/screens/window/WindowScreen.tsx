@@ -29,6 +29,7 @@ import { PropArt } from "../../art/PropArt";
 import { LeaveDraftDialog } from "../boutique/LeaveDraftDialog";
 import { WindowScene, type WindowItemKey } from "../boutique/WindowScene";
 import "./window.css";
+import "./compact.css";
 
 export interface WindowScreenProps {
   readonly state: GameState;

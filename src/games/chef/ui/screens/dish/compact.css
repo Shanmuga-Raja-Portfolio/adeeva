@@ -1,0 +1,106 @@
+@media (max-height: 480px), (max-width: 480px) {
+  .ck-dish {
+    gap: var(--space-2);
+  }
+
+  .ck-rail {
+    flex-wrap: wrap;
+    row-gap: 2px;
+    max-width: 100%;
+  }
+
+  .ck-rail__stop + .ck-rail__stop::before {
+    width: 6px;
+  }
+
+  .ck-chop__hint {
+    padding: 8px var(--space-3);
+  }
+}
+
+@media (max-height: 480px) {
+  .ck-dish__stage {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .ck-chop__counter {
+    padding: var(--space-2);
+  }
+
+  .ck-chop__board {
+    width: min(100%, calc((var(--work-max-h) - 96px) * 1.96));
+  }
+
+  .ck-plate__layout {
+    grid-template-columns: minmax(8rem, 10rem) minmax(0, 1fr) minmax(11rem, 13rem);
+    height: var(--work-max-h);
+    padding: var(--space-2);
+  }
+
+  .ck-plate__stage {
+    min-height: 0;
+  }
+
+  .ck-plate__svg {
+    height: 100%;
+  }
+
+  .ck-plate__side {
+    overflow-y: auto;
+  }
+
+  .ck-plate__tray,
+  .ck-plate__tray--many {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2) 4px;
+  }
+
+  .ck-plate__tray--many .ck-tray-item__dish {
+    width: 54px;
+    height: 50px;
+  }
+
+  .ck-pot {
+    width: min(100%, calc((var(--work-max-h) - 72px) * 1.2));
+  }
+
+  .ck-taste__compass {
+    max-width: min(420px, calc(var(--work-max-h) - 40px));
+  }
+
+  .ck-taste__side {
+    gap: var(--space-2);
+  }
+
+  .ck-jar {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .ck-taste__compass {
+    max-width: min(100%, 34dvh);
+    margin: 0 auto;
+  }
+
+  .ck-taste__layout {
+    gap: var(--space-2);
+  }
+
+  .ck-taste__jars {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ck-jar {
+    min-height: 0;
+    padding: 4px;
+  }
+
+  .ck-plate__stage {
+    min-height: 0;
+  }
+
+  .ck-plate__svg {
+    max-height: 44dvh;
+  }
+}

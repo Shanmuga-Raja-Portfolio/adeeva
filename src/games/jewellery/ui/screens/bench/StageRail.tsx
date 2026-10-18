@@ -9,7 +9,7 @@ export function StageRail({ state, run, dispatch }: Omit<StageProps, "onExit">) 
   const labelOf = (stage: RunStage) =>
     run.purpose.kind === "collection" && stage === "review" ? "To the line" : STAGE_LABELS[stage];
   return (
-    <nav className="jb-rail" aria-label="Making steps">
+    <nav className="jb-rail ad-step-rail" aria-label="Making steps">
       <ol>
         {stages.map((stage, index) => {
           const done = index < current;

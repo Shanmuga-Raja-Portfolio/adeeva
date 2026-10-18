@@ -28,11 +28,11 @@ export function BuildHeader({ state, run, dispatch, onExit }: StageProps) {
     onExit();
   };
   return (
-    <header className="ww-build-header">
-      <Button variant="ghost" icon="back" onClick={onExit}>
+    <header className="ww-build-header ad-pinned-head">
+      <Button variant="ghost" icon="back" onClick={onExit} className="ad-pinned-head__back">
         {state.career === "showroom" ? "Back to the shop" : "Back to the garage"}
       </Button>
-      <div className="ww-build-header__title">
+      <div className="ww-build-header__title ad-pinned-head__title">
         <span className="ad-eyebrow">
           {run.purpose.kind === "set"
             ? `Matched set · ${setTemplateById(run.purpose.templateId).name}`
@@ -42,7 +42,7 @@ export function BuildHeader({ state, run, dispatch, onExit }: StageProps) {
           {(run.purpose.kind === "set" ? SET_STAGE_TITLES[run.stage] : undefined) ?? STAGE_TITLES[run.stage]}
         </h1>
       </div>
-      <div className="ww-build-header__stats">
+      <div className="ww-build-header__stats ad-pinned-head__stats">
         <StatChip kind="day" value={`Day ${state.calendar.day}`} />
         <span data-testid="bench-hours">
           <StatChip kind="hours" value={`${state.calendar.hoursLeft} h`} />

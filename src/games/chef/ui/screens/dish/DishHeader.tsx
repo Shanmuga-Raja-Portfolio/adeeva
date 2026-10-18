@@ -17,18 +17,18 @@ export function DishHeader({ state, run, onExit, onSetAside, rail }: DishHeaderP
   const dish = dishById(run.dishId);
   const cuisine = cuisineById(dish.cuisine);
   return (
-    <header className="ck-dish-bar" style={{ ["--ck-cuisine" as string]: cuisine.accent }}>
-      <Button variant="secondary" size="sm" icon="back" onClick={onExit}>
+    <header className="ck-dish-bar ad-pinned-head" style={{ ["--ck-cuisine" as string]: cuisine.accent }}>
+      <Button variant="secondary" size="sm" icon="back" onClick={onExit} className="ad-pinned-head__back">
         Kitchen
       </Button>
-      <div className="ck-dish-bar__title">
+      <div className="ck-dish-bar__title ad-pinned-head__title">
         <span className="ad-eyebrow">
           {purposeLabel(run)} · {cuisine.counter}
         </span>
         <h1 className="ck-dish-bar__name">{dish.name}</h1>
       </div>
       {rail}
-      <div className="ck-dish-bar__stats">
+      <div className="ck-dish-bar__stats ad-pinned-head__stats">
         <span data-testid="dish-coins">
           <StatChip kind="coins" value={<StatUnit value={state.coins} unit="coins" />} />
         </span>

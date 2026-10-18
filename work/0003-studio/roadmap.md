@@ -103,10 +103,12 @@ In progress and next:
 
 12. ✅ **Final pass** (task 58, branch `task/0058-final-pass`, 2026-10-18; `work/0058-final-pass/report.md`): every game played from the studio home on the production build at desktop, iPhone 15 and iPad sizes; the drift and staleness sweep; audits clean. Fixed: four games opened the hub scrolled down after New Game or Continue on a phone, Thrift-Flip's hub and Six Kitchens' New Game steps scrolled sideways on narrow screens, and dead code and CSS were removed.
 
-    Found and left open (see the report): on short or narrow screens (the Android handheld in landscape, phones in portrait) every game's sticky header takes a third or more of the height, and craft steps that need a drag or a traced line don't fit beside it. Decide before inviting players who play on a phone or the handheld.
+    Found and left open (see the report): on short or narrow screens (the Android handheld in landscape, phones in portrait) every game's sticky header takes a third or more of the height, and craft steps that need a drag or a traced line don't fit beside it. Decide before inviting players who play on a phone or the handheld. Done in 12a.
+
+12a. ✅ **Compact layout for short and narrow screens** (task 59, branch `task/0059-compact-small-screens`, 2026-10-18; `work/0059-compact/report.md`; design §6): on the Android handheld in landscape and an upright iPhone, headers become one slim row that scrolls away, craft steps put the surface beside or just above its tray or controls, and nothing scrolls sideways. The desktop, Chromebook and iPad look the same as before. `e2e/release/compact.spec.ts` checks one or two steps per game on both sizes.
 
 13. ⬜ **Deploy with Shan:** Shan sets up Cloudflare as in `work/0057-ci-cd/README.md`, we tag `v1.0.0` and watch the release deploy, then Shan invites the kids, friends and relatives.
-14. ⬜ **After the first players:** a shared art pass (lighting, texture, depth) guided by what the kids and invited families say, a compact layout for short and narrow screens (see task 12), and the Interior Challenging economy check (seed 2 earns 0.79× the loft).
+14. ⬜ **After the first players:** a shared art pass (lighting, texture, depth) guided by what the kids and invited families say, and the Interior Challenging economy check (seed 2 earns 0.79× the loft).
 
 **Recurring: drift and staleness sweep.** Run one at every milestone (after each phase, before every deploy) and whenever docs lag behind the code (Shan, 2026-10-17). It checks that:
 
