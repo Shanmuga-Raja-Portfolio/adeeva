@@ -3,6 +3,7 @@ import { reduce } from "../../src/games/workshop/core/reduce";
 import { READING_PLAN } from "../../src/games/workshop/core/setPlaythrough";
 import { dispatchAll, runOf, sawActions } from "../../src/games/workshop/core/testPlaythrough";
 import { depthShooter } from "../fixtures/depthShots";
+import { holdShowTime, playToScene, releaseShowTime } from "../fixtures/showTime";
 import { isOutsideRequest } from "../fixtures/outsideRequest";
 import {
   fairDayShowroom,
@@ -154,20 +155,25 @@ for (const viewport of VIEWPORTS) {
       await expect(page.getByTestId("music-acoustic-guitar")).toHaveAttribute("aria-checked", "true");
       await page.keyboard.press("ArrowLeft");
       await shot("14-fair-planner", true);
+      await page.clock.install();
+      await holdShowTime(page);
       await page.getByTestId("open-booth").click();
       const reveal = page.getByTestId("booth-reveal");
       await expect(reveal).toHaveClass(/ww-reveal--still/);
       for (let lift = 0; lift < 2; lift += 1) {
-        await expect(page.getByTestId("lift-sheet")).toBeFocused({ timeout: 15_000 });
+        await playToScene(page, "booth-reveal", `wait-${lift + 1}`);
+        await expect(page.getByTestId("lift-sheet")).toBeFocused();
         if (lift === 0) await shot("15-reveal-still");
         await page.keyboard.press(lift === 0 ? "Enter" : " ");
         await expect(reveal).toHaveAttribute("data-scene", `lift-${lift + 1}`);
       }
-      await expect(reveal).toHaveAttribute("data-scene", "panels", { timeout: 15_000 });
+      await playToScene(page, "booth-reveal", "panels");
       await expect(page.locator(".ww-flip")).toHaveCount(4);
       await shot("16-reveal-panels");
+      await expect(reveal).toHaveAttribute("data-scene", "panels");
       await page.getByTestId("skip-reveal").click();
       await expect(page.getByTestId("fair-results-screen")).toBeVisible();
+      await releaseShowTime(page);
       await shot("17-fair-results", true);
       await page.getByTestId("fair-exit").click();
       await finishWorkshopStories(page);

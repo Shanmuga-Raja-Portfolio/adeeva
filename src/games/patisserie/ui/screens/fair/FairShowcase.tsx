@@ -1,11 +1,9 @@
 import type { AvatarLook } from "../../../../../engine/avatar";
-import { useMemo, type CSSProperties } from "react";
+import { memo, useMemo, type CSSProperties } from "react";
 import { colourById } from "../../../../../engine/palette";
 import { useSettings } from "../../../../../studio/SettingsContext";
-import { Avatar } from "../../../../../ui/art/avatar/Avatar";
 import { PetalFall } from "../../../../../ui/art/PetalFall";
 import { Button } from "../../../../../ui/kit/Button";
-import { Icon, type IconName } from "../../../../../ui/kit/IconSet";
 import { easeInOut, easeOut, window01 } from "../../../../../ui/kit/easing";
 import { useShowClock } from "../../../../../ui/kit/useShowClock";
 import type { FairThemeDef } from "../../../content/fairTheme";
@@ -19,6 +17,7 @@ import { PANEL_LOOKS } from "./panelLooks";
 import { showcaseSteps } from "./showcaseSteps";
 import { revealedSlots, type RevealStep } from "../../../../../ui/show/revealSteps";
 import { useRevealSteps } from "../../../../../ui/show/useRevealSteps";
+import { ShowcaseCrowd, type ShowcaseFan } from "./ShowcaseCrowd";
 import "./showcase.css";
 import type { ShowPlateView } from "./showPlates";
 
@@ -36,9 +35,8 @@ const SPARKLES = Array.from({ length: 16 }, (_, index) => index);
 const STAR_PATH = "M0 -7 Q1.2 -1.2 7 0 Q1.2 1.2 0 7 Q-1.2 1.2 -7 0 Q-1.2 -1.2 0 -7 Z";
 const BURST_PATH =
   "M0 -8 L1.6 -2.4 L5.7 -5.7 L2.4 -1.6 L8 0 L2.4 1.6 L5.7 5.7 L1.6 2.4 L0 8 L-1.6 2.4 L-5.7 5.7 L-2.4 1.6 L-8 0 L-2.4 -1.6 L-5.7 -5.7 L-1.6 -2.4 Z";
-const CHEERS: readonly IconName[] = ["heart", "star", "sparkle", "heart", "star"];
-const CROWD_POSES = ["cheer", "poised", "chat", "present", "poised-right", "graceful"] as const;
-const CROWD_SIZES = [1, 0.9, 1.08, 0.95, 1.04, 0.92];
+const Backdrop = memo(GlasshouseBackdrop);
+const Bake = memo(BakePreview);
 
 function restSpot(position: number, count: number): number {
   if (position === count - 1) return 50;
@@ -69,14 +67,27 @@ function caption(step: RevealStep, plates: readonly ShowPlateView[], theme: Fair
   }
 }
 
-interface StepViewProps extends Omit<FairShowcaseProps, "skippable"> {
+function showcaseFans(visitors: readonly string[]): ShowcaseFan[] {
+  return [
+    ...FAIR_PANELS.flatMap((panel) =>
+      panel.members.map((member) => ({ name: member.name, look: member.look })),
+    ),
+    ...visitors.flatMap((id) => {
+      const client = clientById(id);
+      return client === undefined ? [] : [{ name: client.guestName, look: client.look }];
+    }),
+  ].filter((member, at, all) => all.findIndex((other) => lookalike(other.look, member.look)) === at);
+}
+
+interface StepViewProps extends Omit<FairShowcaseProps, "skippable" | "visitors"> {
+  readonly fans: readonly ShowcaseFan[];
   readonly steps: readonly RevealStep[];
   readonly index: number;
   readonly reduced: boolean;
   readonly onNext: () => void;
 }
 
-function StepView({ steps, index, reduced, onNext, theme, result, plates, visitors }: StepViewProps) {
+function StepView({ steps, index, reduced, onNext, theme, result, plates, fans }: StepViewProps) {
   const step = steps[index] ?? steps[steps.length - 1];
   const elapsed = useShowClock(step?.ms ?? 1, onNext);
   if (step === undefined) return null;
@@ -96,19 +107,10 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
   const cheering = clapping || step.kind === "reveal";
   const petals = clapping ? (step.kind === "finale" ? t : 1 + t) * 0.9 : -1;
   const palette = [...theme.palette.map((colour) => colourById(colour).hex), "#fff6ee"];
-  const members = [
-    ...FAIR_PANELS.flatMap((panel) =>
-      panel.members.map((member) => ({ name: member.name, look: member.look })),
-    ),
-    ...visitors.flatMap((id) => {
-      const client = clientById(id);
-      return client === undefined ? [] : [{ name: client.guestName, look: client.look }];
-    }),
-  ].filter((member, at, all) => all.findIndex((other) => lookalike(other.look, member.look)) === at);
   return (
     <>
       <div className="pa-showcase__stage" data-step={step.kind} data-plate={step.slot}>
-        <GlasshouseBackdrop className="pa-showcase__backdrop" lights={lights} cloth={cloth} />
+        <Backdrop className="pa-showcase__backdrop" lights={lights} cloth={cloth} />
         {revealed.map((slotPosition) => {
           const slot = order[slotPosition];
           const plate = slot === undefined ? undefined : plates[slot];
@@ -119,7 +121,7 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
               className="pa-showcase__plate pa-showcase__plate--rest"
               style={{ left: `${restSpot(slotPosition, order.length)}%` } as CSSProperties}
             >
-              <BakePreview look={plate.look} title={plate.label} plaque={plate.plaque} />
+              <Bake look={plate.look} title={plate.label} plaque={plate.plaque} />
               <span className="pa-showcase__card">{plate.label}</span>
             </div>
           );
@@ -136,7 +138,7 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
                 aria-hidden="true"
               />
             ) : null}
-            <BakePreview
+            <Bake
               look={current.look}
               title={step.kind === "reveal" ? current.label : null}
               plaque={current.plaque}
@@ -196,41 +198,7 @@ function StepView({ steps, index, reduced, onNext, theme, result, plates, visito
             <PetalFall t={petals} colours={palette} width={1200} height={640} />
           </svg>
         ) : null}
-        <div
-          className={clapping ? "pa-showcase__crowd pa-showcase__crowd--clap" : "pa-showcase__crowd"}
-          aria-hidden="true"
-        >
-          <span className="pa-showcase__bench" />
-          {members.map((member, at) => {
-            const underCake = Math.abs(at - (members.length - 1) / 2) < 1.5;
-            const cheer = underCake ? null : (CHEERS[at % CHEERS.length] ?? null);
-            const pose = {
-              animationDelay: `${(at % 4) * 120}ms`,
-              "--lean": `${((at % 3) - 1) * 4}deg`,
-              "--lift": `${(at % 2) * -1.2}cqi`,
-              "--size": CROWD_SIZES[at % CROWD_SIZES.length],
-              "--flip": at % 2 === 0 ? 1 : -1,
-            } as CSSProperties;
-            return (
-              <span key={member.name} className="pa-showcase__fan" style={pose}>
-                <span className="pa-showcase__body">
-                  <Avatar
-                    variant="three-quarter"
-                    look={member.look}
-                    mood={cheering ? "delighted" : "happy"}
-                    pose={cheering ? CROWD_POSES[at % CROWD_POSES.length] : "rest"}
-                    title={member.name}
-                  />
-                </span>
-                {cheering && cheer !== null ? (
-                  <span className={`pa-showcase__cheer pa-showcase__cheer--${cheer}`}>
-                    <Icon name={cheer} size={30} />
-                  </span>
-                ) : null}
-              </span>
-            );
-          })}
-        </div>
+        <ShowcaseCrowd members={fans} cheering={cheering} clapping={clapping} />
         {step.kind === "title" ? (
           <div className="pa-showcase__title" style={{ opacity: Math.min(1, t * 3) }}>
             <span className="ad-eyebrow">The Larkspur Patisserie Fair</span>
@@ -271,6 +239,7 @@ export function FairShowcase({ theme, result, plates, visitors, skippable, onDon
   const { reducedMotion } = useSettings();
   const steps = useMemo(() => showcaseSteps(plates.length, reducedMotion), [plates.length, reducedMotion]);
   const { index, step, next, canSkip } = useRevealSteps(steps, skippable, onDone);
+  const fans = useMemo(() => showcaseFans(visitors), [visitors]);
   const music = fairMusicById(result.plan.music);
   return (
     <section
@@ -288,7 +257,7 @@ export function FairShowcase({ theme, result, plates, visitors, skippable, onDon
         theme={theme}
         result={result}
         plates={plates}
-        visitors={visitors}
+        fans={fans}
         onDone={onDone}
       />
       <div className="pa-showcase__hud">

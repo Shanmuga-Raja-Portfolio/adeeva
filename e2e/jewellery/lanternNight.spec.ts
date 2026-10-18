@@ -3,6 +3,7 @@ import { finishJewelleryStories } from "../fixtures/jewelleryBench";
 import { endLoftDay } from "../fixtures/loftBench";
 import { isOutsideRequest } from "../fixtures/outsideRequest";
 import { lanternNight, openPreparedJewellery } from "../fixtures/preparedJewellery";
+import { holdShowTime, playToScene, playWithinScene, releaseShowTime } from "../fixtures/showTime";
 
 async function planTheLaunch(page: Page): Promise<void> {
   await page.getByTestId("open-launch").click();
@@ -19,7 +20,16 @@ async function planTheLaunch(page: Page): Promise<void> {
     .getByRole("button", { name: /^Show .* earlier$/ })
     .last()
     .click();
+  await page.clock.install();
+  await holdShowTime(page);
   await page.getByTestId("stage-launch").click();
+}
+
+async function slideDuringReveal(page: Page, reveal: string): Promise<void> {
+  const slide = page.getByTestId("lantern-slide");
+  await playWithinScene(page, "lantern-launch", reveal, () => slide.isVisible());
+  await expect(page.getByTestId("lantern-launch")).toHaveAttribute("data-scene", reveal);
+  await expect(slide).toBeVisible();
 }
 
 test("Lantern Night in motion: keyboard lids, one advance for a double tap, skip, results, the Pop-up and a copy request", async ({
@@ -37,12 +47,12 @@ test("Lantern Night in motion: keyboard lids, one advance for a double tap, skip
   const show = page.getByTestId("lantern-launch");
   await expect(show).toHaveAttribute("data-scene", "title");
   await expect(page.getByTestId("skip-launch")).toHaveCount(0);
-  await expect(show).toHaveAttribute("data-scene", "wait-1", { timeout: 20_000 });
+  await playToScene(page, "lantern-launch", "wait-1");
   await expect(page.getByTestId("open-lid")).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(show).toHaveAttribute("data-scene", "reveal-1");
-  await expect(page.getByTestId("lantern-slide")).toBeVisible();
-  await expect(show).toHaveAttribute("data-scene", "wait-2", { timeout: 20_000 });
+  await slideDuringReveal(page, "reveal-1");
+  await playToScene(page, "lantern-launch", "wait-2");
   await page.evaluate(() => {
     const lid = document.querySelector<HTMLButtonElement>("[data-testid='open-lid']");
     const box = document.querySelector<HTMLButtonElement>("[data-testid='music-box']");
@@ -55,6 +65,7 @@ test("Lantern Night in motion: keyboard lids, one advance for a double tap, skip
 
   const results = page.getByTestId("launch-results");
   await expect(results).toBeVisible();
+  await releaseShowTime(page);
   await expect(results.getByTestId("panel-craft")).toBeVisible();
   await expect(results.getByTestId("panel-story")).toBeVisible();
   await expect(page.getByTestId("launch-totals")).toContainText("rep");
@@ -109,15 +120,16 @@ test("Lantern Night in reduced motion shows every beat as stills with the same t
   const show = page.getByTestId("lantern-launch");
   await expect(show).toHaveClass(/jb-launch-reveal--still/);
   for (let piece = 1; piece <= 3; piece += 1) {
-    await expect(show).toHaveAttribute("data-scene", `wait-${piece}`, { timeout: 20_000 });
+    await playToScene(page, "lantern-launch", `wait-${piece}`);
     await page.getByTestId("open-lid").press("Space");
     await expect(show).toHaveAttribute("data-scene", `reveal-${piece}`);
-    await expect(page.getByTestId("lantern-slide")).toBeVisible();
+    await slideDuringReveal(page, `reveal-${piece}`);
   }
-  await expect(show).toHaveAttribute("data-scene", "finale", { timeout: 20_000 });
+  await playToScene(page, "lantern-launch", "finale");
   await expect(page.getByTestId("light-thread")).toBeVisible();
   await expect(page.locator(".jb-launch-reveal__award")).toContainText("lantern glows");
-  await expect(show).toHaveAttribute("data-scene", "panels", { timeout: 20_000 });
+  await playToScene(page, "lantern-launch", "panels");
+  await releaseShowTime(page);
   await expect(page.getByTestId("launch-results")).toBeVisible({ timeout: 20_000 });
 });
 

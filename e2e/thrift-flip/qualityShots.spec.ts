@@ -20,7 +20,7 @@ import {
 import { openThriftSave, showcaseSave, tillDaySave } from "../fixtures/boutiqueSaves";
 import { afterNextFrame } from "../fixtures/frames";
 import { settledForShot } from "../fixtures/settle";
-import { holdShowTime, playUntil, releaseShowTime, sceneOf } from "../fixtures/showTime";
+import { holdShowTime, playToScene, playWithinScene, releaseShowTime } from "../fixtures/showTime";
 import { finishStories } from "../fixtures/story";
 import { scrollIntoView } from "../fixtures/thriftBench";
 import { centreOf, svgToScreen, THRIFT_URL } from "../fixtures/thriftPage";
@@ -246,11 +246,10 @@ test.describe("quality screenshots", () => {
     await page.getByTestId("stage-showcase").click();
     await expect(page.getByTestId("hall-show")).toBeVisible();
     const card = page.getByTestId("show-story-card");
-    await playUntil(
-      page,
-      "the first story card",
-      async () => (await sceneOf(page, "hall-show")) === "walk-1" && (await card.isVisible()),
-    );
+    await playToScene(page, "hall-show", "walk-1");
+    await playWithinScene(page, "hall-show", "walk-1", () => card.isVisible());
+    await expect(page.getByTestId("hall-show")).toHaveAttribute("data-scene", "walk-1");
+    await expect(card).toBeVisible();
     await page.clock.runFor(1700);
     await restPointer(page);
     await snap(page, "showcase.png", false);

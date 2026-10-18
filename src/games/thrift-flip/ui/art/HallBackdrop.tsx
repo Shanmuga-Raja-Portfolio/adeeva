@@ -10,6 +10,8 @@ export interface HallBackdropProps {
   readonly className?: string | undefined;
   readonly title?: string | undefined;
   readonly crop?: "top" | "middle" | undefined;
+  readonly audienceId?: string | undefined;
+  readonly audienceOf?: string | undefined;
 }
 
 const { width: W, height: H, horizon: HORIZON, farFeet: FAR } = RUNWAY_VIEW;
@@ -121,6 +123,8 @@ export function HallBackdrop({
   className,
   title,
   crop = "middle",
+  audienceId,
+  audienceOf,
 }: HallBackdropProps) {
   const id = useSvgId("hall");
   const bannerColour = palette[0] ?? "#7b7fd1";
@@ -302,7 +306,13 @@ export function HallBackdrop({
       </g>
       <FairyLights y={26} sag={46} phase={0} />
       <FairyLights y={190} sag={40} phase={1} />
-      <HallAudience />
+      {audienceOf === undefined ? (
+        <g id={audienceId}>
+          <HallAudience />
+        </g>
+      ) : (
+        <use href={`#${audienceOf}`} />
+      )}
       <rect width={W} height={H} fill={tint} opacity={light === "spotlight" ? 0.32 : 0.1} />
       <rect width={W} height={H} fill={`url(#${id}-vignette)`} />
       {light === "spotlight" ? <rect width={W} height={H} fill={`url(#${id}-spot)`} /> : null}

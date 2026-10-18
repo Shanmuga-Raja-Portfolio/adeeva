@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { ADEEVA_URL } from "./fixtures/adeevaPage";
 import { finishStories } from "./fixtures/story";
 import { isOutsideRequest } from "./fixtures/outsideRequest";
+import { recordToasts, toastsSeen } from "./fixtures/toastLog";
 
 function watchOutsideRequests(page: Page): string[] {
   const outside: string[] = [];
@@ -149,10 +150,10 @@ test("several perks unlocked at once arrive as one message", async ({ page }) =>
     const chef = { schemaVersion: 1, reputation: 30, profile: { trait: "charmer", start: "student" } };
     window.localStorage.setItem("chef.save.1", JSON.stringify(chef));
   });
+  const toasts = await recordToasts(page);
   await page.reload();
-  const toasts = page.locator(".ad-toast");
-  await expect(toasts).toHaveCount(1);
-  await expect(toasts).toContainText("8 new perks unlocked!");
+  await expect.poll(() => toastsSeen(toasts, "8 new perks unlocked!")).toBe(1);
+  expect(await toasts()).toHaveLength(1);
 });
 
 test("a save ADEEVA cannot open earns no studio reputation", async ({ page }) => {

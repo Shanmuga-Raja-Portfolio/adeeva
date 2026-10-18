@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { depthShooter } from "../fixtures/depthShots";
+import { holdShowTime, playToScene, releaseShowTime } from "../fixtures/showTime";
 import { isOutsideRequest } from "../fixtures/outsideRequest";
 import {
   joinRestWithMagnet,
@@ -167,24 +168,29 @@ test.describe("the showroom journey", () => {
       .last()
       .click();
     await shot("14-fair-planner");
+    await page.clock.install();
+    await holdShowTime(page);
     await page.getByTestId("open-booth").click();
 
-    await expect(page.getByTestId("booth-reveal")).toBeVisible();
+    const reveal = page.getByTestId("booth-reveal");
+    await expect(reveal).toBeVisible();
+    await playToScene(page, "booth-reveal", "wait-1");
     const lift = page.getByTestId("lift-sheet");
-    await expect(lift).toBeVisible({ timeout: 15_000 });
+    await expect(lift).toBeVisible();
     await shot("15-reveal-sheet");
     await lift.focus();
     await page.keyboard.press("Enter");
-    await expect(page.getByTestId("booth-reveal")).toHaveAttribute("data-scene", "lift-1");
-    await expect(page.getByTestId("dust-sheet")).toBeVisible({ timeout: 15_000 });
+    await expect(reveal).toHaveAttribute("data-scene", "lift-1");
+    await playToScene(page, "booth-reveal", "wait-2");
     await page.getByTestId("dust-sheet").click();
-    await expect(page.getByTestId("booth-reveal")).toHaveAttribute("data-scene", /finale|panels/, {
-      timeout: 15_000,
-    });
+    await expect(reveal).toHaveAttribute("data-scene", "lift-2");
+    await playToScene(page, "booth-reveal", "finale");
     await shot("16-reveal-finale");
+    await expect(reveal).toHaveAttribute("data-scene", "finale");
     await page.getByTestId("skip-reveal").click();
 
     await expect(page.getByTestId("fair-results-screen")).toBeVisible();
+    await releaseShowTime(page);
     await expect(page.locator(".ad-jury")).toHaveCount(4);
     await expect(page.getByRole("heading", { level: 1, name: /Rosette!|Ribbon/ })).toBeVisible();
     await shot("17-fair-results", true);

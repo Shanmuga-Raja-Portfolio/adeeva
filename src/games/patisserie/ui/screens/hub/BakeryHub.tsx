@@ -21,7 +21,7 @@ import {
 } from "../../../core";
 import { MAX_ACTIVE_GIGS } from "../../../../../engine/gigBoard";
 import type { PlayView } from "../../patisserieRoute";
-import { useAfterFirstPaint } from "../../useAfterFirstPaint";
+import { useAfterFirstPaint } from "../../../../../ui/kit/useAfterFirstPaint";
 import { GuideBubble } from "../GuideBubble";
 import { StoryOverlay } from "../story/StoryOverlay";
 import { SeasonPanel } from "../season/SeasonPanel";

@@ -3,8 +3,8 @@ import { serialize, type GameState } from "../../src/games/patisserie/core";
 import { showcaseSteps } from "../../src/games/patisserie/ui/screens/fair/showcaseSteps";
 import { dragBetween, finishBakeryStories, PATISSERIE_URL } from "../fixtures/patisseriePage";
 import { recordScenes } from "../fixtures/sceneLog";
-import { holdShowTime, playToScene, releaseShowTime } from "../fixtures/showTime";
-import { settledForShot } from "../fixtures/settle";
+import { holdShowTime, playToScene, playWithinScene, releaseShowTime } from "../fixtures/showTime";
+import { countUpsShown, settledForShot } from "../fixtures/settle";
 import { widestSidewaysScroll } from "../fixtures/sidewaysScroll";
 
 import {
@@ -164,8 +164,10 @@ for (const viewport of VIEWPORTS) {
       await playToScene(page, "fair-showcase", "finale");
       await shot(page, info, "showcase-finale");
       await playToScene(page, "fair-showcase", "panels");
-      await releaseShowTime(page);
+      await playWithinScene(page, "fair-showcase", "panels", () => countUpsShown(page));
+      await expect(page.getByTestId("fair-showcase")).toHaveAttribute("data-scene", "panels");
       await shot(page, info, "showcase-panels");
+      await releaseShowTime(page);
       const shown = await scenes();
       const seen = shown.slice(0, shown.indexOf("panels") + 1);
       const plates = seen.filter((scene) => scene.startsWith("reveal-")).length;

@@ -16,21 +16,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts((current) => current.filter((toast) => toast.id !== id));
   }, []);
 
-  const show = useCallback<ShowToast>(
-    (text, tone = "success") => {
-      const id = nextId.current;
-      nextId.current += 1;
-      setToasts((current) => [...current, { id, text, tone }].slice(-MAX_TOASTS));
-      window.setTimeout(() => dismiss(id), TOAST_LIFETIME_MS);
-    },
-    [dismiss],
-  );
+  const show = useCallback<ShowToast>((text, tone = "success") => {
+    const id = nextId.current;
+    nextId.current += 1;
+    setToasts((current) => [...current, { id, text, tone }].slice(-MAX_TOASTS));
+  }, []);
 
   const value = useMemo(() => show, [show]);
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <ToastStack toasts={toasts} onDismiss={dismiss} />
+      <ToastStack toasts={toasts} lifetimeMs={TOAST_LIFETIME_MS} onDismiss={dismiss} />
     </ToastContext.Provider>
   );
 }

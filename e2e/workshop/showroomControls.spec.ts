@@ -5,6 +5,7 @@ import { bramsPick } from "../../src/games/workshop/core/fairPick";
 import { reduce } from "../../src/games/workshop/core/reduce";
 import { showroomTestGame } from "../../src/games/workshop/core/setPlaythrough";
 import { fairDayShowroom, openShowroomSave, setAt, twoSetsOnFloor } from "../fixtures/showroomSaves";
+import { holdShowTime, playUntilVisible, releaseShowTime } from "../fixtures/showTime";
 
 test.use({ viewport: { width: 1280, height: 800 } });
 
@@ -105,11 +106,14 @@ test("the Planner keeps choices and focus, and the results say how the set came 
   await page.getByRole("button", { name: "Back to the board" }).click();
   await page.getByTestId("fair-board-next").click();
   expect(await plannerChoices(page)).toEqual(mine);
+  await page.clock.install();
+  await holdShowTime(page);
   await page.getByTestId("open-booth").click();
-  await expect(page.getByTestId("skip-reveal")).toBeVisible({ timeout: 20_000 });
+  await playUntilVisible(page, "the skip button", page.getByTestId("skip-reveal"));
   await page.getByTestId("skip-reveal").click();
   const results = page.getByTestId("fair-results-screen");
   await expect(results).toBeVisible();
+  await releaseShowTime(page);
   const after = (await savedState(page)).showroom?.floor.find((set) => set.setId === pick.setId);
   if (after === undefined) throw new Error("The set did not come home");
   await expect(results).toContainText(

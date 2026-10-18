@@ -20,6 +20,7 @@ import {
 } from "../../src/games/adeeva/core/testPlaythrough";
 import { openPreparedGame, savedState, settleStories } from "../fixtures/preparedGame";
 import { finishStories } from "../fixtures/story";
+import { recordToasts, toastsSeen, toastsShownAfterPaint } from "../fixtures/toastLog";
 
 const CRAFT_FLOW_CHUNK = "**/assets/CraftFlow-*.js";
 
@@ -207,20 +208,27 @@ test("a failed save warns once and asks before leaving", async ({ page }) => {
   await openPreparedGame(page, settledStudent());
   await page.evaluate(() => {
     const original = Storage.prototype.setItem;
+    const tries = window as { failedSaves?: number };
     Storage.prototype.setItem = function (key: string, value: string) {
-      if (key.startsWith("adeeva.save")) throw new DOMException("The disk is full", "QuotaExceededError");
+      if (key.startsWith("adeeva.save")) {
+        tries.failedSaves = (tries.failedSaves ?? 0) + 1;
+        throw new DOMException("The disk is full", "QuotaExceededError");
+      }
       original.call(this, key, value);
     };
   });
+  const failedSaves = () => page.evaluate(() => (window as { failedSaves?: number }).failedSaves ?? 0);
+  const toasts = await recordToasts(page);
   const offers = page.getByTestId("offer-card");
   await offers
     .first()
     .getByRole("button", { name: /^Accept/ })
     .click();
-  const warning = page.locator(".ad-toast--warning");
-  await expect(warning).toContainText("We couldn't save");
+  await expect.poll(() => toastsSeen(toasts, "We couldn't save", "warning")).toBe(1);
+  const failedBefore = await failedSaves();
   await page.getByRole("button", { name: /^Hire/ }).click();
-  await expect(warning).toHaveCount(1);
+  await expect.poll(failedSaves).toBeGreaterThan(failedBefore);
+  expect(await toastsShownAfterPaint(page, toasts, "We couldn't save", "warning")).toBe(1);
 
   await page.getByRole("button", { name: "Save & exit" }).click();
   const dialog = page.getByRole("dialog", { name: "We couldn't save" });

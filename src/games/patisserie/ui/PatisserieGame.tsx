@@ -19,9 +19,9 @@ import { BakeryHub } from "./screens/hub/BakeryHub";
 import { NewGameFlow } from "./screens/newGame/NewGameFlow";
 import { SettingsDialog } from "./screens/settings/SettingsDialog";
 import { TitleScreen } from "./screens/title/TitleScreen";
-import { lazyScreen } from "./lazyScreen";
+import { lazyScreen } from "../../../studio/lazyScreen";
 import { AssistProvider } from "./useAssist";
-import { useIdlePreload } from "./useIdlePreload";
+import { useIdlePreload } from "../../../studio/useIdlePreload";
 import "./theme.css";
 import "./ambient.css";
 

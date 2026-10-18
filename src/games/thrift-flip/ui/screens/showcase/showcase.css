@@ -204,6 +204,10 @@
   border-radius: 12px;
 }
 
+.tf-planner__preview-wait {
+  background: linear-gradient(180deg, #efe0c4 0%, #e3cfa8 55%, #b8875a 56%, #8f6440 100%);
+}
+
 .tf-planner__foot,
 .tf-showcase-results__foot {
   position: sticky;

@@ -1,8 +1,10 @@
-import { lazy, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { GameScreenProps } from "../../../studio/gameModule";
 import { lookAllowed } from "../../../studio/perks";
+import { lazyScreen } from "../../../studio/lazyScreen";
 import { useToast } from "../../../studio/ToastContext";
 import { useGameSession, type SaveMoment } from "../../../studio/useGameSession";
+import { useIdlePreload } from "../../../studio/useIdlePreload";
 import { ViewLoadBoundary } from "../../../studio/ViewLoadBoundary";
 import { Button } from "../../../ui/kit/Button";
 import { Dialog } from "../../../ui/kit/Dialog";
@@ -16,21 +18,24 @@ import { thriftSlots, type SaveSlotId } from "./thriftSlots";
 import "./theme.css";
 import "./art/art.css";
 
-const FlipFlow = lazy(() =>
-  import("./screens/flip/FlipFlow").then((module) => ({ default: module.FlipFlow })),
+const flip = lazyScreen(() => import("./screens/flip/FlipFlow").then((module) => module.FlipFlow));
+const stall = lazyScreen(() =>
+  import("./screens/stall/StallDayScreen").then((module) => module.StallDayScreen),
 );
-const StallDayScreen = lazy(() =>
-  import("./screens/stall/StallDayScreen").then((module) => ({ default: module.StallDayScreen })),
+const shopWindow = lazyScreen(() =>
+  import("./screens/window/WindowScreen").then((module) => module.WindowScreen),
 );
-const WindowScreen = lazy(() =>
-  import("./screens/window/WindowScreen").then((module) => ({ default: module.WindowScreen })),
+const hall = lazyScreen(() => import("./screens/hall/HallScreen").then((module) => module.HallScreen));
+const showcase = lazyScreen(() =>
+  import("./screens/showcase/ShowcaseScreen").then((module) => module.ShowcaseScreen),
 );
-const HallScreen = lazy(() =>
-  import("./screens/hall/HallScreen").then((module) => ({ default: module.HallScreen })),
-);
-const ShowcaseScreen = lazy(() =>
-  import("./screens/showcase/ShowcaseScreen").then((module) => ({ default: module.ShowcaseScreen })),
-);
+const FlipFlow = flip.Screen;
+const StallDayScreen = stall.Screen;
+const WindowScreen = shopWindow.Screen;
+const HallScreen = hall.Screen;
+const ShowcaseScreen = showcase.Screen;
+const PRELOADS = [flip.preload, showcase.preload, hall.preload, stall.preload, shopWindow.preload];
+const NO_PRELOADS: readonly (() => Promise<unknown>)[] = [];
 
 export function ThriftFlipGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
@@ -62,6 +67,7 @@ export function ThriftFlipGame({ player, lookOptions, onPlayerChange, onExit }: 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [leaveBlocked, setLeaveBlocked] = useState(false);
   const screen = resolveScreen(route, session.game);
+  useIdlePreload(screen.name === "hub" ? PRELOADS : NO_PRELOADS);
 
   const refreshSlots = useCallback(() => setSlots(thriftSlots.readAllSlots()), []);
   const toHub = useCallback(() => setRoute({ name: "play", view: "hub" }), []);

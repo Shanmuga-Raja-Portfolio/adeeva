@@ -7,6 +7,7 @@ import {
   settleStories,
 } from "../../src/games/patisserie/core/testPlaythrough";
 import { coins, dragBetween, finishBakeryStories, PATISSERIE_URL } from "../fixtures/patisseriePage";
+import { holdShowTime, playFor, releaseShowTime } from "../fixtures/showTime";
 
 test("two counter trays sell in boxes on Counter Day and the rest go to the neighbours", async ({ page }) => {
   let state = settleStories(newTestGame({ trait: "charmer" }));
@@ -61,8 +62,16 @@ test("two counter trays sell in boxes on Counter Day and the rest go to the neig
     .getByTestId(`treat-${missingKind === "cupcake-tray" ? "tray-1" : "tray-2"}`)
     .first()
     .click();
+  await page.clock.install();
+  await holdShowTime(page);
   await page.getByTestId(`order-box-${target}`).locator(".pa-card__box").click();
-  await expect(page.locator(".ad-toast").filter({ hasText: "That box needs something else." })).toBeVisible();
+  const nudge = page.locator(".ad-toast").filter({ hasText: "That box needs something else." });
+  await expect(nudge).toBeVisible();
+  await playFor(page, 3100);
+  await expect(nudge).toBeVisible();
+  await playFor(page, 200);
+  await expect(nudge).toHaveCount(0);
+  await releaseShowTime(page);
 
   await page.getByTestId("close-shop").click();
   await expect(page.getByTestId("bakery-hub")).toBeVisible();

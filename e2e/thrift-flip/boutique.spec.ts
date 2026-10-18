@@ -7,7 +7,7 @@ import {
   tillDaySave,
 } from "../fixtures/boutiqueSaves";
 import { shooter } from "../fixtures/screens";
-import { holdShowTime, playToScene, playUntil, releaseShowTime, sceneOf } from "../fixtures/showTime";
+import { holdShowTime, playToScene, playUntil, playWithinScene, releaseShowTime } from "../fixtures/showTime";
 import { finishStories } from "../fixtures/story";
 import { scrollIntoView, scrubOneStain, sewSeams, snipStitches } from "../fixtures/thriftBench";
 import { advance, centreOf, coinsIn, drag, svgToScreen } from "../fixtures/thriftPage";
@@ -185,6 +185,8 @@ for (const viewport of VIEWPORTS) {
       await page.getByTestId("open-showcase").focus();
       await page.keyboard.press("Enter");
       await expect(page.getByTestId("showcase-planner")).toBeVisible();
+      await expect(page.locator(".ad-rw-choice__stage use")).toHaveCount(3);
+      expect(await page.locator("[data-testid='showcase-planner'] *").count()).toBeLessThan(20_000);
       await shot("b15-planner");
       await page.getByRole("button", { name: /Walk the Remade Top earlier/ }).focus();
       await page.keyboard.press("Enter");
@@ -203,11 +205,10 @@ for (const viewport of VIEWPORTS) {
       await expect(show).toBeVisible();
       await expect(page.getByTestId("skip-show")).toBeFocused();
       const card = page.getByTestId("show-story-card");
-      await playUntil(
-        page,
-        "the first story card",
-        async () => (await sceneOf(page, "hall-show")) === "walk-1" && (await card.isVisible()),
-      );
+      await playToScene(page, "hall-show", "walk-1");
+      await playWithinScene(page, "hall-show", "walk-1", () => card.isVisible());
+      await expect(page.getByTestId("hall-show")).toHaveAttribute("data-scene", "walk-1");
+      await expect(card).toBeVisible();
       await shot("b17-show-walk");
       await releaseShowTime(page);
       await page.keyboard.press("Enter");
@@ -265,10 +266,14 @@ for (const viewport of VIEWPORTS) {
         const bed = work.getByTestId("sewing-bed");
         await bed.scrollIntoViewIfNeeded();
         const [x, y] = await centreOf(bed);
+        await page.clock.install();
+        await holdShowTime(page);
         await page.mouse.move(x, y);
         await page.mouse.down();
-        await expect(work.locator(".tf-table-work__done")).toBeVisible({ timeout: 30_000 });
+        const done = work.locator(".tf-table-work__done");
+        await playUntil(page, "the mended seam", () => done.isVisible());
         await page.mouse.up();
+        await releaseShowTime(page);
       }
       await expect(work.locator(".tf-table-work__done")).toBeVisible({ timeout: 20_000 });
       await page.getByTestId("table-close").click();

@@ -3,6 +3,8 @@ import { colourById } from "../../../../../engine/palette";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { StatChip } from "../../../../../ui/kit/StatChip";
+import { useAfterFirstPaint } from "../../../../../ui/kit/useAfterFirstPaint";
+import { useSvgId } from "../../../../../ui/art/useSvgId";
 import { RUNWAY_LIGHTS, type RunwayLightId } from "../../../../adeeva/content/runwayLight";
 import { MUSIC_MOODS, type MusicMoodId } from "../../../../../engine/musicMood";
 import { LightPicker } from "../../../../adeeva/ui/screens/label/LightPicker";
@@ -63,6 +65,8 @@ export function ShowcasePlanner({ state, season, dispatch, onStaged, onExit }: S
   const [mood, setMood] = useState<MusicMoodId | null>(null);
   const [light, setLight] = useState<RunwayLightId | null>(null);
   const [leaving, setLeaving] = useState(false);
+  const painted = useAfterFirstPaint();
+  const audienceId = useSvgId("tf-planner-audience");
   const [cards, setCards] = useState<Readonly<Record<string, string>>>(() =>
     Object.fromEntries(shelf.map((piece) => [piece.id, storyCardsFor(piece)[0]?.id ?? "fresh"])),
   );
@@ -97,6 +101,7 @@ export function ShowcasePlanner({ state, season, dispatch, onStaged, onExit }: S
           light={light ?? "warm"}
           crop="top"
           title={`Larkspur Hall ready for ${season.banner}`}
+          audienceId={audienceId}
         />
       </div>
       <header className="tf-planner__head">
@@ -217,14 +222,19 @@ export function ShowcasePlanner({ state, season, dispatch, onStaged, onExit }: S
               value={light}
               onChange={setLight}
               copy={LIGHT_WORDS}
-              renderPreview={(id) => (
-                <HallBackdrop
-                  banner={season.banner}
-                  palette={palette}
-                  light={id}
-                  className="ad-rw-choice__stage"
-                />
-              )}
+              renderPreview={(id) =>
+                painted ? (
+                  <HallBackdrop
+                    banner={season.banner}
+                    palette={palette}
+                    light={id}
+                    className="ad-rw-choice__stage"
+                    audienceOf={audienceId}
+                  />
+                ) : (
+                  <span className="ad-rw-choice__stage tf-planner__preview-wait" aria-hidden="true" />
+                )
+              }
             />
           </section>
           {tip !== null ? (

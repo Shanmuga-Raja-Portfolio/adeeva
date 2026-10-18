@@ -12,6 +12,7 @@ import {
 } from "../fixtures/interiorStudio";
 import { loadSave, v1ThresholdSave } from "../fixtures/preparedLarkspur";
 import { settle } from "../fixtures/settle";
+import { holdShowTime, playToScene, playUntilVisible, releaseShowTime } from "../fixtures/showTime";
 
 async function endHomeDay(page: Page, button = "home-end-day"): Promise<void> {
   await page.getByTestId(button).click();
@@ -202,15 +203,17 @@ test("a v1 save at the threshold takes the keys and plays a whole home through i
   await planByKeyboard(page);
   for (let day = 0; day < 8 && (await page.getByTestId("open-doors").isDisabled()); day += 1)
     await endHomeDay(page, "planner-end-day");
+  await page.clock.install();
+  await holdShowTime(page);
   await page.getByTestId("open-doors").click();
   await expect(page.getByTestId("open-house-show")).toBeVisible();
   await expect(page.getByTestId("show-title")).toBeVisible();
-  await expect(page.getByTestId("open-house-show")).toHaveAttribute("data-scene", "walk-1", {
-    timeout: 20_000,
-  });
+  await playToScene(page, "open-house-show", "walk-1");
   await expect(page.getByTestId("home-strip")).toBeVisible();
-  await page.getByTestId("skip-show").click({ timeout: 20_000 });
+  await playUntilVisible(page, "the skip button", page.getByTestId("skip-show"));
+  await page.getByTestId("skip-show").click();
   await expect(page.getByTestId("open-house-results")).toBeVisible();
+  await releaseShowTime(page);
   await expect(page.getByTestId("panel-flow")).toBeVisible();
   await expect(page.getByTestId("panel-story")).toBeVisible();
   await expect(page.getByTestId("open-house-tip")).toContainText("Next time, try");

@@ -11,6 +11,8 @@ import {
   themedLoft,
   v1Save,
 } from "../fixtures/preparedJewellery";
+import { countUpsShown } from "../fixtures/settle";
+import { holdShowTime, playFor, playToScene, playWithinScene, releaseShowTime } from "../fixtures/showTime";
 
 const VIEWPORTS = [
   { width: 1280, height: 800 },
@@ -123,26 +125,32 @@ for (const viewport of VIEWPORTS) {
       await page.getByTestId("music-beach-pop").click();
       await page.getByTestId("story-card-0").click();
       await shot("10-launch-planner", true);
+      await page.clock.install();
+      await holdShowTime(page);
       await page.getByTestId("stage-launch").click();
       const show = page.getByTestId("lantern-launch");
-      await expect(show).toHaveAttribute("data-scene", "wait-1", { timeout: 20_000 });
+      await playToScene(page, "lantern-launch", "wait-1");
       await shot("11-launch-wait");
       await page.getByTestId("open-lid").click();
       await expect(show).toHaveAttribute("data-scene", "reveal-1");
-      await page.waitForTimeout(900);
+      await playFor(page, 900);
+      await expect(show).toHaveAttribute("data-scene", "reveal-1");
       await shot("12-launch-reveal");
-      await expect(show).toHaveAttribute("data-scene", "finale", { timeout: 40_000 });
+      await playToScene(page, "lantern-launch", "finale");
       await expect(page.locator(".jb-launch-reveal__paper-lantern").first()).toHaveCSS(
         "position",
         "absolute",
       );
-      await page.waitForTimeout(2600);
+      await playFor(page, 2600);
+      await expect(show).toHaveAttribute("data-scene", "finale");
       await shot("12b-launch-finale");
-      await expect(show).toHaveAttribute("data-scene", "panels", { timeout: 10_000 });
-      await page.waitForTimeout(2500);
+      await playToScene(page, "lantern-launch", "panels");
+      await playWithinScene(page, "lantern-launch", "panels", () => countUpsShown(page));
+      await expect(show).toHaveAttribute("data-scene", "panels");
       await shot("12c-launch-panels");
       await page.keyboard.press("Escape");
       await expect(page.getByTestId("launch-results")).toBeVisible();
+      await releaseShowTime(page);
       await expect(page.locator("#jb-launch-results-title")).toBeFocused();
       await shot("13-launch-results", true);
     });
@@ -154,13 +162,17 @@ for (const viewport of VIEWPORTS) {
       await expect(page.getByTestId("popup-window")).toBeVisible();
       await expect(page.getByRole("heading", { name: "Pop-up Window" })).toBeFocused();
       await shot("14-popup-window", true);
+      await page.clock.install();
+      await holdShowTime(page);
       await page.getByTestId("open-window").click();
       await expect(page.getByTestId("popup-stroll")).toBeVisible();
       await expect(page.getByTestId("skip-stroll")).toBeFocused();
-      await page.waitForTimeout(1500);
+      await playFor(page, 1500);
       await shot("15-popup-stroll");
+      await expect(page.getByTestId("skip-stroll")).toBeFocused();
       await page.keyboard.press("Enter");
       await expect(page.getByTestId("popup-results")).toBeVisible();
+      await releaseShowTime(page);
       await expect(page.locator("#jb-popup-results-title")).toBeFocused();
       await shot("16-popup-results", true);
       await page.getByTestId("popup-exit").click();

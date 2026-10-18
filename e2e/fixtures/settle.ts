@@ -11,19 +11,22 @@ export async function settle(page: Page): Promise<void> {
   );
 }
 
+function countUpsAtTarget(): boolean {
+  return Array.from(document.querySelectorAll("[aria-label*=' out of 100']")).every((element) => {
+    const target = /(\d+) out of 100/.exec(element.getAttribute("aria-label") ?? "")?.[1];
+    const shown = [element, ...Array.from(element.querySelectorAll("*"))].find((node) =>
+      /^\d+$/.test(node.textContent?.trim() ?? ""),
+    );
+    return target === undefined || shown === undefined || shown.textContent?.trim() === target;
+  });
+}
+
+export async function countUpsShown(page: Page): Promise<boolean> {
+  return page.evaluate(countUpsAtTarget);
+}
+
 export async function countUpsDone(page: Page): Promise<void> {
-  await page.waitForFunction(
-    () =>
-      Array.from(document.querySelectorAll("[aria-label*=' out of 100']")).every((element) => {
-        const target = /(\d+) out of 100/.exec(element.getAttribute("aria-label") ?? "")?.[1];
-        const shown = [element, ...Array.from(element.querySelectorAll("*"))].find((node) =>
-          /^\d+$/.test(node.textContent?.trim() ?? ""),
-        );
-        return target === undefined || shown === undefined || shown.textContent?.trim() === target;
-      }),
-    undefined,
-    { polling: "raf" },
-  );
+  await page.waitForFunction(countUpsAtTarget, undefined, { polling: "raf" });
 }
 
 async function countTargetsReached(page: Page): Promise<void> {

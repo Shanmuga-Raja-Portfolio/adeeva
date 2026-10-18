@@ -28,7 +28,7 @@ import { PaddedTrolley } from "../../art/PaddedTrolley";
 import { floorLooks, type PieceLook } from "../../art/pieceLook";
 import { PiecePreview } from "../../art/PiecePreview";
 import { PanelFlips } from "../../../../../ui/show/PanelFlips";
-import { FairCrowd } from "./FairCrowd";
+import { FairCrowd, type CrowdMember } from "./FairCrowd";
 import { PANEL_LOOKS } from "./panelLooks";
 import { REVEAL_TIMINGS } from "./revealSteps";
 import { restX, revealedSlots, revealSteps, type RevealStep } from "../../../../../ui/show/revealSteps";
@@ -109,6 +109,15 @@ function PieceOnStage({
   );
 }
 
+function fairCrowd(visitorId: string): CrowdMember[] {
+  const visitor = clientById(visitorId);
+  return [
+    ...FAIR_PANELS.flatMap((panel) => panel.members),
+    { name: REN.name, look: REN.look },
+    ...(visitor === undefined ? [] : [{ name: visitor.name, look: visitor.look }]),
+  ].filter((member, index, all) => all.findIndex((other) => other.name === member.name) === index);
+}
+
 interface StepViewProps {
   readonly steps: readonly RevealStep[];
   readonly index: number;
@@ -147,6 +156,7 @@ function caption(step: RevealStep, name: string, theme: FairThemeDef): string {
 function StepView({ steps, index, reduced, onNext, theme, result, set, looks, sky, awning }: StepViewProps) {
   const step = steps[index] ?? steps[steps.length - 1];
   const elapsed = useShowClock(step?.ms ?? 1, onNext);
+  const crowd = useMemo(() => fairCrowd(result.visitor), [result.visitor]);
   if (step === undefined) return null;
   const t = step.ms === 0 ? 1 : elapsed / step.ms;
   const order = result.plan.order;
@@ -164,11 +174,6 @@ function StepView({ steps, index, reduced, onNext, theme, result, set, looks, sk
   const glow = step.kind === "title" ? easeOut(t) : 1;
   const visitor = clientById(result.visitor);
   const palette = [...theme.palette.map((id) => shadeById(id).hex), "#e9a23b", "#c0574a"];
-  const crowd = [
-    ...FAIR_PANELS.flatMap((panel) => panel.members),
-    { name: REN.name, look: REN.look },
-    ...(visitor === undefined ? [] : [{ name: visitor.name, look: visitor.look }]),
-  ].filter((member, index, all) => all.findIndex((other) => other.name === member.name) === index);
   const currentName =
     currentPiece === undefined
       ? "piece"

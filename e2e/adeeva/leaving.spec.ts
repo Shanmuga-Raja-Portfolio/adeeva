@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { newTestGame } from "../../src/games/adeeva/core/testPlaythrough";
 import { openPreparedGame, savedState, settleStories } from "../fixtures/preparedGame";
+import { recordToasts, toastsSeen } from "../fixtures/toastLog";
 
 async function acceptFirstOffer(page: Page): Promise<void> {
   await page
@@ -56,10 +57,9 @@ test("leaving while the browser refuses to save says so on the way out", async (
       original.call(this, key, value);
     };
   });
+  const toasts = await recordToasts(page);
   await acceptFirstOffer(page);
   await leaveByHash(page);
-  await expect(
-    page.locator(".ad-toast--warning").filter({ hasText: "We couldn't save your last few moments" }),
-  ).toBeVisible();
+  await expect.poll(() => toastsSeen(toasts, "We couldn't save your last few moments", "warning")).toBe(1);
   expect(await savedState(page, (state) => state.gigs.active.length)).toBe(0);
 });

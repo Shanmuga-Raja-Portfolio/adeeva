@@ -9,6 +9,7 @@ import {
   tasteByHand,
 } from "../fixtures/chefKitchen";
 import { chopClockAtLeast, holdChopBoard } from "../fixtures/chopBoardClock";
+import { holdShowTime, playUntil, releaseShowTime } from "../fixtures/showTime";
 
 test.use({ hasTouch: true, viewport: { width: 820, height: 1180 } });
 
@@ -62,14 +63,16 @@ test("keyboard and touch players get fair, steady controls through a whole lesso
   const pot = page.getByTestId("simmer-pot");
   const target = Number(await pot.getAttribute("data-target"));
   await pot.locator("svg.ck-pot").focus();
+  await page.clock.install();
+  await holdShowTime(page);
   await page.keyboard.down(" ");
-  await page.waitForFunction(
-    (line) =>
-      Number(document.querySelector("[data-testid='simmer-pot']")?.getAttribute("data-level")) <= line,
-    target + 0.01,
-    { polling: "raf" },
+  await playUntil(
+    page,
+    "the simmer line",
+    async () => Number(await pot.getAttribute("data-level")) <= target + 0.01,
   );
   await page.keyboard.up(" ");
+  await releaseShowTime(page);
   await page.getByTestId("off-the-heat").click();
   const simmer = await page.locator(".ck-checklist__row--ok", { hasText: "Simmer" }).innerText();
   expect(Number(simmer.replace(/[^0-9]/g, ""))).toBeGreaterThan(80);

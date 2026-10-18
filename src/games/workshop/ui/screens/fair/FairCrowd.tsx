@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { AvatarLook } from "../../../../../engine/avatar";
 import { AvatarFigure } from "../../../../../ui/art/avatar/Avatar";
 
@@ -11,7 +12,7 @@ export interface FairCrowdProps {
   readonly clapping: boolean;
 }
 
-export function FairCrowd({ members, clapping }: FairCrowdProps) {
+export const FairCrowd = memo(function FairCrowd({ members, clapping }: FairCrowdProps) {
   return (
     <div
       className={clapping ? "ww-reveal__crowd ww-reveal__crowd--clap" : "ww-reveal__crowd"}
@@ -34,4 +35,4 @@ export function FairCrowd({ members, clapping }: FairCrowdProps) {
       ))}
     </div>
   );
-}
+});
