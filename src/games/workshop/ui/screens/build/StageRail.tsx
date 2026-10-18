@@ -9,7 +9,7 @@ const RAIL_STAGES: readonly RunStage[] = RUN_STAGES.filter((stage) => stage !== 
 export function StageRail({ state, run, dispatch }: Omit<StageProps, "onExit">) {
   const current = RAIL_STAGES.indexOf(run.stage);
   return (
-    <nav className="ww-rail" aria-label="Building steps">
+    <nav className="ww-rail ad-step-rail" aria-label="Building steps">
       <ol>
         {RAIL_STAGES.map((stage, index) => {
           const done = index < current;

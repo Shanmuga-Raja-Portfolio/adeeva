@@ -25,6 +25,7 @@ import { Shoppers } from "../../art/Shoppers";
 import { StallBackdrop } from "../../art/StallBackdrop";
 import { PriceTagEditor, sliderMax } from "./PriceTagEditor";
 import "./stall.css";
+import "./compact.css";
 
 export interface StallDayScreenProps {
   readonly state: GameState;

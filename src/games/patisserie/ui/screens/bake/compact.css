@@ -1,0 +1,183 @@
+@media (max-height: 480px) {
+  .pa-bake {
+    gap: var(--space-2);
+  }
+
+  .pa-weigh-station__scene {
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 0.9fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "scale banner"
+      "scale target"
+      "scale controls";
+    min-height: 0;
+    row-gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .pa-weigh-station__scene > .pa-weigh-station__banner {
+    padding: 6px 12px;
+    font-size: 1rem;
+  }
+
+  .pa-weigh-station__scale {
+    justify-self: center;
+    width: min(100%, calc((var(--work-max-h) - 48px) * 0.74));
+  }
+
+  .pa-weigh-station__target {
+    padding: 0 12px 12px;
+  }
+
+  .pa-weigh-station__pack svg {
+    width: 64px;
+    height: 64px;
+  }
+
+  .pa-weigh-station__controls {
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .pa-pour-pad {
+    min-height: 52px;
+  }
+
+  .pa-stir {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .pa-stir__bowl {
+    grid-row: span 4;
+    width: min(100%, calc(var(--work-max-h) - 16px));
+  }
+
+  .pa-oven-bench {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 1fr);
+    align-items: start;
+    gap: var(--space-3);
+  }
+
+  .pa-oven-bench .pa-oven {
+    max-height: calc(var(--work-max-h) - 16px);
+  }
+
+  .pa-oven-bench__controls {
+    gap: var(--space-2);
+  }
+
+  .pa-stack__layout {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 18rem);
+  }
+
+  .pa-stack__side {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .pa-stack__pieces {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pa-stack__piece {
+    min-height: 72px;
+    padding: 4px;
+  }
+
+  .pa-stack__piece svg {
+    height: 40px;
+  }
+
+  .pa-stack__stand {
+    width: min(100%, calc(var(--work-max-h) - 16px));
+  }
+
+  .pa-pipe-table {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .pa-pipe-table__turntable {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    width: min(100%, calc(var(--work-max-h) - 48px));
+    min-width: 0;
+  }
+
+  .pa-pipe-table__stats,
+  .pa-pipe-table__actions {
+    grid-column: 2;
+  }
+
+  .pa-pipe__table {
+    padding: var(--space-2);
+  }
+
+  .pa-decorate {
+    grid-template-columns: minmax(14rem, 17rem) minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .pa-decorate__tray {
+    max-height: var(--work-max-h);
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .pa-decorate__grid {
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .pa-decorate__cake {
+    height: var(--work-max-h);
+  }
+}
+
+@media (max-width: 480px) {
+  .pa-weigh-station__scale {
+    width: min(100%, 240px);
+  }
+
+  .pa-weigh-station__pack svg {
+    width: 64px;
+    height: 64px;
+  }
+
+  .pa-weigh-station__scene {
+    row-gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .pa-decorate__cake {
+    height: 46dvh;
+  }
+
+  .pa-decorate__tray {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .pa-decorate__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding-bottom: var(--space-2);
+    mask-image: none;
+  }
+}
+
+@media (max-height: 480px), (max-width: 480px) {
+  .pa-topping-tile {
+    min-height: 84px;
+  }
+
+  .pa-topping-tile__plate {
+    width: 44px;
+    height: 44px;
+  }
+}

@@ -34,7 +34,7 @@ src/
     interior/
     jewellery/
     chef/          Six Kitchens
-e2e/               Playwright: a folder of specs per game, a studio spec, fixtures/, and release/ (install, offline, integrity, update, signed out, About)
+e2e/               Playwright: a folder of specs per game, a studio spec, fixtures/, and release/ (install, offline, integrity, update, signed out, About, compact layout)
 tooling/           Build-time helpers: the service-worker build, the precache list and the _headers reader for vite preview
 ```
 
@@ -72,3 +72,22 @@ Every game follows: **brief → design → materials → hands-on making (2–3 
 4. Making the avatar once shows it in every game. Studio reputation and perks update from every game.
 5. The parent page shows playtime and the safety promise. Zero network requests in any game.
 6. Gates: typecheck, lint (zero warnings), unit tests twice, e2e three consecutive runs, build with no warnings, no comments in code, no file over 700 lines.
+
+## 6. Layout
+
+Every screen is one column that grows with the window. A game's top bar (hub) or craft header sticks to the top, a step rail sits under the craft header, and the step's surface (board, bench, canvas or plate) sits above or beside its tray and controls.
+
+**Compact mode** (task 59) makes short and narrow screens usable. It is pure CSS, keyed on the window size and not on the device, so a desktop window dragged small gets it too:
+
+- **Both** — `@media (max-height: 480px), (max-width: 480px)`: the Android handheld in landscape (863×360) and phones held upright (iPhone 15, 393×659). An iPad, a Chromebook (1366×768) and a 1280×800 desktop never match, so they render exactly as before.
+- **Short** — `(max-height: 480px)`: craft steps go side by side (surface beside its tray or controls), and the token `--work-max-h` becomes `calc(100dvh - 16px)` (it is `none` elsewhere). Surfaces cap their height with it, so an SVG letterboxes instead of growing past the screen.
+- **Narrow** — `(max-width: 480px)`: surfaces cap at a share of `dvh` and trays sit just under them; back buttons show only their arrow (the accessible name stays), and step rails wrap.
+
+The shared part lives in `src/styles/compact.css` and works through two kit classes the screens carry:
+
+- `ad-pinned-head` (with `__title`, `__stats` and `__back`) on every hub top bar and craft header: in compact mode it stops being sticky and becomes one slim wrapping row (title, stat chips with their labels kept for screen readers only, buttons);
+- `ad-step-rail` on every step rail: other steps show only their number, the current step keeps its label.
+
+Compact mode also tightens the large spacing and heading tokens. Each game then has its own `compact.css` next to the flow it changes, imported after that flow's CSS so it wins. These per-game files only arrange things: grid columns, heights capped by `--work-max-h` or `dvh`, trays that scroll beside the surface, and smaller tiles. They never change the art.
+
+Rules: touch targets stay at least 44 px (`--tap`), body text at least 14 px, nothing scrolls sideways, and the source and focus order never change (only `order` on a non-interactive checklist and score). `e2e/release/compact.spec.ts` checks on `android-handheld` and `webkit-iphone` that each game's hub actions are in view at the top, that representative steps show the surface and its controls together, and that nothing scrolls sideways.

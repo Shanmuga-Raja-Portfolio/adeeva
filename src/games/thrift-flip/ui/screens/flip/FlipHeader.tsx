@@ -26,15 +26,15 @@ export function FlipHeader(props: StageProps) {
     onExit();
   };
   return (
-    <header className="tf-flip-header">
-      <Button variant="ghost" onClick={onExit}>
+    <header className="tf-flip-header ad-pinned-head">
+      <Button variant="ghost" onClick={onExit} className="ad-pinned-head__back">
         <span aria-hidden="true">←</span> Back to the stall
       </Button>
-      <div className="tf-flip-header__title">
+      <div className="tf-flip-header__title ad-pinned-head__title">
         <span className="ad-eyebrow">{owner(props)}</span>
         <h1>{stageTitle(run)}</h1>
       </div>
-      <div className="tf-flip-header__stats">
+      <div className="tf-flip-header__stats ad-pinned-head__stats">
         <StatChip kind="day" value={`Day ${state.calendar.day}`} />
         <StatChip kind="hours" value={`${state.calendar.hoursLeft} h left`} />
         <span className="tf-flip-header__coins">

@@ -16,6 +16,7 @@ import { COACH } from "./stageNames";
 import { StageRail } from "./StageRail";
 import { StyleStage } from "./StyleStage";
 import "./makeover.css";
+import "./compact.css";
 
 interface MakeoverFlowProps {
   readonly state: GameState;

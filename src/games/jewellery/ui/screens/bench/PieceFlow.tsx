@@ -18,6 +18,7 @@ import { StageRail } from "./StageRail";
 import { SuppliesStage } from "./SuppliesStage";
 import "./bench.css";
 import "./station.css";
+import "./compact.css";
 
 interface PieceFlowProps {
   readonly state: GameState;

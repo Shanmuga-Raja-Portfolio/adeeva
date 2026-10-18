@@ -439,3 +439,26 @@
     max-height: 50vh;
   }
 }
+
+@media (max-height: 480px), (max-width: 480px) {
+  .ad-machine {
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .ad-machine__hud {
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-2);
+  }
+
+  .ad-machine__actions {
+    gap: var(--space-2);
+  }
+}
+
+@media (max-height: 480px) {
+  .ad-machine__stage {
+    max-height: calc(var(--work-max-h) - 136px);
+  }
+}

@@ -1,6 +1,7 @@
 @import "./tokens.css";
 @import "./kit.css";
 @import "./art.css";
+@import "./compact.css";
 
 *,
 *::before,

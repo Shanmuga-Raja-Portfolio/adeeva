@@ -7,7 +7,7 @@ export function StageRail({ state, run, dispatch }: Omit<StageProps, "onExit">) 
   const stages: readonly RunStage[] = RUN_STAGES.filter((stage) => stage !== "done");
   const current = stages.indexOf(run.stage);
   return (
-    <nav className="is-rail" aria-label="Makeover steps">
+    <nav className="is-rail ad-step-rail" aria-label="Makeover steps">
       <ol>
         {stages.map((stage, index) => {
           const done = index < current;

@@ -1,0 +1,67 @@
+@media (max-height: 480px), (max-width: 480px) {
+  .tf-bench-hud .tf-workbench__lines {
+    flex-wrap: wrap;
+  }
+
+  .tf-bench-spool__bar {
+    width: min(260px, 100%);
+  }
+
+  .tf-flip__body {
+    gap: var(--space-3);
+  }
+}
+
+@media (max-height: 480px) {
+  .tf-workbench--unpick .tf-bench-wrap {
+    height: max(200px, calc(var(--work-max-h) - 112px));
+  }
+
+  .tf-bench-hud {
+    margin: var(--space-1) 0;
+  }
+
+  .tf-cut__mat,
+  .tf-cut__ready {
+    min-height: 0;
+  }
+
+  .tf-finish__svg {
+    max-height: calc(var(--work-max-h) - 64px);
+  }
+
+  .tf-finish__stage {
+    padding-top: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tf-drawer .tf-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 4px;
+    white-space: normal;
+    line-height: 1.1;
+  }
+
+  .tf-drawer {
+    gap: var(--space-2);
+    padding: var(--space-2);
+  }
+
+  .tf-finish__svg {
+    max-height: 36dvh;
+  }
+
+  .tf-finish__stage {
+    padding-top: 44px;
+  }
+
+  .tf-drawer__items {
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  }
+
+  .tf-chip {
+    min-height: 64px;
+  }
+}

@@ -1,0 +1,97 @@
+@media (max-height: 480px), (max-width: 480px) {
+  .pa-salon {
+    gap: var(--space-2);
+  }
+
+  .pa-salon__top {
+    position: static;
+    padding-top: var(--space-1);
+    padding-bottom: var(--space-1);
+  }
+
+  .pa-salon__top h1 {
+    font-size: 1.125rem;
+  }
+
+  .pa-salon__earned {
+    padding: 2px var(--space-3);
+    font-size: var(--text-lg);
+  }
+
+  .pa-salon .pa-counter__window {
+    height: 56px;
+    border-width: 6px;
+  }
+
+  .pa-salon .pa-counter__street {
+    height: 22px;
+  }
+
+  .pa-salon .pa-counter__sun {
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+  }
+
+  .pa-salon__bunting {
+    height: 12px;
+  }
+
+  .pa-salon__shelf,
+  .pa-salon__side {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .pa-salon__shelf h2,
+  .pa-salon__side h2 {
+    font-size: var(--text-lg);
+  }
+
+  .pa-salon-treat {
+    width: 56px;
+    height: 56px;
+  }
+
+  .pa-stand {
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
+@media (max-height: 480px) {
+  .pa-salon__layout {
+    grid-template-columns: minmax(9.5rem, 11rem) minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .pa-salon__shelf {
+    grid-column: auto;
+    display: flex;
+    max-height: var(--work-max-h);
+    overflow-y: auto;
+  }
+
+  .pa-salon__side {
+    max-height: var(--work-max-h);
+    overflow-y: auto;
+  }
+
+  .pa-stand__frame {
+    width: min(100%, calc((var(--work-max-h) - 96px) * 0.89));
+  }
+
+  .pa-tea-scene {
+    max-height: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pa-salon__shelf {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pa-stand__frame {
+    width: min(100%, 40dvh);
+  }
+}

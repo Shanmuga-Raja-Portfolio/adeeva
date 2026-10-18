@@ -96,7 +96,7 @@ export function SawBench({
   const maxY = Math.min(size.height + MARGIN, Math.max(...ys) + MARGIN) + 9;
   const viewWidth = maxX - minX;
   const viewHeight = maxY - minY;
-  const pxPerCm = clamp(Math.min(containerWidth / viewWidth, MAX_HEIGHT_PX / viewHeight), 6, 16);
+  const pxPerCm = clamp(Math.min(containerWidth / viewWidth, MAX_HEIGHT_PX / viewHeight), 3, 16);
   const coverage = cut === undefined ? 0 : pathCoverage(cut, samples, tolerance);
   const rideDone = useRef(onRideDone);
   const openCuts = useRef<readonly SawCut[]>([]);

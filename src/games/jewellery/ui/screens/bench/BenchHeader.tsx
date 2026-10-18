@@ -28,11 +28,11 @@ export function BenchHeader({ state, run, dispatch, onExit }: StageProps) {
     onExit();
   };
   return (
-    <header className="jb-bench-header">
-      <Button variant="ghost" icon="back" onClick={onExit}>
+    <header className="jb-bench-header ad-pinned-head">
+      <Button variant="ghost" icon="back" onClick={onExit} className="ad-pinned-head__back">
         {state.career === "collection" ? "Back to the loft" : "Back to the arcade"}
       </Button>
-      <div className="jb-bench-header__title">
+      <div className="jb-bench-header__title ad-pinned-head__title">
         <span className="ad-eyebrow">
           {run.purpose.kind === "collection"
             ? `For your line · ${productById(run.design.productId).name}`
@@ -46,7 +46,7 @@ export function BenchHeader({ state, run, dispatch, onExit }: StageProps) {
             : STAGE_TITLES[run.stage]}
         </h1>
       </div>
-      <div className="jb-bench-header__stats">
+      <div className="jb-bench-header__stats ad-pinned-head__stats">
         <StatChip kind="day" value={state.calendar.day} />
         <span data-testid="bench-hours">
           <StatChip kind="hours" value={`${state.calendar.hoursLeft} h`} />

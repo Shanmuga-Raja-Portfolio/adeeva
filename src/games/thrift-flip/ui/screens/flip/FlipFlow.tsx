@@ -20,6 +20,7 @@ import { StageRail } from "./StageRail";
 import { UnpickStage } from "./unpick/UnpickStage";
 import "../../../../adeeva/ui/screens/craft/craftControls.css";
 import "./flip.css";
+import "./compact.css";
 
 export interface FlipFlowProps {
   readonly state: GameState;

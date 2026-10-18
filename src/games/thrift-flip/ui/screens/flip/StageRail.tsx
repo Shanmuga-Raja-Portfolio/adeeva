@@ -13,7 +13,7 @@ export function StageRail({ state, run, dispatch }: StageRailProps) {
   const stages = craftStages(run);
   const currentIndex = stages.findIndex((stage) => stage === run.stage);
   return (
-    <nav className="tf-rail" aria-label="Flip steps">
+    <nav className="tf-rail ad-step-rail" aria-label="Flip steps">
       <ol>
         {stages.map((stage, index) => {
           const done = index < currentIndex;

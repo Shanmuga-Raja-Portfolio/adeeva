@@ -31,6 +31,7 @@ import { StaffBench } from "./StaffBench";
 import { StationTabs } from "./StationTabs";
 import { TicketRail } from "./TicketRail";
 import "./service.css";
+import "./compact.css";
 
 interface ServiceRushProps {
   readonly state: GameState;

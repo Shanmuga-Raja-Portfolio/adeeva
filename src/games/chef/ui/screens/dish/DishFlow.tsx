@@ -16,6 +16,7 @@ import { SegmentCueStrip } from "./SegmentCueStrip";
 import { StageRail } from "./StageRail";
 import { TicketStage } from "./TicketStage";
 import "./dish.css";
+import "./compact.css";
 
 interface DishFlowProps {
   readonly state: GameState;
