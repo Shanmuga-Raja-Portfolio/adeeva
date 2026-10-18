@@ -2,6 +2,7 @@ import { expect, type Locator, type Page } from "@playwright/test";
 import { chopBoardFinished, chopClockAtLeast, holdChopBoard, type ChopBoardHandle } from "./chopBoardClock";
 import { isOutsideRequest } from "./outsideRequest";
 import { nextReadyPiece } from "./panReadyPiece";
+import { settle, stillBox } from "./settle";
 
 export const CHEF_URL = "/#/chef";
 
@@ -66,8 +67,7 @@ export async function advance(page: Page): Promise<void> {
 }
 
 async function middle(locator: Locator): Promise<Pair> {
-  const box = await locator.boundingBox();
-  if (box === null) throw new Error("Element has no box");
+  const box = await stillBox(locator);
   return [box.x + box.width / 2, box.y + box.height / 2];
 }
 
@@ -83,6 +83,7 @@ export async function dragOnto(page: Page, from: Locator, to: Locator): Promise<
 }
 
 export async function svgToScreen(svg: Locator, points: readonly Pair[]): Promise<Pair[]> {
+  await settle(svg.page());
   return svg.evaluate((element, list) => {
     const matrix = (element as SVGGraphicsElement).getScreenCTM();
     if (matrix === null) return [];

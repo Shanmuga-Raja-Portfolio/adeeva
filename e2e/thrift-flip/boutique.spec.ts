@@ -7,6 +7,7 @@ import {
   tillDaySave,
 } from "../fixtures/boutiqueSaves";
 import { shooter } from "../fixtures/screens";
+import { stillBox } from "../fixtures/settle";
 import { holdShowTime, playToScene, playUntil, playWithinScene, releaseShowTime } from "../fixtures/showTime";
 import { finishStories } from "../fixtures/story";
 import { scrollIntoView, scrubOneStain, sewSeams, snipStitches } from "../fixtures/thriftBench";
@@ -136,8 +137,7 @@ for (const viewport of VIEWPORTS) {
       await page.getByTestId("window-add-piece-2").click();
       const piece = page.locator('[data-window-item="piece:piece-2"]');
       const from = await centreOf(piece);
-      const frame = await page.locator(".tf-window-screen__scene").boundingBox();
-      if (frame === null) throw new Error("No window");
+      const frame = await stillBox(page.locator(".tf-window-screen__scene"));
       await drag(page, from, [frame.x + frame.width * 0.84, from[1]]);
       await page.locator(".tf-window-screen__stage").focus();
       await page.keyboard.press("ArrowUp");

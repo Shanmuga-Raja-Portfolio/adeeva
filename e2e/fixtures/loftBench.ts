@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { finishJewelleryStories } from "./jewelleryBench";
+import { stillBox } from "./settle";
 
 export async function endLoftDay(page: Page): Promise<void> {
   await page.getByTestId("end-day").click();
@@ -18,8 +19,7 @@ export async function warmTwinByHand(page: Page): Promise<void> {
   const high = (secondFrom ?? 0.76) + ((firstTo ?? 0.85) - (secondFrom ?? 0.76)) * 0.6;
   const button = page.getByTestId("warm-button");
   await button.scrollIntoViewIfNeeded();
-  const box = await button.boundingBox();
-  if (box === null) throw new Error("No warm button");
+  const box = await stillBox(button);
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   const done = async () => (await page.getByTestId("twin-note").count()) > 0;
   const warmth = async () =>

@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { stillBox } from "./settle";
 
 export const PATISSERIE_URL = "/#/patisserie";
 
@@ -24,8 +25,7 @@ export async function coins(page: Page): Promise<number> {
 }
 
 export async function centreOf(locator: Locator): Promise<{ readonly x: number; readonly y: number }> {
-  const box = await locator.boundingBox();
-  if (box === null) throw new Error("Element is not on screen");
+  const box = await stillBox(locator);
   return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
 }
 

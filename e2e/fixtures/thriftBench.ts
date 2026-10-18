@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { afterNextFrame } from "./frames";
+import { stillBox } from "./settle";
 import { centreOf, drag } from "./thriftPage";
 
 export async function scrollIntoView(page: Page, selector: string) {
@@ -50,8 +51,7 @@ export async function snipStitches(page: Page) {
 export async function scrubOneStain(page: Page) {
   const scrubber = page.getByTestId("stain-scrubber");
   await scrollIntoView(page, ".tf-workbench__table");
-  const box = await scrubber.boundingBox();
-  if (box === null) throw new Error("No stain on the bench");
+  const box = await stillBox(scrubber);
   const cx = box.x + box.width / 2;
   const cy = box.y + box.height / 2;
   const radius = box.width * 0.17;

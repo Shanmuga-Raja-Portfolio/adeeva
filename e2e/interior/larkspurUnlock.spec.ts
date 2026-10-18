@@ -11,7 +11,7 @@ import {
   watchOutsideRequests,
 } from "../fixtures/interiorStudio";
 import { loadSave, v1ThresholdSave } from "../fixtures/preparedLarkspur";
-import { settle } from "../fixtures/settle";
+import { settle, stillBox } from "../fixtures/settle";
 import { holdShowTime, playToScene, playUntilVisible, releaseShowTime } from "../fixtures/showTime";
 
 async function endHomeDay(page: Page, button = "home-end-day"): Promise<void> {
@@ -21,9 +21,8 @@ async function endHomeDay(page: Page, button = "home-end-day"): Promise<void> {
 }
 
 async function dragElement(page: Page, from: string, to: string): Promise<void> {
-  const start = await page.getByTestId(from).boundingBox();
-  const end = await page.getByTestId(to).boundingBox();
-  if (start === null || end === null) throw new Error("Nothing to drag");
+  const start = await stillBox(page.getByTestId(from));
+  const end = await stillBox(page.getByTestId(to));
   const sx = start.x + start.width / 2;
   const sy = start.y + start.height / 2;
   await page.mouse.move(sx, sy);

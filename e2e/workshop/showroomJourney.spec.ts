@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { depthShooter } from "../fixtures/depthShots";
+import { stillBox } from "../fixtures/settle";
 import { holdShowTime, playToScene, releaseShowTime } from "../fixtures/showTime";
 import { isOutsideRequest } from "../fixtures/outsideRequest";
 import {
@@ -125,8 +126,7 @@ test.describe("the showroom journey", () => {
 
     await page.getByTestId("finish-clear-oil").click();
     await scrollToTop(page);
-    const canvasBox = await page.getByTestId("finish-canvas").boundingBox();
-    if (canvasBox === null) throw new Error("No piece to decorate");
+    const canvasBox = await stillBox(page.getByTestId("finish-canvas"));
     await drag(
       page,
       await centreOf(page.getByTestId("extra-wood-knob")),

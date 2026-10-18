@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { openAdeeva } from "../fixtures/adeevaPage";
 import { reduce, serialize, type GameState } from "../../src/games/adeeva/core";
 import { newTestGame } from "../../src/games/adeeva/core/testPlaythrough";
+import { settle, stillBox } from "../fixtures/settle";
 import { finishStories } from "../fixtures/story";
 
 const VIEWPORTS = [
@@ -43,6 +44,7 @@ async function svgToScreen(
   svg: Locator,
   points: readonly (readonly [number, number])[],
 ): Promise<[number, number][]> {
+  await settle(svg.page());
   return svg.evaluate((element, list) => {
     const matrix = (element as SVGSVGElement).getScreenCTM();
     if (matrix === null) return [];
@@ -54,8 +56,7 @@ async function svgToScreen(
 }
 
 async function centreOf(locator: Locator): Promise<[number, number]> {
-  const box = await locator.boundingBox();
-  if (box === null) throw new Error("Element is not visible");
+  const box = await stillBox(locator);
   return [box.x + box.width / 2, box.y + box.height / 2];
 }
 

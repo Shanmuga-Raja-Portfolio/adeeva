@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { shooter } from "../fixtures/screens";
+import { stillBox } from "../fixtures/settle";
 import { tapMalletOnce } from "../fixtures/mallet";
 import {
   advance,
@@ -211,8 +212,7 @@ for (const viewport of VIEWPORTS) {
       await expect(page.getByRole("heading", { name: "Finish and extras" })).toBeVisible();
       await page.getByTestId("finish-chalk-paint").click();
       await scrollToTop(page);
-      const canvasBox = await page.getByTestId("finish-canvas").boundingBox();
-      if (canvasBox === null) throw new Error("No piece to decorate");
+      const canvasBox = await stillBox(page.getByTestId("finish-canvas"));
       const onPiece: ScreenPoint = [canvasBox.x + canvasBox.width / 2, canvasBox.y + canvasBox.height * 0.45];
       await drag(page, await centreOf(page.getByTestId("extra-star-stencil")), onPiece, 20);
       await expect(page.getByTestId("placed-star-stencil")).toHaveCount(1);
