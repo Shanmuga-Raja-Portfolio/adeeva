@@ -101,10 +101,6 @@
   color: var(--tf-tangerine-deep);
 }
 
-.tf-stitch-border {
-  border: 2px dashed rgba(63, 93, 132, 0.35);
-}
-
 .tf-chalk {
   font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", var(--font-body);
   color: var(--tf-chalk-ink);

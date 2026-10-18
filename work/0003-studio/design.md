@@ -19,10 +19,12 @@ Players are aged 8 to 15+. The safety promise holds everywhere: fully offline, n
 src/
   main.tsx
   studio/          StudioApp (hash routes #/, #/<gameId>, #/parent, #/about), home hall, registry, profile, perks, playtime, parent page, About and privacy page with SVG install guides, update notice, slot store, generic useGameSession, settings and toasts
-  offline/         serviceWorker.js (template; the build fills in the version and file list), worker registration and update tracking, storage persistence
+  offline/         serviceWorker.js (template; the build fills in the version and file list), worker registration and update tracking, the signed-out check, storage persistence
   engine/          Pure, generic, deterministic TS shared by every game (no React, no DOM, no Date, no Math.random); small generic modules such as clamp and average sit at its root, geometry/ holds polygon maths
-  ui/kit/          Shared UI primitives (existing)
-  ui/art/          Shared art: avatar/ (Avatar, face, hair, outfits, accessories), cloth/ (Cloth, fabric look and pattern, garment pieces, ButtonArt), tiles/ (home tile art), colourMix, useSvgId
+  ui/kit/          Shared UI primitives (Button, Card, Dialog, PanelCard, toasts and the rest), hooks such as useShowClock and useTickLoop, and lazyScreen and useIdlePreload for idle-preloaded screens
+  ui/art/          Shared art: avatar/ (Avatar, face, hair, outfits, accessories), cloth/ (Cloth, fabric look and pattern, garment pieces, ButtonArt), tiles/ (home tile art), PetalFall, PlacedLayer, colourMix, useSvgId
+  ui/newGame/      The shared New Game steps (career, avatar, trait, difficulty)
+  ui/show/         Shared showcase playback (timeline, reveal steps, panel flips, music chip)
   styles/          Shared tokens and global CSS
   games/
     adeeva/        core/, content/, ui/ (fashion-specific screens and art), plus its tests
@@ -32,7 +34,8 @@ src/
     interior/
     jewellery/
     chef/          Six Kitchens
-e2e/               Playwright, one spec file per game plus a studio spec
+e2e/               Playwright: a folder of specs per game, a studio spec, fixtures/, and release/ (install, offline, integrity, update, signed out, About)
+tooling/           Build-time helpers: the service-worker build, the precache list and the _headers reader for vite preview
 ```
 
 Rules:
@@ -45,7 +48,7 @@ Rules:
 - Studio reputation: each game module exposes `reputationOf(rawSave) => number`, the reputation earned in that save (ADEEVA subtracts its career's starting reputation). The studio sums the best slot per game, capping each game's contribution at 24 (`PER_GAME_REPUTATION_CAP`) so every perk needs play across several games. Perks unlock at 4, 8, 13, 19, 26, 34, 43 and 53 (rose-gold hair, star hair clip, twilight hall, sunny dungarees, round glasses, ocean-teal hair, garden hall, flower crown), so a few finished orders unlock the first one. Unlocked perks are never taken away. They are cosmetic only: no gameplay advantages, no purchases and no randomness. Locked hair colours and outfits are hidden from every game's avatar step until unlocked.
 - Parent page (`#/parent`, linked from the home footer): plain-language "What this studio does not do" list, how saves work with a clear-all button per game, and local playtime per game (counted only while a game screen is visible, stored in localStorage `studio.playtime` as `{ version: 1, seconds }`).
 - About and privacy (`#/about`, linked from the home footer and the parent page): what is stored and where, what the app never does, the host's request logs, picture steps to install on Android, Chromebook, Windows, iPhone/iPad and Mac, per-device saves, and a "Delete everything on this device" button that only works once a grown-up types the word delete.
-- Installable offline app (production builds only): `public/manifest.webmanifest` and icons (`public/icons/maker-studio.svg` is the source drawing), a hand-written service worker built by `tooling/offlineBuild.ts` that precaches every built file under a versioned cache, checks each file against its SHA-384 hash so a damaged or mismatched file fails the whole install, and stores nothing beyond that list; and an update notice ("A new version is ready — restart when you like") shown only outside games. `public/_headers` holds the security headers for Cloudflare Pages; `vite preview` applies the same file path by path, as the host does, so every browser test runs under the real CSP and caching rules (minus `upgrade-insecure-requests`, which the plain-HTTP preview can't honour). The manifest link sends credentials, so it still loads behind Cloudflare Access.
+- Installable offline app (production builds only): `public/manifest.webmanifest` and icons (`public/icons/maker-studio.svg` is the source drawing), a hand-written service worker built by `tooling/offlineBuild.ts` that precaches every built file under a versioned cache, checks each file against its SHA-384 hash so a damaged or mismatched file fails the whole install, and stores nothing beyond that list; an update notice ("A new version is ready — restart when you like") shown only outside games; and a "Signed out" mark with a Sign in button on the home, parent and About pages when the Cloudflare Access session has expired. `public/_headers` holds the security headers for Cloudflare Pages; `vite preview` applies the same file path by path, as the host does, so every browser test runs under the real CSP and caching rules (minus `upgrade-insecure-requests`, which the plain-HTTP preview can't honour). The manifest link sends credentials, so it still loads behind Cloudflare Access.
 - Launcher: `Play Maker Studio.cmd` at the repo root starts the dev server and opens the browser on the studio home.
 
 ## 3. Shared game shape

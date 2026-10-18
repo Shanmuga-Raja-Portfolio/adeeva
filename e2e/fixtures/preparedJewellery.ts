@@ -10,7 +10,6 @@ import {
   lanternNightLine,
   pickFirstTheme,
   playWholeLine,
-  shootLookbook,
   stagedLaunch,
 } from "../../src/games/jewellery/core/linePlaythrough";
 import { JEWELLERY_URL, finishJewelleryStories } from "./jewelleryBench";
@@ -32,10 +31,6 @@ export function boardedLoft(settings: Partial<NewGameSettings> = {}): GameState 
 
 export function madeLine(settings: Partial<NewGameSettings> = {}): GameState {
   return playWholeLine(buyLineGems(boardedLoft(settings)));
-}
-
-export function shotLine(settings: Partial<NewGameSettings> = {}): GameState {
-  return shootLookbook(madeLine(settings));
 }
 
 export function lanternNight(settings: Partial<NewGameSettings> = {}): GameState {

@@ -2,7 +2,7 @@
 
 This is the single place for status, open tasks and the order of work. Game designs live in `work/0003-studio/games/<id>.md`; the studio contract is in `work/0003-studio/design.md`.
 
-**Working agreement:** each task gets its own `task/NNNN-slug` branch and worktree, two adversarial reviews and every check, then one commit. Pushes to GitHub (`Shanmuga-Raja-Portfolio/adeeva`, private) wait for Shan, and are done together, one by one. Once CI is live (task 57), every change reaches `main` through a pull request that merges only on a green `ci-ok`, with rebase or squash and the branch deleted afterwards; production deploys come only from release tags. The details are in `work/0057-ci-cd/README.md`. Every job's processes are cleaned up when it finishes.
+**Working agreement:** each task gets its own `task/NNNN-slug` branch and worktree, two adversarial reviews and every check, then one commit. Pushes to GitHub (`Shanmuga-Raja-Portfolio/adeeva`, private) wait for Shan, and are done together, one by one. Since CI went live (task 57, pull request #1), every change reaches `main` through a pull request that merges only on a green `ci-ok`, with rebase or squash and the branch deleted afterwards; production deploys come only from release tags. The details are in `work/0057-ci-cd/README.md`. Every job's processes are cleaned up when it finishes.
 
 ## Status
 
@@ -32,9 +32,6 @@ Done:
 2. ✅ Browser-test stability and the first load-race sweep. The Patisserie Fair double-advance bug is fixed, and the trace screencast that blocked browser close is off.
 3. ✅ Avatar feet, redrawn as grounded ankle boots (Shan's report).
 4. ✅ Phase C for ADEEVA, Patisserie, Jewellery and Six Kitchens, each at 88%. Patisserie's bench and salon render fast on slow devices: screens preload while the hub is idle, and animated guests have their own layers.
-
-Next:
-
 5. ✅ **Race sweep 2:** the newer specs bind their show and scene waits to held time, a show-clock frame is capped so a stall never skips a scene, and toast lifetimes start when the toast appears. Thrift-Flip (100%) and Interior (100%) Phase C are merged.
 6. ✅ **Workshop Phase C gap round:** 88% from a fresh three-critic panel, none clearly worse. The Craft Fair showcase is still the screen it loses; it is on the art-pass list.
 7. ✅ **Speed on slow devices, all games:**
@@ -54,6 +51,8 @@ Next:
    - browser tests in `e2e/release/` (smoke, no network with no CSP violations and a check that the watch really sees a blocked style, manifest, per-path caching headers and offline play, update prompt, a damaged-file install that never takes over, nothing stored outside the build, About page), with new projects for an Android handheld (Pixel 7 landscape), a Chromebook (1366×768), and WebKit at iPhone 15 and iPad sizes. WebKit runs the service worker too, so offline play and the update prompt are checked there as well.
 
    Left for deploy day, on the live site: check that Cloudflare Access sign-in works inside an installed iOS home-screen app, and that an expired session never breaks offline play (the cached game keeps working, and updates wait until the next sign-in). Keep Cloudflare Web Analytics and any other HTML rewriting off: the worker checks every file's hash, so a page the host changes would never install for offline play. Also check on the live site that the headers arrive as written, and that the Signed out mark appears when an Access session expires (Access may answer the `/sw.js` check with a redirect or a 401). A captive-portal Wi-Fi that redirects every request will also show the mark until the portal is passed. Found along the way and fixed: a kit button's 1px hover lift moved its own hit area, so a pointer resting on its bottom edge flipped hover on and off every frame (seen on ADEEVA's story panel in WebKit). The button now keeps a still hit area while it lifts. Other cards and tiles with their own hover lift use the same pattern and are worth the same check.
+
+In progress and next:
 
 10. 🟨 **Security hardening and pen test** (must be clean before any invite; local part and Shan's AI tools done, live part pending):
     - a written threat model (static site, children as users, invite-only access);
@@ -79,7 +78,7 @@ Next:
     - OWASP ZAP 2.17.0 on the local preview: baseline 0 FAIL, full active scan 0 FAIL with 1 low false positive (the RNG constant read as a timestamp);
     - manual checks of headers, caching, service-worker scope, directory listing, stray files, the manifest and `?signin`, all clean.
 
-    Shan's AI tools done (branch `task/0056-ai-security-tools`, 2026-10-18; `work/0056-ai-security/strix.md`, `open-code-review.md`, `triage.md`). Both ran on MiniMax-M3; the key was read only from the environment and never printed or stored:
+    Shan's AI tools done (branch `task/0056-ai-security-tools`, pull request #2, 2026-10-18; `work/0056-ai-security/strix.md`, `open-code-review.md`, `triage.md`). Both ran on MiniMax-M3; the key was read only from the environment and never printed or stored:
     - **Strix 1.7.0** (Docker sandbox) against the local preview only:
       - 1 Medium, missing SRI on `index.html`'s tags: a false positive, because the HTML and assets are one origin and one atomic deploy;
       - 30 surfaces ruled out, 1 verification gap (the `/sw.js` update path, by design);
@@ -91,19 +90,23 @@ Next:
 
     Pending: Strix against the live address (after the sandbox network lockdown); `/code-review ultra` (Shan starts it); and on deploy day, ZAP against the live URL, Cloudflare Access bypass attempts (direct asset URLs, `*.pages.dev` preview and branch URLs, the cached service worker, `HEAD /sw.js`, cookie flags including `SameSite=Lax`), the headers as Cloudflare actually serves them, and Access sign-in inside an installed iOS app.
 
-11. 🟨 **CI/CD** (task 57, branch `task/0057-ci-cd`, 2026-10-18; built, waiting for Shan to push and watch the first runs). Built:
+11. ✅ **CI/CD** (task 57, branch `task/0057-ci-cd`, 2026-10-18; merged as pull request #1). Built:
     - `ci.yml` on every pull request and push to `main`: verify (frozen install, typecheck, lint, unit tests, build, `pnpm audit --prod` at any level plus `--audit-level high` for everything, `dist` artifact), a gitleaks scan of the full history (pinned, checksum-checked CLI), the browser tests in 2 Chromium shards plus one WebKit job, and a single `ci-ok` check;
     - `preview.yml`: every same-repo pull request gets its own Cloudflare Pages preview and one self-updating comment with the link; it skips with a notice until the Cloudflare secrets exist;
     - `release.yml`: a `v*.*.*` tag on `main` reruns all of CI, deploys the tested build to production, then creates a GitHub Release; a manual run from an older tag is the slow rollback;
     - Dependabot (weekly, grouped minor and patch, TypeScript majors ignored), a pull request template, every action pinned by commit SHA, `actionlint` and ShellCheck clean;
     - `packageManager: pnpm@11.28.5` in `package.json`, with `devEngines` pinned to the same exact version;
-    - a Linux rehearsal of the whole browser suite (Playwright's Ubuntu 24.04 image, 2 CPUs) found that Linux Chromium doesn't recognise `bluetooth` in our `Permissions-Policy`, and the console watch failed 13 tests. The Chromium projects now launch with `--enable-blink-features=WebBluetooth`, as Chromebooks and Android do. With that, everything passes on Linux: 176 Chromium tests and 18 WebKit.
+    - a Linux rehearsal of the whole browser suite (Playwright's Ubuntu 24.04 image, 2 CPUs) found that Linux Chromium doesn't recognise `bluetooth` in our `Permissions-Policy`, and the console watch failed 13 tests. The Chromium projects now launch with `--enable-blink-features=WebBluetooth`, as Chromebooks and Android do. With that, everything passed in the rehearsal: 176 Chromium tests (the other 56 are quality-screenshot specs that skip without `QUALITY_SHOTS_DIR`) and 18 WebKit;
+    - before the merge, a loaded 2-vCPU runner showed one more timing race: drag helpers could measure a stage before its entry rise had finished. Every drag-aiming helper now waits for the stage to settle first. Until the Cloudflare setup below is done, previews skip with a notice and a release would fail at its deploy step.
 
-    Waiting for Shan: push the branch and watch the first runs; create the Pages project, the Pages-only API token, the two repo secrets and the Access application (both `maker-studio.pages.dev` and `*.maker-studio.pages.dev`, cookie `SameSite=Lax`), and set the repo's merge settings. All steps are in `work/0057-ci-cd/README.md`.
+    Waiting for Shan: create the Pages project, the Pages-only API token, the two repo secrets and the Access application (both `maker-studio.pages.dev` and `*.maker-studio.pages.dev`, cookie `SameSite=Lax`), and set the repo's merge settings. All steps are in `work/0057-ci-cd/README.md`.
 
-12. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, a drift sweep, and a closing report.
+12. ✅ **Final pass** (task 58, branch `task/0058-final-pass`, 2026-10-18; `work/0058-final-pass/report.md`): every game played from the studio home on the production build at desktop, iPhone 15 and iPad sizes; the drift and staleness sweep; audits clean. Fixed: four games opened the hub scrolled down after New Game or Continue on a phone, Thrift-Flip's hub and Six Kitchens' New Game steps scrolled sideways on narrow screens, and dead code and CSS were removed.
+
+    Found and left open (see the report): on short or narrow screens (the Android handheld in landscape, phones in portrait) every game's sticky header takes a third or more of the height, and craft steps that need a drag or a traced line don't fit beside it. Decide before inviting players who play on a phone or the handheld.
+
 13. ⬜ **Deploy with Shan:** Shan sets up Cloudflare as in `work/0057-ci-cd/README.md`, we tag `v1.0.0` and watch the release deploy, then Shan invites the kids, friends and relatives.
-14. ⬜ **After the first players:** a shared art pass (lighting, texture, depth) guided by what the kids and invited families say, and the Interior Challenging economy check (seed 2 earns 0.79× the loft).
+14. ⬜ **After the first players:** a shared art pass (lighting, texture, depth) guided by what the kids and invited families say, a compact layout for short and narrow screens (see task 12), and the Interior Challenging economy check (seed 2 earns 0.79× the loft).
 
 **Recurring: drift and staleness sweep.** Run one at every milestone (after each phase, before every deploy) and whenever docs lag behind the code (Shan, 2026-10-17). It checks that:
 
@@ -156,8 +159,9 @@ Parked: the Tauri desktop app for the Windows PC (Shan, 2026-10-17). Rust 1.99.1
 
 ## Waiting for Shan (do together, one by one)
 
-- Create the hosting account (Cloudflare Pages, plus Cloudflare Access for invite-only), and choose a private link or invite-only. The steps for the Pages project, the API token, the repo secrets and the Access application are in `work/0057-ci-cd/README.md`.
+- Create the hosting account (Cloudflare Pages, plus Cloudflare Access for invite-only), and choose a private link or invite-only. The steps for the Pages project, the API token, the repo secrets, the Access application and the repo's merge settings are in `work/0057-ci-cd/README.md`.
 - Push each task branch to GitHub and open its pull request; merge on a green `ci-ok`.
+- Start `/code-review ultra` over the release diff (it is billed, so only Shan can start it).
 - Read the research reports and decide whether anything in them is worth discussing.
 - Playtest with the kids, then the invited friends and relatives. Their reactions are the final judge.
 

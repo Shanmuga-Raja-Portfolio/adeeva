@@ -70,6 +70,7 @@ export function WorkshopGame({ player, lookOptions, onPlayerChange, onExit }: Ga
     (view: PlayView) => {
       if (view !== "hub") flush();
       setRoute({ name: "play", view });
+      window.scrollTo({ top: 0 });
     },
     [flush],
   );

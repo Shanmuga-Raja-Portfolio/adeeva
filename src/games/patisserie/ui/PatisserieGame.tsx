@@ -77,11 +77,9 @@ export function PatisserieGame({ player, lookOptions, onPlayerChange, onExit }: 
   const refreshSlots = useCallback(() => setSlots(readAllSlots()), []);
   const open = useCallback(
     (view: PlayView) => {
-      if (view !== "hub") {
-        flush();
-        window.scrollTo({ top: 0 });
-      }
+      if (view !== "hub") flush();
       setRoute({ name: "play", view });
+      window.scrollTo({ top: 0 });
     },
     [flush],
   );

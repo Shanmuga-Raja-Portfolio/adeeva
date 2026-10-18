@@ -15,7 +15,6 @@ export type RunStage = (typeof RUN_STAGES)[number];
 
 export type RunKind = "order" | "tray" | "salon-tray" | "showpiece";
 
-export const ORDER_STAGES: readonly RunStage[] = RUN_STAGES;
 export const TRAY_STAGES: readonly RunStage[] = [
   "design",
   "pantry",
@@ -40,7 +39,7 @@ export const SALON_TRAY_STAGES: readonly RunStage[] = [
 export function stagesFor(kind: RunKind): readonly RunStage[] {
   if (kind === "tray") return TRAY_STAGES;
   if (kind === "salon-tray") return SALON_TRAY_STAGES;
-  return ORDER_STAGES;
+  return RUN_STAGES;
 }
 
 export function stageIndex(stage: RunStage): number {

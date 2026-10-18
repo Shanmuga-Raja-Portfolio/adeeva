@@ -1,10 +1,9 @@
-﻿node_modules/
+node_modules/
 dist/
 dist-e2e/
 coverage/
 test-results*/
 playwright-report/
 *.local
-dressmaker_ide_build_spec_DELETE_when_done.md
-
 .claude/
+dressmaker_ide_build_spec_DELETE_when_done.md

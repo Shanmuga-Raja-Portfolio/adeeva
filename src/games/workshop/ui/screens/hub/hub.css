@@ -59,13 +59,6 @@
   margin-top: var(--space-3);
 }
 
-.ww-hub__bench {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-
 .ww-door {
   position: absolute;
   inset: 0;

@@ -13,12 +13,6 @@
   filter: drop-shadow(0 4px 4px rgba(91, 58, 30, 0.18));
 }
 
-.tf-bunting {
-  display: block;
-  width: 100%;
-  height: 32px;
-}
-
 .tf-tag {
   --tf-tilt: 0deg;
   position: relative;

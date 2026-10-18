@@ -57,7 +57,10 @@ export function AdeevaGame({ player, lookOptions, onPlayerChange, onExit }: Game
   useIdlePreload(screen.name === "hub" ? PRELOADS : NO_PRELOADS);
 
   const refreshSlots = useCallback(() => setSlots(readAllSlots()), []);
-  const toHub = useCallback(() => setRoute({ name: "play", view: "hub" }), []);
+  const toHub = useCallback(() => {
+    setRoute({ name: "play", view: "hub" });
+    window.scrollTo({ top: 0 });
+  }, []);
   const toCraft = useCallback(() => {
     flush();
     setRoute({ name: "play", view: "craft" });

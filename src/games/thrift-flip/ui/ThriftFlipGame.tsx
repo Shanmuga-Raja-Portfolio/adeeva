@@ -70,7 +70,10 @@ export function ThriftFlipGame({ player, lookOptions, onPlayerChange, onExit }: 
   useIdlePreload(screen.name === "hub" ? PRELOADS : NO_PRELOADS);
 
   const refreshSlots = useCallback(() => setSlots(thriftSlots.readAllSlots()), []);
-  const toHub = useCallback(() => setRoute({ name: "play", view: "hub" }), []);
+  const toHub = useCallback(() => {
+    setRoute({ name: "play", view: "hub" });
+    window.scrollTo({ top: 0 });
+  }, []);
   const toFlip = useCallback(() => {
     flush();
     setRoute({ name: "play", view: "flip" });

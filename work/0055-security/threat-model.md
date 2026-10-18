@@ -36,7 +36,7 @@ Not an asset: the code itself is not secret. Anyone invited can read it, and the
 5. **The manifest.** The browser reads it to install the app (name, icons, scope, start URL).
 6. **The Cloudflare Access boundary.** Access sits in front of every request to the Pages project, including `HEAD /sw.js`, which the app uses to notice an expired session.
 7. **Messages.** The page posts one message to the waiting service worker (`SKIP_WAITING`). The page itself listens for no `message` events.
-8. **The build and deploy pipeline.** `pnpm install` from a frozen lockfile, `vite build`, then upload to Pages.
+8. **The build and deploy pipeline.** On GitHub Actions since task 57: `pnpm install` from a frozen lockfile, `vite build`, every check, then `wrangler pages deploy` of the tested `dist`: production only from a release tag (`.github/workflows/release.yml`), plus a preview for each pull request from a branch in this repo (`.github/workflows/preview.yml`). The Cloudflare token reaches only those two deploy steps, never the build or test jobs, and anyone with write access could reach it from a branch, which is why write access stays with Shan alone (`work/0057-ci-cd/README.md`).
 
 ## Mitigations (with where to look)
 

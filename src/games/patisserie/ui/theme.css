@@ -133,16 +133,6 @@
   color: var(--ink-soft);
 }
 
-.pa-safety--quiet {
-  align-self: center;
-  padding: 2px 12px;
-  border: none;
-  background: rgba(255, 253, 247, 0.6);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--pa-cocoa);
-}
-
 .pa-safety svg {
   flex: none;
   color: var(--pa-blueberry);
