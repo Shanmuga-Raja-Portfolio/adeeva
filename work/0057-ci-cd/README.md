@@ -10,13 +10,13 @@ Shan's decisions (2026-10-18):
 
 ## The workflows
 
-| File                               | Runs on                                       | What it does                                                                                                                                       |
-| ---------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/ci.yml`         | every pull request to `main`, push to `main`  | install, typecheck, lint, unit tests, build, `pnpm audit`, a gitleaks scan of the whole history, and the browser tests on Chromium and WebKit      |
-| `.github/workflows/preview.yml`    | every pull request from a branch in this repo | builds the PR and deploys it to its own Cloudflare Pages preview, then posts (and keeps updating) one comment with the link                        |
-| `.github/workflows/release.yml`    | a pushed `v*.*.*` tag, or a manual re-run     | checks the tag is on `main`, runs the whole of `ci.yml` again on that commit, deploys the tested build to production and creates a GitHub Release  |
-| `.github/dependabot.yml`           | weekly, Mondays                               | grouped minor and patch updates for npm and GitHub Actions; TypeScript majors are ignored (it stays on 6.x); npm versions must be 5 days old first |
-| `.github/pull_request_template.md` | every new pull request                        | what changed, evidence, the gate checklist, screenshots for UI, and a security impact line                                                         |
+| File                               | Runs on                                       | What it does                                                                                                                                                    |
+| ---------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/ci.yml`         | every pull request to `main`, push to `main`  | install, typecheck, lint, unit tests, build, `pnpm audit`, a gitleaks scan of the whole history, and the browser tests on Chromium and WebKit                   |
+| `.github/workflows/preview.yml`    | every pull request from a branch in this repo | builds the PR and deploys it to its own Cloudflare Pages preview, then posts (and keeps updating) one comment with the link                                     |
+| `.github/workflows/release.yml`    | a pushed `v*.*.*` tag, or a manual re-run     | checks the tag is on `main`, runs the whole of `ci.yml` again on that commit, deploys the tested build to production and creates a GitHub Release               |
+| `.github/dependabot.yml`           | weekly, Mondays                               | grouped minor and patch updates for npm, the deploy tool and GitHub Actions; TypeScript majors are ignored (it stays on 6.x); versions must be 5 days old first |
+| `.github/pull_request_template.md` | every new pull request                        | what changed, evidence, the gate checklist, screenshots for UI, and a security impact line                                                                      |
 
 ### Job graph
 
@@ -36,7 +36,7 @@ release.yml
 
 - **verify:** `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`, the two audits below, and the `dist` folder uploaded as an artifact (kept 7 days).
 - **secrets:** the gitleaks CLI over the full git history. The binary is pinned by version and checked against the release's SHA-256 before it runs. (gitleaks-action is not used: it needs a paid licence for organisations.)
-- **e2e chromium:** the `chromium`, `android-handheld` and `chromebook` projects, split into 2 shards. **e2e webkit:** the `webkit-iphone` and `webkit-ipad` projects in one job. Both wait for `verify`, so a lint or unit-test failure costs about 5 minutes, not 40. Each job installs its browser with its OS packages, caches the browser download per Playwright version, runs with 2 workers (the runners have 2 vCPUs), and uploads the HTML report and the traces only when it fails. Traces are kept only for failed tests, and screenshots are off in `playwright.config.ts` by design.
+- **e2e chromium:** the `chromium`, `android-handheld` and `chromebook` projects, split into 2 shards. **e2e webkit:** the `webkit-iphone` and `webkit-ipad` projects in one job. Both wait for `verify`, so a lint or unit-test failure costs about 5 minutes, not 40. Each job installs its browser with its OS packages, caches the browser download per Playwright version, runs with 2 workers (the runners have 2 vCPUs), uploads the HTML report and the traces only when it fails, and finally checks that the build it tested is byte-for-byte the `dist` artifact from `verify` (the build is deterministic, so a difference means the deployed files aren't the tested ones). Traces are kept only for failed tests, and screenshots are off in `playwright.config.ts` by design.
 - **ci-ok:** runs even when something before it failed or was skipped, and passes only when all four jobs before it passed. **`ci-ok` is the one check name to look at** before merging.
 
 ### The audit policy
@@ -58,21 +58,21 @@ Every action is pinned by its full commit SHA, with the version in a trailing co
 | `actions/cache`             | v6.1.0  | `55cc8345863c7cc4c66a329aec7e433d2d1c52a9` |
 | `actions/github-script`     | v9.0.0  | `3a2844b7e9c422d3c10d287c895573f7108da1b3` |
 
-Tools pinned inside the workflows (Dependabot can't see these, so they're bumped by hand):
+Tools pinned outside the actions (Dependabot sees only wrangler's lockfile; the rest are bumped by hand):
 
 | Tool     | Version | How it's pinned                                                                                                                                  |
 | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | gitleaks | 8.30.1  | `GITLEAKS_VERSION` and `GITLEAKS_SHA256` in `ci.yml`; the hash matches the release's checksums file and GitHub's asset digest                    |
-| wrangler | 4.151.1 | `WRANGLER_VERSION` in `preview.yml` and `release.yml`; run with `npx --yes wrangler@<version>`, never a project dependency                       |
+| wrangler | 4.151.1 | `.github/deploy/package.json` and its `package-lock.json` (every transitive package locked with its integrity hash); never a project dependency  |
 | pnpm     | 11.28.5 | `packageManager` and `devEngines.packageManager` in `package.json`; `pnpm/action-setup` reads `devEngines` first, so both hold the exact version |
 | Node     | 24      | `node-version: 24` in each `setup-node` step                                                                                                     |
 
-To bump gitleaks: take the `linux_x64` line from the new release's `gitleaks_<version>_checksums.txt`, and check it against the asset's digest on the release page. To bump wrangler: change both files together.
+To bump gitleaks: take the `linux_x64` line from the new release's `gitleaks_<version>_checksums.txt`, and check it against the asset's digest on the release page. To bump wrangler by hand: `npm install --package-lock-only --ignore-scripts wrangler@<version>` in `.github/deploy`, then `npm audit` there.
 
 ### Permissions and secrets
 
 - Every workflow sets `permissions: contents: read` at the top. Only two jobs get more: the preview **comment** job (`pull-requests: write`) and the release **github release** job (`contents: write`). Neither runs any project code.
-- The Cloudflare secrets reach only the two deploy jobs. Those jobs download the built `dist` artifact and run wrangler. They never run `pnpm install` or any dependency's code, so a bad package can't read the token.
+- The Cloudflare secrets reach only the two deploy jobs, and only the single step that runs `wrangler pages deploy`. Those jobs download the built `dist` artifact, check out only `.github/deploy`, and install wrangler with `npm ci --ignore-scripts` in an earlier step that has no secrets. They never run `pnpm install`, and no install script of wrangler's dependencies (esbuild and workerd have them) ever runs. (An earlier draft ran `npx --yes wrangler@<version>`: that resolved wrangler's transitive packages fresh on every deploy and ran their install scripts with the token in the environment.)
 - Previews run only for pull requests from branches in this repo. A fork's pull request never gets a preview, because secrets are involved.
 - Dependabot pull requests don't receive repo secrets, so their preview job skips with a notice. CI still runs on them in full.
 - Untrusted text (the branch name) reaches shell scripts only through environment variables, never pasted into a script.
@@ -92,7 +92,7 @@ To bump gitleaks: take the `linux_x64` line from the new release's `gitleaks_<ve
 Branch protection rules, rulesets and environment reviewers aren't available for private repos on the free plan. The rules above are therefore a habit, not something GitHub enforces. What holds them up:
 
 - `ci-ok` is a single, always-reported check. A red or missing `ci-ok` means don't merge.
-- A release can't deploy a commit that isn't on `main`, and it reruns all of CI on that commit before it deploys. A bad direct push to `main` would still be caught at release time.
+- A release can't deploy a commit that isn't on `main`, and it reruns all of CI on that commit before it deploys. A bad direct push to `main` would still be caught at release time. This guards against mistakes, not against someone with write access: a tag runs the `release.yml` of the commit it points to, so a tag on a commit with an edited `release.yml` could skip the check. That is the same limit as described under **What the free plan can't stop**.
 - Only Shan can push.
 
 ### One-time repository settings (all on the free plan)
@@ -126,7 +126,7 @@ Then watch **Actions → Release**. It runs these steps:
 
 1. **tag is on main** fails unless the tag is exactly `vMAJOR.MINOR.PATCH` and its commit is on `origin/main`.
 2. **ci** runs the whole of `ci.yml` on the tagged commit: every gate, including all browser tests. Expect about 15 to 20 minutes.
-3. **deploy production** takes the `dist` that CI just built and tested, and runs `wrangler pages deploy dist --project-name maker-studio --branch main`. It fails if Cloudflare reports anything other than a production deployment.
+3. **deploy production** takes the `dist` that CI just built (each browser-test job rebuilds the app for its server and checks, with `diff -r`, that its build is byte-for-byte this `dist`), and runs `wrangler pages deploy dist --project-name maker-studio --branch main`. It fails if Cloudflare reports anything other than a production deployment.
 4. **github release** creates the GitHub Release with generated notes.
 
 Only one release runs at a time (`concurrency: release-production`). A second tag waits for the first to finish.
@@ -272,7 +272,8 @@ The workflows have not run on GitHub yet. Watch the first runs for the points in
 - **`pnpm/action-setup` and pnpm 11.** The action reads `devEngines.packageManager` before `packageManager`, which is why both now hold exactly `11.28.5`. The lockfile records that specifier, so `--frozen-lockfile` passes.
 - **Runner speed.** If a shard runs past about 20 minutes, or a timing-sensitive test fails only on GitHub, look at the trace in the failure artifact before changing anything. Don't add retries: the suite has been kept deterministic on purpose.
 - **WebKit dependencies.** `playwright install --with-deps webkit` pulls a long list of apt packages on `ubuntu-24.04`. If apt is slow or a mirror fails, the WebKit job fails before any test runs. Re-run it.
-- **Dependabot and pnpm 11.** Dependabot's support for pnpm 11 lockfiles hasn't been seen working here yet. If its first npm pull request fails to update `pnpm-lock.yaml`, update that dependency by hand on a task branch.
+- **Dependabot and pnpm 11.** Dependabot's support for pnpm 11 lockfiles hasn't been seen working here yet. If its first npm pull request fails to update `pnpm-lock.yaml`, update that dependency by hand on a task branch. Also expect `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` on some Dependabot pull requests: pnpm 11 refuses packages younger than a day by default, Dependabot's 5-day cooldown covers only the dependency it bumps, and a fresh transitive package in its lockfile fails `--frozen-lockfile`. Re-run CI a day later rather than turning the check off.
 - **The first preview** skips with "Preview skipped" until the two Cloudflare secrets exist. After that, the comment must show both a per-commit link and a branch link, and both must ask for the Access email code.
+- **Every preview** fails if Cloudflare reports anything other than a preview deployment, so a branch can never land on production through the preview workflow.
 - **The first release** fails at `deploy production` if the Pages project doesn't exist yet or its production branch isn't `main`. That's on purpose: it refuses to make a preview deployment by mistake.
 - **`GITHUB_SHA` on an annotated tag.** The tag check compares the tag's commit with `GITHUB_SHA` after dereferencing both, so it works whether GitHub reports the tag object or the commit.
