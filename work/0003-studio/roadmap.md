@@ -60,7 +60,7 @@ Parked: the Tauri desktop app for the Windows PC (Shan, 2026-10-17). Rust 1.99.1
 
 **Updates.** When we deploy a new version, an installed copy notices it in the background the next time it's opened online. It then shows a gentle "A new version is ready, restart when you like" note, and never interrupts a game. Saves carry over: every game has versioned saves with migrations.
 
-**Hosting.** The game is a static site: HTML, JavaScript, CSS and images, with no server code, database, accounts or logins of its own. It runs on a free static host with HTTPS. The suggestion is Cloudflare Pages: Shan creates the account, and the project gets a free `*.pages.dev` address. A custom domain is optional later.
+**Hosting.** The game is a static site: HTML, JavaScript, CSS and images, with no server code, database, accounts or logins of its own. It runs on a free static host with HTTPS. The suggestion is Cloudflare Pages: Shan creates the account, and the project gets a free `*.pages.dev` address. Shan has no domain and none is needed: the game lives at the free address, for example `https://maker-studio.pages.dev` (the name depends on what is free). A custom domain costs about $10 a year and is optional later. Check when setting up: Cloudflare Access must protect the production `pages.dev` address and not only preview builds, and find out whether the free Zero Trust plan (up to 50 users) asks for a payment card on file.
 
 **Who can open it.** Two options for Shan to choose:
 
