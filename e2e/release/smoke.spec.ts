@@ -32,6 +32,7 @@ test("the studio opens, a game starts, and the family pages read well on this sc
 test("a new game opens its hub at the top, and the hub and chef's steps fit this screen", async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await page.getByTestId("tile-thrift-flip").click();
   await page.getByRole("button", { name: "New Game" }).click();
