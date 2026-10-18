@@ -1,0 +1,663 @@
+{
+	"@programName": "ZAP",
+	"@version": "2.17.0",
+	"@generated": "Sun, 18 Oct 2026 12:40:15",
+	"created": "2026-10-18T12:40:15.707820308Z",
+	"insights":[
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://host.docker.internal:6220",
+			"key": "insight.code.2xx",
+			"description": "Percentage of responses with status code 2xx",
+			"statistic": "100"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://host.docker.internal:6220",
+			"key": "insight.endpoint.ctype.application/manifest+json",
+			"description": "Percentage of endpoints with content type application/manifest+json",
+			"statistic": "1"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://host.docker.internal:6220",
+			"key": "insight.endpoint.ctype.image/png",
+			"description": "Percentage of endpoints with content type image/png",
+			"statistic": "1"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://host.docker.internal:6220",
+			"key": "insight.endpoint.ctype.image/svg+xml",
+			"description": "Percentage of endpoints with content type image/svg+xml",
+			"statistic": "1"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://host.docker.internal:6220",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "Percentage of endpoints with content type text/css",
+			"statistic": "17"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://host.docker.internal:6220",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "Percentage of endpoints with content type text/html",
+			"statistic": "4"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://host.docker.internal:6220",
+			"key": "insight.endpoint.ctype.text/javascript",
+			"description": "Percentage of endpoints with content type text/javascript",
+			"statistic": "74"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://host.docker.internal:6220",
+			"key": "insight.endpoint.method.GET",
+			"description": "Percentage of endpoints with method GET",
+			"statistic": "100"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://host.docker.internal:6220",
+			"key": "insight.endpoint.total",
+			"description": "Count of total endpoints",
+			"statistic": "74"
+		}
+	],
+	"site":[ 
+		{
+			"@name": "http://host.docker.internal:6220",
+			"@host": "host.docker.internal",
+			"@port": "6220",
+			"@ssl": "false",
+			"alerts": [ 
+				{
+					"pluginid": "10096",
+					"alertRef": "10096",
+					"alert": "Timestamp Disclosure - Unix",
+					"name": "Timestamp Disclosure - Unix",
+					"riskcode": "1",
+					"confidence": "1",
+					"riskdesc": "Low (Low)",
+					"desc": "<p>A timestamp was disclosed by the application/web server. - Unix</p>",
+					"instances":[ 
+						{
+							"id": "4",
+							"uri": "http://host.docker.internal:6220/assets/profile-D6--OydM.js",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/profile-D6--OydM.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "1831565813",
+							"otherinfo": "1831565813, which evaluates to: 2028-01-15 16:16:53."
+						}
+					],
+					"count": "1",
+					"systemic": false,
+					"solution": "<p>Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns.</p>",
+					"otherinfo": "<p>1831565813, which evaluates to: 2028-01-15 16:16:53.</p>",
+					"reference": "<p>https://cwe.mitre.org/data/definitions/200.html</p>",
+					"cweid": "497",
+					"wascid": "13",
+					"sourceid": "19"
+				},
+				{
+					"pluginid": "10094",
+					"alertRef": "10094-3",
+					"alert": "Base64 Disclosure",
+					"name": "Base64 Disclosure",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>Base64 encoded data was disclosed by the application/web server. Note: in the interests of performance not all base64 strings in the response were analyzed individually, the entire response should be looked at by the analyst/security team/developer(s).</p>",
+					"instances":[ 
+						{
+							"id": "43",
+							"uri": "http://host.docker.internal:6220/assets/AdeevaGame-BJeeEX7B.js",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/AdeevaGame-BJeeEX7B.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "assets/useGameSession-DWCsr4Ay",
+							"otherinfo": "j\uFFFD\\x001e\uFFFD\uFFFD\uFFFD\u1699\u47B2\u0228\uFFFD\uFFFD\uFFFD\n\uFFFD\uFFFD\\x0003"
+						},
+						{
+							"id": "61",
+							"uri": "http://host.docker.internal:6220/assets/ChefGame-U8OtCXcI.js",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/ChefGame-U8OtCXcI.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "assets/useGameSession-DWCsr4Ay",
+							"otherinfo": "j\uFFFD\\x001e\uFFFD\uFFFD\uFFFD\u1699\u47B2\u0228\uFFFD\uFFFD\uFFFD\n\uFFFD\uFFFD\\x0003"
+						},
+						{
+							"id": "60",
+							"uri": "http://host.docker.internal:6220/assets/InteriorGame-CFB8Tu_N.js",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/InteriorGame-CFB8Tu_N.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "assets/useGameSession-DWCsr4Ay",
+							"otherinfo": "j\uFFFD\\x001e\uFFFD\uFFFD\uFFFD\u1699\u47B2\u0228\uFFFD\uFFFD\uFFFD\n\uFFFD\uFFFD\\x0003"
+						},
+						{
+							"id": "55",
+							"uri": "http://host.docker.internal:6220/assets/JewelleryGame-CYxQ49tD.js",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/JewelleryGame-CYxQ49tD.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "assets/useGameSession-DWCsr4Ay",
+							"otherinfo": "j\uFFFD\\x001e\uFFFD\uFFFD\uFFFD\u1699\u47B2\u0228\uFFFD\uFFFD\uFFFD\n\uFFFD\uFFFD\\x0003"
+						},
+						{
+							"id": "46",
+							"uri": "http://host.docker.internal:6220/assets/PatisserieGame-CovMN06n.js",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/PatisserieGame-CovMN06n.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "assets/useGameSession-DWCsr4Ay",
+							"otherinfo": "j\uFFFD\\x001e\uFFFD\uFFFD\uFFFD\u1699\u47B2\u0228\uFFFD\uFFFD\uFFFD\n\uFFFD\uFFFD\\x0003"
+						},
+						{
+							"id": "53",
+							"uri": "http://host.docker.internal:6220/assets/ThriftFlipGame-m1YaFQta.js",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/ThriftFlipGame-m1YaFQta.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "assets/useGameSession-DWCsr4Ay",
+							"otherinfo": "j\uFFFD\\x001e\uFFFD\uFFFD\uFFFD\u1699\u47B2\u0228\uFFFD\uFFFD\uFFFD\n\uFFFD\uFFFD\\x0003"
+						},
+						{
+							"id": "54",
+							"uri": "http://host.docker.internal:6220/assets/WorkshopGame-DA32_DPh.js",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/WorkshopGame-DA32_DPh.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "assets/useGameSession-DWCsr4Ay",
+							"otherinfo": "j\uFFFD\\x001e\uFFFD\uFFFD\uFFFD\u1699\u47B2\u0228\uFFFD\uFFFD\uFFFD\n\uFFFD\uFFFD\\x0003"
+						},
+						{
+							"id": "36",
+							"uri": "http://host.docker.internal:6220/assets/index-CgnW7Ejk.js",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/index-CgnW7Ejk.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "assets/useGameSession-DWCsr4Ay",
+							"otherinfo": "j\uFFFD\\x001e\uFFFD\uFFFD\uFFFD\u1699\u47B2\u0228\uFFFD\uFFFD\uFFFD\n\uFFFD\uFFFD\\x0003"
+						}
+					],
+					"count": "8",
+					"systemic": false,
+					"solution": "<p>Manually confirm that the Base64 data does not leak sensitive information, and that the data cannot be aggregated/used to exploit other vulnerabilities.</p>",
+					"otherinfo": "<p>j\uFFFD\\x001e\uFFFD\uFFFD\uFFFD\u1699\u47B2\u0228\uFFFD\uFFFD\uFFFD</p><p>\uFFFD\uFFFD\\x0003</p>",
+					"reference": "<p>https://projects.webappsec.org/w/page/13246936/Information%20Leakage</p>",
+					"cweid": "319",
+					"wascid": "13",
+					"sourceid": "35"
+				},
+				{
+					"pluginid": "120000",
+					"alertRef": "120000-1",
+					"alert": "Information Disclosure - Information in Browser localStorage",
+					"name": "Information Disclosure - Information in Browser localStorage",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "Informational (High)",
+					"desc": "<p>Information was stored in browser localStorage.</p><p>This is not unusual or necessarily unsafe - this informational alert has been raised to help you get a better understanding of what this app is doing. For more details see the Client tabs - this information was set directly in the browser and will therefore not necessarily appear in this form in any HTTP(S) messages.</p>",
+					"instances":[ 
+						{
+							"id": "47",
+							"uri": "http://host.docker.internal:6220/#/parent",
+							"nodeName": "http:\/\/host.docker.internal:6220\/",
+							"method": "GET",
+							"param": "studio.playtime",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "The following data (key=value) was set: studio.playtime={\"version\":1,\"seconds\":{\"adeeva\":4}}\nNote that this alert will only be raised once for each URL + key."
+						},
+						{
+							"id": "30",
+							"uri": "http://host.docker.internal:6220/",
+							"nodeName": "http:\/\/host.docker.internal:6220\/",
+							"method": "GET",
+							"param": "studio.profile",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "The following data (key=value) was set: studio.profile={\"version\":1,\"name\":\"\",\"look\":{\"skinTone\":\"honey\",\"hairStyle\":\"long-waves\",\"hairColour\":\"dark-brown\",\"outfit\":\"studio-apron\"},\"accessory\":null,\"theme\":\"morning\",\"perks\":[]}\nNote that this alert will only be raised once for each URL + key."
+						}
+					],
+					"count": "2",
+					"systemic": false,
+					"solution": "<p>This is an informational alert and no action is necessary. </p>",
+					"otherinfo": "<p>The following data (key=value) was set: studio.playtime={\"version\":1,\"seconds\":{\"adeeva\":4}}</p><p>Note that this alert will only be raised once for each URL + key.</p>",
+					"reference": "",
+					"cweid": "359",
+					"wascid": "13",
+					"sourceid": "83"
+				},
+				{
+					"pluginid": "10109",
+					"alertRef": "10109",
+					"alert": "Modern Web Application",
+					"name": "Modern Web Application",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The application appears to be a modern web application. If you need to explore it automatically then the Client Spider may well be more effective than the standard one.</p>",
+					"instances":[ 
+						{
+							"id": "1",
+							"uri": "http://host.docker.internal:6220/",
+							"nodeName": "http:\/\/host.docker.internal:6220\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "<script type=\"module\" crossorigin src=\"/assets/index-CgnW7Ejk.js\"></script>",
+							"otherinfo": "No links have been found while there are scripts, which is an indication that this is a modern web application."
+						},
+						{
+							"id": "0",
+							"uri": "http://host.docker.internal:6220/robots.txt",
+							"nodeName": "http:\/\/host.docker.internal:6220\/robots.txt",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "<script type=\"module\" crossorigin src=\"/assets/index-CgnW7Ejk.js\"></script>",
+							"otherinfo": "No links have been found while there are scripts, which is an indication that this is a modern web application."
+						},
+						{
+							"id": "3",
+							"uri": "http://host.docker.internal:6220/sitemap.xml",
+							"nodeName": "http:\/\/host.docker.internal:6220\/sitemap.xml",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "<script type=\"module\" crossorigin src=\"/assets/index-CgnW7Ejk.js\"></script>",
+							"otherinfo": "No links have been found while there are scripts, which is an indication that this is a modern web application."
+						}
+					],
+					"count": "3",
+					"systemic": false,
+					"solution": "<p>This is an informational alert and so no changes are required.</p>",
+					"otherinfo": "<p>No links have been found while there are scripts, which is an indication that this is a modern web application.</p>",
+					"reference": "",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "1"
+				},
+				{
+					"pluginid": "90005",
+					"alertRef": "90005-3",
+					"alert": "Sec-Fetch-Dest Header is Missing",
+					"name": "Sec-Fetch-Dest Header is Missing",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "Informational (High)",
+					"desc": "<p>Specifies how and where the data would be used. For instance, if the value is audio, then the requested resource must be audio data and not any other type of resource.</p>",
+					"instances":[ 
+						{
+							"id": "22",
+							"uri": "http://host.docker.internal:6220/",
+							"nodeName": "http:\/\/host.docker.internal:6220\/",
+							"method": "GET",
+							"param": "Sec-Fetch-Dest",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "12",
+							"uri": "http://host.docker.internal:6220/icons/apple-touch-icon.png",
+							"nodeName": "http:\/\/host.docker.internal:6220\/icons\/apple-touch-icon.png",
+							"method": "GET",
+							"param": "Sec-Fetch-Dest",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "7",
+							"uri": "http://host.docker.internal:6220/icons/maker-studio.svg",
+							"nodeName": "http:\/\/host.docker.internal:6220\/icons\/maker-studio.svg",
+							"method": "GET",
+							"param": "Sec-Fetch-Dest",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "17",
+							"uri": "http://host.docker.internal:6220/manifest.webmanifest",
+							"nodeName": "http:\/\/host.docker.internal:6220\/manifest.webmanifest",
+							"method": "GET",
+							"param": "Sec-Fetch-Dest",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						}
+					],
+					"count": "4",
+					"systemic": false,
+					"solution": "<p>Ensure that Sec-Fetch-Dest header is included in request headers.</p>",
+					"otherinfo": "",
+					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-Dest</p>",
+					"cweid": "352",
+					"wascid": "9",
+					"sourceid": "8"
+				},
+				{
+					"pluginid": "90005",
+					"alertRef": "90005-2",
+					"alert": "Sec-Fetch-Mode Header is Missing",
+					"name": "Sec-Fetch-Mode Header is Missing",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "Informational (High)",
+					"desc": "<p>Allows to differentiate between requests for navigating between HTML pages and requests for loading resources like images, audio etc.</p>",
+					"instances":[ 
+						{
+							"id": "21",
+							"uri": "http://host.docker.internal:6220/",
+							"nodeName": "http:\/\/host.docker.internal:6220\/",
+							"method": "GET",
+							"param": "Sec-Fetch-Mode",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "10",
+							"uri": "http://host.docker.internal:6220/icons/apple-touch-icon.png",
+							"nodeName": "http:\/\/host.docker.internal:6220\/icons\/apple-touch-icon.png",
+							"method": "GET",
+							"param": "Sec-Fetch-Mode",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "6",
+							"uri": "http://host.docker.internal:6220/icons/maker-studio.svg",
+							"nodeName": "http:\/\/host.docker.internal:6220\/icons\/maker-studio.svg",
+							"method": "GET",
+							"param": "Sec-Fetch-Mode",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "16",
+							"uri": "http://host.docker.internal:6220/manifest.webmanifest",
+							"nodeName": "http:\/\/host.docker.internal:6220\/manifest.webmanifest",
+							"method": "GET",
+							"param": "Sec-Fetch-Mode",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						}
+					],
+					"count": "4",
+					"systemic": false,
+					"solution": "<p>Ensure that Sec-Fetch-Mode header is included in request headers.</p>",
+					"otherinfo": "",
+					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-Mode</p>",
+					"cweid": "352",
+					"wascid": "9",
+					"sourceid": "8"
+				},
+				{
+					"pluginid": "90005",
+					"alertRef": "90005-1",
+					"alert": "Sec-Fetch-Site Header is Missing",
+					"name": "Sec-Fetch-Site Header is Missing",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "Informational (High)",
+					"desc": "<p>Specifies the relationship between request initiator's origin and target's origin.</p>",
+					"instances":[ 
+						{
+							"id": "19",
+							"uri": "http://host.docker.internal:6220/",
+							"nodeName": "http:\/\/host.docker.internal:6220\/",
+							"method": "GET",
+							"param": "Sec-Fetch-Site",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "8",
+							"uri": "http://host.docker.internal:6220/icons/apple-touch-icon.png",
+							"nodeName": "http:\/\/host.docker.internal:6220\/icons\/apple-touch-icon.png",
+							"method": "GET",
+							"param": "Sec-Fetch-Site",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "5",
+							"uri": "http://host.docker.internal:6220/icons/maker-studio.svg",
+							"nodeName": "http:\/\/host.docker.internal:6220\/icons\/maker-studio.svg",
+							"method": "GET",
+							"param": "Sec-Fetch-Site",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "15",
+							"uri": "http://host.docker.internal:6220/manifest.webmanifest",
+							"nodeName": "http:\/\/host.docker.internal:6220\/manifest.webmanifest",
+							"method": "GET",
+							"param": "Sec-Fetch-Site",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						}
+					],
+					"count": "4",
+					"systemic": false,
+					"solution": "<p>Ensure that Sec-Fetch-Site header is included in request headers.</p>",
+					"otherinfo": "",
+					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-Site</p>",
+					"cweid": "352",
+					"wascid": "9",
+					"sourceid": "8"
+				},
+				{
+					"pluginid": "90005",
+					"alertRef": "90005-4",
+					"alert": "Sec-Fetch-User Header is Missing",
+					"name": "Sec-Fetch-User Header is Missing",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "Informational (High)",
+					"desc": "<p>Specifies if a navigation request was initiated by a user.</p>",
+					"instances":[ 
+						{
+							"id": "23",
+							"uri": "http://host.docker.internal:6220/",
+							"nodeName": "http:\/\/host.docker.internal:6220\/",
+							"method": "GET",
+							"param": "Sec-Fetch-User",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "13",
+							"uri": "http://host.docker.internal:6220/icons/apple-touch-icon.png",
+							"nodeName": "http:\/\/host.docker.internal:6220\/icons\/apple-touch-icon.png",
+							"method": "GET",
+							"param": "Sec-Fetch-User",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "9",
+							"uri": "http://host.docker.internal:6220/icons/maker-studio.svg",
+							"nodeName": "http:\/\/host.docker.internal:6220\/icons\/maker-studio.svg",
+							"method": "GET",
+							"param": "Sec-Fetch-User",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "18",
+							"uri": "http://host.docker.internal:6220/manifest.webmanifest",
+							"nodeName": "http:\/\/host.docker.internal:6220\/manifest.webmanifest",
+							"method": "GET",
+							"param": "Sec-Fetch-User",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						}
+					],
+					"count": "4",
+					"systemic": false,
+					"solution": "<p>Ensure that Sec-Fetch-User header is included in user initiated requests.</p>",
+					"otherinfo": "",
+					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-User</p>",
+					"cweid": "352",
+					"wascid": "9",
+					"sourceid": "8"
+				},
+				{
+					"pluginid": "10049",
+					"alertRef": "10049-3",
+					"alert": "Storable and Cacheable Content",
+					"name": "Storable and Cacheable Content",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The response contents are storable by caching components such as proxy servers, and may be retrieved directly from the cache, rather than from the origin server by the caching servers, in response to similar requests from other users. If the response data is sensitive, personal or user-specific, this may result in sensitive information being leaked. In some cases, this may even result in a user gaining complete control of the session of another user, depending on the configuration of the caching components in use in their environment. This is primarily an issue where \"shared\" caching servers such as \"proxy\" caches are configured on the local network. This configuration is typically found in corporate or educational environments, for instance.</p>",
+					"instances":[ 
+						{
+							"id": "25",
+							"uri": "http://host.docker.internal:6220/assets/index-CEPDn-Cr.css",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/index-CEPDn-Cr.css",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "max-age=31536000",
+							"otherinfo": ""
+						},
+						{
+							"id": "27",
+							"uri": "http://host.docker.internal:6220/assets/profile-D6--OydM.js",
+							"nodeName": "http:\/\/host.docker.internal:6220\/assets\/profile-D6--OydM.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "max-age=31536000",
+							"otherinfo": ""
+						}
+					],
+					"count": "2",
+					"systemic": false,
+					"solution": "<p>Validate that the response does not contain sensitive, personal or user-specific information. If it does, consider the use of the following HTTP response headers, to limit, or prevent the content being stored and retrieved from the cache by another user:</p><p>Cache-Control: no-cache, no-store, must-revalidate, private</p><p>Pragma: no-cache</p><p>Expires: 0</p><p>This configuration directs both HTTP 1.0 and HTTP 1.1 compliant caching servers to not store the response, and to not retrieve the response (without validation) from the cache, in response to a similar request.</p>",
+					"otherinfo": "",
+					"reference": "<p>https://datatracker.ietf.org/doc/html/rfc7234</p><p>https://datatracker.ietf.org/doc/html/rfc7231</p><p>https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html</p>",
+					"cweid": "524",
+					"wascid": "13",
+					"sourceid": "21"
+				},
+				{
+					"pluginid": "10049",
+					"alertRef": "10049-2",
+					"alert": "Storable but Non-Cacheable Content",
+					"name": "Storable but Non-Cacheable Content",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The response contents are storable by caching components such as proxy servers, but will not be retrieved directly from the cache, without validating the request upstream, in response to similar requests from other users.</p>",
+					"instances":[ 
+						{
+							"id": "24",
+							"uri": "http://host.docker.internal:6220/",
+							"nodeName": "http:\/\/host.docker.internal:6220\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-cache",
+							"otherinfo": ""
+						},
+						{
+							"id": "14",
+							"uri": "http://host.docker.internal:6220/icons/apple-touch-icon.png",
+							"nodeName": "http:\/\/host.docker.internal:6220\/icons\/apple-touch-icon.png",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-cache",
+							"otherinfo": ""
+						},
+						{
+							"id": "11",
+							"uri": "http://host.docker.internal:6220/icons/maker-studio.svg",
+							"nodeName": "http:\/\/host.docker.internal:6220\/icons\/maker-studio.svg",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-cache",
+							"otherinfo": ""
+						},
+						{
+							"id": "20",
+							"uri": "http://host.docker.internal:6220/manifest.webmanifest",
+							"nodeName": "http:\/\/host.docker.internal:6220\/manifest.webmanifest",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-cache",
+							"otherinfo": ""
+						},
+						{
+							"id": "26",
+							"uri": "http://host.docker.internal:6220/sitemap.xml",
+							"nodeName": "http:\/\/host.docker.internal:6220\/sitemap.xml",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-cache",
+							"otherinfo": ""
+						}
+					],
+					"count": "5",
+					"systemic": true,
+					"solution": "",
+					"otherinfo": "",
+					"reference": "<p>https://datatracker.ietf.org/doc/html/rfc7234</p><p>https://datatracker.ietf.org/doc/html/rfc7231</p><p>https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html</p>",
+					"cweid": "524",
+					"wascid": "13",
+					"sourceid": "8"
+				}
+			]
+		}
+	],
+	"sequences":[
+	]
+
+}

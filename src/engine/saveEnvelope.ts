@@ -9,7 +9,8 @@ export interface SaveCodec<S> {
 }
 
 export type SaveParseResult<S> =
-  { readonly ok: true; readonly state: S } | { readonly ok: false; readonly error: string };
+  | { readonly ok: true; readonly state: S }
+  | { readonly ok: false; readonly error: string; readonly thrown?: unknown };
 
 function readJson(json: string): { readonly ok: true; readonly value: unknown } | { readonly ok: false } {
   try {
@@ -44,12 +45,16 @@ export function parseSaveWith<S>(json: string, codec: SaveCodec<S>): SaveParseRe
     return { ok: false, error: "The save file has no version number." };
   if (version > codec.version || version < 1)
     return { ok: false, error: `This save uses version ${version}, which this game does not recognise.` };
-  const migrated = migrateRaw(raw, version, codec.version, codec.migrations);
-  if (migrated === null)
-    return { ok: false, error: `This save uses version ${version}, which can no longer be upgraded.` };
-  const outcome = codec.parse(migrated, "save");
-  if (!outcome.ok) return { ok: false, error: `The save file is damaged (${outcome.error}).` };
-  return { ok: true, state: outcome.value };
+  try {
+    const migrated = migrateRaw(raw, version, codec.version, codec.migrations);
+    if (migrated === null)
+      return { ok: false, error: `This save uses version ${version}, which can no longer be upgraded.` };
+    const outcome = codec.parse(migrated, "save");
+    if (!outcome.ok) return { ok: false, error: `The save file is damaged (${outcome.error}).` };
+    return { ok: true, state: outcome.value };
+  } catch (thrown) {
+    return { ok: false, error: "The save file is damaged and could not be opened.", thrown };
+  }
 }
 
 export function serializeSave<S>(state: S): string {

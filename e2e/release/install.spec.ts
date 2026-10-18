@@ -68,6 +68,8 @@ test("each file gets the host's caching rule for its own path", async ({ page })
     const reply = await page.request.get(path);
     expect(reply.headers()["cache-control"], path).toBe(rule);
     expect(reply.headers()["content-security-policy"], path).toContain("default-src 'self'");
+    expect(reply.headers()["cross-origin-resource-policy"], path).toBe("same-origin");
+    expect(reply.headers()["cross-origin-embedder-policy"], path).toBeUndefined();
   }
 });
 

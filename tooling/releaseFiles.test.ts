@@ -34,6 +34,8 @@ describe("the files the host serves", () => {
       expect(headers["Referrer-Policy"]).toBe("no-referrer");
       expect(headers["X-Frame-Options"]).toBe("DENY");
       expect(headers["Cross-Origin-Opener-Policy"]).toBe("same-origin");
+      expect(headers["Cross-Origin-Embedder-Policy"]).toBeUndefined();
+      expect(headers["Cross-Origin-Resource-Policy"]).toBe("same-origin");
       for (const feature of ["camera", "microphone", "geolocation", "payment", "usb"])
         expect(headers["Permissions-Policy"]).toContain(`${feature}=()`);
     }

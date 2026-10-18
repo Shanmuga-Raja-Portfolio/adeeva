@@ -17,9 +17,17 @@ const NEVER = [
   "No network requests once it has loaded. When you are online it only asks its own address whether a newer version exists and whether your family sign-in is still open.",
 ] as const;
 
+function clearStorage(): void {
+  try {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  } catch {
+    return;
+  }
+}
+
 function forgetThisDevice(): void {
-  window.localStorage.clear();
-  window.sessionStorage.clear();
+  clearStorage();
   window.location.hash = "#/";
   window.location.reload();
 }

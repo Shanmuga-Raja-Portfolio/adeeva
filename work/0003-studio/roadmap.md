@@ -55,7 +55,7 @@ Next:
 
    Left for deploy day, on the live site: check that Cloudflare Access sign-in works inside an installed iOS home-screen app, and that an expired session never breaks offline play (the cached game keeps working, and updates wait until the next sign-in). Keep Cloudflare Web Analytics and any other HTML rewriting off: the worker checks every file's hash, so a page the host changes would never install for offline play. Also check on the live site that the headers arrive as written, and that the Signed out mark appears when an Access session expires (Access may answer the `/sw.js` check with a redirect or a 401). A captive-portal Wi-Fi that redirects every request will also show the mark until the portal is passed. Found along the way and fixed: a kit button's 1px hover lift moved its own hit area, so a pointer resting on its bottom edge flipped hover on and off every frame (seen on ADEEVA's story panel in WebKit). The button now keeps a still hit area while it lifts. Other cards and tiles with their own hover lift use the same pattern and are worth the same check.
 
-10. ⬜ **Security hardening and pen test** (must be clean before any invite):
+10. 🟨 **Security hardening and pen test** (must be clean before any invite; local part done, live part and Shan's tools pending):
     - a written threat model (static site, children as users, invite-only access);
     - a strict CSP and headers via `_headers`, verified on the preview and the live URL: `default-src 'self'`, no inline scripts, `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'none'`, HSTS, `X-Content-Type-Options`, `Referrer-Policy: no-referrer`, and a locked-down `Permissions-Policy`;
     - a code review for XSS sinks (`dangerouslySetInnerHTML`, `innerHTML`, dynamic URLs) and safe parsing of every save and settings value read from storage (the parsers already reject bad saves; fuzz them);
@@ -68,6 +68,19 @@ Next:
       - **Strix** (`usestrix/strix`, Apache-2.0, Docker sandbox) as AI pen-test agents against our own preview and live address only, alongside OWASP ZAP;
       - small local models (Ollama) and MiniMax for mundane, repetitive checks. API keys are Shan's and never printed;
     - a security report in `work/` with findings and fixes.
+
+    Local part done (branch `task/0055-security-review`, 2026-10-18; `work/0055-security/threat-model.md` and `report.md`, ZAP reports in `work/0055-security/zap/`):
+    - threat model written: assets, actors, entry points, mitigations with code pointers, residual risks;
+    - code review: no HTML sinks, `eval`, string timers or `javascript:` URLs in app code; navigation is whitelisted; every storage read goes through a validating parser;
+    - fuzzing with no new dependency (`src/engine/hostileJson.ts`, `src/engine/saveFuzz.ts`): every game's save loader and migrations, the profile, settings, play time, slot store, studio reputation and the jewellery drafts. A deep run of 210,231 cases has 0 failures; the committed tests run about 4,500 seeded cases;
+    - fixed: `Cross-Origin-Resource-Policy: same-origin` on every path (COEP deliberately left off: it adds nothing under our CSP and only turns on cross-origin isolation); parse errors cut stored keys to 40 characters; `parseSaveWith` turns a throwing migration or parser into a damaged-save message, keeping the error for tests; cut drafts look up their own keys only; the About page's delete survives blocked storage; `vite preview` no longer sends CORS headers;
+    - found: CORP does not stop another site from probing whether a browser is signed in to Access, because `CF_Authorization` defaults to `SameSite=None`; set the Access cookie to `SameSite=Lax` on deploy day;
+    - `gitleaks` clean (working tree and all 57 commits); `dist/` has no source maps, `.env` values or local addresses; `pnpm audit` clean; the bundle holds only React (MIT) and app code;
+    - OWASP ZAP 2.17.0 on the local preview: baseline 0 FAIL, full active scan 0 FAIL with 1 low false positive (the RNG constant read as a timestamp);
+    - manual checks of headers, caching, service-worker scope, directory listing, stray files, the manifest and `?signin`, all clean.
+
+    Pending: Strix and Alibaba Open Code Review (need Shan's MiniMax key); `/code-review ultra` (Shan starts it); and on deploy day, ZAP against the live URL, Cloudflare Access bypass attempts (direct asset URLs, `*.pages.dev` preview and branch URLs, the cached service worker, `HEAD /sw.js`, cookie flags including `SameSite=Lax`), the headers as Cloudflare actually serves them, and Access sign-in inside an installed iOS app.
+
 11. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, a drift sweep, and a closing report.
 12. ⬜ **Deploy with Shan:** Shan creates the hosting account, we push and deploy together, then Shan invites the kids, friends and relatives.
 13. ⬜ **After the first players:** a shared art pass (lighting, texture, depth) guided by what the kids and invited families say, and the Interior Challenging economy check (seed 2 earns 0.79× the loft).

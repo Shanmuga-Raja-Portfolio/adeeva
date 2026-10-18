@@ -52,7 +52,7 @@ function writeBook(book: DraftBook): void {
 
 export function readCutDraft(piece: string, cut: string): CutStrokes {
   const book = readBook();
-  if (book === null || book.piece !== piece) return [];
+  if (book === null || book.piece !== piece || !Object.hasOwn(book.drafts, cut)) return [];
   return book.drafts[cut] ?? [];
 }
 

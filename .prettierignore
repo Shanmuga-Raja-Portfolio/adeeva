@@ -5,3 +5,4 @@ test-results*
 playwright-report
 dressmaker_ide_build_spec_DELETE_when_done.md
 dist-e2e
+work/0055-security/zap/

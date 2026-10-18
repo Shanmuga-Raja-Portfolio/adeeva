@@ -10,6 +10,12 @@ export function failed<T>(path: string, expectation: string): ParseResult<T> {
   return { ok: false, error: `${path}: expected ${expectation}` };
 }
 
+const KEY_LABEL_LENGTH = 40;
+
+function keyLabel(key: string): string {
+  return key.length > KEY_LABEL_LENGTH ? `${key.slice(0, KEY_LABEL_LENGTH)}…` : key;
+}
+
 export function isPlainObject(input: unknown): input is Readonly<Record<string, unknown>> {
   return typeof input === "object" && input !== null && !Array.isArray(input);
 }
@@ -111,8 +117,9 @@ export function recordOf<T>(
     if (!isPlainObject(input)) return failed(path, "an object");
     const entries: [string, T][] = [];
     for (const [key, entry] of Object.entries(input)) {
-      if (!isKey(key)) return failed(`${path}.${key}`, "a known key");
-      const outcome = value(entry, `${path}.${key}`);
+      const at = `${path}.${keyLabel(key)}`;
+      if (!isKey(key)) return failed(at, "a known key");
+      const outcome = value(entry, at);
       if (!outcome.ok) return outcome;
       entries.push([key, outcome.value]);
     }

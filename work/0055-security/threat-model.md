@@ -1,0 +1,108 @@
+# Maker Studio — Threat model
+
+Written 2026-10-18 for roadmap task 10 (security hardening and pen test). It covers the release build: a static site on Cloudflare Pages, behind Cloudflare Access, installed as an offline web app by invited families. The findings and test results are in `report.md` next to this file.
+
+## What Maker Studio is, in one paragraph
+
+Maker Studio is seven offline games for children, delivered as plain files: one HTML page, JavaScript, CSS, images, a manifest and a service worker. There is no server code, no database, no accounts of its own and no third-party code at runtime. The only library shipped is React. Progress is saved in the browser's own storage on each device and never leaves it. Cloudflare Access decides who can download the files at all: only email addresses Shan adds can get past it, by typing a one-time code that Cloudflare sends them.
+
+## What we protect (assets)
+
+| Asset                         | Why it matters                                                                                                                      | Where it lives                                                                                                                                                                       |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Children's saves and settings | Hours of play. Losing or corrupting them upsets a child; a broken save must never lock the app.                                     | `localStorage` on each device (`<game>.save.1-3`, `<game>.lastSlot`, `studio.profile`, `studio.playtime`, `adeeva.settings`, `chef.sound`); `sessionStorage` for one jewellery draft |
+| Children's privacy            | The only personal data is the maker name a child types and how long they played. It must not leave the device or reach anyone else. | Same storage as above                                                                                                                                                                |
+| Integrity of the shipped code | Whatever the browser runs must be exactly what we built and checked: nothing injected, nothing swapped, nothing old mixed in.       | Cloudflare Pages, the browser's HTTP cache and the service worker's Cache Storage                                                                                                    |
+| Invite-only access            | Only invited families should be able to download and play. A forwarded link should not be enough.                                   | Cloudflare Access in front of the Pages site                                                                                                                                         |
+
+Not an asset: the code itself is not secret. Anyone invited can read it, and the threat model assumes an attacker who has a copy.
+
+## Who might attack (actors)
+
+| Actor                           | What they can do                                                                                                                                                 | What they might want                                                                                                |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| An outsider with the URL        | Send any HTTP request to the site, guess paths, try the `*.pages.dev` preview addresses, run scanners.                                                           | Play without an invite, find a hole in Access, read anything not meant to be public.                                |
+| An invited family member        | Everything an outsider can, plus a valid Access session and the full app on their device. Can edit their own device's storage in developer tools.                | Usually nothing. Worst case: a curious older child edits saves, or someone keeps playing after being removed.       |
+| A malicious page in another tab | Runs its own script in the same browser, can open or frame our URL, send requests to it with the family's cookies, and post messages to windows it opens.        | Read the child's name or saves, trick a click (clickjacking), learn that this browser belongs to an invited family. |
+| A compromised dependency        | Code in React or in a build tool (Vite, plugins, ESLint, Playwright) that turns malicious in an update.                                                          | Ship a tracker or a crypto-miner to children, or steal secrets from the build machine.                              |
+| The host (Cloudflare)           | Sees every request (IP address, time, path) and the invited email addresses. Could in theory change a file in transit or inject analytics or a challenge script. | Normal logging; a mistake such as turning on HTML rewriting or Web Analytics.                                       |
+
+## Ways in (entry points)
+
+1. **Static files** (`/`, `/index.html`, `/assets/*`, `/icons/*`, `/manifest.webmanifest`, `/sw.js`). Read-only; the host serves them with the headers in `public/_headers`. Unknown paths fall back to the studio page (the app uses `#/` routes, so the server never needs a real route).
+2. **The service worker and its caches.** `sw.js` controls the whole origin (scope `/`), answers every same-origin GET from its versioned cache, and decides when a new version may take over.
+3. **Saves and settings in `localStorage` / `sessionStorage`.** Anything stored there is read back on start. A save might be damaged by a browser crash, an old version, a storage quota error, or a person editing it in developer tools.
+4. **URL parts.** The hash (`#/parent`, `#/about`, `#/<game>`) picks the screen. The query `?signin=1` tells the service worker to let a navigation reach the host so Cloudflare Access can show its sign-in page.
+5. **The manifest.** The browser reads it to install the app (name, icons, scope, start URL).
+6. **The Cloudflare Access boundary.** Access sits in front of every request to the Pages project, including `HEAD /sw.js`, which the app uses to notice an expired session.
+7. **Messages.** The page posts one message to the waiting service worker (`SKIP_WAITING`). The page itself listens for no `message` events.
+8. **The build and deploy pipeline.** `pnpm install` from a frozen lockfile, `vite build`, then upload to Pages.
+
+## Mitigations (with where to look)
+
+### Children's saves: damaged or hostile data can't crash the app
+
+- Every value read from storage goes through a validating parser before use; nothing is trusted because it came from our own storage.
+  - Saves: `src/engine/saveEnvelope.ts` (`parseSaveWith`) reads JSON safely, checks the version, runs migrations, then the game's typed parser (`src/games/*/core/gameStateParser.ts` and friends, built from `src/engine/parse.ts`). A migration or parser that throws becomes a "damaged save" message instead of an exception (added in this task); the result keeps the thrown error in `thrown`, so tests and the fuzz runner still report it as a bug.
+  - Profile: `src/studio/profile.ts` (`parseProfile`, `profileFromSave`). Settings: `src/studio/settings.ts` (each switch must be `true` or `false`, otherwise the default). Play time: `src/studio/playtime.ts` (whole seconds from 0 to `MAX_SAFE_INTEGER`, known game ids only). Reputation from raw saves: `src/engine/earnedReputation.ts`. Slots: `src/studio/slotStore.ts` (the last-slot value must be exactly `1`, `2` or `3`). Jewellery cut drafts: `src/games/jewellery/ui/cutDraft.ts`.
+  - Every storage call is wrapped, so blocked or full storage (Safari private mode, quota errors, cookies blocked in browser settings) gives defaults instead of an exception: `src/studio/storedJson.ts`, `slotStore.ts`, and the About page's **Delete everything** (wrapped in this task, so the page still reloads when storage is blocked).
+- Parsers build fresh objects from a fixed list of known keys (`objectOf`), or with `Object.fromEntries` for keyed records. A `__proto__` or `constructor` key in a save stays plain data and can never change `Object.prototype`. Catalogue look-ups use `Object.hasOwn` or `find`, never `key in object`.
+- A damaged slot shows "Damaged save" with a short reason; the other slots still load. Keys quoted in that reason are cut to 40 characters (added in this task), so a hostile key can't flood the screen.
+- If a game screen still fails while rendering, `src/studio/ViewLoadBoundary.tsx` shows "This part of the studio didn't load" with **Back to studio** and **Reload**, never a blank page.
+- Property-style fuzz tests prove all of this for every game, the profile, settings, play time, the slot store, studio reputation and the jewellery drafts: `src/engine/hostileJson.ts`, `src/engine/saveFuzz.ts`, `src/games/*/core/saveFuzz.test.ts`, `src/studio/storageFuzz.test.ts`, `src/games/jewellery/ui/cutDraft.test.ts`.
+
+### Children's privacy: nothing leaves the device
+
+- No network code in the app besides loading itself, the update check and the sign-in check (`src/offline/`). There are no analytics, ads, fonts, images or scripts from anyone else.
+- The Content Security Policy (`public/_headers`) enforces this in the browser: `default-src 'self'`, `connect-src 'self'`, `script-src 'self'`, `style-src 'self'`, `img-src 'self' data: blob:`. Even if a bug let an attacker inject markup, the browser would refuse to run inline script or send data to another address.
+- `Referrer-Policy: no-referrer` means links never tell another site where they came from. `Permissions-Policy` turns off camera, microphone, location, payment, USB, Bluetooth and the rest.
+- The app renders all text, including the child's name, through React, which escapes it. The source has no `dangerouslySetInnerHTML`, `innerHTML`, `eval`, `new Function`, string timers or `javascript:` URLs (checked in this task; see the report).
+- `e2e/release/noNetwork.spec.ts` plays through the studio and two games and fails on any request to another address or any CSP violation.
+- The About page (`src/studio/AboutPage.tsx`) explains what is stored and has a **Delete everything on this device** button behind a typed confirmation.
+
+### A malicious page in another tab
+
+- `localStorage` belongs to our origin only; another site cannot read it.
+- `frame-ancestors 'none'` and `X-Frame-Options: DENY` stop other sites from framing the studio (no clickjacking of the delete button or the parent page).
+- `Cross-Origin-Opener-Policy: same-origin` cuts the link between our window and any window that opened it, so `window.opener` tricks don't work.
+- `Cross-Origin-Resource-Policy: same-origin` (added in this task) stops another site from pulling our scripts, styles or icons into its own page as `no-cors` sub-resources, so their bytes never reach another site's process (the Spectre defence ZAP 90004 asks for).
+- CORP does **not** stop another site from learning whether this browser is signed in to Access. Access sets `CF_Authorization` with `SameSite=None` by default, so a cross-site request carries it. With CORP, a `fetch(…, { mode: "no-cors" })` of one of our files fails when signed in (our answer is blocked) and succeeds when signed out (Access answers, without our headers); without CORP, an `<img>` of an icon loads only when signed in. Both were reproduced in Chromium and WebKit during this task. The real fix is the Access application's cookie setting **SameSite = Lax** (not Strict, which Cloudflare warns can loop on sign-in): then no cross-site sub-request carries the cookie and every probe sees the signed-out answer. It is a deploy-day setting and check.
+- `Cross-Origin-Embedder-Policy` is deliberately **not** sent. It only limits what our own page may load from other origins, and the CSP already allows nothing but our own origin, so it adds no protection. Its one effect is to make the page cross-origin isolated (`crossOriginIsolated`, `SharedArrayBuffer`, finer timers), which the app does not need, and its interaction with Access sign-in on an installed iOS app can only be tested live. The release tests pin that it stays off.
+- The page has no `message` listener. The service worker's `message` handler only accepts `{ type: "SKIP_WAITING" }`, and browsers only deliver service-worker messages from same-origin pages.
+- There is no server state, so there is nothing for cross-site request forgery to change.
+
+### Integrity of the shipped code
+
+- Content-hashed file names under `/assets/` with a year of `immutable` caching; `index.html`, `/`, `sw.js` and the manifest are `no-cache` so a deploy is seen at once (`public/_headers`, checked by `e2e/release/install.spec.ts`).
+- The service worker (`src/offline/serviceWorker.js`, filled in by `tooling/offlineBuild.ts`, `tooling/precacheList.ts`, `tooling/workerSource.ts`):
+  - precaches every built file with its SHA-384 integrity hash, `cache: "reload"` and `redirect: "error"`; it only keeps status-200, same-origin (`basic`), non-redirected answers, and one bad file throws away the whole new version (`e2e/release/integrity.spec.ts`);
+  - uses a cache name per build hash, deletes older caches on activate, and never stores anything at runtime, only the precache list ("a file outside the build is never stored");
+  - ignores non-GET requests, other origins, `Range` requests and `/cdn-cgi/` (Cloudflare Access), so it can't cache a third-party or opaque answer;
+  - registers with `scope: "/"` and `updateViaCache: "none"`, in production builds only (`src/offline/workerUpdates.ts`);
+  - waits for the player to press **Restart**; it never swaps code under a running game (`e2e/release/update.spec.ts`).
+- No source maps, no `.env` files, no dev server client and no `localhost` addresses in `dist/` (checked in this task).
+- Dependencies: two runtime packages (`react`, `react-dom`, which brings `scheduler`), all MIT. `pnpm audit` is clean, the lockfile is committed, and the build bundles nothing else (checked from the build's own source list).
+- `gitleaks` finds no secrets in the working tree or in any of the 57 commits on every branch.
+
+### Invite-only access
+
+- Cloudflare Access protects every path of the Pages project, including `sw.js`, `/assets/*` and the manifest. The manifest link uses `crossorigin="use-credentials"` so the browser sends the Access cookie with it.
+- The Access application's cookie must be set to `SameSite=Lax` (Cloudflare's default is `None`), `HttpOnly` and `Secure`; see "A malicious page in another tab" for why. Deploy-day setting and check.
+- The app never handles a password or code. Access does the sign-in at Cloudflare's own address and sets its cookie; our pages only see whether `HEAD /sw.js` answers 200 (signed in) or a redirect, 401 or 403 (signed out) (`src/offline/signInState.ts`).
+- `?signin=1` is a fixed flag. Its value is never read, never shown and never used to build a URL. The service worker only lets that navigation reach the host and serves the saved studio again once the host answers normally. Any redirect comes from the host, never from our code, so there is no open redirect in the app. The flag is removed from the address bar afterwards.
+
+## What is left (residual risks)
+
+| Risk                                                                                                                                                                                | Rating               | Why we accept it, or what closes it                                                                                                                                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A family member removed from Access keeps playing the copy already installed on their device.                                                                                       | Low                  | By design: offline play must not need the network. They can't get updates, and the app holds no one else's data. Removing someone stops new downloads, not old copies.                                                                              |
+| Another site learns whether this browser is signed in to Access (cookie probing), while `CF_Authorization` is `SameSite=None`.                                                      | Low until set        | Set the Access application's cookie to `SameSite=Lax` on deploy day, then repeat the cross-site probe from a page on another site.                                                                                                                  |
+| Preview deployments (`<hash>.<project>.pages.dev`, branch aliases) are not covered by the Access policy.                                                                            | Medium until checked | Deploy-day check: the Access application must cover both `<project>.pages.dev` and `*.<project>.pages.dev`. Try each from a private window.                                                                                                         |
+| The host changes our files (Web Analytics, Rocket Loader, email obfuscation, Bot Fight Mode scripts).                                                                               | Low                  | CSP blocks any injected script or beacon, and the service worker's integrity hashes refuse a changed file for offline play. Keep these Cloudflare features off; check on deploy day that the live headers and HTML match the build.                 |
+| A child edits their own saves in developer tools.                                                                                                                                   | Accepted             | It only affects that child's own device. The parsers keep the app from breaking; they don't try to stop cheating.                                                                                                                                   |
+| A compromised React or build-tool release.                                                                                                                                          | Low                  | Lockfile frozen, `pnpm audit` before every deploy, a tiny runtime dependency list, and CSP limits what injected code could reach. A malicious build tool could still change the output; deploys come from a clean install of the reviewed lockfile. |
+| The host's request logs (IP addresses, times) and Access's list of invited emails.                                                                                                  | Accepted             | Normal for any website; the About page says so.                                                                                                                                                                                                     |
+| The browser may clear saves when storage is short (mostly Safari in a tab, not the home-screen app).                                                                                | Low                  | The app asks for persistent storage once per launch (`src/offline/keepSaves.ts`) and the About page tells families to play from the installed icon.                                                                                                 |
+| A captive-portal Wi-Fi answers `HEAD /sw.js` with a redirect.                                                                                                                       | Low                  | The "Signed out" mark appears until the portal is passed; offline play is unaffected.                                                                                                                                                               |
+| Unknown paths, including missing `/assets/*.js`, answer 200 with the studio page; under `/assets/*` that answer carries the year-long `immutable` rule.                             | Low                  | Content-hashed names are never reused, so a cached wrong answer is never asked for again; the service worker never stores it. The routes are all `#/`, so a `404.html` could be added later if we want real 404s.                                   |
+| Things only the live site can prove: Access cookie flags, the exact headers Cloudflare sends, HSTS and `upgrade-insecure-requests` over HTTPS, sign-in inside an installed iOS app. | Open                 | Listed in the report as deploy-day checks.                                                                                                                                                                                                          |
