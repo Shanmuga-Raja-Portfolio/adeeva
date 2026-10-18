@@ -1,13 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
 import { advance, coins, finishJewelleryStories, freshJewellery } from "../fixtures/jewelleryBench";
+import { stillBox } from "../fixtures/settle";
 
 async function railCut(page: Page): Promise<void> {
   for (let part = 0; part < 6; part += 1) {
     const loupe = page.getByTestId("cut-loupe");
     if ((await loupe.count()) === 0) return;
     await loupe.scrollIntoViewIfNeeded();
-    const box = await loupe.boundingBox();
-    if (box === null) throw new Error("No loupe");
+    const box = await stillBox(loupe);
     const cx = box.x + box.width / 2;
     const cy = box.y + box.height / 2;
     await page.mouse.move(cx, cy);

@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { settle, stillBox } from "./settle";
 
 export type ScreenPoint = readonly [number, number];
 
@@ -19,6 +20,7 @@ export async function svgToScreen(
   svg: Locator,
   points: readonly (readonly [number, number])[],
 ): Promise<ScreenPoint[]> {
+  await settle(svg.page());
   return svg.evaluate((element, list) => {
     const matrix = (element as SVGGraphicsElement).getScreenCTM();
     if (matrix === null) return [];
@@ -30,8 +32,7 @@ export async function svgToScreen(
 }
 
 export async function centreOf(locator: Locator): Promise<ScreenPoint> {
-  const box = await locator.boundingBox();
-  if (box === null) throw new Error("Element is not visible");
+  const box = await stillBox(locator);
   return [box.x + box.width / 2, box.y + box.height / 2];
 }
 

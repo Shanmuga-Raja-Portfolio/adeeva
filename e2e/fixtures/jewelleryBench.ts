@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { settle, stillBox } from "./settle";
 
 export const JEWELLERY_URL = "/#/jewellery";
 
@@ -47,6 +48,7 @@ export async function advance(page: Page): Promise<void> {
 }
 
 export async function toScreen(svg: Locator, points: readonly Pair[]): Promise<Pair[]> {
+  await settle(svg.page());
   return svg.evaluate((element, list) => {
     const matrix = (element as SVGGraphicsElement).getScreenCTM();
     if (matrix === null) return [];
@@ -108,8 +110,7 @@ export async function warmByHand(page: Page, input: "mouse" | "keyboard" = "mous
   const button = page.getByTestId("warm-button");
   await button.scrollIntoViewIfNeeded();
   if (input === "mouse") {
-    const box = await button.boundingBox();
-    if (box === null) throw new Error("No warm button");
+    const box = await stillBox(button);
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   }
   const hold = () => (input === "mouse" ? page.mouse.down() : page.keyboard.down(" "));
@@ -151,9 +152,9 @@ export async function setStoneByHand(page: Page): Promise<void> {
     const claw = page.getByTestId(`claw-${index}`);
     if ((await claw.count()) === 0) break;
     const [sx, sy] = ((await claw.getAttribute("data-snug")) ?? "0,0").split(",").map(Number);
-    const box = await claw.boundingBox();
+    const box = await stillBox(claw);
     const [snug] = await toScreen(svg, [[sx ?? 0, sy ?? 0]]);
-    if (box === null || snug === undefined) throw new Error("No claw on screen");
+    if (snug === undefined) throw new Error("No claw on screen");
     await dragPath(page, [[box.x + box.width / 2, box.y + box.height / 2], snug]);
   }
   await page.getByTestId("seat-done").click();
@@ -165,8 +166,7 @@ export async function polishByHand(page: Page): Promise<void> {
   await svg.scrollIntoViewIfNeeded();
   for (let round = 0; round < 4; round += 1) {
     if (Number((await pad.getAttribute("data-shine")) ?? "0") >= 0.95) return;
-    const box = await svg.boundingBox();
-    if (box === null) throw new Error("No polish pad");
+    const box = await stillBox(svg);
     const route: Pair[] = [];
     for (let row = 0; row < 14; row += 1) {
       const share = 0.2 + (row * 0.6) / 13;
@@ -181,9 +181,8 @@ export async function polishByHand(page: Page): Promise<void> {
 
 export async function dragOnto(page: Page, from: Locator, to: Locator): Promise<void> {
   await to.scrollIntoViewIfNeeded();
-  const start = await from.boundingBox();
-  const end = await to.boundingBox();
-  if (start === null || end === null) throw new Error("Nothing to drag");
+  const start = await stillBox(from);
+  const end = await stillBox(to);
   await dragPath(page, [
     [start.x + start.width / 2, start.y + start.height / 2],
     [start.x + start.width / 2 + 12, start.y + start.height / 2 + 8],

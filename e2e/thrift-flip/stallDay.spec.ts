@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { reduce, serialize, type GameState, type RackPiece } from "../../src/games/thrift-flip/core";
 import { newTestGame, settleStories } from "../../src/games/thrift-flip/core/testPlaythrough";
+import { stillBox } from "../fixtures/settle";
 import { finishStories } from "../fixtures/story";
 import { coinsIn, openThrift } from "../fixtures/thriftPage";
 
@@ -71,8 +72,7 @@ for (const viewport of VIEWPORTS) {
     await expect(page.getByTestId("price-tag")).toHaveCount(2);
 
     const slider = page.getByTestId("price-tag").nth(0).locator("input[type=range]");
-    const box = await slider.boundingBox();
-    if (box === null) throw new Error("No slider");
+    const box = await stillBox(slider);
     await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2);
     await page.mouse.down();
     await page.mouse.move(box.x + box.width * 0.45, box.y + box.height / 2, { steps: 10 });

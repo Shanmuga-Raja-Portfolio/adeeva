@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { centreOf } from "./patisseriePage";
+import { stillBox } from "./settle";
 import { traceLegs, type TracePoint } from "./traceLegs";
 
 export async function pourByHand(page: Page, stopAt: number): Promise<void> {
@@ -33,8 +34,7 @@ const STIR_MOVES_PER_CHECK = 8;
 
 export async function stirByHand(page: Page, laps: number): Promise<void> {
   const bowl = page.getByTestId("stir-bowl");
-  const box = await bowl.boundingBox();
-  if (box === null) throw new Error("No bowl");
+  const box = await stillBox(bowl);
   const cx = box.x + box.width / 2;
   const cy = box.y + box.height / 2;
   const radius = box.width * 0.28;
@@ -79,8 +79,7 @@ export async function traceByHand(page: Page): Promise<void> {
   const raw = (await table.getAttribute("data-path")) ?? "[]";
   const closed = (await table.getAttribute("data-closed")) === "true";
   const points = JSON.parse(raw) as TracePoint[];
-  const box = await table.boundingBox();
-  if (box === null) throw new Error("No pipe table");
+  const box = await stillBox(table);
   const toScreen = ([x, y]: TracePoint) => ({
     x: box.x + (x / 24) * box.width,
     y: box.y + (y / 24) * box.height,

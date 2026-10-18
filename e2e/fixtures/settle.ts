@@ -1,4 +1,11 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
+
+export interface StillBox {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
 
 export async function settle(page: Page): Promise<void> {
   await page.evaluate(() =>
@@ -9,6 +16,13 @@ export async function settle(page: Page): Promise<void> {
         .map((animation) => animation.finished.catch(() => undefined)),
     ),
   );
+}
+
+export async function stillBox(locator: Locator): Promise<StillBox> {
+  await settle(locator.page());
+  const box = await locator.boundingBox();
+  if (box === null) throw new Error("Element is not on screen");
+  return box;
 }
 
 function countUpsAtTarget(): boolean {

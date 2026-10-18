@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { shooter } from "../fixtures/screens";
+import { stillBox } from "../fixtures/settle";
 import { finishStories } from "../fixtures/story";
 import { advance, centreOf, coinsIn, drag, svgToScreen } from "../fixtures/thriftPage";
 import { scrollIntoView, scrubOneStain, sewSeams, snipStitches } from "../fixtures/thriftBench";
@@ -110,8 +111,7 @@ for (const viewport of VIEWPORTS) {
       const board = page.locator(".tf-layout__svg");
       const piece = board.locator("[data-piece-id] .ad-placed-piece__hit").first();
       const from = await centreOf(piece);
-      const boardBox = await board.boundingBox();
-      if (boardBox === null) throw new Error("No board");
+      const boardBox = await stillBox(board);
       await drag(page, from, [from[0] + boardBox.width * 0.08, from[1] + boardBox.height * 0.04]);
       await shot("15-layout-dragged");
       await page.getByTestId("auto-layout").click();

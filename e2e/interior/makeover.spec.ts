@@ -13,6 +13,7 @@ import {
   rollByHand,
   watchOutsideRequests,
 } from "../fixtures/interiorStudio";
+import { stillBox } from "../fixtures/settle";
 
 test("a new designer makes Nana Pearl's reading nook by hand, reveals it, then saves and continues", async ({
   page,
@@ -118,8 +119,7 @@ test("the plan refuses a piece on the door swing and explains why", async ({ pag
   await page.getByTestId("tray-desk").click();
   const placed = page.getByTestId("placed-desk");
   await expect(placed).toBeVisible();
-  const box = await placed.boundingBox();
-  if (box === null) throw new Error("No placed piece");
+  const box = await stillBox(placed);
   await dragPath(page, [
     [box.x + box.width / 2, box.y + box.height / 2],
     [box.x + box.width / 2 + 30, box.y - 40],

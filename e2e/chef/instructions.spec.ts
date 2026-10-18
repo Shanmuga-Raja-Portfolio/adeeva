@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { advance, finishChefStories, freshChef, newChef } from "../fixtures/chefKitchen";
 import { chopClockAtLeast, holdChopBoard } from "../fixtures/chopBoardClock";
+import { stillBox } from "../fixtures/settle";
 
 test.use({ viewport: { width: 1280, height: 800 } });
 
@@ -9,8 +10,7 @@ const instruction = (page: Page) => page.getByTestId("station-instruction");
 async function boardMiddle(page: Page): Promise<[number, number]> {
   const surface = page.getByTestId("chop-surface");
   await surface.scrollIntoViewIfNeeded();
-  const box = await surface.boundingBox();
-  if (box === null) throw new Error("No chopping board");
+  const box = await stillBox(surface);
   return [box.x + box.width / 2, box.y + box.height / 2];
 }
 
