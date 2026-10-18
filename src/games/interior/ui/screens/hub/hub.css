@@ -36,7 +36,7 @@
 
 .is-hub-hero {
   position: relative;
-  min-height: 330px;
+  min-height: 292px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -56,14 +56,13 @@
 .is-hub-hero__figure {
   position: relative;
   align-self: end;
-  height: 310px;
+  height: 280px;
   padding-left: clamp(16px, 6vw, 90px);
 }
 
 .is-hub-hero__figure svg {
   height: 100%;
   width: auto;
-  filter: drop-shadow(0 8px 10px rgba(43, 34, 48, 0.3));
   transform-origin: 50% 100%;
   animation: is-sway 4.8s ease-in-out infinite;
 }
@@ -91,8 +90,8 @@
 
 .is-hub-hero__card {
   position: relative;
-  margin: var(--space-5) var(--space-4) var(--space-4);
-  padding: var(--space-4) var(--space-5);
+  margin: var(--space-4) var(--space-4) var(--space-3);
+  padding: var(--space-3) var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -130,7 +129,7 @@
   flex: 0 1 auto;
   width: auto;
   max-width: 100%;
-  height: 28px;
+  height: 34px;
 }
 
 .is-dots__label {
@@ -422,13 +421,22 @@
 }
 
 .is-mood__chip {
+  position: relative;
   display: grid;
   place-items: center;
   width: 92px;
   height: 64px;
   border-radius: 4px;
   border: 4px solid #fffaf2;
-  box-shadow: 0 4px 8px rgba(43, 34, 48, 0.25);
+  background-image: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.35),
+    transparent 45%,
+    rgba(43, 34, 48, 0.08)
+  );
+  box-shadow:
+    0 4px 8px rgba(43, 34, 48, 0.25),
+    0 1px 0 rgba(43, 34, 48, 0.15);
   font-family: var(--font-display);
   font-weight: 700;
   text-transform: capitalize;
@@ -577,4 +585,16 @@
   .is-hub__grid > .is-hub__column:last-child {
     grid-template-columns: 1fr;
   }
+}
+
+.is-mood__chip::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: calc(50% - 7px);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff9c8a, #c8664a 60%, #8a3a26);
+  box-shadow: 0 2px 2px rgba(43, 34, 48, 0.35);
 }

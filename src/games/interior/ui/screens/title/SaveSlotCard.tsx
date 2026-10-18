@@ -19,9 +19,11 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
   if (read.kind === "empty") {
     return (
       <article className="is-slot is-slot--empty" data-testid={`slot-${read.slot}`}>
-        <span className="ad-eyebrow">{label}</span>
-        <p className="is-slot__empty">An empty room, waiting for its first coat of paint.</p>
-        <Button variant="secondary" size="sm" onClick={onNewGame}>
+        <div>
+          <span className="ad-eyebrow">{label}</span>
+          <p className="is-slot__empty">Empty, ready for a new loft.</p>
+        </div>
+        <Button variant="secondary" size="sm" icon="sparkle" onClick={onNewGame}>
           Start here
         </Button>
       </article>
@@ -76,7 +78,7 @@ export function SaveSlotCard({ read, onLoad, onNewGame, onDelete }: SaveSlotCard
       </div>
       <div className="is-slot__actions">
         <Button
-          variant="ghost"
+          variant="secondary"
           size="sm"
           onClick={onNewGame}
           aria-label={`Start a new game in slot ${read.slot}`}

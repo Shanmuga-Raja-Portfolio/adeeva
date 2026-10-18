@@ -1,4 +1,4 @@
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { useSettings } from "../../../../../studio/SettingsContext";
 import { Button } from "../../../../../ui/kit/Button";
 import type { SvgPoint } from "../../../../../ui/kit/clientToSvg";
@@ -24,7 +24,7 @@ import {
 import { useSvgId } from "../../../../../ui/art/useSvgId";
 import { BARE_WALL, roomHex } from "../../art/roomHex";
 import { FloorPieceArt, pieceFinish } from "./FloorPieceArt";
-import { FLOOR_VIEW, FloorRoomBack, FreshSparkles } from "./FloorRoom";
+import { FLOOR_VIEW, FloorRoomBack } from "./FloorRoom";
 import { useAssist } from "../../useAssist";
 import { usePointerDrag } from "../../usePointerDrag";
 import { StageFooter } from "./StageFooter";
@@ -59,7 +59,7 @@ export function FloorStage(props: StageProps) {
   const [wobble, setWobble] = useState<string | null>(null);
   const pattern = runPattern(run);
   const canvas = floorCanvas(pattern);
-  const pieces = runFloorPieces(run);
+  const pieces = useMemo(() => runFloorPieces(run), [run]);
   const laid = laidCount(run);
   const next = pieces[laid];
   const floor = run.plan.floor === null ? null : floorById(run.plan.floor);
@@ -187,89 +187,127 @@ export function FloorStage(props: StageProps) {
   };
 
   const shown = ghostPending ?? pending;
+  const boxStyle = (box: { x: number; y: number; width: number; height: number }): CSSProperties => ({
+    left: `${(((box.x - view.x) / view.width) * 100).toFixed(2)}%`,
+    top: `${(((box.y - view.y) / view.height) * 100).toFixed(2)}%`,
+    width: `${((box.width / view.width) * 100).toFixed(2)}%`,
+    height: `${((box.height / view.height) * 100).toFixed(2)}%`,
+  });
+  const fresh = laid > 0 ? pieces[laid - 1] : undefined;
   return (
     <div className="is-floor">
       <div className="is-floor__work">
-        <p className="is-floor__lead">
-          Lay the show strip by the door.{" "}
-          <span className="is-muted">Your helper copies your pattern for the rest.</span>
-        </p>
         <div className="is-floor__bench">
-          <svg
-            ref={svgRef}
-            className="is-floor__area"
-            viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`}
-            width={view.width * FLOOR_PX_PER_CM}
-            height={view.height * FLOOR_PX_PER_CM}
-            data-testid="floor-area"
-            data-target={next === undefined ? "" : `${next.x},${next.y}`}
-            role="img"
-            aria-label={`Floor strip, ${laid} of ${FLOOR_PIECES} pieces laid`}
-          >
-            <FloorRoomBack
-              width={canvas.width}
-              height={canvas.height}
-              margin={MARGIN}
-              wall={wall}
-              fill={base}
-              finish={finish}
-              id={sceneId}
-            />
-            {pieces.map((piece) => {
-              const done = Object.hasOwn(run.floorLaid, String(piece.index));
-              return done ? (
-                <g key={piece.index} transform={`translate(${piece.x} ${piece.y})`}>
-                  <g className="is-floor__laid">
+          <div className="is-floor__left">
+            <div
+              className="is-floor__board"
+              style={{ "--floor-aspect": (view.width / view.height).toFixed(3) } as CSSProperties}
+            >
+              <svg
+                ref={svgRef}
+                className="is-floor__area"
+                viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`}
+                width={view.width * FLOOR_PX_PER_CM}
+                height={view.height * FLOOR_PX_PER_CM}
+                data-testid="floor-area"
+                data-target={next === undefined ? "" : `${next.x},${next.y}`}
+                role="img"
+                aria-label={`Floor strip, ${laid} of ${FLOOR_PIECES} pieces laid`}
+              >
+                <FloorRoomBack
+                  width={canvas.width}
+                  height={canvas.height}
+                  margin={MARGIN}
+                  wall={wall}
+                  fill={base}
+                  finish={finish}
+                  pieces={pieces}
+                  id={sceneId}
+                />
+                {pieces.map((piece) => {
+                  const done = Object.hasOwn(run.floorLaid, String(piece.index));
+                  return done ? (
+                    <g key={piece.index} transform={`translate(${piece.x} ${piece.y})`}>
+                      <rect
+                        x={0.8}
+                        y={1.6}
+                        width={piece.width}
+                        height={piece.height}
+                        rx={1.2}
+                        fill="#1c1220"
+                        opacity={0.18}
+                      />
+                      <FloorPieceArt
+                        width={piece.width}
+                        height={piece.height}
+                        fill={fillFor(piece.source, piece.tone)}
+                        finish={finish}
+                        seed={piece.index + 1}
+                      />
+                    </g>
+                  ) : (
+                    <rect
+                      key={piece.index}
+                      x={piece.x + 0.4}
+                      y={piece.y + 0.4}
+                      width={piece.width - 0.8}
+                      height={piece.height - 0.8}
+                      rx={1}
+                      fill={piece.index === laid ? "rgba(255,246,200,0.35)" : "none"}
+                      stroke={piece.index === laid ? "#fff6c8" : "#ffffff"}
+                      strokeOpacity={piece.index === laid ? 1 : 0.5}
+                      strokeWidth={piece.index === laid ? 0.9 : 0.5}
+                      strokeDasharray="2 1.4"
+                    />
+                  );
+                })}
+                {shown !== null ? (
+                  <g
+                    transform={`translate(${shown.x} ${shown.y})`}
+                    tabIndex={0}
+                    role="button"
+                    aria-label="The piece you are placing. Arrow keys nudge it, Enter presses it down."
+                    className="is-floor__pending"
+                    onKeyDown={nudge}
+                    data-testid="floor-pending"
+                    {...(pending !== null ? handlers({ kind: "pending" }) : {})}
+                  >
+                    <rect
+                      x={1.4}
+                      y={3}
+                      width={shown.candidate.width}
+                      height={shown.candidate.height}
+                      rx={1.2}
+                      fill="#1c1220"
+                      opacity={0.26}
+                    />
                     <FloorPieceArt
-                      width={piece.width}
-                      height={piece.height}
-                      fill={fillFor(piece.source, piece.tone)}
+                      width={shown.candidate.width}
+                      height={shown.candidate.height}
+                      fill={fillFor(shown.candidate.source, shown.candidate.tone)}
                       finish={finish}
-                      seed={piece.index + 1}
+                      seed={laid + 1}
                     />
                   </g>
-                  {piece.index === laid - 1 && next !== undefined ? (
-                    <FreshSparkles width={piece.width} height={piece.height} />
-                  ) : null}
-                </g>
-              ) : (
-                <rect
-                  key={piece.index}
-                  x={piece.x + 0.4}
-                  y={piece.y + 0.4}
-                  width={piece.width - 0.8}
-                  height={piece.height - 0.8}
-                  rx={1}
-                  fill={piece.index === laid ? "rgba(255,255,255,0.28)" : "none"}
-                  stroke="#ffffff"
-                  strokeOpacity={piece.index === laid ? 0.95 : 0.45}
-                  strokeWidth={piece.index === laid ? 0.8 : 0.5}
-                  strokeDasharray="2 1.4"
-                  className={piece.index === laid ? "is-floor__ghost" : ""}
-                />
-              );
-            })}
-            {shown !== null ? (
-              <g
-                transform={`translate(${shown.x} ${shown.y})`}
-                tabIndex={0}
-                role="button"
-                aria-label="The piece you are placing. Arrow keys nudge it, Enter presses it down."
-                className="is-floor__pending"
-                onKeyDown={nudge}
-                data-testid="floor-pending"
-                {...(pending !== null ? handlers({ kind: "pending" }) : {})}
-              >
-                <FloorPieceArt
-                  width={shown.candidate.width}
-                  height={shown.candidate.height}
-                  fill={fillFor(shown.candidate.source, shown.candidate.tone)}
-                  finish={finish}
-                  seed={laid + 1}
-                />
-              </g>
-            ) : null}
-          </svg>
+                ) : null}
+              </svg>
+              {next !== undefined && pending === null ? (
+                <span className="is-floor__spot" style={boxStyle(next)} aria-hidden="true" />
+              ) : null}
+              {fresh !== undefined ? (
+                <span key={laid} className="is-floor__burst" style={boxStyle(fresh)} aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </span>
+              ) : null}
+            </div>
+            <p className="is-floor__caption">
+              <strong>Show strip by the door.</strong> Your helper copies your pattern for the rest.
+            </p>
+          </div>
           <div className="is-floor__side">
             <p className="is-floor__hint" role="status" aria-live="polite">
               {hint ??
@@ -277,13 +315,13 @@ export function FloorStage(props: StageProps) {
                   ? "Every piece is down. Lovely and snug!"
                   : threshold
                     ? HOME_HINTS.threshold
-                    : "Pick the piece that fits the pattern.")}
+                    : "Drag the piece that fits onto the glowing spot.")}
             </p>
             <div className="is-floor__controls">
-              <span className="is-floor__tray-label" aria-hidden="true">
-                Pick the next piece
-              </span>
               <div className="is-floor__tray" aria-label="Floor pieces to pick from">
+                <span className="is-floor__tray-label" aria-hidden="true">
+                  Next piece
+                </span>
                 {next === undefined
                   ? null
                   : candidates.map((candidate) => (
@@ -302,8 +340,8 @@ export function FloorStage(props: StageProps) {
                       >
                         <svg
                           viewBox={`-1 -1 ${candidate.width + 2} ${candidate.height + 2}`}
-                          width={(candidate.width + 2) * 2.8}
-                          height={(candidate.height + 2) * 2.8}
+                          width={(candidate.width + 2) * 2.1}
+                          height={(candidate.height + 2) * 2.1}
                           aria-hidden="true"
                         >
                           <FloorPieceArt

@@ -128,7 +128,7 @@ export function ShopStage(props: StageProps) {
                 }}
                 data-testid="top-up"
               >
-                Top up the purse · {TOP_UP_STEP}
+                Top up the purse: add {TOP_UP_STEP} of your coins
               </Button>
             </div>
           ) : (

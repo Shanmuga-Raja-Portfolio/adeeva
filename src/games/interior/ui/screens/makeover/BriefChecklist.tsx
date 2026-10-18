@@ -5,14 +5,19 @@ import { checklist, clientById, type GameState, type MakeoverRun } from "../../.
 export interface BriefChecklistProps {
   readonly state: GameState;
   readonly run: MakeoverRun;
+  readonly compact?: boolean | undefined;
 }
 
-export function BriefChecklist({ state, run }: BriefChecklistProps) {
+export function BriefChecklist({ state, run, compact = false }: BriefChecklistProps) {
   const items = checklist(state, run);
   const client = clientById(run.brief.clientId);
   const met = items.filter((item) => item.status === "met").length;
   return (
-    <aside className="is-checklist is-tape-card" aria-label="Brief checklist" data-testid="brief-checklist">
+    <aside
+      className={compact ? "is-checklist is-checklist--compact" : "is-checklist is-tape-card"}
+      aria-label="Brief checklist"
+      data-testid="brief-checklist"
+    >
       <header className="is-checklist__head">
         {client !== undefined ? (
           <Avatar look={client.look} size={44} title={client.name} frameColour="#fcefc2" />
@@ -25,8 +30,11 @@ export function BriefChecklist({ state, run }: BriefChecklistProps) {
           {met}/{items.length}
         </span>
       </header>
+      {compact && met === items.length ? (
+        <p className="is-checklist__done">Everything on the brief is on track!</p>
+      ) : null}
       <ul className="is-checklist__list">
-        {items.map((item) => (
+        {(compact ? items.filter((item) => item.status !== "met") : items).map((item) => (
           <li key={item.id} className={`is-checklist__item is-checklist__item--${item.status}`}>
             <span className="is-checklist__mark" aria-hidden="true">
               {item.status === "met" ? <Icon name="check" size={12} /> : item.status === "unmet" ? "!" : "·"}

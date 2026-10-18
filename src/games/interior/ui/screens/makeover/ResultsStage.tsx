@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { focusHeading } from "../../../../../studio/focusHeading";
 import { useSettings } from "../../../../../studio/SettingsContext";
 import { Avatar } from "../../../../../ui/art/avatar/Avatar";
+import { darken } from "../../../../../ui/art/colourMix";
 import { Button } from "../../../../../ui/kit/Button";
 import { Icon } from "../../../../../ui/kit/IconSet";
 import { StarRating } from "../../../../../ui/kit/StarRating";
@@ -50,6 +51,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
       </div>
     );
   const { evaluation, reward } = entry;
+  const look = roomLook(run, FINISHED);
   const metCount = evaluation.criteria.filter((criterion) => criterion.passed).length;
   const allMet = metCount === evaluation.criteria.length;
   const happy = reward.outcome === "pass";
@@ -64,9 +66,10 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
       <div className="is-results__scene">
         {happy ? <Confetti /> : null}
         <RoomCutaway
-          look={roomLook(run, FINISHED)}
+          look={look}
           title={`${name}'s finished ${roomById(run.brief.roomId).name}`}
           className="is-results__room"
+          staging={{ palette: [look.soft, look.backWall ?? look.soft, darken(look.soft, 0.35)] }}
         />
         {client !== undefined ? (
           <div className="is-results__client">
@@ -85,7 +88,7 @@ export function ResultsStage({ state, run, onExit }: StageProps) {
             evaluation.stars >= 4 ? "is-results__stars is-results__stars--burst" : "is-results__stars"
           }
         >
-          <StarRating stars={evaluation.stars} size={30} />
+          <StarRating stars={evaluation.stars} size={38} />
           <strong className="is-results__score">{evaluation.score} / 100</strong>
         </div>
         <ul className="is-results__summary">

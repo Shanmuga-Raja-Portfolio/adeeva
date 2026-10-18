@@ -1,6 +1,10 @@
 .is-results {
   display: grid;
   align-content: center;
+  background:
+    radial-gradient(ellipse at 28% 18%, rgba(246, 215, 122, 0.4), transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(242, 160, 174, 0.28), transparent 50%),
+    linear-gradient(180deg, #fff6ea, #f6e4db);
   grid-template-columns: minmax(0, 1.2fr) minmax(320px, 1fr);
   gap: var(--space-4);
   width: min(1320px, 100%);
@@ -50,7 +54,6 @@
 .is-results__room {
   width: 100%;
   height: auto;
-  filter: drop-shadow(0 16px 24px rgba(43, 34, 48, 0.18));
 }
 
 .is-results__client {
@@ -253,24 +256,29 @@
 }
 
 .is-results__lines {
-  display: grid;
-  gap: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .is-results__lines li {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 2px;
-  border-bottom: 2px dashed var(--paper-edge);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: #f1f4e6;
+  box-shadow: inset 0 0 0 1.5px #cdd6a8;
   font-size: 1.0625rem;
   font-weight: 700;
 }
 
 .is-results__lines strong {
-  color: var(--is-olive);
+  color: #4f5a24;
+  font-size: 1.125rem;
 }
 
 .is-results__totals {
@@ -299,14 +307,28 @@
 
 .is-confetti__piece {
   position: absolute;
-  top: -12px;
+  top: -16px;
   border-radius: 2px;
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.12);
+  background: linear-gradient(135deg, color-mix(in srgb, currentColor 70%, #ffffff), currentColor 55%);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.14);
   animation: is-fall 2.4s ease-in 1 both;
 }
 
 .is-confetti__piece--round {
   border-radius: 50%;
+}
+
+.is-confetti__piece--star {
+  border-radius: 0;
+  box-shadow: none;
+  clip-path: polygon(50% 0, 62% 36%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 38% 36%);
+}
+
+.is-confetti__piece--ribbon {
+  border-radius: 50% 50% 50% 50% / 100% 100% 0 0;
+  background: none;
+  box-shadow: none;
+  border-top: 4px solid currentColor;
 }
 
 @keyframes is-fall {

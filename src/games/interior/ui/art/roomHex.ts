@@ -1,7 +1,7 @@
 import { roomColourById, type RoomColour } from "../../content/roomColour";
 
-export const BARE_WALL = "#d3c6ba";
-export const BARE_FLOOR = "#b8a590";
+export const BARE_WALL = "#dccab6";
+export const BARE_FLOOR = "#c0a282";
 
 export function roomHex(colour: RoomColour): string {
   return roomColourById(colour).hex;

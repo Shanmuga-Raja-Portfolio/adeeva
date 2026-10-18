@@ -1,8 +1,6 @@
-import type { CSSProperties } from "react";
+import { memo, useMemo, type CSSProperties } from "react";
 import type { AvatarLook } from "../../../../../engine/avatar";
-import type { AvatarPose } from "../../../../../ui/art/avatar/ArmPose";
-import { Avatar } from "../../../../../ui/art/avatar/Avatar";
-import { clampUnit, easeInOut, easeOut, window01 } from "../../../../../ui/kit/easing";
+import { easeOut, window01 } from "../../../../../ui/kit/easing";
 import type { HomeStoryDef } from "../../../content/homeStory";
 import { VISITOR_ECHOES } from "../../../content/visitor";
 import { glowPath, placedLights, runRoom, type MakeoverRun, type PlacedDecor } from "../../../core";
@@ -10,10 +8,9 @@ import { cutawayFrame, floorPoint } from "../../art/cutawayFrame";
 import { RoomCutaway } from "../../art/RoomCutaway";
 import { roomHex } from "../../art/roomHex";
 import { PartyBunting } from "./PartyBunting";
-import { OpenHouseTreats } from "./OpenHouseTreats";
-import { treatSpots } from "./treatSpots";
-import { visitorSpots } from "./visitorSpots";
+import { StripVisitors } from "./StripVisitors";
 import { BARE, FINISHED, roomLook } from "../../art/roomLook";
+import { CUTAWAY_HEIGHT, CUTAWAY_WIDTH } from "../../art/cutawayFrame";
 
 export interface StripRoom {
   readonly run: MakeoverRun;
@@ -30,111 +27,6 @@ interface HomeStripProps {
   readonly reveal: number;
   readonly visitors: readonly AvatarLook[];
   readonly story: HomeStoryDef;
-}
-
-const POSES: readonly AvatarPose[] = ["point", "cheer", "chat", "wave", "graceful"];
-const VISITORS_IN_ROOM = 4;
-const BUILD = 1.24;
-
-function Reaction({ x, y, kind, size }: { x: number; y: number; kind: number; size: number }) {
-  const scale = size / 14;
-  return (
-    <g transform={`translate(${x} ${y}) scale(${scale.toFixed(2)})`}>
-      <circle r={10} fill="#fffaf2" opacity={0.85} />
-      {kind % 2 === 0 ? (
-        <path
-          d="M0 5 C-8 -1 -7 -9 0 -4.5 C7 -9 8 -1 0 5 Z"
-          fill="#e8546a"
-          stroke="#7a2232"
-          strokeWidth={1.2}
-          strokeLinejoin="round"
-        />
-      ) : (
-        <path
-          d="M0 -8 L2.2 -2.2 L8 0 L2.2 2.2 L0 8 L-2.2 2.2 L-8 0 L-2.2 -2.2 Z"
-          fill="#ffd95a"
-          stroke="#b07f12"
-          strokeWidth={1.2}
-          strokeLinejoin="round"
-        />
-      )}
-    </g>
-  );
-}
-
-function Visitors({
-  run,
-  t,
-  still,
-  visitors,
-  cloth,
-}: {
-  run: MakeoverRun;
-  t: number;
-  still: boolean;
-  visitors: readonly AvatarLook[];
-  cloth: string;
-}) {
-  const room = runRoom(run);
-  const frame = cutawayFrame(room);
-  const spots = visitorSpots(room, run.plan.pieces, Math.min(VISITORS_IN_ROOM, visitors.length));
-  const treats = treatSpots(room, run.plan.pieces, spots);
-  const door: readonly [number, number] = [room.doorCol + 1, room.rows - 0.4];
-  const height = frame.cell * 2;
-  const placed = spots
-    .map((spot, index) => {
-      const raw = clampUnit(t * 2.2 - index * 0.12);
-      const arrive = still ? 1 : easeInOut(raw);
-      const col = door[0] + (spot[0] + 0.5 - door[0]) * arrive;
-      const row = door[1] + (spot[1] + 0.55 - door[1]) * arrive;
-      return { index, col, row, arrive, raw };
-    })
-    .sort((a, b) => a.row - b.row);
-  return (
-    <g pointerEvents="none">
-      {placed.map(({ index, col, row, arrive, raw }) => {
-        const look = visitors[index];
-        if (look === undefined) return null;
-        const [x, y] = floorPoint(frame, col, row);
-        const bob = still || arrive >= 1 ? 0 : Math.abs(Math.sin(raw * 18 + index)) * frame.cell * 0.08;
-        const flip = index % 2 === 1 ? -1 : 1;
-        return (
-          <g key={index} transform={`translate(${x.toFixed(1)} ${(y - bob).toFixed(1)})`}>
-            <ellipse cx={0} cy={0} rx={height * 0.2} ry={height * 0.05} fill="#2b2230" opacity={0.22} />
-            <g
-              transform={`rotate(${((index % 3) - 1) * 3}) scale(${flip * BUILD} 1) translate(${(-height / 4).toFixed(1)} ${(-height).toFixed(1)})`}
-            >
-              <Avatar
-                look={look}
-                variant="full"
-                size={height}
-                mood={index % 3 === 0 ? "delighted" : "happy"}
-                pose={POSES[index % POSES.length]}
-                title="Visitor"
-              />
-            </g>
-            {still || raw >= 0.5 ? (
-              <g opacity={still ? 1 : window01(raw, 0.5, 0.8)}>
-                <Reaction
-                  x={height * 0.2}
-                  y={-height * 1.06 - (still ? 0 : Math.sin(t * 9 + index) * frame.cell * 0.06)}
-                  kind={index}
-                  size={frame.cell * 0.42}
-                />
-              </g>
-            ) : null}
-          </g>
-        );
-      })}
-      <OpenHouseTreats
-        frame={frame}
-        table={treats.table}
-        easel={treats.easel}
-        cloth={cloth}
-        shown={still ? 1 : window01(t, 0.05, 0.25)}
-      />
-    </g>
-  );
 }
 
 function GlowSteps({ run, t, still }: { run: MakeoverRun; t: number; still: boolean }) {
@@ -230,6 +122,67 @@ function StoryBubbles({
   );
 }
 
+const StaticRoom = memo(function StaticRoom({
+  run,
+  label,
+  evening,
+  palette,
+  bare,
+}: {
+  run: MakeoverRun;
+  label: string;
+  evening: boolean;
+  palette: readonly string[];
+  bare: boolean;
+}) {
+  return (
+    <RoomCutaway
+      look={roomLook(run, bare ? BARE : FINISHED)}
+      title={bare ? `${label} before` : label}
+      evening={bare ? false : evening}
+      className="is-strip__cutaway"
+      staging={bare ? undefined : { palette }}
+    />
+  );
+});
+
+function LiveLayer({
+  run,
+  earlier,
+  t,
+  still,
+  visitors,
+  story,
+  palette,
+}: {
+  run: MakeoverRun;
+  earlier: readonly MakeoverRun[];
+  t: number;
+  still: boolean;
+  visitors: readonly AvatarLook[];
+  story: HomeStoryDef;
+  palette: readonly string[];
+}) {
+  const lightsOn = still ? 1 : easeOut(window01(t, 0.04, 0.3));
+  return (
+    <svg className="is-strip__live" viewBox={`0 0 ${CUTAWAY_WIDTH} ${CUTAWAY_HEIGHT}`} aria-hidden="true">
+      {lightsOn < 1 ? (
+        <rect width={CUTAWAY_WIDTH} height={CUTAWAY_HEIGHT} fill="#141026" opacity={0.55 * (1 - lightsOn)} />
+      ) : null}
+      <PartyBunting frame={cutawayFrame(runRoom(run))} colours={palette} shown={lightsOn} />
+      <GlowSteps run={run} t={t} still={still} />
+      <StripVisitors
+        run={run}
+        t={t}
+        still={still}
+        visitors={visitors}
+        cloth={roomHex(story.palette[1] ?? story.palette[0] ?? "ivory")}
+      />
+      <StoryBubbles run={run} earlier={earlier} t={t} still={still} story={story} />
+    </svg>
+  );
+}
+
 export function HomeStrip({
   rooms,
   focus,
@@ -241,8 +194,8 @@ export function HomeStrip({
   visitors,
   story,
 }: HomeStripProps) {
-  const lightsOn = still ? 1 : easeOut(window01(t, 0.04, 0.3));
   const style = { "--strip-rooms": rooms.length, "--strip-focus": focus } as CSSProperties;
+  const palette = useMemo(() => story.palette.map((colour) => roomHex(colour)), [story]);
   return (
     <div className={finale ? "is-strip is-strip--finale" : "is-strip"} style={style} data-testid="home-strip">
       <div className="is-strip__track">
@@ -256,53 +209,35 @@ export function HomeStrip({
             >
               {visible ? (
                 <div className="is-strip__frame">
-                  <RoomCutaway
-                    look={roomLook(entry.run, FINISHED)}
-                    title={entry.label}
+                  <StaticRoom
+                    run={entry.run}
+                    label={entry.label}
                     evening={evening}
-                    className="is-strip__cutaway"
-                  >
-                    {current && !finale ? (
-                      <>
-                        <rect
-                          width={640}
-                          height={420}
-                          fill="#141026"
-                          opacity={0.55 * (1 - lightsOn)}
-                          pointerEvents="none"
-                        />
-                        <PartyBunting
-                          frame={cutawayFrame(runRoom(entry.run))}
-                          colours={story.palette.map((colour) => roomHex(colour))}
-                          shown={lightsOn}
-                        />
-                        <GlowSteps run={entry.run} t={t} still={still} />
-                        <Visitors
-                          run={entry.run}
-                          t={t}
-                          still={still}
-                          visitors={visitors}
-                          cloth={roomHex(story.palette[1] ?? story.palette[0] ?? "ivory")}
-                        />
-                        <StoryBubbles
-                          run={entry.run}
-                          earlier={rooms.slice(0, index).map((other) => other.run)}
-                          t={t}
-                          still={still}
-                          story={story}
-                        />
-                      </>
-                    ) : null}
-                  </RoomCutaway>
+                    palette={palette}
+                    bare={false}
+                  />
+                  {current && !finale ? (
+                    <LiveLayer
+                      run={entry.run}
+                      earlier={rooms.slice(0, index).map((other) => other.run)}
+                      t={t}
+                      still={still}
+                      visitors={visitors}
+                      story={story}
+                      palette={palette}
+                    />
+                  ) : null}
                   {finale ? (
                     <div
                       className="is-strip__before"
                       style={{ clipPath: `inset(0 0 0 ${(reveal * 100).toFixed(1)}%)` }}
                     >
-                      <RoomCutaway
-                        look={roomLook(entry.run, BARE)}
-                        title={`${entry.label} before`}
-                        className="is-strip__cutaway"
+                      <StaticRoom
+                        run={entry.run}
+                        label={entry.label}
+                        evening={false}
+                        palette={palette}
+                        bare
                       />
                     </div>
                   ) : null}

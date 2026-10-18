@@ -68,7 +68,7 @@ export function HubHero({ state, onWorkShift, onEndDay }: HubHeroProps) {
             disabledReason={shift.ok ? undefined : shift.reasons.join(" ")}
             aria-label={`${career.shiftName} for ${career.shiftPay} coins`}
           >
-            {career.shiftLabel} · +{career.shiftPay}
+            {career.shiftLabel} · earn {career.shiftPay} <Icon name="coin" size={16} />
           </Button>
           <Button size="lg" icon="calendar" onClick={onEndDay} data-testid="end-day">
             End day

@@ -1,6 +1,7 @@
 import type { FurnitureId } from "../../content/furniture";
 import { Bed, Bunk, Daybed, DoubleBed } from "./furniture/BedSprites";
-import { BeanBag, Chair, HallBench, Sofa, Armchair, WindowSeat } from "./furniture/SeatSprites";
+import { BeanBag, Chair, HallBench, WindowSeat } from "./furniture/SeatSprites";
+import { Armchair, Sofa } from "./furniture/SofaSprites";
 import {
   BedsideTable,
   CoffeeTable,

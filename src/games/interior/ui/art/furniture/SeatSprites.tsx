@@ -37,61 +37,6 @@ export function Chair({ w, u, fill, line }: Box) {
   );
 }
 
-export function Sofa({ w, u, soft, line }: Box) {
-  const h = u * 1.05;
-  const arm = u * 0.32;
-  return (
-    <g>
-      <rect
-        x={-w / 2 + arm * 0.6}
-        y={-h}
-        width={w - arm * 1.2}
-        height={h * 0.62}
-        rx={u * 0.2}
-        fill={darken(soft, 0.08)}
-        stroke={INK}
-        strokeWidth={line}
-      />
-      <rect
-        x={-w / 2}
-        y={-h * 0.58}
-        width={arm}
-        height={h * 0.5}
-        rx={u * 0.14}
-        fill={soft}
-        stroke={INK}
-        strokeWidth={line}
-      />
-      <rect
-        x={w / 2 - arm}
-        y={-h * 0.58}
-        width={arm}
-        height={h * 0.5}
-        rx={u * 0.14}
-        fill={soft}
-        stroke={INK}
-        strokeWidth={line}
-      />
-      <rect
-        x={-w / 2 + arm * 0.8}
-        y={-h * 0.42}
-        width={w - arm * 1.6}
-        height={h * 0.3}
-        rx={u * 0.12}
-        fill={lighten(soft, 0.18)}
-        stroke={INK}
-        strokeWidth={line}
-      />
-      <path d={`M0 ${-h * 0.4} L0 ${-h * 0.14}`} stroke={darken(soft, 0.2)} strokeWidth={line} />
-      <Legs w={w - arm * 0.6} h={h * 0.1} u={u} line={line} />
-    </g>
-  );
-}
-
-export function Armchair({ w, u, soft, line }: Box) {
-  return <Sofa w={w} u={u} soft={soft} fill={soft} line={line} />;
-}
-
 export function WindowSeat({ w, u, soft, fill, line }: Box) {
   const h = u * 0.6;
   return (

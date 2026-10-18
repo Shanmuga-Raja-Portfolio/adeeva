@@ -123,3 +123,113 @@ Our screens won six pairs:
 - **Art is the one criterion we lose on almost every pair.** Every win comes from purpose, feedback and readability, not from looks. The critic still called the paint step "a flat diagram of a box room" and the floor art plain.
 - **Floor step layout.** At 1280 x 800 the side column is tall enough that the step list scrolls below the fold.
 - **Next steps:** denser props and textiles in styled rooms, a decor catalogue with more pieces to browse, more natural poses for visitors, and a shorter floor-step side column would close most of what is left.
+
+## Gap round — 2026-10-17
+
+### Method
+
+- **Same blind A/B as before, with a higher bar.** Each round compared eight of our screens with official store screenshots of the titles in `work/0013-research/references.md`, section "6. Interior Studio - room makeovers and show homes": Unpacking, House Flipper 2 and Mini Cozy Room: Lo-Fi. The eight screen kinds are the same as in the first pass, but some pairs were matched with a different reference title (see the table below).
+- **Random labels.** Each pair was shown as A and B, with the sides picked at random.
+- **Fresh critics each round.** A new panel of three critics judged every round with no memory of earlier rounds. They scored art, typography, feedback, readability and touch, gave an outcome, and flagged any pair where ours was clearly worse.
+- **The bar was raised:** at least 85% of pairs won or tied, and no pair clearly worse.
+- **Our screenshots** came from `e2e/interior/qualityShots.spec.ts`. Round 1 used 1280 x 800. Round 2 used 1280 x 720, the same shape as the store screenshots.
+- **What stays out of the repo:** the reference screenshots belong to their owners. They were kept outside the repo, and nothing was traced, copied or imitated. Every change came from general craft: composition, hierarchy, colour, lighting, depth, texture, typography, feedback and spacing.
+
+| Pair | Screen kind | Our screen                     | Reference title       |
+| ---- | ----------- | ------------------------------ | --------------------- |
+| 1    | title       | Title                          | House Flipper 2       |
+| 2    | hub         | Loft hub                       | Mini Cozy Room: Lo-Fi |
+| 3    | hub         | Larkspur Close (second career) | Mini Cozy Room: Lo-Fi |
+| 4    | craft-step  | Paint the walls                | House Flipper 2       |
+| 5    | craft-step  | Lay the floor                  | Unpacking             |
+| 6    | craft-step  | Style the room                 | Mini Cozy Room: Lo-Fi |
+| 7    | results     | Results                        | House Flipper 2       |
+| 8    | showcase    | Open House showcase            | Unpacking             |
+
+### Round 1 — 6/8 won or tied (75%), 0 clearly worse — fail
+
+| Pair | Kind       | Reference             | Outcome | Clearly worse | Criteria ours won                                 |
+| ---- | ---------- | --------------------- | ------- | ------------- | ------------------------------------------------- |
+| 1    | title      | House Flipper 2       | win     | no            | typography, feedback, readability, touch          |
+| 2    | hub        | Mini Cozy Room: Lo-Fi | win     | no            | art, typography, feedback, readability, touch     |
+| 3    | hub        | Mini Cozy Room: Lo-Fi | win     | no            | typography, feedback, readability (touch tied)    |
+| 4    | craft-step | House Flipper 2       | win     | no            | typography, feedback, readability, touch          |
+| 5    | craft-step | Unpacking             | loss    | no            | typography, feedback, readability, touch          |
+| 6    | craft-step | Mini Cozy Room: Lo-Fi | win     | no            | typography, readability (feedback and touch tied) |
+| 7    | results    | House Flipper 2       | win     | no            | typography, feedback, readability, touch          |
+| 8    | showcase   | Unpacking             | loss    | no            | typography, readability (touch tied)              |
+
+Nothing was clearly worse, but two pairs lost:
+
+- **Floor step.** The critics said the play area was "a mostly empty grey slab with a few cork tiles". There was a lot of dead space under the floor, and the main button was greyed out. Two of the three critics picked the reference for its craft, even though ours explained the task better.
+- **Showcase.** The critics called the visitors "stiff, mannequin-like" and the room under-furnished. They also disliked the harsh black bar across the top. The reference won feedback because its stars, hearts and exclamation stickers make the moment feel like a celebration.
+
+The style step won narrowly. The critics liked its stepper, coach bubble and brief, but said its decor box offered only three items and that the swatches and toolbar were cut off at the bottom.
+
+### Round 2 — 8/8 won or tied (100%), 0 clearly worse — pass
+
+| Pair | Kind       | Reference             | Outcome | Clearly worse | Criteria ours won                              |
+| ---- | ---------- | --------------------- | ------- | ------------- | ---------------------------------------------- |
+| 1    | title      | House Flipper 2       | win     | no            | typography, feedback, readability, touch       |
+| 2    | hub        | Mini Cozy Room: Lo-Fi | win     | no            | art, typography, feedback, readability, touch  |
+| 3    | hub        | Mini Cozy Room: Lo-Fi | win     | no            | typography, feedback, readability, touch       |
+| 4    | craft-step | House Flipper 2       | win     | no            | typography, readability, touch                 |
+| 5    | craft-step | Unpacking             | win     | no            | typography, feedback, readability, touch       |
+| 6    | craft-step | Mini Cozy Room: Lo-Fi | win     | no            | typography, feedback, readability, touch       |
+| 7    | results    | House Flipper 2       | win     | no            | typography, feedback, readability, touch       |
+| 8    | showcase   | Unpacking             | win     | no            | typography, readability, touch (feedback tied) |
+
+All the pairs that were weak in round 1 now won:
+
+- **Floor step.** All three critics now picked ours. They pointed to the glowing drop spot, the piece picker, the "Thunk! Next piece." toast, the sparkles and the big "Press it down" button.
+- **Style step.** It won every criterion except art. The critics named the "Drag onto a glowing spot" prompt, the dashed target rings, the Placed and Must-have badges, the Turn, Smaller and Bigger buttons and the fabric palette.
+- **Showcase.** It won on story. Visitors react with heart and exclamation bubbles, and the room has bunting and balloons. The "Room 2 of 2 · The grand finale" caption, the progress pips and the Skip button make the moment easy to follow.
+
+### What changed between rounds
+
+- **Screenshots** moved to 1280 x 720, the same shape as the store screenshots.
+- **Makeover layout:** the stage rail and the coach bubble now share one row, so the room and its controls sit higher and nothing is cut off at the bottom. The "To unlock" list became a row of short chips.
+- **Floor step:**
+  - The flat grey board became a furnished room seen from above: a window with curtains, a bookcase, a picture, an armchair under a dust sheet, a tape measure and an open box of spare pieces.
+  - The next spot glows, and a burst plays when a piece lands.
+  - The piece cards sit in one "Next piece" row. The Press button is a dashed outline until a piece is on its spot, so it no longer looks greyed out and broken.
+  - The hint moved under the floor as one short line.
+- **Style step:**
+  - The decor box became a full shelf of pieces, each with its price. It shows Placed and Must-have badges and says "Drag onto a glowing spot".
+  - Dashed rings on the walls and floor show where each piece can go.
+  - The brief folded into a short card above the shelf that lists only what is still to do. When everything is met, it says "Everything on the brief is on track!"
+  - The fabric swatches became one row, with the chosen colour named.
+  - Finished rooms gained a woven rug, cushions and new sofa art. Two floor lamps that stand side by side now face away from each other instead of overlapping.
+- **Showcase:**
+  - The visitors were redrawn as one shared townsfolk figure (`src/ui/art/avatar/Townsfolk.tsx`), with relaxed poses such as cheering, holding a mug, taking a photo and pointing.
+  - Big hand-drawn heart and exclamation bubbles pop over their heads.
+  - Fairy lights and a large rug fill the room. The street behind is no longer blurred.
+  - The harsh black top bar became a soft tint, with clearer progress pips and softer music and Skip chips.
+- **Results:** the finished room is staged with the same rug and cushions. The confetti has more pieces, in strips, rounds, stars and ribbons.
+- **Paint step:** the arm holding the roller has a rolled-up sleeve and shading, and the wet drips are smaller and softer.
+- **Hubs and title:**
+  - The loft hub's beams and mood-board pins have more depth, and the shift button says "earn" with a coin icon.
+  - Larkspur Close has bolder step chips and a clearer top-up button that says how many of your coins it adds to the purse.
+  - The title's empty save slot is shorter and has a sparkle Start here button, and the title backdrop is warmer.
+
+### Final result
+
+**Passed in round 2: 8/8 won or tied (100%), none clearly worse.**
+
+Our screens won all eight pairs:
+
+- the title
+- both hubs
+- the paint step
+- the floor step
+- the style step
+- results
+- the Open House showcase
+
+### Remaining gap
+
+- **Art is still the criterion we lose most.** In round 2 we won art only on the loft hub. Every other win came from clarity, feedback, readability and touch. The critics still called the reference art "far more charming and better crafted".
+- **Paint step.** The critics said the painted wall is flat and "reads like striped wallpaper", while the reference's paint strokes look wet and tactile.
+- **Floor step.** One critic found too many instructions at once: the coach tip, the toast, the locked-button reason, the door-strip line and the Floor magnet hint. The hammer floats, and the cork texture is still plain.
+- **Second-career hub.** The critics called it busy and said it reads like a text-heavy web dashboard next to the reference's charming dioramas.
+- **Next steps:** give fresh paint a wet sheen and roller texture, show one floor instruction at a time, and give the Larkspur Close room cards more of the diorama feel that the loft hub already has.

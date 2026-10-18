@@ -50,8 +50,7 @@
 }
 
 .is-oh-stage__street {
-  opacity: 0.9;
-  filter: saturate(1.15) blur(1px);
+  opacity: 0.92;
 }
 
 .is-oh-stage::after {
@@ -96,8 +95,27 @@
 }
 
 .is-oh-show .ad-show__screen::before {
-  height: 64px;
-  background: linear-gradient(180deg, #050407 70%, transparent);
+  height: 76px;
+  background: linear-gradient(180deg, rgba(40, 30, 58, 0.55), transparent);
+}
+
+.is-oh-show .ad-show__pips li {
+  width: 44px;
+  height: 12px;
+  border-radius: 6px;
+  background: rgba(255, 250, 242, 0.55);
+  box-shadow: 0 1px 3px rgba(20, 14, 30, 0.35);
+}
+
+.is-oh-show .ad-show__pips li.is-done {
+  background: #fffaf2;
+}
+
+.is-oh-show .ad-show__pips li.is-active {
+  background: var(--show-glow);
+  box-shadow:
+    0 0 0 2px #fffaf2,
+    0 2px 6px rgba(20, 14, 30, 0.35);
 }
 
 .is-oh-show .ad-show__screen::after {
@@ -161,6 +179,15 @@
   display: block;
   width: 100%;
   height: auto;
+}
+
+.is-strip__live {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .is-strip__before {
@@ -424,4 +451,11 @@
   .is-oh-results__key {
     animation: none;
   }
+}
+
+.is-oh-show .ad-music-chip,
+.is-oh-show .ad-show__skip {
+  background: rgba(46, 32, 62, 0.78);
+  border-color: rgba(255, 250, 242, 0.45);
+  box-shadow: 0 4px 12px rgba(20, 14, 30, 0.25);
 }

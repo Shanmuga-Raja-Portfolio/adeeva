@@ -20,14 +20,16 @@ function Drip({
   wide: number;
   colour: string;
 }) {
-  const bulb = wide * 0.95;
+  const bulb = wide * 0.78;
   return (
     <g>
       <path
         d={`M${x - wide} ${y - 3} C${x - wide * 0.6} ${y + long * 0.35} ${x - wide * 0.35} ${y + long * 0.7} ${x - bulb} ${y + long} A${bulb} ${bulb} 0 1 0 ${x + bulb} ${y + long} C${x + wide * 0.35} ${y + long * 0.7} ${x + wide * 0.6} ${y + long * 0.35} ${x + wide} ${y - 3} Z`}
         fill={colour}
         stroke={darken(colour, 0.25)}
-        strokeWidth={1}
+        strokeOpacity={0.55}
+        strokeWidth={0.8}
+        opacity={0.92}
       />
       <ellipse
         cx={x - bulb * 0.35}
@@ -52,8 +54,8 @@ export function WetDrips({ cells, size }: WetDripsProps) {
             key={`${cell.x}-${cell.y}`}
             x={cell.x + size * spot + (step - 1.5) * 3}
             y={cell.y + size}
-            long={10 + step * 7}
-            wide={4 + (step % 3) * 1.5}
+            long={5 + step * 4}
+            wide={3.4 + (step % 3) * 1.2}
             colour={cell.colour}
           />
         );

@@ -30,7 +30,7 @@ export function MoodBoard({ state }: MoodBoardProps) {
           <span
             key={tag}
             className="is-mood__chip"
-            style={{ background: TAG_TINTS[tag] ?? "#fffaf2", rotate: `${index % 2 === 0 ? -4 : 3}deg` }}
+            style={{ backgroundColor: TAG_TINTS[tag] ?? "#fffaf2", rotate: `${index % 2 === 0 ? -4 : 3}deg` }}
           >
             {tag}
           </span>

@@ -53,7 +53,7 @@ export function HomeRooms({ state, project, dispatch, onOpenRoom, onEndDay }: Ho
                   toast(`You added ${TOP_UP_STEP} coins to the purse.`, "info");
               }}
             >
-              Top up the purse · {TOP_UP_STEP}
+              Top up the purse: add {TOP_UP_STEP} of your coins
             </Button>
           </section>
           {larkspur === null ? null : (

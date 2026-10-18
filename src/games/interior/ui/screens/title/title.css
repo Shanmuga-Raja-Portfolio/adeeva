@@ -16,9 +16,9 @@
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 42%, rgba(255, 240, 200, 0.35), transparent 55%),
-    radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(92, 52, 46, 0.28) 100%),
-    linear-gradient(180deg, rgba(251, 245, 238, 0) 55%, rgba(251, 245, 238, 0.7) 100%);
+    radial-gradient(ellipse at 40% 40%, rgba(255, 236, 186, 0.55), transparent 58%),
+    radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(92, 52, 46, 0.32) 100%),
+    linear-gradient(180deg, rgba(246, 228, 214, 0.35), rgba(246, 228, 214, 0.55));
   pointer-events: none;
 }
 
@@ -27,11 +27,11 @@
   z-index: 1;
   width: min(1240px, 100%);
   margin: 0 auto;
-  padding: var(--space-4) var(--space-5) var(--space-6);
+  padding: var(--space-3) var(--space-5) var(--space-4);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(20px, 4vh, 36px);
+  gap: var(--space-3);
 }
 
 .is-title__nav {
@@ -47,7 +47,7 @@
 }
 
 .is-title__hero {
-  margin-top: clamp(0px, 1vh, 16px);
+  margin-top: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -135,8 +135,9 @@
 .is-wordmark__tagline {
   margin: 0;
   max-width: 36ch;
-  color: var(--ink-soft);
+  color: var(--ink);
   font-size: var(--text-lg);
+  font-weight: 600;
 }
 
 .is-title__showcase {
@@ -237,7 +238,7 @@
   .is-title__slots {
     grid-column: 2;
     grid-row: 1 / span 2;
-    margin-top: clamp(0px, 1vh, 16px);
+    margin-top: 0;
     padding: var(--space-3);
     border-radius: var(--radius-lg);
     background: rgba(255, 250, 242, 0.72);
@@ -257,6 +258,10 @@
 
   .is-title__slots .is-slot {
     padding: var(--space-3);
+  }
+
+  .is-title__slots .is-slot--empty {
+    padding: var(--space-2) var(--space-3);
   }
 }
 
@@ -284,14 +289,18 @@
 }
 
 .is-slot--empty {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
   border-style: dashed;
-  background: rgba(255, 252, 247, 0.88);
-  align-items: flex-start;
+  background: rgba(255, 252, 247, 0.9);
 }
 
 .is-slot__empty {
-  margin: 0;
-  color: var(--ink-soft);
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .is-slot__head {

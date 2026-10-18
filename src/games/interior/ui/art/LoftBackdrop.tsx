@@ -113,13 +113,20 @@ export function LoftBackdrop({ className, decor = [], sign, evening = false }: L
       <rect width={1200} height={600} fill={`url(#${id}-wall)`} />
       <path d="M0 0 L1200 0 L1200 40 L0 120 Z" fill="#fffaf2" opacity={0.55} />
       {[160, 420, 680, 940].map((x) => (
-        <path
-          key={x}
-          d={`M${x} 0 L${x + 40} 0 L${x + 40} ${92 - x * 0.067} L${x} ${95 - x * 0.067} Z`}
-          fill="#b97f4b"
-          opacity={0.7}
-        />
+        <g key={x}>
+          <path
+            d={`M${x} 0 L${x + 34} 0 L${x + 34} ${118 - (x + 34) * 0.0667} L${x} ${120 - x * 0.0667} Z`}
+            fill="#a8713f"
+          />
+          <path
+            d={`M${x} 0 L${x + 8} 0 L${x + 8} ${120 - (x + 8) * 0.0667} L${x} ${120 - x * 0.0667} Z`}
+            fill="#c99560"
+          />
+          <path d={`M${x + 34} 0 L${x + 34} ${118 - (x + 34) * 0.0667}`} stroke="#7a4f2c" strokeWidth={2} />
+        </g>
       ))}
+      <path d="M0 120 L1200 40 L1200 52 L0 132 Z" fill="#a8713f" />
+      <path d="M0 120 L1200 40" stroke="#c99560" strokeWidth={3} />
       <ArchWindow x={180} id={id} evening={evening} />
       <ArchWindow x={800} id={id} evening={evening} />
       {evening ? null : (

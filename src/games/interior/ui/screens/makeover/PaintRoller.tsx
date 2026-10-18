@@ -38,20 +38,49 @@ export function PaintRoller({ x, y, colour, loaded, still }: PaintRollerProps) {
       <path d="M4 64 L16 64 M4 72 L16 72 M4 80 L16 80 M4 88 L16 88" stroke="#2a4f82" strokeWidth={2.5} />
       <rect x={4} y={55} width={4} height={42} rx={2} fill="#ffffff" opacity={0.3} />
       <path
-        d="M0 84 L24 84 L64 168 L34 178 Z"
+        d="M-1 84 C4 112 22 150 34 184 L66 172 C54 140 34 108 25 84 Z"
         fill={SKIN}
         stroke={INK}
         strokeWidth={2.5}
         strokeLinejoin="round"
       />
       <path
-        d="M14 116 L40 106 L78 176 L46 190 Z"
+        d="M21 90 C30 112 46 144 58 170"
+        stroke={darken(SKIN, 0.22)}
+        strokeWidth={6}
+        strokeLinecap="round"
+        fill="none"
+        opacity={0.55}
+      />
+      <path
+        d="M4 92 C9 114 20 140 30 166"
+        stroke={lighten(SKIN, 0.3)}
+        strokeWidth={4}
+        strokeLinecap="round"
+        fill="none"
+        opacity={0.6}
+      />
+      <path
+        d="M24 136 C36 130 48 126 56 122 L84 182 C70 192 56 196 44 198 Z"
         fill="#e98a6c"
         stroke={INK}
         strokeWidth={2.5}
         strokeLinejoin="round"
       />
-      <path d="M17 122 L42 112" stroke="#c8664a" strokeWidth={4} strokeLinecap="round" />
+      <path
+        d="M24 136 C36 130 48 126 56 122 L60 132 C50 136 40 140 28 146 Z"
+        fill="#f4b29b"
+        stroke={INK}
+        strokeWidth={2}
+        strokeLinejoin="round"
+      />
+      <path
+        d="M44 156 C52 162 60 172 64 186 M58 146 C64 154 70 164 74 176"
+        stroke="#c8664a"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        fill="none"
+      />
       <rect x={-5} y={62} width={30} height={28} rx={10} fill={SKIN} stroke={INK} strokeWidth={2.5} />
       <path
         d="M-3 69 L23 69 M-3 76 L23 76 M-3 83 L23 83"

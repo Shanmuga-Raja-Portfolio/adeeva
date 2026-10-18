@@ -1,4 +1,4 @@
-import type { ReactNode, Ref } from "react";
+import type { ReactNode } from "react";
 import { darken, lighten } from "../../../../ui/art/colourMix";
 import { useSvgId } from "../../../../ui/art/useSvgId";
 import type { RoomTemplate } from "../../content/roomTemplate";
@@ -30,6 +30,7 @@ import { LightFixture } from "./LightFixture";
 import { BARE_WALL, roomHex } from "./roomHex";
 import type { RoomLook } from "./roomLook";
 import { DressingDefs, RoomDressing } from "./RoomDressing";
+import { ShowStaging, StagingDefs } from "./ShowStaging";
 import { WindowDrapes } from "./WindowDrapes";
 
 interface RoomCutawayProps {
@@ -37,9 +38,13 @@ interface RoomCutawayProps {
   readonly title: string;
   readonly className?: string | undefined;
   readonly evening?: boolean | undefined;
-  readonly decorLayer?: ReactNode;
-  readonly svgRef?: Ref<SVGSVGElement> | undefined;
+  readonly staging?: StagingLook | undefined;
   readonly children?: ReactNode;
+}
+
+export interface StagingLook {
+  readonly palette: readonly string[];
+  readonly extras?: boolean | undefined;
 }
 
 const WINDOW_TOP = 0.8;
@@ -191,6 +196,20 @@ function Glow({ frame, light, id }: { frame: CutawayFrame; light: PlacedLight; i
   );
 }
 
+function mirrored(frame: CutawayFrame, lights: readonly PlacedLight[], light: PlacedLight): boolean {
+  if (lightById(light.lightId).mount !== "floor") return false;
+  const across = (other: PlacedLight) =>
+    (other.col - light.col) * frame.cell - (other.row - light.row) * frame.shift;
+  return lights.some(
+    (other) =>
+      other !== light &&
+      lightById(other.lightId).mount === "floor" &&
+      Math.abs(other.col - light.col) <= 1 &&
+      Math.abs(other.row - light.row) <= 1 &&
+      (across(other) > 0 || (across(other) === 0 && other.row > light.row)),
+  );
+}
+
 function fixtureSpot(frame: CutawayFrame, room: RoomTemplate, light: PlacedLight) {
   const mount = lightById(light.lightId).mount;
   const centre = floorPoint(frame, light.col + 0.5, light.row + 0.5);
@@ -210,8 +229,7 @@ export function RoomCutaway({
   title,
   className,
   evening = false,
-  decorLayer,
-  svgRef,
+  staging,
   children,
 }: RoomCutawayProps) {
   const id = useSvgId("is-room");
@@ -247,7 +265,6 @@ export function RoomCutaway({
   ].sort((a, b) => a.front - b.front);
   return (
     <svg
-      ref={svgRef}
       className={className}
       viewBox={`0 0 ${CUTAWAY_WIDTH} ${CUTAWAY_HEIGHT}`}
       role="img"
@@ -279,6 +296,7 @@ export function RoomCutaway({
         <ShellDefs id={id} />
         <BloomDefs id={id} />
         <DressingDefs id={id} back={back} />
+        {staging === undefined ? null : <StagingDefs id={id} />}
       </defs>
       <ellipse
         cx={CUTAWAY_WIDTH / 2}
@@ -402,6 +420,16 @@ export function RoomCutaway({
         strokeWidth={1.5}
       />
       <WallCaps frame={frame} back={back} side={side} id={id} />
+      {staging === undefined ? null : (
+        <ShowStaging
+          frame={frame}
+          room={room}
+          pieces={look.pieces}
+          palette={staging.palette}
+          id={id}
+          extras={staging.extras}
+        />
+      )}
       {evening ? (
         <polygon
           points={pointsAttr([
@@ -467,13 +495,21 @@ export function RoomCutaway({
         if (entry.light === null) return null;
         const spot = fixtureSpot(frame, room, entry.light);
         return (
-          <LightFixture
+          <g
             key={entry.key}
-            lightId={entry.light.lightId}
-            x={spot.point[0]}
-            y={spot.point[1]}
-            unit={frame.cell}
-          />
+            transform={
+              mirrored(frame, look.lights, entry.light)
+                ? `translate(${(spot.point[0] * 2).toFixed(1)} 0) scale(-1 1)`
+                : undefined
+            }
+          >
+            <LightFixture
+              lightId={entry.light.lightId}
+              x={spot.point[0]}
+              y={spot.point[1]}
+              unit={frame.cell}
+            />
+          </g>
         );
       })}
       {hanging.map((light, index) => {
@@ -495,25 +531,27 @@ export function RoomCutaway({
         spots={look.lights.map((light) => {
           const def = lightById(light.lightId);
           const spot = fixtureSpot(frame, room, light);
+          const head = lampHead(light.lightId, spot.point[0], spot.point[1], frame.cell);
           return {
-            point: lampHead(light.lightId, spot.point[0], spot.point[1], frame.cell),
+            point: mirrored(frame, look.lights, light)
+              ? ([spot.point[0] * 2 - head[0], head[1]] as const)
+              : head,
             warm: def.warmth === "warm",
             wall: def.mount === "wall",
             strength: def.strength,
           };
         })}
       />
-      {decorLayer ??
-        [...look.decor]
-          .sort((a, b) => a.layer - b.layer)
-          .map((item) => (
-            <g
-              key={item.id}
-              transform={`translate(${item.x} ${item.y}) rotate(${item.rotation}) scale(${item.scale})`}
-            >
-              <DecorArt decorId={item.decorId} soft={look.soft} />
-            </g>
-          ))}
+      {[...look.decor]
+        .sort((a, b) => a.layer - b.layer)
+        .map((item) => (
+          <g
+            key={item.id}
+            transform={`translate(${item.x} ${item.y}) rotate(${item.rotation}) scale(${item.scale})`}
+          >
+            <DecorArt decorId={item.decorId} soft={look.soft} />
+          </g>
+        ))}
       {children}
     </svg>
   );

@@ -88,13 +88,17 @@ export function MakeoverFlow({ state, dispatch, onExit, onExitHome, onOpenSettin
         onExit={leave}
         onOpenSettings={onOpenSettings}
       />
-      <StageRail state={state} run={run} dispatch={dispatch} />
-      {coach !== undefined ? <CoachBubble show={coachOn(state)} text={coach} /> : null}
-      <div className="is-makeover__body">
+      <div className="is-makeover__guide">
+        <StageRail state={state} run={run} dispatch={dispatch} />
+        {coach !== undefined ? <CoachBubble show={coachOn(state)} text={coach} /> : null}
+      </div>
+      <div
+        className={run.stage === "style" ? "is-makeover__body is-makeover__body--solo" : "is-makeover__body"}
+      >
         <section className="is-makeover__stage" key={run.stage} aria-label={`${run.stage} step`}>
           <StageView state={state} run={run} dispatch={dispatch} onExit={leave} />
         </section>
-        <BriefChecklist state={state} run={run} />
+        {run.stage === "style" ? null : <BriefChecklist state={state} run={run} />}
       </div>
     </main>
   );
