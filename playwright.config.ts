@@ -7,18 +7,27 @@ const origin = `http://${host}:${port}`;
 const outDir = `dist-e2e/${port}`;
 const deviceSpecs = /release[\\/](smoke|install)\.spec\.ts$/;
 const safariSpecs = /release[\\/](smoke|noNetwork|install|update|about)\.spec\.ts$/;
+const chromiumLaunch = { args: ["--enable-blink-features=WebBluetooth"] };
 
 export default defineConfig({
   testDir: "e2e",
   timeout: 120_000,
   use: { baseURL: origin, trace: { mode: "retain-on-failure", screenshots: false } },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "android-handheld", testMatch: deviceSpecs, use: { ...devices["Pixel 7 landscape"] } },
+    { name: "chromium", use: { ...devices["Desktop Chrome"], launchOptions: chromiumLaunch } },
+    {
+      name: "android-handheld",
+      testMatch: deviceSpecs,
+      use: { ...devices["Pixel 7 landscape"], launchOptions: chromiumLaunch },
+    },
     {
       name: "chromebook",
       testMatch: deviceSpecs,
-      use: { ...devices["Desktop Chrome"], viewport: { width: 1366, height: 768 } },
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1366, height: 768 },
+        launchOptions: chromiumLaunch,
+      },
     },
     { name: "webkit-iphone", testMatch: safariSpecs, use: { ...devices["iPhone 15"] } },
     { name: "webkit-ipad", testMatch: safariSpecs, use: { ...devices["iPad (gen 11)"] } },

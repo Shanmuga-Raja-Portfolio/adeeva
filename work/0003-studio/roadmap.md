@@ -2,7 +2,7 @@
 
 This is the single place for status, open tasks and the order of work. Game designs live in `work/0003-studio/games/<id>.md`; the studio contract is in `work/0003-studio/design.md`.
 
-**Working agreement:** everything stays local. Each task gets its own branch and worktree, two adversarial reviews and every check, then one commit. `main` is fast-forwarded locally only after it passes every check again. Pushes to GitHub (`Shanmuga-Raja-Portfolio/adeeva`, private) wait for Shan, and are done together, one by one. Every job's processes are cleaned up when it finishes.
+**Working agreement:** each task gets its own `task/NNNN-slug` branch and worktree, two adversarial reviews and every check, then one commit. Pushes to GitHub (`Shanmuga-Raja-Portfolio/adeeva`, private) wait for Shan, and are done together, one by one. Once CI is live (task 57), every change reaches `main` through a pull request that merges only on a green `ci-ok`, with rebase or squash and the branch deleted afterwards; production deploys come only from release tags. The details are in `work/0057-ci-cd/README.md`. Every job's processes are cleaned up when it finishes.
 
 ## Status
 
@@ -81,9 +81,19 @@ Next:
 
     Pending: Strix and Alibaba Open Code Review (need Shan's MiniMax key); `/code-review ultra` (Shan starts it); and on deploy day, ZAP against the live URL, Cloudflare Access bypass attempts (direct asset URLs, `*.pages.dev` preview and branch URLs, the cached service worker, `HEAD /sw.js`, cookie flags including `SameSite=Lax`), the headers as Cloudflare actually serves them, and Access sign-in inside an installed iOS app.
 
-11. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, a drift sweep, and a closing report.
-12. ⬜ **Deploy with Shan:** Shan creates the hosting account, we push and deploy together, then Shan invites the kids, friends and relatives.
-13. ⬜ **After the first players:** a shared art pass (lighting, texture, depth) guided by what the kids and invited families say, and the Interior Challenging economy check (seed 2 earns 0.79× the loft).
+11. 🟨 **CI/CD** (task 57, branch `task/0057-ci-cd`, 2026-10-18; built, waiting for Shan to push and watch the first runs). Built:
+    - `ci.yml` on every pull request and push to `main`: verify (frozen install, typecheck, lint, unit tests, build, `pnpm audit --prod` at any level plus `--audit-level high` for everything, `dist` artifact), a gitleaks scan of the full history (pinned, checksum-checked CLI), the browser tests in 2 Chromium shards plus one WebKit job, and a single `ci-ok` check;
+    - `preview.yml`: every same-repo pull request gets its own Cloudflare Pages preview and one self-updating comment with the link; it skips with a notice until the Cloudflare secrets exist;
+    - `release.yml`: a `v*.*.*` tag on `main` reruns all of CI, deploys the tested build to production, then creates a GitHub Release; a manual run from an older tag is the slow rollback;
+    - Dependabot (weekly, grouped minor and patch, TypeScript majors ignored), a pull request template, every action pinned by commit SHA, `actionlint` and ShellCheck clean;
+    - `packageManager: pnpm@11.28.5` in `package.json`, with `devEngines` pinned to the same exact version;
+    - a Linux rehearsal of the whole browser suite (Playwright's Ubuntu 24.04 image, 2 CPUs) found that Linux Chromium doesn't recognise `bluetooth` in our `Permissions-Policy`, and the console watch failed 13 tests. The Chromium projects now launch with `--enable-blink-features=WebBluetooth`, as Chromebooks and Android do. With that, everything passes on Linux: 176 Chromium tests and 18 WebKit.
+
+    Waiting for Shan: push the branch and watch the first runs; create the Pages project, the Pages-only API token, the two repo secrets and the Access application (both `maker-studio.pages.dev` and `*.maker-studio.pages.dev`, cookie `SameSite=Lax`), and set the repo's merge settings. All steps are in `work/0057-ci-cd/README.md`.
+
+12. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, a drift sweep, and a closing report.
+13. ⬜ **Deploy with Shan:** Shan sets up Cloudflare as in `work/0057-ci-cd/README.md`, we tag `v1.0.0` and watch the release deploy, then Shan invites the kids, friends and relatives.
+14. ⬜ **After the first players:** a shared art pass (lighting, texture, depth) guided by what the kids and invited families say, and the Interior Challenging economy check (seed 2 earns 0.79× the loft).
 
 **Recurring: drift and staleness sweep.** Run one at every milestone (after each phase, before every deploy) and whenever docs lag behind the code (Shan, 2026-10-17). It checks that:
 
@@ -120,22 +130,24 @@ Parked: the Tauri desktop app for the Windows PC (Shan, 2026-10-17). Rust 1.99.1
 - No ads, chat, accounts, analytics, tracking, third-party scripts, fonts or images. The app makes zero network requests besides loading itself, and a browser test checks that.
 - Strict security headers on every response: a Content Security Policy that allows only the site itself, no framing by other sites, no referrer leaks, and camera, microphone, location and other device features switched off.
 - HTTPS only, enforced by the host.
-- Dependencies are audited before every deploy (`pnpm audit`), the lockfile is frozen, and builds come from a clean install.
+- Dependencies are audited on every pull request and before every deploy (`pnpm audit`), the lockfile is frozen, and builds come from a clean install on GitHub's runners.
 - An "About and privacy" page for parents covers what the app stores (saves on the device only), what it never does, and how to delete everything.
 - The host keeps its own standard request logs (IP addresses), as every website does. The About page mentions it.
 
-**How a deploy happens.** Deploys are deliberate, never automatic from work in progress:
+**How a deploy happens.** Deploys are deliberate, never automatic from work in progress, and never from a merge (Shan, 2026-10-18). The full workflow is in `work/0057-ci-cd/README.md`.
 
-1. Every check passes on `main`, and the security review is clean.
-2. Shan and I push together. The host builds from the pushed branch, or I upload the checked build after Shan logs in.
-3. We open the live link on each device and check that it installs, plays offline and keeps its saves.
+1. Every change reaches `main` through a pull request. Each pull request gets its own preview link behind Cloudflare Access, and merges only when the `ci-ok` check is green.
+2. When `main` is ready and the security review is clean, Shan tags it (`git tag -a v1.0.0 -m …`) and pushes the tag.
+3. The release workflow checks that the tag is on `main`, runs every check again on that commit, deploys the tested build to production with `wrangler pages deploy`, and creates a GitHub Release. Cloudflare never builds anything and is never connected to the repo.
+4. We open the live link on each device and check that it installs, plays offline and keeps its saves.
+5. To roll back, use the Cloudflare dashboard's "Rollback to this deployment" (instant), or re-run the release workflow from an older tag. If the newer release raised a save version, roll forward with a fix instead.
 
 **Feedback from invited players.** It happens outside the game: a short form or an email to Shan. The game itself never collects anything.
 
 ## Waiting for Shan (do together, one by one)
 
-- Create the hosting account (Cloudflare Pages, plus Cloudflare Access for invite-only), and choose a private link or invite-only.
-- Push `main` and each task branch to GitHub once that task is merged and has passed every check.
+- Create the hosting account (Cloudflare Pages, plus Cloudflare Access for invite-only), and choose a private link or invite-only. The steps for the Pages project, the API token, the repo secrets and the Access application are in `work/0057-ci-cd/README.md`.
+- Push each task branch to GitHub and open its pull request; merge on a green `ci-ok`.
 - Read the research reports and decide whether anything in them is worth discussing.
 - Playtest with the kids, then the invited friends and relatives. Their reactions are the final judge.
 

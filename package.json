@@ -15,10 +15,11 @@
     "e2e": "playwright test",
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm test && pnpm e2e"
   },
+  "packageManager": "pnpm@11.28.5",
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "^11.22.0",
+      "version": "11.28.5",
       "onFail": "download"
     }
   },
