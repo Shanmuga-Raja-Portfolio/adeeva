@@ -39,7 +39,7 @@ Next:
 6. 🔄 **Workshop Phase C gap round:** the showroom hub, the finish step, and the Craft Fair crowd.
 7. ⬜ **Speed on slow devices, all games:** move Patisserie's `lazyScreen` and `useIdlePreload` into `src/ui/kit` and use them in every game. Measure every hub and screen at 6× CPU throttle, and fix anything slower than 1.5 s. Check the richer Phase C art for animations inside big SVGs and heavy filters.
 8. ⬜ **Dependency refresh and security audit:** apply the patch updates (Playwright 1.64.1, React 19.3.1, typescript-eslint 8.71.2, Vitest 5.0.5, ESLint 10.13.0; TypeScript stays on 6.x), remove anything unused, confirm `pnpm audit` is clean, check every licence is commercially permissive, and run the full gate.
-9. ⬜ **Installable web app (PWA) and hardening** (see Release plan): manifest, icons, offline service worker, an update prompt, storage persistence, security headers, a no-network check, and an "About and privacy" page for families. Test at Android-handheld size and on a Chromebook.
+9. ⬜ **Installable web app (PWA) and hardening** (see Release plan): manifest, icons, offline service worker, an update prompt, storage persistence, security headers, a no-network check, and an "About and privacy" page for families. Test at Android-handheld size and on a Chromebook. Add a Playwright **WebKit** project, so Safari's engine runs the smoke and install checks on every gate, and test at iPhone and iPad sizes. Check that Cloudflare Access sign-in works inside an installed iOS app, and that an expired session never breaks offline play: the cached game keeps working, and updates wait until next sign-in.
 10. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, a pre-deploy security review, and a closing report.
 11. ⬜ **Deploy with Shan:** Shan creates the hosting account, we push and deploy together, then Shan invites the kids, friends and relatives.
 12. ⬜ **After the first players:** a shared art pass (lighting, texture, depth) guided by what the kids and invited families say, and the Interior Challenging economy check (seed 2 earns 0.79× the loft).
@@ -53,6 +53,8 @@ Parked: the Tauri desktop app for the Windows PC (Shan, 2026-10-17). Rust 1.99.1
 - **Android handheld:** Chrome shows "Install app" or "Add to Home screen".
 - **Chromebook:** an install icon in the address bar; the game then sits in the launcher like an app.
 - **Windows PC:** Chrome or Edge, using the install icon in the address bar.
+- **iPhone and iPad (Safari):** Share, then **Add to Home Screen**. Apple shows no install prompt, so the About page carries picture steps. Saves live inside the home-screen app and are separate from Safari tabs, so play from the icon. Safari's 7-day clean-up of website data doesn't apply to home-screen apps.
+- **Mac:** Safari, File, then **Add to Dock** (macOS 14 or later), or the Chrome or Edge install icon.
 
 **Saves.** Each device keeps its own saves in its browser storage. Nothing is uploaded and nothing is shared between devices. The app asks the browser to keep that storage persistent so it isn't cleared under space pressure. Uninstalling the app or clearing site data deletes the saves on that device, and the About page says so plainly.
 
