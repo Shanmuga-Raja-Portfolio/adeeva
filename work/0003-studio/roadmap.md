@@ -40,9 +40,24 @@ Next:
 7. ⬜ **Speed on slow devices, all games:** move Patisserie's `lazyScreen` and `useIdlePreload` into `src/ui/kit` and use them in every game. Measure every hub and screen at 6× CPU throttle, and fix anything slower than 1.5 s. Check the richer Phase C art for animations inside big SVGs and heavy filters.
 8. ⬜ **Dependency refresh and security audit:** apply the patch updates (Playwright 1.64.1, React 19.3.1, typescript-eslint 8.71.2, Vitest 5.0.5, ESLint 10.13.0; TypeScript stays on 6.x), remove anything unused, confirm `pnpm audit` is clean, check every licence is commercially permissive, and run the full gate.
 9. ⬜ **Installable web app (PWA) and hardening** (see Release plan): manifest, icons, offline service worker, an update prompt, storage persistence, security headers, a no-network check, and an "About and privacy" page for families. Test at Android-handheld size and on a Chromebook. Add a Playwright **WebKit** project, so Safari's engine runs the smoke and install checks on every gate, and test at iPhone and iPad sizes. Check that Cloudflare Access sign-in works inside an installed iOS app, and that an expired session never breaks offline play: the cached game keeps working, and updates wait until next sign-in.
-10. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, a pre-deploy security review, and a closing report.
-11. ⬜ **Deploy with Shan:** Shan creates the hosting account, we push and deploy together, then Shan invites the kids, friends and relatives.
-12. ⬜ **After the first players:** a shared art pass (lighting, texture, depth) guided by what the kids and invited families say, and the Interior Challenging economy check (seed 2 earns 0.79× the loft).
+10. ⬜ **Security hardening and pen test** (must be clean before any invite):
+    - a written threat model (static site, children as users, invite-only access);
+    - a strict CSP and headers via `_headers`, verified on the preview and the live URL: `default-src 'self'`, no inline scripts, `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'none'`, HSTS, `X-Content-Type-Options`, `Referrer-Policy: no-referrer`, and a locked-down `Permissions-Policy`;
+    - a code review for XSS sinks (`dangerouslySetInnerHTML`, `innerHTML`, dynamic URLs) and safe parsing of every save and settings value read from storage (the parsers already reject bad saves; fuzz them);
+    - service-worker safety (scope, cache versioning, no caching of opaque or third-party responses, update integrity);
+    - a dependency audit, licence check and secret scan (git history included);
+    - an OWASP ZAP baseline scan and a manual pen-test pass against the local preview and then the live address, including Cloudflare Access bypass attempts (direct asset URLs, preview URLs, cached service worker);
+    - a security report in `work/` with findings and fixes.
+11. ⬜ **Final pass:** every check on `main`, a playthrough of every game from the studio home, a drift sweep, and a closing report.
+12. ⬜ **Deploy with Shan:** Shan creates the hosting account, we push and deploy together, then Shan invites the kids, friends and relatives.
+13. ⬜ **After the first players:** a shared art pass (lighting, texture, depth) guided by what the kids and invited families say, and the Interior Challenging economy check (seed 2 earns 0.79× the loft).
+
+**Recurring: drift and staleness sweep.** Run one at every milestone (after each phase, before every deploy) and whenever docs lag behind the code (Shan, 2026-10-17). It checks that:
+
+- docs match the code (statuses, paths, scripts, numbers);
+- there is no dead code, no unused files or dependencies, and no stale worktrees, branches or stray untracked files;
+- every rule still holds;
+- `pnpm audit` is clean.
 
 Parked: the Tauri desktop app for the Windows PC (Shan, 2026-10-17). Rust 1.99.1, tauri-cli 2.11.2, MSVC Build Tools and WebView2 are already installed.
 
