@@ -6,15 +6,15 @@ This is the single place for status, open tasks and the order of work. Game desi
 
 ## Status
 
-| Game               | Playable slice        | Depth (second career or showcase)                    | Quality loop (bar 85%)               |
-| ------------------ | --------------------- | ---------------------------------------------------- | ------------------------------------ |
-| ADEEVA             | ✅                    | ✅ Student → Label, runway                           | ✅ 88%                               |
-| Patisserie Atelier | ✅                    | ✅ Salon Pâtissier: Tea Salon and Patisserie Fair    | ✅ 88%                               |
-| Thrift-Flip Studio | ✅                    | ✅ Resale Boutique and Upcycle Showcase              | ✅ 100% (merging after the race fix) |
-| Interior Studio    | ✅                    | ✅ Show-Home Development and Open House              | ✅ 100% (merging after the race fix) |
-| Workshop & Wood    | ✅                    | ✅ Furniture Showroom and Larkspur Craft Fair        | 🔄 gap round running                 |
-| Jewellery Bench    | ✅                    | ✅ Collection Launch and Lantern Night               | ✅ 88%                               |
-| Six Kitchens       | ✅ school → head chef | ✅ Crossroads: Restaurant, Food Truck, TV & Cookbook | ✅ 88%                               |
+| Game               | Playable slice        | Depth (second career or showcase)                    | Quality loop (bar 85%) |
+| ------------------ | --------------------- | ---------------------------------------------------- | ---------------------- |
+| ADEEVA             | ✅                    | ✅ Student → Label, runway                           | ✅ 88%                 |
+| Patisserie Atelier | ✅                    | ✅ Salon Pâtissier: Tea Salon and Patisserie Fair    | ✅ 88%                 |
+| Thrift-Flip Studio | ✅                    | ✅ Resale Boutique and Upcycle Showcase              | ✅ 100%                |
+| Interior Studio    | ✅                    | ✅ Show-Home Development and Open House              | ✅ 100%                |
+| Workshop & Wood    | ✅                    | ✅ Furniture Showroom and Larkspur Craft Fair        | ✅ 88%                 |
+| Jewellery Bench    | ✅                    | ✅ Collection Launch and Lantern Night               | ✅ 88%                 |
+| Six Kitchens       | ✅ school → head chef | ✅ Crossroads: Restaurant, Food Truck, TV & Cookbook | ✅ 88%                 |
 
 Every score comes from a blind panel of three critics against official store screenshots (see Phase C below). Art is still the criterion we lose most often; we win on clarity, feedback, readability and touch.
 
@@ -35,15 +35,15 @@ Done:
 
 Next:
 
-5. 🔄 **Race sweep 2:** browser tests that wait on scenes which move on by themselves, in the newer specs (Jewellery Lantern Night, the Patisserie Fair timeout). After it lands, merge Thrift-Flip and Interior Phase C.
-6. 🔄 **Workshop Phase C gap round:** the showroom hub, the finish step, and the Craft Fair crowd.
+5. ✅ **Race sweep 2:** the newer specs bind their show and scene waits to held time, a show-clock frame is capped so a stall never skips a scene, and toast lifetimes start when the toast appears. Thrift-Flip (100%) and Interior (100%) Phase C are merged.
+6. ✅ **Workshop Phase C gap round:** 88% from a fresh three-critic panel, none clearly worse. The Craft Fair showcase is still the screen it loses; it is on the art-pass list.
 7. ✅ **Speed on slow devices, all games:**
    - `lazyScreen` and `useIdlePreload` now live in `src/ui/kit`, and every game uses them.
    - 269 transitions across all seven games were measured at 6× CPU throttle on the production build. Nothing reaches 1.5 s; the slowest is the Thrift-Flip boutique hub at 1.05 s.
    - Posed avatars draw only their own arm in each arm segment, about 190 fewer SVG nodes each. Still pictures match apart from anti-aliasing in 2 of 800 diffed scenes. Idle animations now pivot on the visible figure, which moves it by under a pixel.
    - The hall's fairy lights twinkle as two layers instead of 48.
    - The method and the before and after table are in `work/0054-perf/report.md`.
-8. ⬜ **Dependency refresh and security audit:** apply the patch updates (Playwright 1.64.1, React 19.3.1, typescript-eslint 8.71.2, Vitest 5.0.5, ESLint 10.13.0; TypeScript stays on 6.x), remove anything unused, confirm `pnpm audit` is clean, check every licence is commercially permissive, and run the full gate.
+8. ✅ **Dependency refresh and security audit:** Playwright 1.64.1, React 19.3.1, typescript-eslint 8.71.2, Vitest 5.0.5 and ESLint 10.13.0 (TypeScript stays on 6.x). `pnpm audit` is clean, knip finds no unused dependencies, and every licence is permissive (MIT, Apache-2.0, ISC, BSD, BlueOak); MPL-2.0 appears only in the lightningcss build tool, which is not shipped.
 9. ✅ **Installable web app (PWA) and hardening** (branch `task/0053-pwa-hardening`). Built:
    - a manifest (`public/manifest.webmanifest`, standalone, scope `/`), icons at 192, 512 and 512 maskable plus a 180 apple-touch icon, all drawn from one SVG based on the studio mark, and the theme-colour and Apple tags in `index.html`;
    - a hand-written service worker with no new dependency. `tooling/offlineBuild.ts` writes the build's version and full file list into `src/offline/serviceWorker.js` as `sw.js`. It precaches every built file under a versioned cache, fetching each one with its SHA-384 integrity hash so that a damaged file, or a file from a different deploy, fails the whole install and leaves nothing behind. It deletes old caches on activate, handles same-origin GETs only, stores nothing outside the precache list, and leaves `/cdn-cgi/` (Cloudflare Access) to the network. A navigation always serves the cached studio straight away. If the family's Cloudflare Access session has expired, the studio screens show a small "Signed out" mark with a Sign in button (Shan, 2026-10-18): the app asks for its own `/sw.js` headers (a `HEAD` request that skips every cache) on open, when it returns to the foreground and when the device comes back online, and a redirect, 401 or 403 means signed out. The mark sits in the page header of the home, parent and About pages, never over the content and never inside a game. Sign in opens `/?signin=1`, which the worker passes to the network so the host's sign-in page appears. Once the host answers normally again, the worker still serves the saved studio, so the running version always matches what is kept for offline play, and the flag is removed from the address afterwards;
