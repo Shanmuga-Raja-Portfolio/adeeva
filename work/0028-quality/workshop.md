@@ -103,3 +103,64 @@ The panel's grey-bar complaints came from the comparison tool letterboxing our 1
 - **Results:** some of the lines on the results screen contradict each other, so the wording needs a check.
 - **Showcase:** the crowd and the overall composition are weak, even though the screen is festive and clear.
 - **Next steps:** softer shading and more texture on the bench and room art, a less crowded garage hub, a fuller showroom, bigger extras tiles, consistent results wording, and a more natural fair crowd would close most of what is left.
+
+## Gap round — 2026-10-17
+
+### Method
+
+- **Same blind A/B as before, with a panel.** The round compared eight of our screens with official store screenshots of the titles in `work/0013-research/references.md`, section "4. Workshop & Wood - furniture making": Little Big Workshop, Master Of Pottery and The Lilliput Workshop. The pairs are the same eight as in the first pass.
+- **Random labels.** Each pair was shown as A and B, with the sides picked at random.
+- **Fresh critics each round.** A new panel of three critics judged the round with no memory of earlier rounds. They scored art, typography, feedback, readability and touch, gave an outcome, and flagged any pair where ours was clearly worse.
+- **The bar:** at least 85% of pairs won or tied, and no pair clearly worse.
+- **Same frame for both sides.** The comparison tool crops our 16:10 shots and the references to the same 16:9 frame, so there are no grey letterbox bars.
+- **Our screenshots** came from `e2e/workshop/qualityShots.spec.ts` at 1280 x 800.
+- **What stays out of the repo:** the reference screenshots belong to their owners. They were kept outside the repo, and nothing was traced, copied or imitated.
+
+### Round 1 — 7/8 won or tied (88%), 0 clearly worse — pass
+
+| Pair | Kind       | Reference             | Outcome | Clearly worse | Criteria ours won                              |
+| ---- | ---------- | --------------------- | ------- | ------------- | ---------------------------------------------- |
+| 1    | title      | Little Big Workshop   | win     | no            | typography, readability, touch                 |
+| 2    | hub        | Little Big Workshop   | win     | no            | typography, readability, touch                 |
+| 3    | hub        | Master Of Pottery     | win     | no            | typography, readability                        |
+| 4    | craft-step | Little Big Workshop   | win     | no            | art, typography, feedback, readability, touch  |
+| 5    | craft-step | Master Of Pottery     | win     | no            | typography, feedback, readability, touch       |
+| 6    | craft-step | The Lilliput Workshop | win     | no            | typography, feedback, readability, touch       |
+| 7    | results    | Master Of Pottery     | win     | no            | typography, feedback, readability, touch       |
+| 8    | showcase   | Master Of Pottery     | loss    | no            | typography, feedback, readability (touch tied) |
+
+What the panel said:
+
+- **Title.** All three critics called ours a working front door: a strong two-tone wordmark, one big Continue button with the save shown on it, and clear save slots. The reference is a lovely lit scene, but it has no title and nothing to press.
+- **Garage hub.** It won for the first time with a panel. The big greeting, the labelled stat chips, the job notes with Accept and Not this time, and the large End day button make the next step obvious for ages 8 and up.
+- **Showroom hub.** A narrow win on clarity. The critics said the scene is still sparse and muted, and one said the action buttons at the bottom are cut off.
+- **Saw step.** It won on every criterion, art included: one clear task, a step tracker, big part chips and a safety note.
+- **Sand step.** It won on clear instructions ("Rub back and forth along the arrow"), the target zone and the sparkle and dust feedback. The critics agreed the reference art is much better, so the win is narrow, and one said the instruction text is clipped.
+- **Finish step.** It flipped from a loss to a win. The labelled, priced extras, the Turn, Bigger and Smaller buttons with words and the full checklist won on clarity, though one critic still called the bench art crude.
+- **Results.** All three critics called it a real reward moment: the headline, 100/100 with five stars, the coin breakdown, the confetti and one clear Back button.
+- **Showcase (the one loss).** Two of three critics preferred the reference, a lit glass case that makes one piece the hero. Ours is festive and clearly labelled, but the pieces are small in the middle of the stage, and the row of near-identical cheering figures across the bottom takes over.
+
+### What changed
+
+- **No Workshop code changed in this round.** The panel judged the game as it stood at the end of the first pass. The only change is this report.
+- The higher score, compared with the 63% panel re-judge in the first pass, comes from the fairer 16:9 crop and a new panel, not from new work. The garage hub and the finish step flipped from losses to wins.
+
+### Final result
+
+**Passed in round 1: 7/8 won or tied (88%), none clearly worse.**
+
+Our screens won seven pairs:
+
+- the title
+- both hubs
+- sawing
+- sanding
+- the finish step
+- results
+
+### Remaining gap
+
+- **Craft fair showcase (lost in every panel).** The pieces need to be the hero: bigger, lit like a display, and in front of the crowd, not crowded out by it. The cheering crowd needs more varied people and poses, and it should not be cut off at the bottom edge.
+- **Art is still the criterion we lose most.** We win art only on the saw step. Everywhere else we win on clarity, feedback and touch, not on looks.
+- **Small fixes the critics noticed:** the showroom hub's action buttons sit below the fold, the sand step's instruction text is clipped, and the finish step's bench is still flat.
+- **Next steps:** stage one or two pieces large and lit on the fair stage with a varied crowd, fill out the showroom scene with richer light and texture, and soften the shading on the bench art.
