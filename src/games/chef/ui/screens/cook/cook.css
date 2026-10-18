@@ -288,12 +288,6 @@
   animation: ck-oil 1.8s ease-out infinite;
 }
 
-.ck-pan__label {
-  fill: #2e3a40;
-  font-size: 18px;
-  font-weight: 800;
-}
-
 .ck-pan__tray-label {
   fill: #f3f0e8;
   font-size: 20px;

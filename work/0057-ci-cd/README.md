@@ -1,6 +1,6 @@
 # CI/CD for Maker Studio
 
-Task 57, branch `task/0057-ci-cd`, 2026-10-18. This page is the working agreement for getting a change from a branch to the kids' devices. It covers the GitHub workflows, the Cloudflare setup Shan does once, releases, rollbacks and the free-minutes budget.
+Task 57, branch `task/0057-ci-cd`, 2026-10-18, merged as pull request #1. This page is the working agreement for getting a change from a branch to the kids' devices. It covers the GitHub workflows, the Cloudflare setup Shan does once, releases, rollbacks and the free-minutes budget.
 
 Shan's decisions (2026-10-18):
 
@@ -10,13 +10,13 @@ Shan's decisions (2026-10-18):
 
 ## The workflows
 
-| File                               | Runs on                                       | What it does                                                                                                                                                    |
-| ---------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/ci.yml`         | every pull request to `main`, push to `main`  | install, typecheck, lint, unit tests, build, `pnpm audit`, a gitleaks scan of the whole history, and the browser tests on Chromium and WebKit                   |
-| `.github/workflows/preview.yml`    | every pull request from a branch in this repo | builds the PR and deploys it to its own Cloudflare Pages preview, then posts (and keeps updating) one comment with the link                                     |
-| `.github/workflows/release.yml`    | a pushed `v*.*.*` tag, or a manual re-run     | checks the tag is on `main`, runs the whole of `ci.yml` again on that commit, deploys the tested build to production and creates a GitHub Release               |
-| `.github/dependabot.yml`           | weekly, Mondays                               | grouped minor and patch updates for npm, the deploy tool and GitHub Actions; TypeScript majors are ignored (it stays on 6.x); versions must be 5 days old first |
-| `.github/pull_request_template.md` | every new pull request                        | what changed, evidence, the gate checklist, screenshots for UI, and a security impact line                                                                      |
+| File                               | Runs on                                       | What it does                                                                                                                                                                  |
+| ---------------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/ci.yml`         | every pull request to `main`, push to `main`  | install, typecheck, lint, unit tests, build, `pnpm audit`, a gitleaks scan of the whole history, and the browser tests on Chromium and WebKit                                 |
+| `.github/workflows/preview.yml`    | every pull request from a branch in this repo | builds the PR and deploys it to its own Cloudflare Pages preview, then posts (and keeps updating) one comment with the link                                                   |
+| `.github/workflows/release.yml`    | a pushed `v*.*.*` tag, or a manual re-run     | checks the tag is on `main`, runs the whole of `ci.yml` again on that commit, deploys the tested build to production and creates a GitHub Release                             |
+| `.github/dependabot.yml`           | weekly, Mondays                               | npm, the deploy tool and GitHub Actions, with minor and patch grouped for npm and Actions; TypeScript majors are ignored (it stays on 6.x); versions must be 5 days old first |
+| `.github/pull_request_template.md` | every new pull request                        | what changed, evidence, the gate checklist, screenshots for UI, and a security impact line                                                                                    |
 
 ### Job graph
 
@@ -81,7 +81,7 @@ To bump gitleaks: take the `linux_x64` line from the new release's `gitleaks_<ve
 
 ## Day to day: branches, pull requests and merging
 
-1. Every change starts on a branch named `task/NNNN-slug`, for example `task/0058-art-pass`. The number is the next free one under `work/`.
+1. Every change starts on a branch named `task/NNNN-slug`, for example `task/0059-art-pass`. The number is the next free one under `work/`.
 2. Push the branch and open a pull request into `main`. Fill in the template. CI and the preview start on their own.
 3. Merge only when **`ci-ok`** is green. Use **Rebase and merge** or **Squash and merge**, never a merge commit, so `main` stays a straight line.
 4. Delete the branch after merging (GitHub does it automatically once the setting below is on), and remove its local worktree.
@@ -190,7 +190,7 @@ Zero Trust dashboard → **Access → Applications → Add an application → Se
 - **Application name:** Maker Studio
 - **Public hostnames:** add both of these:
   - `maker-studio.pages.dev` (production)
-  - `*.maker-studio.pages.dev` (every preview: branch aliases like `task-0058-art-pass.maker-studio.pages.dev`, and per-commit addresses like `1a2b3c4d.maker-studio.pages.dev`)
+  - `*.maker-studio.pages.dev` (every preview: branch aliases like `task-0059-art-pass.maker-studio.pages.dev`, and per-commit addresses like `1a2b3c4d.maker-studio.pages.dev`)
 
   The wildcard doesn't match the bare name, so both entries are needed.
 
@@ -265,11 +265,11 @@ The suite had only ever run on Windows. Before the first push it was run in Micr
 - `check-jsonschema` against SchemaStore's GitHub workflow and Dependabot schemas: all valid.
 - `prettier --check` covers every new file through `pnpm lint`.
 
-The workflows have not run on GitHub yet. Watch the first runs for the points in **First runs to watch** below.
+CI first ran on GitHub with pull request #1, which merged on a green `ci-ok`. Before the merge, a loaded 2-vCPU runner showed one drag-timing race in the browser tests (helpers measured a stage before its entry rise had finished); every drag-aiming helper now waits for the stage to settle. No preview has deployed yet (the Preview workflow skips with a notice until the secrets exist) and no release has run: both wait for the Cloudflare setup above. Watch those first runs, and the first Dependabot pull requests, for the points in **First runs to watch** below.
 
 ## First runs to watch
 
-- **`pnpm/action-setup` and pnpm 11.** The action reads `devEngines.packageManager` before `packageManager`, which is why both now hold exactly `11.28.5`. The lockfile records that specifier, so `--frozen-lockfile` passes.
+- **`pnpm/action-setup` and pnpm 11** (working since the first CI runs). The action reads `devEngines.packageManager` before `packageManager`, which is why both now hold exactly `11.28.5`. The lockfile records that specifier, so `--frozen-lockfile` passes.
 - **Runner speed.** If a shard runs past about 20 minutes, or a timing-sensitive test fails only on GitHub, look at the trace in the failure artifact before changing anything. Don't add retries: the suite has been kept deterministic on purpose.
 - **WebKit dependencies.** `playwright install --with-deps webkit` pulls a long list of apt packages on `ubuntu-24.04`. If apt is slow or a mirror fails, the WebKit job fails before any test runs. Re-run it.
 - **Dependabot and pnpm 11.** Dependabot's support for pnpm 11 lockfiles hasn't been seen working here yet. If its first npm pull request fails to update `pnpm-lock.yaml`, update that dependency by hand on a task branch. Also expect `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` on some Dependabot pull requests: pnpm 11 refuses packages younger than a day by default, Dependabot's 5-day cooldown covers only the dependency it bumps, and a fresh transitive package in its lockfile fails `--frozen-lockfile`. Re-run CI a day later rather than turning the check off.

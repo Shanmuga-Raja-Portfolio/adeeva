@@ -4,10 +4,6 @@
   animation: pa-steam-rise 2.8s ease-in-out infinite;
 }
 
-.pa-steam--late {
-  animation-delay: -1.4s;
-}
-
 @keyframes pa-steam-rise {
   0% {
     opacity: 0;

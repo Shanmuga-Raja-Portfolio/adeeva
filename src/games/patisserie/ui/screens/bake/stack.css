@@ -38,10 +38,6 @@
   }
 }
 
-.pa-stack__filling {
-  animation: ad-fade-in var(--duration-slow) var(--ease-out) both;
-}
-
 .pa-stack__slot {
   position: absolute;
   border: none;

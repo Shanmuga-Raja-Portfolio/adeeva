@@ -33,6 +33,10 @@
   font-size: var(--text-lg);
 }
 
+.tf-hub-top__row > .tf-wordmark {
+  justify-self: start;
+}
+
 .tf-hub-top__who {
   display: flex;
   align-items: center;
