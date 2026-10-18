@@ -70,6 +70,10 @@ export default tseslint.config(
     },
   },
   {
+    files: ["src/offline/serviceWorker.js"],
+    languageOptions: { globals: { ...globals.serviceworker, __MAKER_BUILD__: "readonly" } },
+  },
+  {
     files: ["src/engine/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": ["error", { patterns: [...PURE_IMPORTS, ...folderPatterns(["games"])] }],

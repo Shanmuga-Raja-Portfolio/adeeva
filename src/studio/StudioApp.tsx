@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
+import { AboutPage } from "./AboutPage";
 import { focusHeading } from "./focusHeading";
 import type { StudioPlayer } from "./gameModule";
 import { GameStage } from "./GameStage";
@@ -9,6 +10,7 @@ import { liveGame } from "./registry";
 import { SettingsProvider } from "./SettingsContext";
 import { HOME_ROUTE } from "./studioRoute";
 import { ToastProvider } from "./ToastContext";
+import { UpdateNotice } from "./UpdateNotice";
 import { useStudioProfile } from "./useStudioProfile";
 import { useStudioRoute } from "./useStudioRoute";
 
@@ -30,7 +32,6 @@ function StudioShell() {
     focusHeading();
   }, [arrival]);
 
-  if (route.name === "parent") return <ParentPage />;
   const game = route.name === "game" ? liveGame(route.gameId) : null;
   if (game !== null)
     return (
@@ -45,11 +46,20 @@ function StudioShell() {
       />
     );
   return (
-    <HomeScreen
-      profile={profile}
-      returnedFrom={from?.name === "game" ? from.gameId : null}
-      onProfileChange={updateProfile}
-    />
+    <>
+      {route.name === "parent" ? (
+        <ParentPage />
+      ) : route.name === "about" ? (
+        <AboutPage />
+      ) : (
+        <HomeScreen
+          profile={profile}
+          returnedFrom={from?.name === "game" ? from.gameId : null}
+          onProfileChange={updateProfile}
+        />
+      )}
+      <UpdateNotice />
+    </>
   );
 }
 

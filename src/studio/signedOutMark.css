@@ -1,0 +1,28 @@
+.st-signed-out-slot {
+  display: inline-flex;
+}
+
+.st-signed-out {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 4px 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  animation: ad-rise var(--duration-base) var(--ease-out) both;
+}
+
+.st-signed-out__words {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  font-size: var(--text-sm);
+}
+
+.st-signed-out__calm {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}

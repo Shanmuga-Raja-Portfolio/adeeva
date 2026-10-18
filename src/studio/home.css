@@ -84,10 +84,24 @@
 .st-bar {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: var(--space-4);
+  gap: var(--space-3) var(--space-4);
   max-width: 1180px;
   margin: 0 auto;
+}
+
+.st-bar__end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2) 0;
+  margin-left: auto;
+}
+
+.st-signed-out-slot:not(:empty) + .st-bar__promise {
+  margin-left: var(--space-3);
 }
 
 .st-mark {
@@ -527,6 +541,12 @@
 
 .st-footer p {
   margin: 0;
+}
+
+.st-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 .st-footer__link {

@@ -1,0 +1,45 @@
+.st-update-region {
+  position: fixed;
+  z-index: 60;
+  top: max(var(--space-3), env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.st-update {
+  pointer-events: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-lg);
+  color: var(--ink);
+  animation: ad-rise var(--duration-base) var(--ease-out) both;
+}
+
+.st-update p {
+  flex: 1 1 14rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.st-update__icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--rose-soft);
+  color: var(--rose-deep);
+}
+
+.st-update__actions {
+  display: flex;
+  gap: var(--space-2);
+}

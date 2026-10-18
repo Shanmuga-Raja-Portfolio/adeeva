@@ -278,30 +278,34 @@ test("Continue picks the slot that was played last", async ({ page }) => {
   await expect(page.getByRole("button", { name: /^Continue/ })).toContainText("Bea");
 });
 
-test("a studio view that fails to load offers a reload and keeps the save", async ({ page }) => {
-  await page.route(CRAFT_FLOW_CHUNK, (route) => route.abort());
-  await openPreparedGame(page, withActiveGig(settledStudent(), "mom"));
-  const savedOnClick = await page
-    .getByTestId("gig-card")
-    .getByRole("button", { name: "Start sewing" })
-    .evaluate((button) => {
-      (button as HTMLButtonElement).click();
-      return window.localStorage.getItem("adeeva.save.1");
-    });
-  expect((JSON.parse(savedOnClick ?? "{}") as GameState).activeRun?.stage).toBe("brief");
-  const failed = page.getByTestId("view-load-failed");
-  await expect(failed).toBeVisible();
-  await expect(failed).toContainText("This part of the studio didn't load. Reload to continue");
-  expect(await savedState(page, (state) => state.activeRun?.stage)).toBe("brief");
-  await page.unroute(CRAFT_FLOW_CHUNK);
-  await failed.getByRole("button", { name: "Reload" }).click();
-  await page.getByRole("button", { name: /^Continue/ }).click();
-  await finishStories(page);
-  await page
-    .getByTestId("gig-card")
-    .getByRole("button", { name: /^Continue/ })
-    .click();
-  await expect(page.getByRole("heading", { name: "Meet the brief" })).toBeVisible();
+test.describe("with the offline worker held back so the chunk can be blocked", () => {
+  test.use({ serviceWorkers: "block" });
+
+  test("a studio view that fails to load offers a reload and keeps the save", async ({ page }) => {
+    await page.route(CRAFT_FLOW_CHUNK, (route) => route.abort());
+    await openPreparedGame(page, withActiveGig(settledStudent(), "mom"));
+    const savedOnClick = await page
+      .getByTestId("gig-card")
+      .getByRole("button", { name: "Start sewing" })
+      .evaluate((button) => {
+        (button as HTMLButtonElement).click();
+        return window.localStorage.getItem("adeeva.save.1");
+      });
+    expect((JSON.parse(savedOnClick ?? "{}") as GameState).activeRun?.stage).toBe("brief");
+    const failed = page.getByTestId("view-load-failed");
+    await expect(failed).toBeVisible();
+    await expect(failed).toContainText("This part of the studio didn't load. Reload to continue");
+    expect(await savedState(page, (state) => state.activeRun?.stage)).toBe("brief");
+    await page.unroute(CRAFT_FLOW_CHUNK);
+    await failed.getByRole("button", { name: "Reload" }).click();
+    await page.getByRole("button", { name: /^Continue/ }).click();
+    await finishStories(page);
+    await page
+      .getByTestId("gig-card")
+      .getByRole("button", { name: /^Continue/ })
+      .click();
+    await expect(page.getByRole("heading", { name: "Meet the brief" })).toBeVisible();
+  });
 });
 
 test("turning Assist sew on mid-seam keeps the machine running and marks the seam assisted", async ({

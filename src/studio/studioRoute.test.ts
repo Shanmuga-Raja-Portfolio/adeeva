@@ -5,10 +5,11 @@ import { parseRoute, routeHash } from "./studioRoute";
 const allOpen = () => true;
 
 describe("studio routes", () => {
-  it("reads home, the parent page and every game from the hash", () => {
+  it("reads home, the parent and about pages and every game from the hash", () => {
     expect(parseRoute("", allOpen)).toEqual({ name: "home" });
     expect(parseRoute("#/", allOpen)).toEqual({ name: "home" });
     expect(parseRoute("#/parent", allOpen)).toEqual({ name: "parent" });
+    expect(parseRoute("#/about/", allOpen)).toEqual({ name: "about" });
     expect(parseRoute("#/adeeva/", allOpen)).toEqual({ name: "game", gameId: "adeeva" });
     expect(parseRoute("#/nowhere", allOpen)).toEqual({ name: "home" });
   });
@@ -26,5 +27,6 @@ describe("studio routes", () => {
     }
     expect(routeHash({ name: "home" })).toBe("#/");
     expect(routeHash({ name: "parent" })).toBe("#/parent");
+    expect(routeHash({ name: "about" })).toBe("#/about");
   });
 });

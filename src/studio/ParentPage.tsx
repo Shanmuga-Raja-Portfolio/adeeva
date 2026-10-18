@@ -5,14 +5,15 @@ import { Icon } from "../ui/kit/IconSet";
 import type { GameModule } from "./gameModule";
 import { playtimeLabel, readPlaytime } from "./playtime";
 import { GAMES } from "./registry";
+import { SignedOutMark } from "./SignedOutMark";
 import { clearGameSaves, readRawSlots } from "./slotStore";
 import "./parent.css";
 
 const PROMISES = [
   "No ads, and no links that lead out of the studio.",
   "No chat and no contact with other players.",
-  "No accounts, sign-ins or email addresses.",
-  "Nothing leaves this device. The studio makes no network requests.",
+  "No accounts, sign-ins or email addresses inside the game.",
+  "Nothing leaves this device. Once loaded, the studio only asks its own address whether a newer version exists and whether your family sign-in is still open.",
   "Nothing to buy. Coins are earned in play and can't be bought.",
   "No random prize boxes or reward wheels.",
   "No scoring of how anyone looks. Clients judge the work, never the maker.",
@@ -36,16 +37,23 @@ export function ParentPage() {
   return (
     <main className="st-parent ad-screen" data-testid="parent-page">
       <header className="st-parent__head">
-        <a className="st-parent__back" href="#/">
-          <Icon name="back" size={20} />
-          Back to the studio
-        </a>
+        <div className="st-parent__top">
+          <a className="st-parent__back" href="#/">
+            <Icon name="back" size={20} />
+            Back to the studio
+          </a>
+          <SignedOutMark />
+        </div>
         <span className="st-eyebrow">For parents and carers</span>
         <h1>How Maker Studio looks after your child</h1>
         <p className="st-muted">
           A calm, offline place to make things. Here is what it never does, how long it has been played on
           this device, and how saves work.
         </p>
+        <a className="st-parent__more" href="#/about">
+          <Icon name="lock" size={18} />
+          About, privacy and installing the app
+        </a>
       </header>
 
       <section className="st-parent__card st-parent__card--promise" aria-labelledby="st-promise-title">

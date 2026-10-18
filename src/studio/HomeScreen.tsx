@@ -9,6 +9,7 @@ import type { GameId } from "./gameModule";
 import type { StudioProfile } from "./profile";
 import { GAMES } from "./registry";
 import { ReputationCard } from "./ReputationCard";
+import { SignedOutMark } from "./SignedOutMark";
 import { readRawSlots } from "./slotStore";
 import { StudioMark } from "./StudioMark";
 import { useToast } from "./ToastContext";
@@ -54,9 +55,12 @@ export function HomeScreen({ profile, returnedFrom, onProfileChange }: HomeScree
         <HallBackdrop className="st-hall__backdrop" />
         <header className="st-bar">
           <StudioMark />
-          <span className="st-bar__promise">
-            <Icon name="shield" size={18} />
-            Offline · No ads · No chat
+          <span className="st-bar__end">
+            <SignedOutMark />
+            <span className="st-bar__promise">
+              <Icon name="shield" size={18} />
+              Offline · No ads · No chat
+            </span>
           </span>
         </header>
         <div className="st-hero">
@@ -113,10 +117,16 @@ export function HomeScreen({ profile, returnedFrom, onProfileChange }: HomeScree
       </div>
       <footer className="st-footer">
         <p>Everything stays on this device. No accounts, no ads, no chat and nothing to buy.</p>
-        <a className="st-footer__link" href="#/parent" data-testid="parent-link">
-          <Icon name="shield" size={18} />
-          Parent page
-        </a>
+        <span className="st-footer__links">
+          <a className="st-footer__link" href="#/about" data-testid="about-link">
+            <Icon name="lock" size={18} />
+            About and privacy
+          </a>
+          <a className="st-footer__link" href="#/parent" data-testid="parent-link">
+            <Icon name="shield" size={18} />
+            Parent page
+          </a>
+        </span>
       </footer>
     </main>
   );

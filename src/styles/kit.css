@@ -38,6 +38,18 @@
     color var(--duration-base) var(--ease-out);
 }
 
+.ad-button::after {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+}
+
+.ad-button--primary:hover:not(:disabled)::after,
+.ad-button--secondary:hover:not(:disabled)::after {
+  transform: translateY(1px);
+}
+
 .ad-button--sm {
   min-height: 36px;
   padding: 0 var(--space-4);
