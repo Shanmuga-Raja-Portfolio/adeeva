@@ -55,7 +55,7 @@ Next:
 
    Left for deploy day, on the live site: check that Cloudflare Access sign-in works inside an installed iOS home-screen app, and that an expired session never breaks offline play (the cached game keeps working, and updates wait until the next sign-in). Keep Cloudflare Web Analytics and any other HTML rewriting off: the worker checks every file's hash, so a page the host changes would never install for offline play. Also check on the live site that the headers arrive as written, and that the Signed out mark appears when an Access session expires (Access may answer the `/sw.js` check with a redirect or a 401). A captive-portal Wi-Fi that redirects every request will also show the mark until the portal is passed. Found along the way and fixed: a kit button's 1px hover lift moved its own hit area, so a pointer resting on its bottom edge flipped hover on and off every frame (seen on ADEEVA's story panel in WebKit). The button now keeps a still hit area while it lifts. Other cards and tiles with their own hover lift use the same pattern and are worth the same check.
 
-10. 🟨 **Security hardening and pen test** (must be clean before any invite; local part done, live part and Shan's tools pending):
+10. 🟨 **Security hardening and pen test** (must be clean before any invite; local part and Shan's AI tools done, live part pending):
     - a written threat model (static site, children as users, invite-only access);
     - a strict CSP and headers via `_headers`, verified on the preview and the live URL: `default-src 'self'`, no inline scripts, `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'none'`, HSTS, `X-Content-Type-Options`, `Referrer-Policy: no-referrer`, and a locked-down `Permissions-Policy`;
     - a code review for XSS sinks (`dangerouslySetInnerHTML`, `innerHTML`, dynamic URLs) and safe parsing of every save and settings value read from storage (the parsers already reject bad saves; fuzz them);
@@ -79,7 +79,17 @@ Next:
     - OWASP ZAP 2.17.0 on the local preview: baseline 0 FAIL, full active scan 0 FAIL with 1 low false positive (the RNG constant read as a timestamp);
     - manual checks of headers, caching, service-worker scope, directory listing, stray files, the manifest and `?signin`, all clean.
 
-    Pending: Strix and Alibaba Open Code Review (need Shan's MiniMax key); `/code-review ultra` (Shan starts it); and on deploy day, ZAP against the live URL, Cloudflare Access bypass attempts (direct asset URLs, `*.pages.dev` preview and branch URLs, the cached service worker, `HEAD /sw.js`, cookie flags including `SameSite=Lax`), the headers as Cloudflare actually serves them, and Access sign-in inside an installed iOS app.
+    Shan's AI tools done (branch `task/0056-ai-security-tools`, 2026-10-18; `work/0056-ai-security/strix.md`, `open-code-review.md`, `triage.md`). Both ran on MiniMax-M3; the key was read only from the environment and never printed or stored:
+    - **Strix 1.7.0** (Docker sandbox) against the local preview only:
+      - 1 Medium, missing SRI on `index.html`'s tags: a false positive, because the HTML and assets are one origin and one atomic deploy;
+      - 30 surfaces ruled out, 1 verification gap (the `/sw.js` update path, by design);
+      - its agents broke scope with 22 read-only advisory lookups (OSV, npm, GitHub API), so lock down the sandbox network before the live run;
+    - **Alibaba Open Code Review 1.13.1** over 31 release files: 130 comments (2 critical, 35 high by its own rating), every one checked and every one a false positive or a style opinion;
+    - **triage confirmed 2 issues:**
+      - fixed: the route parser's trailing-slash regex was quadratic, so a crafted `#/////…x` link froze WebKit for 19 s; it is now a linear trim, with a timing test;
+      - upstream, preview only: one malformed request (`GET http://[`) crashes `vite preview` inside Vite's own URL parsing; keep the preview on `127.0.0.1` except during Docker scans.
+
+    Pending: Strix against the live address (after the sandbox network lockdown); `/code-review ultra` (Shan starts it); and on deploy day, ZAP against the live URL, Cloudflare Access bypass attempts (direct asset URLs, `*.pages.dev` preview and branch URLs, the cached service worker, `HEAD /sw.js`, cookie flags including `SameSite=Lax`), the headers as Cloudflare actually serves them, and Access sign-in inside an installed iOS app.
 
 11. 🟨 **CI/CD** (task 57, branch `task/0057-ci-cd`, 2026-10-18; built, waiting for Shan to push and watch the first runs). Built:
     - `ci.yml` on every pull request and push to `main`: verify (frozen install, typecheck, lint, unit tests, build, `pnpm audit --prod` at any level plus `--audit-level high` for everything, `dist` artifact), a gitleaks scan of the full history (pinned, checksum-checked CLI), the browser tests in 2 Chromium shards plus one WebKit job, and a single `ci-ok` check;

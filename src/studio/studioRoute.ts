@@ -8,8 +8,15 @@ export type StudioRoute =
 
 export const HOME_ROUTE: StudioRoute = { name: "home" };
 
+function routePath(hash: string): string {
+  const path = hash.replace(/^#\/?/, "");
+  let end = path.length;
+  while (end > 0 && path.charAt(end - 1) === "/") end -= 1;
+  return path.slice(0, end);
+}
+
 export function parseRoute(hash: string, isOpen: (gameId: GameId) => boolean): StudioRoute {
-  const path = hash.replace(/^#\/?/, "").replace(/\/+$/, "");
+  const path = routePath(hash);
   if (path === "parent") return { name: "parent" };
   if (path === "about") return { name: "about" };
   if (isGameId(path) && isOpen(path)) return { name: "game", gameId: path };

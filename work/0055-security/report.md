@@ -2,7 +2,7 @@
 
 Roadmap task 10, local part. Branch `task/0055-security-review`, 2026-10-18. Threat model: `threat-model.md`. ZAP reports: `zap/`.
 
-**Scope.** Everything that needs neither Shan's API keys nor the live site. Strix and Alibaba Open Code Review need Shan's MiniMax key and are pending.
+**Scope.** Everything that needs neither Shan's API keys nor the live site. Strix and Alibaba Open Code Review ran later on the MiniMax key; see `../0056-ai-security/triage.md`.
 
 **Result.** No high or medium findings. Eight low findings: seven fixed, one (F9) closed by an Access setting on deploy day. Informational ZAP alerts explained below. Deploy-day checks remain before any invite.
 
@@ -139,7 +139,13 @@ Preview servers and ZAP containers stopped; `dist/`, `dist-e2e/` and `test-resul
 
 **For Shan:**
 
-- Strix against the preview, then the live address, and Alibaba Open Code Review over the release diff, once the MiniMax key is provided.
+- **Done 2026-10-18** (`../0056-ai-security/`, branch `task/0056-ai-security-tools`): Strix and Alibaba Open Code Review, both on MiniMax-M3.
+  - **Strix 1.7.0** ran against the local preview: 1 Medium (missing SRI in `index.html`, a false positive here), 30 surfaces closed, 1 verification gap (also a false positive).
+  - **Open Code Review 1.13.1** ran over 31 release files: 130 comments, all false positives on checking.
+  - **Triage confirmed 2 issues.**
+    - T1 (Low), fixed with a test: a quadratic regex on the URL hash froze WebKit for 19 s on a crafted link.
+    - T2 (Info), upstream and preview-only: one malformed request crashes `vite preview`.
+- Strix against the live address. Give its sandbox a network that reaches only the target and the model API first: this run's agents looked up React advisories on `api.osv.dev`, `registry.npmjs.org` and `api.github.com` despite the scope instruction.
 - `/code-review ultra`, which Shan starts.
 
 **Deploy day (live site):**

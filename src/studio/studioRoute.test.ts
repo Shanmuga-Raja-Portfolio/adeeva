@@ -20,6 +20,15 @@ describe("studio routes", () => {
     expect(parseRoute("#/adeeva", onlyAdeeva)).toEqual({ name: "game", gameId: "adeeva" });
   });
 
+  it("reads a crafted hash of many slashes in linear time", () => {
+    const slashes = "/".repeat(200_000);
+    const started = performance.now();
+    expect(parseRoute(`#/${slashes}x`, allOpen)).toEqual({ name: "home" });
+    expect(parseRoute(`#/about${slashes}`, allOpen)).toEqual({ name: "about" });
+    expect(parseRoute(`#${slashes}`, allOpen)).toEqual({ name: "home" });
+    expect(performance.now() - started).toBeLessThan(500);
+  });
+
   it("writes hashes that read back to the same route", () => {
     for (const gameId of GAME_IDS) {
       const route = { name: "game" as const, gameId };
