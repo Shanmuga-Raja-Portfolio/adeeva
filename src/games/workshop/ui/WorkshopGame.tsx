@@ -1,4 +1,4 @@
-import { lazy, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { GameScreenProps } from "../../../studio/gameModule";
 import { lookAllowed } from "../../../studio/perks";
 import { useToast } from "../../../studio/ToastContext";
@@ -6,6 +6,8 @@ import { useGameSession, type SaveMoment } from "../../../studio/useGameSession"
 import { ViewLoadBoundary } from "../../../studio/ViewLoadBoundary";
 import { Button } from "../../../ui/kit/Button";
 import { Dialog } from "../../../ui/kit/Dialog";
+import { lazyScreen } from "../../../ui/kit/lazyScreen";
+import { useIdlePreload } from "../../../ui/kit/useIdlePreload";
 import { createGame, newGameIssues, reduce, type NewGameSettings } from "../core";
 import { WorkshopHub } from "./screens/hub/WorkshopHub";
 import { NewGameFlow } from "./screens/newGame/NewGameFlow";
@@ -16,15 +18,16 @@ import { resolveScreen, type AppRoute, type PlayView } from "./workshopRoute";
 import { workshopSlots, type SaveSlotId } from "./workshopSlots";
 import "./theme.css";
 
-const BuildFlow = lazy(() =>
-  import("./screens/build/BuildFlow").then((module) => ({ default: module.BuildFlow })),
+const buildFlow = lazyScreen(() => import("./screens/build/BuildFlow").then((module) => module.BuildFlow));
+const fairFlow = lazyScreen(() => import("./screens/fair/FairFlow").then((module) => module.FairFlow));
+const floorArrange = lazyScreen(() =>
+  import("./screens/floor/FloorArrange").then((module) => module.FloorArrange),
 );
-const FairFlow = lazy(() =>
-  import("./screens/fair/FairFlow").then((module) => ({ default: module.FairFlow })),
-);
-const FloorArrange = lazy(() =>
-  import("./screens/floor/FloorArrange").then((module) => ({ default: module.FloorArrange })),
-);
+const BuildFlow = buildFlow.Screen;
+const FairFlow = fairFlow.Screen;
+const FloorArrange = floorArrange.Screen;
+const PRELOADS = [buildFlow.preload, fairFlow.preload, floorArrange.preload];
+const NO_PRELOADS: readonly (() => Promise<unknown>)[] = [];
 
 export function WorkshopGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
@@ -60,6 +63,7 @@ export function WorkshopGame({ player, lookOptions, onPlayerChange, onExit }: Ga
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [leaveBlocked, setLeaveBlocked] = useState(false);
   const screen = resolveScreen(route, session.game);
+  useIdlePreload(screen.name === "hub" ? PRELOADS : NO_PRELOADS);
 
   const refreshSlots = useCallback(() => setSlots(workshopSlots.readAllSlots()), []);
   const open = useCallback(

@@ -279,8 +279,8 @@ test("Continue picks the slot that was played last", async ({ page }) => {
 });
 
 test("a studio view that fails to load offers a reload and keeps the save", async ({ page }) => {
-  await openPreparedGame(page, withActiveGig(settledStudent(), "mom"));
   await page.route(CRAFT_FLOW_CHUNK, (route) => route.abort());
+  await openPreparedGame(page, withActiveGig(settledStudent(), "mom"));
   const savedOnClick = await page
     .getByTestId("gig-card")
     .getByRole("button", { name: "Start sewing" })

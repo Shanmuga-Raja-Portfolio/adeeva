@@ -71,6 +71,19 @@ function FairyLights({
   readonly phase: number;
 }) {
   const bulbs = Array.from({ length: 24 }, (_, index) => index);
+  const bulb = (index: number) => {
+    const t = (index + 0.5) / bulbs.length;
+    const x = -20 + (W + 40) * t;
+    const by = y + 4 * sag * t * (1 - t) * 1 + 8;
+    const warm = (index + phase) % 3;
+    const fill = warm === 0 ? "#fff1a8" : warm === 1 ? "#ffd38a" : "#ffe8f0";
+    return (
+      <g key={index}>
+        <circle cx={x} cy={by} r={16} fill={fill} opacity={0.22} />
+        <circle cx={x} cy={by} r={6} fill={fill} />
+      </g>
+    );
+  };
   return (
     <g>
       <path
@@ -79,19 +92,8 @@ function FairyLights({
         stroke="#5b4a3a"
         strokeWidth={2}
       />
-      {bulbs.map((index) => {
-        const t = (index + 0.5) / bulbs.length;
-        const x = -20 + (W + 40) * t;
-        const by = y + 4 * sag * t * (1 - t) * 1 + 8;
-        const warm = (index + phase) % 3;
-        const fill = warm === 0 ? "#fff1a8" : warm === 1 ? "#ffd38a" : "#ffe8f0";
-        return (
-          <g key={index} className={index % 2 === 0 ? "tf-twinkle" : "tf-twinkle tf-twinkle--late"}>
-            <circle cx={x} cy={by} r={16} fill={fill} opacity={0.22} />
-            <circle cx={x} cy={by} r={6} fill={fill} />
-          </g>
-        );
-      })}
+      <g className="tf-twinkle">{bulbs.filter((index) => index % 2 === 0).map(bulb)}</g>
+      <g className="tf-twinkle tf-twinkle--late">{bulbs.filter((index) => index % 2 === 1).map(bulb)}</g>
     </g>
   );
 }

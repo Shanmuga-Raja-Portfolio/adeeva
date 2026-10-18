@@ -1,4 +1,4 @@
-import { lazy, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { GameScreenProps } from "../../../studio/gameModule";
 import { lookAllowed } from "../../../studio/perks";
 import { useToast } from "../../../studio/ToastContext";
@@ -6,6 +6,8 @@ import { useGameSession, type SaveMoment } from "../../../studio/useGameSession"
 import { ViewLoadBoundary } from "../../../studio/ViewLoadBoundary";
 import { Button } from "../../../ui/kit/Button";
 import { Dialog } from "../../../ui/kit/Dialog";
+import { lazyScreen } from "../../../ui/kit/lazyScreen";
+import { useIdlePreload } from "../../../ui/kit/useIdlePreload";
 import { createGame, newGameIssues, reduce, type NewGameSettings } from "../core";
 import { resolveScreen, type AppRoute, type PlayView } from "./jewelleryRoute";
 import { jewellerySlots, type SaveSlotId } from "./jewellerySlots";
@@ -17,30 +19,41 @@ import { AssistProvider } from "./useAssist";
 import { TintLabelsProvider } from "./useTintLabels";
 import "./theme.css";
 
-const PieceFlow = lazy(() =>
-  import("./screens/bench/PieceFlow").then((module) => ({ default: module.PieceFlow })),
+const pieceFlow = lazyScreen(() => import("./screens/bench/PieceFlow").then((module) => module.PieceFlow));
+const marketDay = lazyScreen(() => import("./screens/market/MarketDay").then((module) => module.MarketDay));
+const keepsakeCase = lazyScreen(() =>
+  import("./screens/keepsake/KeepsakeCase").then((module) => module.KeepsakeCase),
 );
-const MarketDay = lazy(() =>
-  import("./screens/market/MarketDay").then((module) => ({ default: module.MarketDay })),
+const collectionBoard = lazyScreen(() =>
+  import("./screens/board/CollectionBoard").then((module) => module.CollectionBoard),
 );
-const KeepsakeCase = lazy(() =>
-  import("./screens/keepsake/KeepsakeCase").then((module) => ({ default: module.KeepsakeCase })),
+const gemMarket = lazyScreen(() => import("./screens/gems/GemMarket").then((module) => module.GemMarket));
+const lookbook = lazyScreen(() => import("./screens/lookbook/Lookbook").then((module) => module.Lookbook));
+const launchFlow = lazyScreen(() =>
+  import("./screens/launch/LaunchFlow").then((module) => module.LaunchFlow),
 );
-const CollectionBoard = lazy(() =>
-  import("./screens/board/CollectionBoard").then((module) => ({ default: module.CollectionBoard })),
+const popupWindow = lazyScreen(() =>
+  import("./screens/popup/PopupWindow").then((module) => module.PopupWindow),
 );
-const GemMarket = lazy(() =>
-  import("./screens/gems/GemMarket").then((module) => ({ default: module.GemMarket })),
-);
-const Lookbook = lazy(() =>
-  import("./screens/lookbook/Lookbook").then((module) => ({ default: module.Lookbook })),
-);
-const LaunchFlow = lazy(() =>
-  import("./screens/launch/LaunchFlow").then((module) => ({ default: module.LaunchFlow })),
-);
-const PopupWindow = lazy(() =>
-  import("./screens/popup/PopupWindow").then((module) => ({ default: module.PopupWindow })),
-);
+const PieceFlow = pieceFlow.Screen;
+const MarketDay = marketDay.Screen;
+const KeepsakeCase = keepsakeCase.Screen;
+const CollectionBoard = collectionBoard.Screen;
+const GemMarket = gemMarket.Screen;
+const Lookbook = lookbook.Screen;
+const LaunchFlow = launchFlow.Screen;
+const PopupWindow = popupWindow.Screen;
+const PRELOADS = [
+  pieceFlow.preload,
+  marketDay.preload,
+  keepsakeCase.preload,
+  collectionBoard.preload,
+  gemMarket.preload,
+  lookbook.preload,
+  launchFlow.preload,
+  popupWindow.preload,
+];
+const NO_PRELOADS: readonly (() => Promise<unknown>)[] = [];
 
 export function JewelleryGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
@@ -76,6 +89,7 @@ export function JewelleryGame({ player, lookOptions, onPlayerChange, onExit }: G
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [leaveBlocked, setLeaveBlocked] = useState(false);
   const screen = resolveScreen(route, session.game);
+  useIdlePreload(screen.name === "hub" ? PRELOADS : NO_PRELOADS);
 
   const refreshSlots = useCallback(() => setSlots(jewellerySlots.readAllSlots()), []);
   const open = useCallback(

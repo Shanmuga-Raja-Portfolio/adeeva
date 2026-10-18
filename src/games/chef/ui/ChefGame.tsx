@@ -1,5 +1,5 @@
 import "./theme.css";
-import { lazy, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { GameScreenProps } from "../../../studio/gameModule";
 import { lookAllowed } from "../../../studio/perks";
 import { useToast } from "../../../studio/ToastContext";
@@ -7,6 +7,8 @@ import { useGameSession, type SaveMoment } from "../../../studio/useGameSession"
 import { ViewLoadBoundary } from "../../../studio/ViewLoadBoundary";
 import { Button } from "../../../ui/kit/Button";
 import { Dialog } from "../../../ui/kit/Dialog";
+import { lazyScreen } from "../../../ui/kit/lazyScreen";
+import { useIdlePreload } from "../../../ui/kit/useIdlePreload";
 import { createGame, newGameIssues, reduce, type NewGameSettings } from "../core";
 import { resolveScreen, type AppRoute, type PlayView } from "./chefRoute";
 import { chefSlots, type SaveSlotId } from "./chefSlots";
@@ -17,19 +19,28 @@ import { TitleScreen } from "./screens/title/TitleScreen";
 import { SoundProvider } from "./sound/SoundContext";
 import { AssistProvider } from "./useAssist";
 
-const DishFlow = lazy(() =>
-  import("./screens/dish/DishFlow").then((module) => ({ default: module.DishFlow })),
+const dishFlow = lazyScreen(() => import("./screens/dish/DishFlow").then((module) => module.DishFlow));
+const serviceRush = lazyScreen(() =>
+  import("./screens/service/ServiceRush").then((module) => module.ServiceRush),
 );
-const ServiceRush = lazy(() =>
-  import("./screens/service/ServiceRush").then((module) => ({ default: module.ServiceRush })),
+const crossroadsScreen = lazyScreen(() =>
+  import("./screens/crossroads/CrossroadsScreen").then((module) => module.CrossroadsScreen),
 );
-const CrossroadsScreen = lazy(() =>
-  import("./screens/crossroads/CrossroadsScreen").then((module) => ({ default: module.CrossroadsScreen })),
-);
-const PathHub = lazy(() => import("./screens/path/PathHub").then((module) => ({ default: module.PathHub })));
-const DishDiary = lazy(() =>
-  import("./screens/diary/DishDiary").then((module) => ({ default: module.DishDiary })),
-);
+const pathHub = lazyScreen(() => import("./screens/path/PathHub").then((module) => module.PathHub));
+const dishDiary = lazyScreen(() => import("./screens/diary/DishDiary").then((module) => module.DishDiary));
+const DishFlow = dishFlow.Screen;
+const ServiceRush = serviceRush.Screen;
+const CrossroadsScreen = crossroadsScreen.Screen;
+const PathHub = pathHub.Screen;
+const DishDiary = dishDiary.Screen;
+const PRELOADS = [
+  dishFlow.preload,
+  serviceRush.preload,
+  crossroadsScreen.preload,
+  pathHub.preload,
+  dishDiary.preload,
+];
+const NO_PRELOADS: readonly (() => Promise<unknown>)[] = [];
 
 export function ChefGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
@@ -61,6 +72,7 @@ export function ChefGame({ player, lookOptions, onPlayerChange, onExit }: GameSc
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [leaveBlocked, setLeaveBlocked] = useState(false);
   const screen = resolveScreen(route, session.game);
+  useIdlePreload(screen.name === "hub" ? PRELOADS : NO_PRELOADS);
 
   const refreshSlots = useCallback(() => setSlots(chefSlots.readAllSlots()), []);
   const open = useCallback(

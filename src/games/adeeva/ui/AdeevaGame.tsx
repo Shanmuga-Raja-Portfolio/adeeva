@@ -1,8 +1,10 @@
-import { lazy, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { GameScreenProps } from "../../../studio/gameModule";
 import { createGame, newGameIssues, reduce, type NewGameSettings } from "../core";
 import { Button } from "../../../ui/kit/Button";
 import { Dialog } from "../../../ui/kit/Dialog";
+import { lazyScreen } from "../../../ui/kit/lazyScreen";
+import { useIdlePreload } from "../../../ui/kit/useIdlePreload";
 import { StudioHub } from "./screens/hub/StudioHub";
 import { NewGameFlow } from "./screens/newGame/NewGameFlow";
 import { SettingsDialog } from "./screens/settings/SettingsDialog";
@@ -15,12 +17,12 @@ import { useGameSession, type SaveMoment } from "../../../studio/useGameSession"
 import { ViewLoadBoundary } from "../../../studio/ViewLoadBoundary";
 import "./theme.css";
 
-const CraftFlow = lazy(() =>
-  import("./screens/craft/CraftFlow").then((module) => ({ default: module.CraftFlow })),
-);
-const LabelFlow = lazy(() =>
-  import("./screens/label/LabelFlow").then((module) => ({ default: module.LabelFlow })),
-);
+const craft = lazyScreen(() => import("./screens/craft/CraftFlow").then((module) => module.CraftFlow));
+const label = lazyScreen(() => import("./screens/label/LabelFlow").then((module) => module.LabelFlow));
+const CraftFlow = craft.Screen;
+const LabelFlow = label.Screen;
+const PRELOADS = [craft.preload, label.preload];
+const NO_PRELOADS: readonly (() => Promise<unknown>)[] = [];
 
 export function AdeevaGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
@@ -52,6 +54,7 @@ export function AdeevaGame({ player, lookOptions, onPlayerChange, onExit }: Game
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [leaveBlocked, setLeaveBlocked] = useState(false);
   const screen = resolveScreen(route, session.game);
+  useIdlePreload(screen.name === "hub" ? PRELOADS : NO_PRELOADS);
 
   const refreshSlots = useCallback(() => setSlots(readAllSlots()), []);
   const toHub = useCallback(() => setRoute({ name: "play", view: "hub" }), []);

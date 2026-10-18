@@ -1,4 +1,4 @@
-import { lazy, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { GameScreenProps } from "../../../studio/gameModule";
 import { lookAllowed } from "../../../studio/perks";
 import { useToast } from "../../../studio/ToastContext";
@@ -6,6 +6,8 @@ import { useGameSession, type SaveMoment } from "../../../studio/useGameSession"
 import { ViewLoadBoundary } from "../../../studio/ViewLoadBoundary";
 import { Button } from "../../../ui/kit/Button";
 import { Dialog } from "../../../ui/kit/Dialog";
+import { lazyScreen } from "../../../ui/kit/lazyScreen";
+import { useIdlePreload } from "../../../ui/kit/useIdlePreload";
 import { createGame, newGameIssues, reduce, type NewGameSettings } from "../core";
 import { resolveScreen, type AppRoute, type PlayView } from "./interiorRoute";
 import { interiorSlots, type SaveSlotId } from "./interiorSlots";
@@ -16,17 +18,18 @@ import { TitleScreen } from "./screens/title/TitleScreen";
 import { AssistProvider } from "./useAssist";
 import "./theme.css";
 
-const MakeoverFlow = lazy(() =>
-  import("./screens/makeover/MakeoverFlow").then((module) => ({ default: module.MakeoverFlow })),
+const makeoverFlow = lazyScreen(() =>
+  import("./screens/makeover/MakeoverFlow").then((module) => module.MakeoverFlow),
 );
-
-const HomeScreen = lazy(() =>
-  import("./screens/home/HomeScreen").then((module) => ({ default: module.HomeScreen })),
+const homeScreen = lazyScreen(() => import("./screens/home/HomeScreen").then((module) => module.HomeScreen));
+const openHouseScreen = lazyScreen(() =>
+  import("./screens/openHouse/OpenHouseScreen").then((module) => module.OpenHouseScreen),
 );
-
-const OpenHouseScreen = lazy(() =>
-  import("./screens/openHouse/OpenHouseScreen").then((module) => ({ default: module.OpenHouseScreen })),
-);
+const MakeoverFlow = makeoverFlow.Screen;
+const HomeScreen = homeScreen.Screen;
+const OpenHouseScreen = openHouseScreen.Screen;
+const PRELOADS = [makeoverFlow.preload, homeScreen.preload, openHouseScreen.preload];
+const NO_PRELOADS: readonly (() => Promise<unknown>)[] = [];
 
 export function InteriorGame({ player, lookOptions, onPlayerChange, onExit }: GameScreenProps) {
   const toast = useToast();
@@ -62,6 +65,7 @@ export function InteriorGame({ player, lookOptions, onPlayerChange, onExit }: Ga
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [leaveBlocked, setLeaveBlocked] = useState(false);
   const screen = resolveScreen(route, session.game);
+  useIdlePreload(screen.name === "hub" ? PRELOADS : NO_PRELOADS);
 
   const refreshSlots = useCallback(() => setSlots(interiorSlots.readAllSlots()), []);
   const open = useCallback(

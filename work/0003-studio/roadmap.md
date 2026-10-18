@@ -37,7 +37,12 @@ Next:
 
 5. 🔄 **Race sweep 2:** browser tests that wait on scenes which move on by themselves, in the newer specs (Jewellery Lantern Night, the Patisserie Fair timeout). After it lands, merge Thrift-Flip and Interior Phase C.
 6. 🔄 **Workshop Phase C gap round:** the showroom hub, the finish step, and the Craft Fair crowd.
-7. ⬜ **Speed on slow devices, all games:** move Patisserie's `lazyScreen` and `useIdlePreload` into `src/ui/kit` and use them in every game. Measure every hub and screen at 6× CPU throttle, and fix anything slower than 1.5 s. Check the richer Phase C art for animations inside big SVGs and heavy filters.
+7. ✅ **Speed on slow devices, all games:**
+   - `lazyScreen` and `useIdlePreload` now live in `src/ui/kit`, and every game uses them.
+   - 269 transitions across all seven games were measured at 6× CPU throttle on the production build. Nothing reaches 1.5 s; the slowest is the Thrift-Flip boutique hub at 1.05 s.
+   - Posed avatars draw only their own arm in each arm segment, about 190 fewer SVG nodes each. Still pictures match apart from anti-aliasing in 2 of 800 diffed scenes. Idle animations now pivot on the visible figure, which moves it by under a pixel.
+   - The hall's fairy lights twinkle as two layers instead of 48.
+   - The method and the before and after table are in `work/0054-perf/report.md`.
 8. ⬜ **Dependency refresh and security audit:** apply the patch updates (Playwright 1.64.1, React 19.3.1, typescript-eslint 8.71.2, Vitest 5.0.5, ESLint 10.13.0; TypeScript stays on 6.x), remove anything unused, confirm `pnpm audit` is clean, check every licence is commercially permissive, and run the full gate.
 9. ⬜ **Installable web app (PWA) and hardening** (see Release plan): manifest, icons, offline service worker, an update prompt, storage persistence, security headers, a no-network check, and an "About and privacy" page for families. Test at Android-handheld size and on a Chromebook. Add a Playwright **WebKit** project, so Safari's engine runs the smoke and install checks on every gate, and test at iPhone and iPad sizes. Check that Cloudflare Access sign-in works inside an installed iOS app, and that an expired session never breaks offline play: the cached game keeps working, and updates wait until next sign-in.
 10. ⬜ **Security hardening and pen test** (must be clean before any invite):

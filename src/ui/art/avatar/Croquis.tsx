@@ -1,5 +1,6 @@
 import { darken, lighten, mixHex } from "../colourMix";
 import { useSvgId } from "../useSvgId";
+import { useArmSides } from "./armSide";
 
 export const DOLL_WIDTH = 400;
 export const DOLL_HEIGHT = 800;
@@ -246,6 +247,7 @@ export function CroquisBody({
 
 export function CroquisArms({ skinTone = DEFAULT_SKIN }: CroquisLayerProps) {
   const id = useSvgId("arms");
+  const sides = useArmSides();
   const line = darken(skinTone, 0.42);
   const shade = darken(skinTone, 0.22);
   return (
@@ -253,7 +255,7 @@ export function CroquisArms({ skinTone = DEFAULT_SKIN }: CroquisLayerProps) {
       <defs>
         <SkinGradient id={`${id}-skin`} skin={skinTone} />
       </defs>
-      {[false, true].map((mirrored) => (
+      {sides.map((mirrored) => (
         <g key={String(mirrored)} transform={mirrored ? mirror : undefined}>
           <path
             d={leftArmPath}

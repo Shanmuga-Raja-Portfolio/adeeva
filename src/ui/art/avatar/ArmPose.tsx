@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { DOLL_WIDTH } from "./Croquis";
 import { useSvgId } from "../useSvgId";
+import { ArmSideContext } from "./armSide";
 
 export type AvatarPose =
   | "rest"
@@ -98,34 +99,36 @@ function PosedSide({ side, bend, idBase, children }: SideProps) {
   const x = side === "left" ? -MID : MID;
   const id = `${idBase}-${side}`;
   return (
-    <g>
-      <defs>
-        <clipPath id={`${id}-upper`}>
-          <rect x={x} y={-400} width={DOLL_WIDTH} height={ELBOW.y + 400} />
-        </clipPath>
-        <clipPath id={`${id}-lower`}>
-          <rect x={x} y={ELBOW.y} width={DOLL_WIDTH} height={1200} />
-        </clipPath>
-        <clipPath id={`${id}-joint`}>
-          <circle cx={elbowX} cy={ELBOW.y} r={JOINT_RADIUS} />
-        </clipPath>
-      </defs>
-      <g transform={`rotate(${sign * bend.shoulder} ${shoulderX} ${SHOULDER.y})`}>
-        <g clipPath={`url(#${id}-upper)`}>{children}</g>
-        <g transform={`rotate(${(sign * bend.elbow) / 2} ${elbowX} ${ELBOW.y})`}>
-          <g clipPath={`url(#${id}-joint)`}>
-            <g
-              transform={`translate(${elbowX} ${ELBOW.y}) scale(${JOINT_SPREAD} 1) translate(${-elbowX} ${-ELBOW.y})`}
-            >
-              {children}
+    <ArmSideContext value={side}>
+      <g>
+        <defs>
+          <clipPath id={`${id}-upper`}>
+            <rect x={x} y={-400} width={DOLL_WIDTH} height={ELBOW.y + 400} />
+          </clipPath>
+          <clipPath id={`${id}-lower`}>
+            <rect x={x} y={ELBOW.y} width={DOLL_WIDTH} height={1200} />
+          </clipPath>
+          <clipPath id={`${id}-joint`}>
+            <circle cx={elbowX} cy={ELBOW.y} r={JOINT_RADIUS} />
+          </clipPath>
+        </defs>
+        <g transform={`rotate(${sign * bend.shoulder} ${shoulderX} ${SHOULDER.y})`}>
+          <g clipPath={`url(#${id}-upper)`}>{children}</g>
+          <g transform={`rotate(${(sign * bend.elbow) / 2} ${elbowX} ${ELBOW.y})`}>
+            <g clipPath={`url(#${id}-joint)`}>
+              <g
+                transform={`translate(${elbowX} ${ELBOW.y}) scale(${JOINT_SPREAD} 1) translate(${-elbowX} ${-ELBOW.y})`}
+              >
+                {children}
+              </g>
             </g>
           </g>
-        </g>
-        <g transform={`rotate(${sign * bend.elbow} ${elbowX} ${ELBOW.y})`}>
-          <g clipPath={`url(#${id}-lower)`}>{children}</g>
+          <g transform={`rotate(${sign * bend.elbow} ${elbowX} ${ELBOW.y})`}>
+            <g clipPath={`url(#${id}-lower)`}>{children}</g>
+          </g>
         </g>
       </g>
-    </g>
+    </ArmSideContext>
   );
 }
 

@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
 import type { GameScreenProps } from "../../../studio/gameModule";
 import { lookAllowed } from "../../../studio/perks";
-import { lazyScreen } from "../../../studio/lazyScreen";
+import { lazyScreen } from "../../../ui/kit/lazyScreen";
 import { useToast } from "../../../studio/ToastContext";
 import { useGameSession, type SaveMoment } from "../../../studio/useGameSession";
-import { useIdlePreload } from "../../../studio/useIdlePreload";
+import { useIdlePreload } from "../../../ui/kit/useIdlePreload";
 import { ViewLoadBoundary } from "../../../studio/ViewLoadBoundary";
 import { Button } from "../../../ui/kit/Button";
 import { Dialog } from "../../../ui/kit/Dialog";

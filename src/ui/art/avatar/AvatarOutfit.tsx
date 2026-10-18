@@ -8,6 +8,7 @@ import { fabricLook } from "../cloth/fabricLook";
 import { GarmentPiece } from "../cloth/GarmentPiece";
 import type { GarmentShape } from "../cloth/GarmentShape";
 import { skirtShape } from "../cloth/SkirtShape";
+import { useArmSides } from "./armSide";
 
 type OutfitRole = "top" | "outer" | "bottom";
 
@@ -276,10 +277,18 @@ export function AvatarOutfitBody({ outfit, idBase }: AvatarOutfitProps) {
 
 export function AvatarOutfitSleeves({ outfit, idBase }: AvatarOutfitProps) {
   const design = outfits[outfit];
+  const sides = useArmSides();
   return (
     <g className="ad-outfit-sleeves">
-      <Pieces pieces={design.sleeves} idBase={idBase} outfit={outfit} />
-      <Pieces pieces={design.sleeves} idBase={idBase} outfit={outfit} mirror />
+      {sides.map((mirrored) => (
+        <Pieces
+          key={String(mirrored)}
+          pieces={design.sleeves}
+          idBase={idBase}
+          outfit={outfit}
+          mirror={mirrored}
+        />
+      ))}
     </g>
   );
 }
