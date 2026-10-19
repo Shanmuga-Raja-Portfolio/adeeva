@@ -26,6 +26,18 @@ export async function expectWorkTogether(page: Page, parts: readonly Locator[]):
     expect(box.x + box.width, `right on screen: ${part.toString()}`).toBeLessThanOrEqual(view.width + 1);
   }
   expect(await widestSidewaysScroll(page)).toBe(0);
+  expect(await smallButtons(page)).toEqual([]);
+}
+
+async function smallButtons(page: Page): Promise<string[]> {
+  return page.locator("button:not(:disabled)").evaluateAll((buttons) =>
+    buttons.flatMap((button) => {
+      const box = button.getBoundingClientRect();
+      if (box.width === 0 || box.height === 0 || getComputedStyle(button).visibility === "hidden") return [];
+      if (box.width >= 43.5 && box.height >= 43.5) return [];
+      return [`${button.getAttribute("aria-label") ?? button.textContent ?? ""} ${box.width}x${box.height}`];
+    }),
+  );
 }
 
 export async function expectHubActionsAtTop(page: Page): Promise<void> {

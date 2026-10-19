@@ -16,6 +16,7 @@ import {
 } from "../fixtures/compactStages";
 import { openPreparedBakery, openPreparedBench as openBakeryBench } from "../fixtures/preparedBakery";
 import { openPreparedGame } from "../fixtures/preparedGame";
+import { dragOnto } from "../fixtures/interiorStudio";
 import { nookAt, openPreparedRoom } from "../fixtures/preparedInterior";
 import { openPreparedJewellery } from "../fixtures/preparedJewellery";
 import {
@@ -24,6 +25,7 @@ import {
   openPreparedBench as openWorkshopBench,
   openPreparedWorkshop,
 } from "../fixtures/preparedWorkshop";
+import { stillBox } from "../fixtures/settle";
 import { finishStories } from "../fixtures/story";
 import { THRIFT_URL } from "../fixtures/thriftPage";
 import { expectHubActionsAtTop, expectWorkTogether, isCompactScreen } from "../fixtures/workArea";
@@ -44,10 +46,7 @@ async function dismissCoach(page: Page): Promise<void> {
   await expect(coach).toHaveCount(0);
 }
 
-test("Workshop: the boards sit beside the parts tray and a part drags onto a board", async ({
-  page,
-  browserName,
-}) => {
+test("Workshop: the boards sit beside the parts tray and a part drags onto a board", async ({ page }) => {
   await openPreparedWorkshop(page, commissionAt("rosalind", BENCH_PLAN, "layout"));
   await expectHubActionsAtTop(page);
   await page.getByRole("button", { name: "Back to the workbench" }).first().click();
@@ -55,7 +54,6 @@ test("Workshop: the boards sit beside the parts tray and a part drags onto a boa
   const canvas = page.getByTestId("layout-canvas");
   const part = page.locator("[data-testid^='tray-']").nth(1);
   await expectWorkTogether(page, [canvas, part]);
-  test.skip(browserName !== "chromium", "Playwright's WebKit phone has no finger to drag with");
   const before = await page.locator("[data-testid^='tray-']").count();
   const board = await canvas.boundingBox();
   if (board === null) throw new Error("No boards");
@@ -83,6 +81,18 @@ test("Patisserie: the scale and the pour pad, and the cake and its toppings, fit
   ]);
 });
 
+test("Interior: the plan and its tray fit together and a piece drags onto the plan", async ({ page }) => {
+  await openPreparedRoom(page, nookAt("plan"));
+  await dismissCoach(page);
+  const grid = page.locator(".is-plan__grid");
+  await expectWorkTogether(page, [grid, page.locator(".is-tray")]);
+  const armchair = page.getByTestId("tray-armchair");
+  await armchair.scrollIntoViewIfNeeded();
+  await expectWorkTogether(page, [grid, armchair]);
+  await dragOnto(page, armchair, grid, [60, 60]);
+  await expect(page.getByTestId("placed-armchair")).toBeVisible();
+});
+
 test("Interior: the floor and its pieces fit together", async ({ page }) => {
   await openPreparedRoom(page, nookAt("floor"));
   await dismissCoach(page);
@@ -102,6 +112,7 @@ test("Jewellery: the lamp and the warm button, and the stone bench, fit together
   await page.getByRole("button", { name: "Back to the bench" }).first().click();
   await dismissCoach(page);
   await expectWorkTogether(page, [page.getByTestId("stone-bench"), page.getByTestId("press-claws")]);
+  expect((await stillBox(page.getByTestId("stone"))).width).toBeGreaterThanOrEqual(44);
 });
 
 test("Six Kitchens: the first station and the plate with its tray fit together", async ({ page }) => {
