@@ -138,11 +138,11 @@
 
 @media (max-width: 480px) {
   .is-plan__grid {
-    max-height: 46dvh;
+    max-height: 42dvh;
   }
 
   .is-tray {
-    max-height: 44dvh;
+    max-height: 40dvh;
   }
 
   .is-light__grid {

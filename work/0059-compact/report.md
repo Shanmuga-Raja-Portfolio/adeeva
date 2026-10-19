@@ -2,7 +2,7 @@
 
 Roadmap task 12a (task 59). Branch `task/0059-compact-small-screens`, 2026-10-18, based on `task/0058-final-pass` (`b15f69d`). Design: `work/0003-studio/design.md` §6.
 
-**Result.** On the Android handheld in landscape (863×360) and an upright iPhone 15 (393×659), the sticky headers that took 89–299 px of the height are gone: every header is now one slim row that scrolls away with the page. Craft steps put the surface beside its tray or controls (landscape) or just above them (portrait). Of the craft steps with a hands-on surface, 58 of 61 now fit on one handheld screen (23 before) and 52 of 60 on the iPhone (30 before). Nothing scrolls sideways any more; 12 iPhone screens did before. The desktop (1280×800), Chromebook (1366×768) and iPad look the same as before; see **No regressions**.
+**Result.** On the Android handheld in landscape (863×360) and an upright iPhone 15 (393×659), the sticky headers that took 89–299 px of the height are gone: every header is now one slim row that scrolls away with the page. Craft steps put the surface beside its tray or controls (landscape) or just above them (portrait). Of the craft steps with a hands-on surface, 58 of 61 now fit on one handheld screen (23 before) and 53 of 60 on the iPhone (30 before). Nothing scrolls sideways any more; 12 iPhone screens did before. The desktop (1280×800), Chromebook (1366×768) and iPad look the same as before; see **No regressions**.
 
 ## 1. How it was measured
 
@@ -20,17 +20,17 @@ Screenshots: `C:\Users\shanc\AppData\Local\Temp\claude\y--ADEEVA\fd74eac9-5065-4
 
 - **Shared** (`src/styles/compact.css`). It works through two kit classes:
   - `ad-pinned-head` (with `__title`, `__stats` and `__back`) now sits on all seven hub top bars and all seven craft headers. In compact mode the header stops sticking and becomes one wrapping row: the eyebrow is hidden, the title shrinks to 1.25rem with an ellipsis, and the stat chips keep their labels for screen readers only.
-  - `ad-step-rail` sits on six step rails: steps other than the current one show only their number.
+  - `ad-step-rail` sits on six step rails: steps other than the current one show only their number, on a button still at least 44 px wide.
 
   On narrow screens, back buttons show only their arrow (the accessible name stays) and rails wrap. The large spacing and heading tokens shrink a step. On short screens `--work-max-h` becomes `calc(100dvh - 16px)`, which surfaces use to cap their height.
 
 - **Per game**, a `compact.css` next to the flow it changes, imported after that flow's CSS:
-  - Workshop: saw, join and sand benches beside their controls; the layout boards beside a scrolling parts tray; extras beside the tin. `SawBench`'s smallest scale went from 6 to 3 px per cm, so the plank shrinks to fit a phone instead of scrolling sideways.
+  - Workshop: saw, join and sand benches beside their controls; the layout boards beside a scrolling parts tray, whose part names wrap instead of being cut off; extras beside the tin. `SawBench`'s smallest scale went from 6 to 3 px per cm, so the plank shrinks to fit a phone instead of scrolling sideways.
   - Patisserie: weigh, stir, oven, stack, pipe and decorate side by side; Counter Day and Table Service with a slimmer sunset band and the glass case kept in reach.
-  - Interior: plan, light, style, paint, floor and reveal side by side; the checklist moves after the work area, visually only.
-  - Jewellery: stats, scene and tools in one row; the design and display previews stick 8 px from the top and fit the height. They used to stick at 84 px, under a header that no longer sticks.
+  - Interior: plan, light, style, paint, floor and reveal side by side; on an upright phone the plan (42% of the height) and its tray (40%) fit on one screen; the checklist moves after the work area, visually only.
+  - Jewellery: stats, scene and tools in one row, the stats column narrow enough that the stone stays at least 44 px; the design and display previews stick 8 px from the top and fit the height. They used to stick at 84 px, under a header that no longer sticks.
   - Six Kitchens: chop, sizzle, simmer, taste and plate sized to the height; the service tabs become a right-hand column; the step rail wraps on phones (it used to scroll up to 115 px sideways).
-  - Thrift-Flip: unpick, cut, sew and finish sized to the height; stall day and the window display tighter.
+  - Thrift-Flip: unpick, cut, sew and finish sized to the height, with the finishing drawer's tabs sharing its width and, on phones, the footer's Next button wrapping under its status (CI's Linux fonts scrolled these 45 and 13 px sideways); stall day and the window display tighter.
   - ADEEVA: cutting with the tray beside the board; trace and machine capped to the height; the sewing HUD wraps. It used to scroll sideways on phones, in Thrift-Flip too.
 - **Kept**: all Phase C art, the source and focus order, touch targets of at least 44 px and body text of at least 14 px.
 
@@ -94,7 +94,7 @@ Band and work are in CSS px.
 | stage-floor        | 113 → 0       | 327 no → 304 fits  | 169 → 0     | 563 no → 576 fits   |
 | stage-light        | 137 → 0       | 620 no → 304 fits  | 193 → 0     | 839 no → 595 fits   |
 | stage-paint        | 163 → 0       | 949 no → 328 fits  | 193 → 0     | 706 no → 719 no     |
-| stage-plan         | 187 → 0       | 1301 no → 298 fits | 193 → 0     | 2221 no → 668 no    |
+| stage-plan         | 187 → 0       | 1301 no → 298 fits | 193 → 0     | 2221 no → 620 fits  |
 | stage-reveal       | 0 → 0         | 378 no → 355 fits  | 0 → 0       | 394 fits → 405 fits |
 | stage-shop         | 187 → 0       | 52 fits → 52 fits  | 193 → 0     | 52 fits → 52 fits   |
 | stage-style        | 163 → 0       | 1240 no → 309 fits | 193 → 0     | 1687 no → 1486 no   |
@@ -212,25 +212,26 @@ None of the compact rules match these sizes. The before and after screenshots we
 - one or two representative steps show the surface and its controls on screen together;
 - nothing scrolls sideways.
 
-Its fixtures are `e2e/fixtures/workArea.ts` (the checks, built on `stillBox` and `settle`) and `e2e/fixtures/compactStages.ts` (the prepared saves). On the handheld it also drags a Workshop part from the tray onto a board. That drag is skipped on WebKit, because its phone emulation has no finger.
+Its fixtures are `e2e/fixtures/workArea.ts` (the checks, built on `stillBox` and `settle`) and `e2e/fixtures/compactStages.ts` (the prepared saves). It also checks that every enabled button on those screens is at least 44 px each way, and that the Jewellery stone is at least 44 px. On both sizes it drags a Workshop part from the tray onto a board, and an Interior armchair from the tray onto the plan, with the tray and the plan on screen together.
 
-| Check                                                | Result                                                                                                                                                                        |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm typecheck`                                     | clean                                                                                                                                                                         |
-| `pnpm lint` (eslint with zero warnings, Prettier)    | clean                                                                                                                                                                         |
-| `pnpm test`                                          | 291 files, 1,523 tests passed                                                                                                                                                 |
-| `e2e/release` (`MAKER_PORT=5232 --workers=2`)        | 59 passed, 25 skipped                                                                                                                                                         |
-| `e2e/release/compact.spec.ts` on handheld and iPhone | 15 passed, 1 skipped (the WebKit drag)                                                                                                                                        |
-| full `pnpm e2e` (`--workers=2`)                      | 213 passed, 81 skipped, 1 failed: `update.spec.ts` on Chromium hit Windows' `net::ERR_NO_BUFFER_SPACE` at its first `page.goto`. Re-run on its own, both of its tests passed. |
+| Check                                                    | Result                                                                                                                                                                        |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm typecheck`                                         | clean                                                                                                                                                                         |
+| `pnpm lint` (eslint with zero warnings, Prettier)        | clean                                                                                                                                                                         |
+| `pnpm test`                                              | 291 files, 1,523 tests passed                                                                                                                                                 |
+| `e2e/release` (`MAKER_PORT=5236 --workers=2`)            | 62 passed, 27 skipped                                                                                                                                                         |
+| `e2e/release/compact.spec.ts` on handheld and iPhone     | 18 passed                                                                                                                                                                     |
+| full `pnpm e2e` (`--workers=2`, before the review fixes) | 213 passed, 81 skipped, 1 failed: `update.spec.ts` on Chromium hit Windows' `net::ERR_NO_BUFFER_SPACE` at its first `page.goto`. Re-run on its own, both of its tests passed. |
 
 ## 6. Still doesn't fit
 
 - **Long tap-only screens** stay long, by design, because nothing on them is dragged: ADEEVA's collection board and runway planner, Jewellery's collection board, gem market and second-career hub, the Six Kitchens Crossroads, and Workshop's timber list. Their buttons are reachable by scrolling.
 - **Showcase shows** (ADEEVA runway, Interior Open House, Thrift-Flip Upcycle Showcase) fill the whole screen on purpose.
-- **iPhone, upright:** a few craft steps are taller than one screen. Each still works by scrolling, and no drag has to cross the scroll except on the Interior plan:
-  - Interior plan, style and paint (668–1,486 px). On the plan, the tray is under the room;
+- **iPhone, upright:** a few craft steps are taller than one screen. Each still works by scrolling, and no drag has to cross the scroll:
+  - Interior style and paint (719–1,486 px);
   - Workshop layout, extras and finish (767–1,118 px);
   - Jewellery display (1,184 px);
   - Six Kitchens service rush (548 px against 659).
 - **Handheld:** Workshop's timber list (446 px), and Jewellery design and display, where the preview sits beside choices that scroll.
-- **Drags:** in the measured steps, every drag surface and its tray are on screen together on both sizes, except the iPhone Interior plan. Turning the phone sideways gives the side-by-side layout.
+- **Drags:** in the measured steps, every drag surface and its tray are on screen together on both sizes. On the iPhone's Interior plan the furniture tray scrolls inside itself under the room; the cards also add a piece with a tap.
+- **Saw on a phone:** the 3 px per cm floor keeps the whole plank on screen, but the cut tolerance is in cm, so on the iPhone (3.4 px per cm, 6 before but scrolling sideways) the band a finger must stay in is about 4 px instead of 7. Left as is; widen the tolerance on small screens if children find it too hard.

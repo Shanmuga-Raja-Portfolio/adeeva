@@ -1,7 +1,7 @@
 @media (max-height: 480px) {
   .jb-station,
   .jb-station.jb-station--wide {
-    grid-template-columns: minmax(7.5rem, 9rem) minmax(0, 1fr) minmax(9rem, 11rem);
+    grid-template-columns: minmax(7rem, 8rem) minmax(0, 1fr) minmax(9rem, 11rem);
     grid-template-areas:
       "stats scene tools"
       "hint hint hint";

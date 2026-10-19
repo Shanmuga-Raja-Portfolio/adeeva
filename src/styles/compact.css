@@ -102,6 +102,8 @@
   }
 
   :root .ad-step-rail li:not(:has([aria-current])) [class*="rail__button"] {
+    justify-content: center;
+    min-width: var(--tap);
     padding-left: 2px;
     padding-right: 2px;
     width: auto;

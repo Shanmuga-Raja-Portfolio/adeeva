@@ -195,12 +195,14 @@
   .ww-tray__part {
     flex: 1 1 auto;
     min-width: 0;
-    grid-template-columns: 32px auto;
+    grid-template-columns: 32px minmax(0, 1fr);
+    grid-template-rows: auto;
     min-height: 48px;
     padding: 4px 6px;
   }
 
   .ww-tray__part svg {
+    grid-row: auto;
     width: 32px;
     height: 32px;
   }
@@ -210,11 +212,13 @@
   }
 
   .ww-tray__name {
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    line-height: 1.15;
     font-size: var(--text-sm);
   }
 
   .ww-tray__turn {
+    flex: none;
     width: 44px;
     min-height: 44px;
     font-size: 18px;
