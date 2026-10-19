@@ -94,7 +94,6 @@
 }
 
 .tf-drawer .tf-tabs {
-  flex-wrap: nowrap;
   gap: 6px;
 }
 

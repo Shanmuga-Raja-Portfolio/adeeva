@@ -92,7 +92,7 @@ jobs:
           COMMIT: ${{ needs.check.outputs.commit }}
         run: |
           .github/deploy/node_modules/.bin/wrangler pages deploy dist \
-            --project-name maker-studio --branch main \
+            --project-name makers-studio --branch main \
             --commit-hash "$COMMIT" --commit-message "Release ${GITHUB_REF_NAME}"
           environment=$(jq -r 'select(.type == "pages-deploy-detailed") | .environment // empty' "$WRANGLER_OUTPUT_FILE_PATH" | tail -n 1)
           url=$(jq -r 'select(.type == "pages-deploy-detailed") | .url // empty' "$WRANGLER_OUTPUT_FILE_PATH" | tail -n 1)

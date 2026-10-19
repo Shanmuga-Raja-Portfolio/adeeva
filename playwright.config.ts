@@ -5,8 +5,8 @@ const port = makerPort + 1000;
 const host = "127.0.0.1";
 const origin = `http://${host}:${port}`;
 const outDir = `dist-e2e/${port}`;
-const deviceSpecs = /release[\\/](smoke|install|compact)\.spec\.ts$/;
-const safariSpecs = /release[\\/](smoke|noNetwork|install|update|about|compact)\.spec\.ts$/;
+const deviceSpecs = /release[\\/](smoke|install|compact|finishDrawer)\.spec\.ts$/;
+const safariSpecs = /release[\\/](smoke|noNetwork|install|update|about|compact|finishDrawer)\.spec\.ts$/;
 const chromiumLaunch = { args: ["--enable-blink-features=WebBluetooth"] };
 
 export default defineConfig({
