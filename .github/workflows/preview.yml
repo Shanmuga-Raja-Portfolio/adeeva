@@ -1,6 +1,6 @@
 name: Preview
 
-# Cloudflare Access must cover *.maker-studio.pages.dev (and maker-studio.pages.dev) before
+# Cloudflare Access must cover *.makers-studio.pages.dev (and makers-studio.pages.dev) before
 # the first preview is deployed: every preview URL is public otherwise.
 
 on:
@@ -103,7 +103,7 @@ jobs:
           COMMIT: ${{ github.event.pull_request.head.sha }}
         run: |
           .github/deploy/node_modules/.bin/wrangler pages deploy dist \
-            --project-name maker-studio --branch "$BRANCH" \
+            --project-name makers-studio --branch "$BRANCH" \
             --commit-hash "$COMMIT" --commit-message "Preview of ${BRANCH}"
           environment=$(jq -r 'select(.type == "pages-deploy-detailed") | .environment // empty' "$WRANGLER_OUTPUT_FILE_PATH" | tail -n 1)
           if [ "$environment" != "preview" ]; then

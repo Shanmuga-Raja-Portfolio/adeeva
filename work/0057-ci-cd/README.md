@@ -126,7 +126,7 @@ Then watch **Actions → Release**. It runs these steps:
 
 1. **tag is on main** fails unless the tag is exactly `vMAJOR.MINOR.PATCH` and its commit is on `origin/main`.
 2. **ci** runs the whole of `ci.yml` on the tagged commit: every gate, including all browser tests. Expect about 15 to 20 minutes.
-3. **deploy production** takes the `dist` that CI just built (each browser-test job rebuilds the app for its server and checks, with `diff -r`, that its build is byte-for-byte this `dist`), and runs `wrangler pages deploy dist --project-name maker-studio --branch main`. It fails if Cloudflare reports anything other than a production deployment.
+3. **deploy production** takes the `dist` that CI just built (each browser-test job rebuilds the app for its server and checks, with `diff -r`, that its build is byte-for-byte this `dist`), and runs `wrangler pages deploy dist --project-name makers-studio --branch main`. It fails if Cloudflare reports anything other than a production deployment.
 4. **github release** creates the GitHub Release with generated notes.
 
 Only one release runs at a time (`concurrency: release-production`). A second tag waits for the first to finish.
@@ -137,7 +137,7 @@ After the deploy, open the live link on each device and check that it installs, 
 
 Choose the fastest option that works:
 
-- **Cloudflare dashboard (seconds).** Workers & Pages → `maker-studio` → Deployments → the last good production deployment → ⋯ → **Rollback to this deployment**. Nothing is rebuilt. Installed copies pick it up the next time they open online, as with any update.
+- **Cloudflare dashboard (seconds).** Workers & Pages → `makers-studio` → Deployments → the last good production deployment → ⋯ → **Rollback to this deployment**. Nothing is rebuilt. Installed copies pick it up the next time they open online, as with any update.
 - **Re-deploy an older tag (about 20 minutes).** Actions → Release → **Run workflow**, and under "Use workflow from" pick the tag, for example `v1.0.0`. The tag is checked, CI runs again on it, and its build is deployed. No new GitHub Release is created. This works for every tag made after this task is merged, because the tag must contain `release.yml`.
 
 A rollback serves older files, and saves only migrate forward. If the release being rolled back raised a game's save version (a codec's `version` in the diff between the two tags), any save that was opened in the newer build now reads "This save uses version N, which this game does not recognise" in the older one (`src/engine/saveEnvelope.ts`). In that case roll forward with a fixed tag (for example `v1.0.1`) instead. Rolling forward is the better choice anyway whenever the fix is small.
@@ -150,10 +150,10 @@ Do these in order. The first preview or release will fail, or skip, until they'r
 
 Wrangler will **not** create the project from CI. A non-interactive `wrangler pages deploy` stops with "The Pages project does not exist". Only an interactive run offers to create it, and wrangler 4.151 hands an AI agent's session to Workers instead of Pages when the project is missing. So create it yourself first, using either of these:
 
-- **Dashboard:** Workers & Pages → Create → Pages → **Use direct upload** (not "Connect to Git") → project name `maker-studio` → upload any small folder as a placeholder → Deploy. Then check Settings → **Production branch** is `main`.
-- **Your own terminal** (not from a Claude session): `npx --yes wrangler@4.151.1 login`, then `npx --yes wrangler@4.151.1 pages project create maker-studio --production-branch main`.
+- **Dashboard:** Workers & Pages → Create → Pages → **Use direct upload** (not "Connect to Git") → project name `makers-studio` → upload any small folder as a placeholder → Deploy. Then check Settings → **Production branch** is `main`.
+- **Your own terminal** (not from a Claude session): `npx --yes wrangler@4.151.1 login`, then `npx --yes wrangler@4.151.1 pages project create makers-studio --production-branch main`.
 
-Note the address Cloudflare gives the project. It's `maker-studio.pages.dev` if the name is free, and otherwise a variant like `maker-studio-abc.pages.dev`. If it differs, use that name everywhere below and in the two workflows. The project name `maker-studio` is what the workflows deploy to.
+Note the address Cloudflare gives the project. Shan's project is `makers-studio` at `makers-studio.pages.dev` (created 2026-10-18). If a future project gets a variant like `makers-studio-abc.pages.dev`, use that name everywhere below and in the two workflows. The project name `makers-studio` is what the workflows deploy to.
 
 Never connect the project to GitHub. Builds come only from our workflows, so Cloudflare never needs access to the repo.
 
@@ -161,7 +161,7 @@ Never connect the project to GitHub. Builds come only from our workflows, so Clo
 
 dash.cloudflare.com → **My Profile → API Tokens → Create Token → Create Custom Token**:
 
-- **Name:** `maker-studio GitHub deploy`
+- **Name:** `makers-studio GitHub deploy`
 - **Permissions:** one row only, `Account` · `Cloudflare Pages` · `Edit`
 - **Account Resources:** `Include` · Shan's account (the one account, not "All accounts")
 - **Zone Resources:** none (the row doesn't appear for account-only permissions)
@@ -185,28 +185,32 @@ Until both exist, previews skip with a notice ("Preview skipped") and releases f
 
 Do this **before** the first preview or release. Without it, every `*.pages.dev` address is public.
 
-Zero Trust dashboard → **Access → Applications → Add an application → Self-hosted**:
+Shan's Zero Trust team is `bold-dream-ea34` on the Zero Trust Free plan, so families sign in at `bold-dream-ea34.cloudflareaccess.com`. Cloudflare asked for a payment card even on the free plan; a $25 spend limit is set.
+
+First turn on the emailed code: Zero Trust → **Settings → Authentication → Login methods → Add new → One-time PIN**.
+
+Then Zero Trust dashboard → **Access → Applications → Add an application → Self-hosted**:
 
 - **Application name:** Maker Studio
 - **Public hostnames:** add both of these:
-  - `maker-studio.pages.dev` (production)
-  - `*.maker-studio.pages.dev` (every preview: branch aliases like `task-0059-art-pass.maker-studio.pages.dev`, and per-commit addresses like `1a2b3c4d.maker-studio.pages.dev`)
+  - `makers-studio.pages.dev` (production)
+  - `*.makers-studio.pages.dev` (every preview: branch aliases like `task-0059-art-pass.makers-studio.pages.dev`, and per-commit addresses like `1a2b3c4d.makers-studio.pages.dev`)
 
   The wildcard doesn't match the bare name, so both entries are needed.
 
 - **Session duration:** 1 month is kind to the kids; offline play keeps working after it expires either way.
 - **Policy:** Action **Allow**, Include **Emails**, listing the family and invited addresses. Login method **One-time PIN**.
-- **Cookie settings:** **SameSite: Lax** (found during the security review: the default `None` lets another site probe whether a browser is signed in), and **HTTP Only** on.
+- **Cookie settings** (in the application's **Advanced settings** or **Settings** tab; Cloudflare moves it between versions): **SameSite: Lax** (found during the security review: the default `None` lets another site probe whether a browser is signed in), and **HTTP Only** on.
 
-If you also tick "Enable access policy" for preview deployments in the Pages project's settings, Cloudflare creates a second Access app for `*.maker-studio.pages.dev`. That's harmless, but one app covering both hostnames is easier to keep right.
+If you also tick "Enable access policy" for preview deployments in the Pages project's settings, Cloudflare creates a second Access app for `*.makers-studio.pages.dev`. That's harmless, but one app covering both hostnames is easier to keep right.
 
-Check: open `https://maker-studio.pages.dev` and a preview link in a private window. Both must ask for the email code.
+Check: open `https://makers-studio.pages.dev` and a preview link in a private window. Both must ask for the email code.
 
 ### 5. Keep these off
 
 The service worker installs the game for offline play by fetching every file with its SHA-384 hash. If Cloudflare changes even one byte of a page, the install fails and the game never works offline. So nothing may rewrite or inject into HTML or scripts:
 
-- **Web Analytics** for the Pages project (Workers & Pages → `maker-studio` → Metrics): leave it off. Enabling it injects a beacon script on the next deploy.
+- **Web Analytics** for the Pages project (Workers & Pages → `makers-studio` → Metrics): leave it off. Enabling it injects a beacon script on the next deploy.
 - If a custom domain on a Cloudflare zone is added later, keep these zone features off for it: **Rocket Loader**, **Email Address Obfuscation**, **Automatic HTTPS Rewrites**, **Cloudflare Fonts**, **Zaraz**, **Mirage** and image polishing, **Server-side Excludes**, Bot Fight Mode's **JavaScript detections**, and any Transform Rule, Snippet or Worker that edits responses. (On a plain `*.pages.dev` address these can't be turned on.)
 - No Pages Functions and no `_worker.js`. The site is static files plus `_headers`.
 

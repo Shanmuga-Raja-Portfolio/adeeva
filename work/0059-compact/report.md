@@ -204,6 +204,8 @@ None of the compact rules match these sizes. The before and after screenshots we
 - the larger ones are animated screens (the Open House, Upcycle Showcase and Lantern Night shows, the Fair bunting) and one results screen where the scripted sewing scored 97 instead of 92;
 - one real change: on the iPad, Workshop's saw plank is 1–2 px smaller. The old 6 px per cm floor sat just above the scale that fits the card there, so the plank no longer pokes past it.
 
+**Fixed later (task 60): the Thrift-Flip finishing drawer on an upright iPad.** It scrolled 78 px sideways, before and after this task. Playwright's `iPad (gen 11)` is 656 CSS px wide, so the finish step's right column is about 290 px. The drawer's four tabs were held on one line (`flex-wrap: nowrap`) and needed 374 px, and the drawer's column is sized to its content, so the drawer grew to 400 px and spilled past the screen. The tabs now wrap to a second row when they don't fit (`src/games/thrift-flip/ui/screens/flip/finish/finish.css`). The desktop, Chromebook, handheld and iPhone shots of the finish step (all four tabs) and the unpick step are identical pixel for pixel before and after. `e2e/release/finishDrawer.spec.ts` checks every drawer tab for sideways scroll on all five projects, `webkit-ipad` included.
+
 ## 5. Tests
 
 `e2e/release/compact.spec.ts` (new) runs on `android-handheld` and `webkit-iphone` and skips at other sizes. For each game it checks that:
