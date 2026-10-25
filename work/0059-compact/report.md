@@ -14,7 +14,7 @@ For each screen it recorded:
 - **work**: the height of the step's surface plus its tray or controls (not the Next button), and whether that whole area fits on one screen below the band, once scrolled to it;
 - **sideways**: how far the page scrolls sideways.
 
-Screenshots: `C:\Users\shanc\AppData\Local\Temp\claude\y--ADEEVA\fd74eac9-5065-4828-8ba3-4fdeb3d9b773\scratchpad\compact\shots\before\` and `C:\Users\shanc\AppData\Local\Temp\claude\y--ADEEVA\fd74eac9-5065-4828-8ba3-4fdeb3d9b773\scratchpad\compact\shots\after\`, one folder per size and game. They live in the session scratchpad, not the repo.
+Screenshots were captured per screen, size and game into the session scratchpad (a local temp folder); they were never committed to the repo.
 
 ## 2. What changed
 

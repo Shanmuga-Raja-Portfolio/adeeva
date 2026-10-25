@@ -66,6 +66,45 @@ jobs:
       - name: Scan the full git history
         run: '"$RUNNER_TEMP/gitleaks" git --redact --verbose --exit-code 1 --no-banner .'
 
+  signoff:
+    name: signoff
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          # Check out the PR head, not the synthetic merge commit (which has
+          # no Signed-off-by and would fail every PR).
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify every commit is signed off
+        run: |
+          set -euo pipefail
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          bad=$(git log --format='%H%x00%B%x00END%x00' \
+                  "origin/${{ github.base_ref }}..HEAD" | \
+                python3 -c "
+          import sys
+          data = sys.stdin.read()
+          bad = []
+          for chunk in data.split('\x00END\x00'):
+              chunk = chunk.strip('\x00\n')
+              if not chunk:
+                  continue
+              sha, _, body = chunk.partition('\x00')
+              if 'Signed-off-by:' not in body:
+                  bad.append(sha)
+          print(' '.join(bad))
+          ")
+          if [ -n "$bad" ]; then
+            echo "Commits missing Signed-off-by: $bad"
+            echo "Fix: git rebase --signoff origin/${{ github.base_ref }}, then force-push."
+            exit 1
+          fi
+          echo "All commits signed off."
+
   e2e-chromium:
     name: e2e chromium (${{ matrix.shard }}/2)
     needs: verify
@@ -165,7 +204,7 @@ jobs:
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [verify, secrets, e2e-chromium, e2e-webkit]
+    needs: [verify, secrets, signoff, e2e-chromium, e2e-webkit]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -174,4 +213,6 @@ jobs:
           RESULTS: ${{ toJSON(needs.*.result) }}
         run: |
           echo "$RESULTS"
-          jq -e 'length == 4 and all(. == "success")' <<< "$RESULTS"
+          # "skipped" is only ever the signoff job on non-PR events (pushes,
+          # workflow_call from release.yml); a failed job is "failure".
+          jq -e 'length == 5 and all(. == "success" or . == "skipped")' <<< "$RESULTS"

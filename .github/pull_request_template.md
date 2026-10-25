@@ -8,6 +8,7 @@
 
 ## Gate
 
+- [ ] Every commit is signed off (`git commit -s`, DCO); CI's sign-off check passes
 - [ ] `pnpm typecheck`, `pnpm lint` and `pnpm test` pass locally
 - [ ] Affected browser specs pass locally (`MAKER_PORT=<free port> pnpm e2e <specs> --workers=2`)
 - [ ] No code comments, every file is 700 lines or fewer, no utils, helpers, common or shared folders

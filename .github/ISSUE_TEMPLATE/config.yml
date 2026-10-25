@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security issue (private)
+    url: https://github.com/Shanmuga-Raja-Portfolio/adeeva/security/advisories/new
+    about: Never open a public issue for security problems — use this private channel instead.
+  - name: Code of conduct concern (private)
+    url: https://github.com/Shanmuga-Raja-Portfolio/adeeva/security/advisories/new
+    about: Report unacceptable behavior privately; mention "Code of conduct".
+  - name: Read before contributing
+    url: https://github.com/Shanmuga-Raja-Portfolio/adeeva/blob/main/CONTRIBUTING.md
+    about: The ground rules, local gates and release process.
