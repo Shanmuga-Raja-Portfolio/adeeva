@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maker Studio — seven offline, family-safe maker games</title>
+    <meta
+      name="description"
+      content="Maker Studio: seven offline, family-safe games about running a small creative business. Free and MIT-licensed. No ads, no purchases, no accounts."
+    />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'" />
+    <style>
+      :root {
+        --bg: #fbf8f3;
+        --fg: #2a2520;
+        --muted: #6b625a;
+        --card: #ffffff;
+        --line: #e7dfd5;
+        --accent: #b4532a;
+        --accent-fg: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1b1916;
+          --fg: #eee8e1;
+          --muted: #b3a99f;
+          --card: #24211d;
+          --line: #3a352f;
+          --accent: #e07a4a;
+          --accent-fg: #1b1916;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          17px/1.6 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 48px 20px 64px;
+      }
+      h1 {
+        font-size: 2.4rem;
+        line-height: 1.15;
+        margin: 0 0 8px;
+      }
+      h2 {
+        margin-top: 44px;
+        font-size: 1.4rem;
+      }
+      .lead {
+        font-size: 1.2rem;
+        color: var(--muted);
+        margin: 0 0 28px;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .btn {
+        display: inline-block;
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--fg);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-fg);
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      code,
+      pre {
+        font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+        font-size: 0.92em;
+      }
+      pre {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 14px 16px;
+        overflow-x: auto;
+      }
+      ul.ticks {
+        padding-left: 1.2em;
+      }
+      a {
+        color: var(--accent);
+      }
+      footer {
+        margin-top: 56px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Maker Studio</h1>
+      <p class="lead">
+        Seven offline, family-safe games about running a small creative business — bake, cook, make, mend, and
+        grow a tiny studio of your own. Free and open source.
+      </p>
+
+      <div class="actions">
+        <a class="btn primary" href="https://makers-studio.pages.dev/">Play online (Cloudflare Pages)</a>
+        <a class="btn" href="https://github.com/Shanmuga-Raja-Portfolio/adeeva">Get the code on GitHub</a>
+        <a class="btn" href="https://github.com/Shanmuga-Raja-Portfolio/adeeva/archive/refs/tags/v1.0.0.zip"
+          >Download v1.0.0 (.zip)</a
+        >
+      </div>
+      <p class="note">
+        This page describes the project. The game itself runs on Cloudflare Pages, or on your own computer
+        from the source code.
+      </p>
+
+      <h2>The games</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Game</th>
+            <th>The trade</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Adeeva</strong></td>
+            <td>Craft workshop: take requests, choose materials, make the piece well</td>
+          </tr>
+          <tr>
+            <td><strong>Six Kitchens</strong></td>
+            <td>Restaurant kitchen: prep, cook, plate and serve under the clock</td>
+          </tr>
+          <tr>
+            <td><strong>Patisserie Atelier</strong></td>
+            <td>Bakery: bakes, cakes and a shop of your own</td>
+          </tr>
+          <tr>
+            <td><strong>Jewellery Bench</strong></td>
+            <td>Fine jewellery: bench work, collections, lantern nights</td>
+          </tr>
+          <tr>
+            <td><strong>Interior Studio</strong></td>
+            <td>Home makeovers: plan, decorate and show the finished room</td>
+          </tr>
+          <tr>
+            <td><strong>Thrift-Flip Studio</strong></td>
+            <td>Second-hand finds: mend, style and resell</td>
+          </tr>
+          <tr>
+            <td><strong>Workshop &amp; Wood</strong></td>
+            <td>Woodworking: commissions from the neighbourhood</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Built for families</h2>
+      <ul class="ticks">
+        <li><strong>Offline first.</strong> It installs as an app (PWA) and plays with the network off.</li>
+        <li><strong>No accounts, no ads, no purchases, no analytics.</strong> Nothing is collected.</li>
+        <li>Gentle pacing: no streaks, and nothing punishes a child for walking away.</li>
+        <li>A parent page inside the app explains what is stored on the device and how to forget it.</li>
+      </ul>
+
+      <h2>Run it on your own computer</h2>
+      <p>
+        You need <a href="https://nodejs.org">Node.js 24</a> and <a href="https://pnpm.io">pnpm 11</a> (<code
+          >corepack enable</code
+        >
+        gives you pnpm).
+      </p>
+      <pre><code>git clone https://github.com/Shanmuga-Raja-Portfolio/adeeva.git
+cd adeeva
+pnpm install
+pnpm dev        # play at the local URL it prints</code></pre>
+      <p>
+        <code>pnpm build</code> makes the offline app in <code>dist/</code>; <code>pnpm preview</code> serves
+        it locally. On Windows, double-click <code>Play Maker Studio.cmd</code>.
+      </p>
+
+      <h2>Host your own copy</h2>
+      <p>
+        Build with <code>pnpm build</code> and serve <code>dist/</code> from the site root on any static host.
+        Cloudflare Pages is the tested setup: it applies the security headers in <code>public/_headers</code>.
+        The repository's
+        <a href="https://github.com/Shanmuga-Raja-Portfolio/adeeva/blob/main/.github/workflows/release.yml"
+          >release workflow</a
+        >
+        shows the exact deploy.
+      </p>
+
+      <h2>License</h2>
+      <p>
+        <a href="https://github.com/Shanmuga-Raja-Portfolio/adeeva/blob/main/LICENSE">MIT</a>. Use it, change
+        it, share it. Names, characters and art are original. Found a security issue? Please report it
+        privately through the repository's
+        <a href="https://github.com/Shanmuga-Raja-Portfolio/adeeva/security">Security tab</a>.
+      </p>
+
+      <footer>
+        Part of <a href="https://shanmuga-raja-portfolio.github.io/">Shanmuga Raja Portfolio</a> — public
+        learning-and-making projects.
+      </footer>
+    </main>
+  </body>
+</html>
