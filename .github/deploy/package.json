@@ -3,6 +3,6 @@
   "private": true,
   "license": "UNLICENSED",
   "dependencies": {
-    "wrangler": "4.151.1"
+    "wrangler": "4.154.0"
   }
 }
